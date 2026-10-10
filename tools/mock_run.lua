@@ -353,6 +353,19 @@ for _, step in ipairs({
         ns:ResetBrokerChoices()
         ns:SetBrokerMode(false)
     end,
+    -- help topics: every help text splits into titled sections, nothing lost
+    function()
+        for _, t in ipairs({ ns.L.HELP_TEXT, ns.L.HELP_TEXT_BROKER }) do
+            local sections = ns.SplitHelp(t)
+            assert(#sections >= 4, "help has too few topics")
+            local total = 0
+            for _, sec in ipairs(sections) do
+                assert(sec.title ~= "" and sec.body ~= "", "empty help topic")
+                total = total + #sec.body
+            end
+            assert(total > #t * 0.8, "help text lost while splitting")
+        end
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

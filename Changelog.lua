@@ -26,6 +26,7 @@ ns.CHANGELOG = {
                 .. "(the color you want), and black and white, for Tessera's blocks, launchers and DataBroker blocks. "
                 .. "The Transparent style uses square icons of the same size by default.",
             "After an update, a window offers to read what's new.",
+            "The Help tab is now split into topics: a short summary first, then pick a topic on the left. Several tooltips were updated.",
             "Ready for community translations with CurseForge's localization tool.",
             "Blocks shown from the options are now placed evenly on both sides of the window, and never "
                 .. "over Blizzard's action bars, minimap or chat.",
@@ -53,6 +54,7 @@ ns.CHANGELOG = {
                 .. "bordure (de la couleur voulue), et le noir et blanc, pour les blocs de Tessera, les lanceurs et les "
                 .. "blocs DataBroker. Le style Transparent utilise par défaut des icônes carrées de même taille.",
             "Après une mise à jour, une fenêtre propose de lire les nouveautés.",
+            "L'onglet Aide est maintenant découpé en sujets : un court résumé d'abord, puis tu choisis un sujet à gauche. Plusieurs infobulles ont été mises à jour.",
             "Prêt pour les traductions de la communauté avec l'outil de traduction de CurseForge.",
             "Les blocs affichés depuis les options se placent maintenant des deux côtés de la fenêtre, à parts "
                 .. "égales, et plus jamais sur les barres d'action, la minicarte ou la discussion de Blizzard.",

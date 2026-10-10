@@ -29,7 +29,7 @@ local L = ns.L
 --   Launchers  add and edit launcher blocks and DataBroker blocks
 --   Broker     share Tessera's blocks with DataBroker addons, DataBroker mode
 --   Profiles   profiles and reset
---   Help       help text
+--   Help       help topics (list on the left, selected topic on the right)
 --   Version    installed version and changelog
 -- In DataBroker mode (Broker.lua) only the Broker, Help and Version tabs are shown.
 
@@ -1605,30 +1605,130 @@ end
 -- "Help" tab
 ---------------------------------------------------------------------------
 -- Builds the "Help" tab: scrollable help text
+-- Splits a help text into sections. A section starts with a header line
+-- written in the help title color (|cffffd100Title|r). Returns a list of
+-- { title = "...", body = "..." }; text before the first header, if any,
+-- becomes an untitled first section.
+local HEADER_PATTERN = "|cffffd100(.-)|r\n"
+local function SplitHelp(fullText)
+    local sections = {}
+    local pos = 1
+    local headerStart, headerEnd, title = fullText:find(HEADER_PATTERN, pos)
+    if headerStart and headerStart > 1 then
+        local intro = strtrim(fullText:sub(1, headerStart - 1))
+        if intro ~= "" then table.insert(sections, { title = "", body = intro }) end
+    end
+    if not headerStart then
+        return { { title = "", body = fullText } }
+    end
+    while headerStart do
+        local nextStart, nextEnd, nextTitle = fullText:find(HEADER_PATTERN, headerEnd + 1)
+        local body = fullText:sub(headerEnd + 1, (nextStart or #fullText + 1) - 1)
+        table.insert(sections, { title = title, body = strtrim(body) })
+        headerStart, headerEnd, title = nextStart, nextEnd, nextTitle
+    end
+    return sections
+end
+ns.SplitHelp = SplitHelp -- used by tools/mock_run.lua
+
+-- Help tab: a list of topics on the left, the selected topic on the right.
+-- This keeps each screen short instead of one long wall of text.
+local TOPIC_W, TOPIC_H = 165, 22
 local function BuildHelpPage(page)
+    local topicList = CreateFrame("Frame", nil, page)
+    topicList:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1] - 12, -6)
+    topicList:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 24)
+    topicList:SetWidth(TOPIC_W)
+
+    -- thin vertical line between the topics and the text
+    local divider = page:CreateTexture(nil, "ARTWORK")
+    divider:SetColorTexture(1, 0.82, 0, 0.25)
+    divider:SetWidth(1)
+    divider:SetPoint("TOPLEFT", topicList, "TOPRIGHT", 6, 0)
+    divider:SetPoint("BOTTOMLEFT", topicList, "BOTTOMRIGHT", 6, 0)
+
+    local textX = COL_X[1] - 12 + TOPIC_W + 18
+    local textW = PANEL_W - textX - 48
     local ok, scroll = pcall(CreateFrame, "ScrollFrame", nil, page, "ScrollFrameTemplate")
     if not ok then scroll = CreateFrame("ScrollFrame", nil, page, "UIPanelScrollFrameTemplate") end
-    scroll:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1], -6)
-    scroll:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", -48, 24)
+    scroll:SetPoint("TOPLEFT", page, "TOPLEFT", textX, -6)
+    scroll:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", -40, 24)
 
     local content = CreateFrame("Frame", nil, scroll)
-    content:SetSize(FULL_W - 30, 10)
+    content:SetSize(textW, 10)
     scroll:SetScrollChild(content)
 
+    local title = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT")
+    title:SetWidth(textW)
+    title:SetJustifyH("LEFT")
+
     local text = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    text:SetPoint("TOPLEFT")
-    text:SetWidth(FULL_W - 30)
+    text:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
+    text:SetWidth(textW)
     text:SetJustifyH("LEFT")
     text:SetSpacing(3)
+
+    local buttons, sections = {}, {}
+
+    local function ShowSection(index)
+        local section = sections[index]
+        if not section then return end
+        title:SetText(section.title)
+        text:SetText(section.body)
+        content:SetHeight(title:GetStringHeight() + 10 + text:GetStringHeight() + 20)
+        if scroll.SetVerticalScroll then scroll:SetVerticalScroll(0) end
+        for i, b in ipairs(buttons) do
+            local selectedTopic = (i == index)
+            b.mark:SetShown(selectedTopic)
+            if selectedTopic then
+                b.label:SetTextColor(1, 0.82, 0)
+            else
+                b.label:SetTextColor(0.9, 0.9, 0.9)
+            end
+        end
+    end
+
+    local function TopicButton(i)
+        if buttons[i] then return buttons[i] end
+        local b = CreateFrame("Button", nil, topicList)
+        b:SetSize(TOPIC_W, TOPIC_H)
+        local hl = b:CreateTexture(nil, "HIGHLIGHT")
+        hl:SetAllPoints()
+        hl:SetColorTexture(1, 1, 1, 0.08)
+        b.mark = b:CreateTexture(nil, "ARTWORK")
+        b.mark:SetColorTexture(1, 0.82, 0, 0.9)
+        b.mark:SetSize(3, TOPIC_H - 6)
+        b.mark:SetPoint("LEFT", b, "LEFT", 0, 0)
+        b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        b.label:SetPoint("LEFT", b, "LEFT", 10, 0)
+        b.label:SetPoint("RIGHT", b, "RIGHT", -4, 0)
+        b.label:SetJustifyH("LEFT")
+        b.label:SetWordWrap(true) -- long titles wrap on two lines
+        b:SetScript("OnClick", function() ShowSection(i) end)
+        buttons[i] = b
+        return b
+    end
+
     -- in DataBroker mode, only the help of that mode (how to leave it comes first)
     local shownText
     content.Refresh = function()
         local wanted = ns.brokerModeActive and L.HELP_TEXT_BROKER or L.HELP_TEXT
         if wanted == shownText then return end
         shownText = wanted
-        text:SetText(wanted)
-        content:SetHeight(text:GetStringHeight() + 20)
-        if scroll.SetVerticalScroll then scroll:SetVerticalScroll(0) end
+        sections = SplitHelp(wanted)
+        local y = 0
+        for i, section in ipairs(sections) do
+            local b = TopicButton(i)
+            b.label:SetText(section.title ~= "" and section.title or "...")
+            b:SetHeight(math.max(TOPIC_H, (b.label:GetStringHeight() or 0) + 8))
+            b:ClearAllPoints()
+            b:SetPoint("TOPLEFT", topicList, "TOPLEFT", 0, -y)
+            y = y + b:GetHeight() + 2
+            b:Show()
+        end
+        for i = #sections + 1, #buttons do buttons[i]:Hide() end
+        ShowSection(1)
     end
     content:Refresh()
     Register(content)

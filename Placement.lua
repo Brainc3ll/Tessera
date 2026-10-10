@@ -609,9 +609,12 @@ function ns:LegacyProbe()
                     end
                 end
                 if C_MajorFactions.GetRenownRewardsForLevel then
-                    local ok, rewards = pcall(C_MajorFactions.GetRenownRewardsForLevel, id, 25)
-                    if ok and type(rewards) == "table" then
-                        Add("C_MajorFactions.GetRenownRewardsForLevel(25): " .. Describe(rewards[1]))
+                    for _, level in ipairs({ 15, 25, 40, 55 }) do
+                        local ok, rewards = pcall(C_MajorFactions.GetRenownRewardsForLevel, id, level)
+                        if ok and type(rewards) == "table" then
+                            Add("GetRenownRewardsForLevel(" .. level .. "): " .. #rewards .. " reward(s), first = "
+                                .. Describe(rewards[1]))
+                        end
                     end
                 end
             end

@@ -1642,7 +1642,17 @@ local function LegacyRewards(points)
         local rewards = C_MajorFactions.GetRenownRewardsForLevel
             and Try(C_MajorFactions.GetRenownRewardsForLevel, LEGACY_FACTION, info.level)
         local reward = type(rewards) == "table" and rewards[1]
-        table.insert(list, { level = info.level, name = reward and reward.name or "?", reached = points >= info.level })
+        -- a reward may come without its name (item not cached yet, or already collected):
+        -- then its toast text, or the item's name
+        local name = reward and (reward.name ~= "" and reward.name or nil)
+        if reward and not name and reward.toastDescription and reward.toastDescription ~= "" then
+            name = reward.toastDescription
+        end
+        if reward and not name and reward.itemID then
+            local getName = (C_Item and C_Item.GetItemNameByID) or function(id) return (GetItemInfoFn(id)) end
+            name = Try(getName, reward.itemID)
+        end
+        table.insert(list, { level = info.level, name = name or "?", reached = points >= info.level })
     end
     table.sort(list, function(a, b) return a.level < b.level end)
     return list

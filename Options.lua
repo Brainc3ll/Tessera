@@ -1675,7 +1675,8 @@ local function BuildHelpPage(page)
         local section = sections[index]
         if not section then return end
         title:SetText(section.title)
-        text:SetText(section.body)
+        -- an empty line between paragraphs (each line of the help text), for more air
+        text:SetText((section.body:gsub("\n+", "\n\n")))
         content:SetHeight(title:GetStringHeight() + 10 + text:GetStringHeight() + 20)
         if scroll.SetVerticalScroll then scroll:SetVerticalScroll(0) end
         for i, b in ipairs(buttons) do

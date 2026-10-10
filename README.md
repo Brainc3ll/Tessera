@@ -35,6 +35,10 @@ Help tab inside the game explains everything.
   (with graphs), time, XP, rested XP, coordinates, zone, friends, guild, group, quests,
   reputation, currencies, professions (one block each), weapon skills, talents, Legacy points, hearthstone, mail, whispers,
   reagents, ammo, item level, speed, volume, instances, played time, goal...
+- **Made for WoW Forever's own systems**: a Legacy points block (your points on the Legacy
+  track, the next reward and every reward in the tooltip, a click opens the Legacy panel),
+  weapon skills read from Forever's skill list, and profession, talent and Legacy blocks that
+  open Forever's own windows.
 - Blocks that have nothing to show hide themselves (in a second row under the main bar).
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks.
 - Per-block style, opacity, scale, progress bar, thresholds, show on hover, alerts, click actions.
@@ -145,6 +149,36 @@ block); every data block with `brokerShare` is published as `Tessera_<block key>
 is on; DataBroker mode (`ns.brokerModeActive`) hides all of Tessera's frames. A module needs
 nothing special to be shared: its `update`, `tooltip` and `onClick` are reused. Blocks that open
 Blizzard windows through `secureMacro` cannot do so from another addon's bar.
+
+### WoW Forever specifics
+
+WoW Forever runs on the modern client (Midnight-era API) but has systems of its own, without
+public documentation yet. What Tessera found, with the development probes below:
+
+- **Legacy points** (`legacy` block, `Modules.lua`): the "Legacy" reward track is a renown track
+  of Blizzard's major factions system, faction ID `2802`. The points are
+  `C_MajorFactions.GetMajorFactionData(2802).renownLevel`; the reward levels come from
+  `C_MajorFactions.GetRenownLevels(2802)` and each reward from
+  `C_MajorFactions.GetRenownRewardsForLevel(2802, level)` (its `name`, else its
+  `toastDescription`, else the item's name). Updated on `MAJOR_FACTION_RENOWN_LEVEL_CHANGED`
+  and every minute. The block is registered only when `ToggleLegacySystemUI` (or
+  `LegacySystemFrame_LoadUI`) exists. Not found yet: the unspent points of the Legacy tree and
+  the challenge points total shown in the panel.
+- **Weapon skills** (`weaponSkills` block): the classic globals `GetNumSkillLines` /
+  `GetSkillLineInfo` do not exist; `C_SkillInfo.GetNumSkillLines()` and
+  `C_SkillInfo.GetSkillLineInfo(i)` do, and return one table per line (`name`, `rank`,
+  `maxRank`, `isHeader`, `isAbandonable`, `skillLineCategoryID`, `skillID`). Weapon skills are the
+  lines of category `6` (defense, `skillID` 95, is listed with them). The skills window is
+  `SkillsFrame`, a tab of the character window.
+- **Opening windows**: Forever has micro buttons that retail removed or merged:
+  `ProfessionMicroButton` (professions book, used for gathering professions, which have no
+  crafting window), `TalentMicroButton`, `LegacyMicroButton`, `SpellbookMicroButton`. Blocks
+  click them with a `/click` macro on their secure overlay (`MicroButtonMacro` in
+  `Modules.lua`), so the panels open from Blizzard's own code, without taint.
+- **Development probes** (not listed in the help): `/tessera debug legacy` and
+  `/tessera debug skills` open a window listing what the client offers (API namespaces and
+  functions, the Legacy panel's fields and texts, the raw skill list), which can be copied.
+  Use them to adapt a block when Forever changes, or to find new ones.
 
 ### WoW-specific constraints to keep in mind
 

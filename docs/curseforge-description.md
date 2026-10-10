@@ -9,6 +9,7 @@ Made for **WoW Forever**. English and French.
 ## Features
 
 - **More than 35 information blocks**: gold (with a 7-day history and your characters' gold), bags (with junk value), durability, FPS and latency (with graphs), local and server time, XP and rested XP, coordinates, zone, friends, guild, group, quests, reputation, currencies, one block per profession, weapon skills, talents, Legacy points, hearthstone, mail, whispers, reagents, ammo, item level, speed, volume, instances, played time, a personal goal...
+- **Made for WoW Forever's own systems**: a **Legacy points** block (your points on the Legacy track, the next reward and every reward in its tooltip, a click opens the Legacy panel), **weapon skills** read from Forever's skill list, and profession, talent and Legacy blocks that open Forever's own windows.
 - **Blocks that hide themselves** when they have nothing to show (mail, whispers, reputation...), in a second row under the main bar.
 - **Launcher blocks** made from minimap buttons and addon compartment entries.
 - **DataBroker support**:
@@ -59,6 +60,7 @@ Conçu pour **WoW Forever**. En anglais et en français.
 ## Fonctions
 
 - **Plus de 35 blocs d'informations** : or (avec l'historique sur 7 jours et l'or de tes personnages), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale et du serveur, XP et XP de repos, coordonnées, zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier, compétences d'armes, talents, points d'héritage, pierre de foyer, courrier, chuchotements, composants, munitions, niveau d'objet, vitesse, volume, instances, temps de jeu, objectif personnel...
+- **Pensé pour les systèmes propres à WoW Forever** : un bloc **Points d'héritage** (tes points sur le parcours Héritage, la prochaine récompense et toutes les récompenses dans son infobulle, un clic ouvre le panneau Héritage), les **compétences d'armes** lues dans la liste de compétences de Forever, et des blocs métiers, talents et héritage qui ouvrent les fenêtres de Forever.
 - **Des blocs qui se masquent** quand ils n'ont rien à montrer (courrier, chuchotements, réputation...), dans une deuxième rangée sous la barre principale.
 - **Des blocs lanceurs** créés à partir des boutons de la minicarte et du compartiment d'addons.
 - **Support DataBroker** :

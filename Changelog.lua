@@ -23,7 +23,8 @@ ns.CHANGELOG = {
             "New \"Bring blocks back on screen\" button and /tessera recover command, for groups that stick "
                 .. "out of the screen.",
             "Icons (Frame tab): the same size for every block, a square or round frame with a thin border "
-                .. "(the color you want), and black and white, for Tessera's blocks, launchers and DataBroker blocks.",
+                .. "(the color you want), and black and white, for Tessera's blocks, launchers and DataBroker blocks. "
+                .. "The Transparent style uses square icons of the same size by default.",
             "After an update, a window offers to read what's new.",
             "Ready for community translations with CurseForge's localization tool.",
             "Blocks shown from the options are now placed evenly on both sides of the window, and never "
@@ -50,7 +51,7 @@ ns.CHANGELOG = {
                 .. "dépassent de l'écran.",
             "Icônes (onglet Cadre) : la même taille pour tous les blocs, un cadre carré ou rond avec une fine "
                 .. "bordure (de la couleur voulue), et le noir et blanc, pour les blocs de Tessera, les lanceurs et les "
-                .. "blocs DataBroker.",
+                .. "blocs DataBroker. Le style Transparent utilise par défaut des icônes carrées de même taille.",
             "Après une mise à jour, une fenêtre propose de lire les nouveautés.",
             "Prêt pour les traductions de la communauté avec l'outil de traduction de CurseForge.",
             "Les blocs affichés depuis les options se placent maintenant des deux côtés de la fenêtre, à parts "

@@ -244,6 +244,8 @@ ns.themes = {
             cfg.borderSize = 1
             cfg.borderColor = { r = 0, g = 0, b = 0, a = 0 }
             cfg.font, cfg.outline = "friz", "OUTLINE"
+            -- without a frame around the blocks, framed icons of one size keep the bar tidy
+            cfg.iconShape, cfg.iconSize = "square", 16
         end,
         window = function()
             return FlatWindow({ 0.05, 0.05, 0.05, 0.95 }, { 0, 0, 0, 1 })
@@ -305,15 +307,19 @@ function ns:GetTheme()
 end
 
 -- Writes a theme's block style into one block's settings (current theme if key is nil)
+-- (icons go back to their plain look first: only some themes frame them)
 function ns:ApplyThemeToCfg(cfg, key)
     local theme = byKey[key or self:GetTheme()] or byKey.blizzard
+    cfg.iconShape, cfg.iconSize = "none", 0
+    cfg.iconBorderColor = { r = 0, g = 0, b = 0, a = 1 }
     theme.block(cfg)
 end
 
 -- Writes a theme into every block of the profile and clears the style overrides of the
 -- group and launcher defaults (restyle = also apply it to the frames now)
 local function RestyleProfile(self, key, restyle)
-    for _, field in ipairs({ "bg", "bgColor", "border", "borderSize", "borderColor", "font", "outline" }) do
+    for _, field in ipairs({ "bg", "bgColor", "border", "borderSize", "borderColor", "font", "outline",
+                             "iconShape", "iconSize", "iconBorderColor" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end

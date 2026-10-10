@@ -9,7 +9,7 @@ All notable changes to Tessera. The in-game **Version** tab shows the same list
 - DataBroker mode: turning it off now only applies to the display addon detected at that moment (another one installed later offers the mode again, with its explanation window). The Broker tab shows the current state and can go back to the automatic choice.
 - Opening Blizzard's Edit Mode also unlocks the blocks (option in the General tab).
 - New "Bring blocks back on screen" button and /tessera recover command, for groups that stick out of the screen.
-- Icons (Frame tab): the same size for every block, a square or round frame with a thin border (the color you want), and black and white, for Tessera's blocks, launchers and DataBroker blocks.
+- Icons (Frame tab): the same size for every block, a square or round frame with a thin border (the color you want), and black and white, for Tessera's blocks, launchers and DataBroker blocks. The Transparent style uses square icons of the same size by default.
 - After an update, a window offers to read what's new.
 - Ready for community translations with CurseForge's localization tool.
 - Blocks shown from the options are now placed evenly on both sides of the window, and never over Blizzard's action bars, minimap or chat.

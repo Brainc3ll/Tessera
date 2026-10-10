@@ -1,0 +1,9 @@
+# CurseForge / BigWigs packager: what goes into the release zip
+package-as: Tessera
+
+ignore:
+    - tools
+    - docs
+    - .github
+    - .luacheckrc
+    - .pkgmeta

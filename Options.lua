@@ -1672,6 +1672,9 @@ local function BuildPanel()
     panel:SetScript("OnDragStart", panel.StartMoving)
     panel:SetScript("OnDragStop", panel.StopMovingOrSizing)
     table.insert(UISpecialFrames, panel:GetName()) -- close with Escape
+    -- the placement banner steps aside while this window is open
+    panel:HookScript("OnShow", function() ns:UpdatePlacementBanner() end)
+    panel:HookScript("OnHide", function() ns:UpdatePlacementBanner() end)
 
     panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     panel.title:SetPoint("TOPLEFT", COL_X[1], -24)
@@ -1854,16 +1857,16 @@ end
 function ns:UpdatePlacementBanner()
     -- (never in DataBroker mode: Tessera shows no block of its own; nor while Blizzard's
     -- Edit Mode unlocked the blocks: its own window is open at the same place)
-    local show = self.db and not self:IsLocked() and not self.brokerModeActive
+    local placing = self.db and not self:IsLocked() and not self.brokerModeActive
         and not self.db.unlockedByEditMode and true or false
 
     -- the options window is tucked away during placement and comes back on lock
-    if show and not self.placementActive then
+    if placing and not self.placementActive then
         if panel and panel:IsShown() then
             panel:Hide()
             self.optionsTucked = true
         end
-    elseif not show and self.placementActive then
+    elseif not placing and self.placementActive then
         if self.optionsTucked and self.db and self.db.locked then
             self.optionsTucked = nil
             if panel then
@@ -1873,8 +1876,10 @@ function ns:UpdatePlacementBanner()
             end
         end
     end
-    self.placementActive = show
+    self.placementActive = placing
 
+    -- while the options window is open (it has its own lock button), the banner steps aside
+    local show = placing and not (panel and panel:IsShown())
     if not show then
         if self.banner then self.banner:Hide() end
         return
@@ -1882,15 +1887,28 @@ function ns:UpdatePlacementBanner()
     local b = self.banner
     if not b then
         b = CreateFrame("Frame", "TesseraPlacementBanner", UIParent, "BackdropTemplate")
-        b:SetSize(400, 92)
-        b:SetPoint("TOP", UIParent, "TOP", 0, -140)
+        b:SetSize(400, 104)
+        -- where the player last dragged it (account-wide), else near the top of the screen
+        local pos = self.sv.bannerPoint
+        if type(pos) == "table" and type(pos[1]) == "string" then
+            b:SetPoint(pos[1], UIParent, pos[1], tonumber(pos[2]) or 0, tonumber(pos[3]) or 0)
+        else
+            b:SetPoint("TOP", UIParent, "TOP", 0, -140)
+        end
         b:SetFrameStrata("DIALOG")
         b:SetClampedToScreen(true)
         b:EnableMouse(true)
         b:SetMovable(true)
         b:RegisterForDrag("LeftButton")
         b:SetScript("OnDragStart", b.StartMoving)
-        b:SetScript("OnDragStop", b.StopMovingOrSizing)
+        b:SetScript("OnDragStop", function(frame)
+            frame:StopMovingOrSizing()
+            -- remembered as an offset from the screen center
+            local x, y = frame:GetCenter()
+            local cx, cy = UIParent:GetCenter()
+            local k = frame:GetEffectiveScale() / UIParent:GetEffectiveScale()
+            ns.sv.bannerPoint = { "CENTER", math.floor(x * k - cx + 0.5), math.floor(y * k - cy + 0.5) }
+        end)
 
         b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         b.text:SetPoint("TOPLEFT", 14, -11)

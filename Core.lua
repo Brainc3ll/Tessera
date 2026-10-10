@@ -2010,6 +2010,9 @@ RunCommand = function(msg)
         if ns.BugReport then ns:BugReport() end
     elseif msg == "preview" or msg == "apercu" or msg == "aperçu" then
         ns:SetPreview(not ns.previewMode)
+    elseif msg == "debug legacy" then
+        -- Development: looks for where WoW Forever keeps the Legacy points (no API doc yet)
+        if ns.LegacyProbe then ns:LegacyProbe() end
     elseif msg:match("^debug raccord") then
         -- Live tuning of the corner seam length for the current border
         local value = tonumber(msg:match("^debug raccord%s+([%d%.]+)"))

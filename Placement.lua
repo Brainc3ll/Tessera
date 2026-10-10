@@ -503,6 +503,66 @@ function Tessera_ToggleBlocks()
 end
 
 ---------------------------------------------------------------------------
+-- Development probe (/tessera debug legacy): WoW Forever's Legacy points have no
+-- documented API yet. Lists the game's C_ namespaces that may hold them, the functions
+-- of the Legacy panel, and every text shown in that panel with its frame path, in a
+-- window that can be read (or screenshotted).
+function ns:LegacyProbe()
+    local lines = {}
+    local function Add(s) table.insert(lines, s) end
+    Add("== C_ namespaces (legacy / progress / challenge / account / heritage) ==")
+    local names = {}
+    for k in pairs(_G) do
+        if type(k) == "string" and k:find("^C_") then
+            local low = k:lower()
+            for _, word in ipairs({ "legacy", "progress", "challenge", "account", "heritage", "season" }) do
+                if low:find(word, 1, true) then table.insert(names, k) break end
+            end
+        end
+    end
+    table.sort(names)
+    for _, k in ipairs(names) do
+        local funcs = {}
+        if type(_G[k]) == "table" then
+            for fk, fv in pairs(_G[k]) do if type(fv) == "function" then table.insert(funcs, fk) end end
+        end
+        table.sort(funcs)
+        Add(k .. ": " .. table.concat(funcs, ", "))
+    end
+    local frame = _G.LegacySystemFrame
+    Add("")
+    Add("== LegacySystemFrame functions ==")
+    if not frame then
+        Add("(not loaded: open the Legacy panel once, then type the command again)")
+    else
+        local funcs = {}
+        for k, v in pairs(frame) do if type(v) == "function" then table.insert(funcs, k) end end
+        table.sort(funcs)
+        Add(table.concat(funcs, ", "))
+        Add("")
+        Add("== Texts in the panel ==")
+        local function Walk(f, path, depth)
+            if depth > 8 then return end
+            for _, region in ipairs({ f:GetRegions() }) do
+                if region.GetText and region:GetObjectType() == "FontString" then
+                    local ok, text = pcall(region.GetText, region)
+                    if ok and type(text) == "string" and text ~= "" then
+                        local name = region.GetDebugName and region:GetDebugName() or "?"
+                        Add(path .. " > " .. name .. " = " .. text)
+                    end
+                end
+            end
+            for _, child in ipairs({ f:GetChildren() }) do
+                local name = child.GetDebugName and child:GetDebugName() or "?"
+                Walk(child, name, depth + 1)
+            end
+        end
+        Walk(frame, "LegacySystemFrame", 0)
+    end
+    self:ShowTextWindow("Legacy probe", table.concat(lines, "\n"))
+end
+
+---------------------------------------------------------------------------
 -- Blocks out of the screen, Blizzard's Edit Mode
 ---------------------------------------------------------------------------
 -- Moves back inside the screen every free group (not attached to another frame) that

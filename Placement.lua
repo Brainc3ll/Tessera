@@ -529,6 +529,38 @@ function ns:LegacyProbe()
         table.sort(funcs)
         Add(k .. ": " .. table.concat(funcs, ", "))
     end
+    -- functions anywhere in C_ namespaces whose name mentions the Legacy system
+    Add("")
+    Add("== C_ functions named legacy / rewardtrack / heritage ==")
+    for k, t in pairs(_G) do
+        if type(k) == "string" and k:find("^C_") and type(t) == "table" then
+            for fk, fv in pairs(t) do
+                if type(fk) == "string" and type(fv) == "function" then
+                    local low = fk:lower()
+                    if low:find("legacy", 1, true) or low:find("rewardtrack", 1, true) or low:find("heritage", 1, true) then
+                        Add(k .. "." .. fk)
+                    end
+                end
+            end
+        end
+    end
+    -- global functions and Blizzard addons with "legacy" in their name
+    Add("")
+    Add("== Global functions named legacy ==")
+    for k, v in pairs(_G) do
+        if type(k) == "string" and type(v) == "function" and k:lower():find("legacy", 1, true) then Add(k) end
+    end
+    Add("")
+    Add("== Blizzard addons named legacy ==")
+    local getInfo = C_AddOns and C_AddOns.GetAddOnInfo
+    local count = (C_AddOns and C_AddOns.GetNumAddOns and C_AddOns.GetNumAddOns()) or 0
+    for i = 1, count do
+        local ok, name = pcall(getInfo, i)
+        if ok and type(name) == "string" and name:lower():find("legacy", 1, true) then
+            local loaded = C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded(i)
+            Add(name .. (loaded and " (loaded)" or " (not loaded)"))
+        end
+    end
     local frame = _G.LegacySystemFrame
     Add("")
     Add("== LegacySystemFrame functions ==")
@@ -539,6 +571,17 @@ function ns:LegacyProbe()
         for k, v in pairs(frame) do if type(v) == "function" then table.insert(funcs, k) end end
         table.sort(funcs)
         Add(table.concat(funcs, ", "))
+        for _, sub in ipairs({ "RewardTrackPage", "ChallengesPage", "TreePage" }) do
+            local page = frame[sub]
+            if type(page) == "table" then
+                local keys = {}
+                for k, v in pairs(page) do
+                    if type(k) == "string" then table.insert(keys, k .. (type(v) == "function" and "()" or "")) end
+                end
+                table.sort(keys)
+                Add(sub .. ": " .. table.concat(keys, ", "))
+            end
+        end
         Add("")
         Add("== Texts in the panel ==")
         local function Walk(f, path, depth)

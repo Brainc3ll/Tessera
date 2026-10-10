@@ -2010,6 +2010,9 @@ RunCommand = function(msg)
         if ns.BugReport then ns:BugReport() end
     elseif msg == "preview" or msg == "apercu" or msg == "aperçu" then
         ns:SetPreview(not ns.previewMode)
+    elseif msg == "debug skills" then
+        -- Development: what WoW Forever offers for weapon skills
+        if ns.SkillsProbe then ns:SkillsProbe() end
     elseif msg == "debug legacy" then
         -- Development: looks for where WoW Forever keeps the Legacy points (no API doc yet)
         if ns.LegacyProbe then ns:LegacyProbe() end

@@ -225,6 +225,7 @@ for _, step in ipairs({
     function() SlashCmdList.TESSERA("help") end,
     function() SlashCmdList.TESSERA("bug") end,
     function() SlashCmdList.TESSERA("debug legacy") end,
+    function() SlashCmdList.TESSERA("debug skills") end,
     function() local k = ns:AddSpacer(); ns:OpenOptionsFor(k); ns:RemoveSpacer(k) end,
     function() ns:UpdateVehicleState() end,
     -- DataBroker: add every source, update, tooltip, click, then remove one

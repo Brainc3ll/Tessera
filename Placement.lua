@@ -562,6 +562,56 @@ function ns:LegacyProbe()
     self:ShowTextWindow("Legacy probe", table.concat(lines, "\n"))
 end
 
+-- Development probe (/tessera debug skills): does this client have weapon skills?
+-- Lists the skill functions that exist, the skill list they return, the C_ namespaces
+-- and frames whose name mentions skills or weapons.
+function ns:SkillsProbe()
+    local lines = {}
+    local function Add(s) table.insert(lines, s) end
+    Add("== Classic skill functions ==")
+    for _, name in ipairs({ "GetNumSkillLines", "GetSkillLineInfo", "ExpandSkillHeader", "GetProfessions",
+        "GetProfessionInfo", "GetWeaponSkill", "UnitCharacterPoints" }) do
+        Add(name .. ": " .. (type(_G[name]) == "function" and "yes" or "no"))
+    end
+    if type(GetNumSkillLines) == "function" and type(GetSkillLineInfo) == "function" then
+        local ok, count = pcall(GetNumSkillLines)
+        Add("")
+        Add("== Skill list (" .. tostring(ok and count) .. " lines) ==")
+        for i = 1, (ok and tonumber(count) or 0) do
+            local okLine, name, header, _, rank, _, _, max, abandonable = pcall(GetSkillLineInfo, i)
+            if okLine then
+                Add(("%d. %s%s %s/%s%s"):format(i, tostring(name), header and " [header]" or "",
+                    tostring(rank), tostring(max), abandonable and " (can be unlearned)" or ""))
+            end
+        end
+    end
+    Add("")
+    Add("== C_ namespaces (skill / weapon / profession / tradeskill) ==")
+    local found = {}
+    for k in pairs(_G) do
+        if type(k) == "string" then
+            local low = k:lower()
+            local isC = k:find("^C_")
+            for _, word in ipairs({ "skill", "weapon", "profession" }) do
+                if low:find(word, 1, true) and (isC or (type(_G[k]) == "table" and _G[k].GetObjectType)) then
+                    table.insert(found, k)
+                    break
+                end
+            end
+        end
+    end
+    table.sort(found)
+    for _, k in ipairs(found) do
+        local funcs = {}
+        if k:find("^C_") and type(_G[k]) == "table" then
+            for fk, fv in pairs(_G[k]) do if type(fv) == "function" then table.insert(funcs, fk) end end
+            table.sort(funcs)
+        end
+        Add(k .. (#funcs > 0 and (": " .. table.concat(funcs, ", ")) or ""))
+    end
+    self:ShowTextWindow("Skills probe", table.concat(lines, "\n"))
+end
+
 ---------------------------------------------------------------------------
 -- Blocks out of the screen, Blizzard's Edit Mode
 ---------------------------------------------------------------------------

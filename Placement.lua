@@ -503,6 +503,17 @@ function Tessera_ToggleBlocks()
 end
 
 ---------------------------------------------------------------------------
+-- Development probes: one value (or a table's plain fields) as text
+local function Describe(v)
+    if type(v) ~= "table" then return tostring(v) end
+    local parts = {}
+    for k, x in pairs(v) do
+        if type(x) ~= "table" and type(x) ~= "function" then table.insert(parts, tostring(k) .. "=" .. tostring(x)) end
+    end
+    table.sort(parts)
+    return "{ " .. table.concat(parts, ", ") .. " }"
+end
+
 -- Development probe (/tessera debug legacy): WoW Forever's Legacy points have no
 -- documented API yet. Lists the game's C_ namespaces that may hold them, the functions
 -- of the Legacy panel, and every text shown in that panel with its frame path, in a
@@ -571,6 +582,53 @@ function ns:LegacyProbe()
         for k, v in pairs(frame) do if type(v) == "function" then table.insert(funcs, k) end end
         table.sort(funcs)
         Add(table.concat(funcs, ", "))
+        -- the reward track looks built on the renown (major factions) system
+        local track = frame.RewardTrackPage
+        if type(track) == "table" then
+            Add("")
+            Add("== RewardTrackPage data ==")
+            Add("majorFactionData = " .. Describe(track.majorFactionData))
+            Add("actualLevel = " .. tostring(track.actualLevel) .. ", displayLevel = " .. tostring(track.displayLevel)
+                .. ", maxLevel = " .. tostring(track.maxLevel))
+            if type(track.renownLevelsInfo) == "table" then
+                for i, info in ipairs(track.renownLevelsInfo) do
+                    if i > 6 then break end
+                    Add("renownLevelsInfo[" .. i .. "] = " .. Describe(info))
+                end
+            end
+            local id = type(track.majorFactionData) == "table" and track.majorFactionData.factionID
+            if id and C_MajorFactions then
+                if C_MajorFactions.GetMajorFactionData then
+                    local ok, data = pcall(C_MajorFactions.GetMajorFactionData, id)
+                    Add("C_MajorFactions.GetMajorFactionData(" .. id .. ") = " .. (ok and Describe(data) or "error"))
+                end
+                if C_MajorFactions.GetRenownLevels then
+                    local ok, levels = pcall(C_MajorFactions.GetRenownLevels, id)
+                    if ok and type(levels) == "table" then
+                        Add("C_MajorFactions.GetRenownLevels: " .. #levels .. " levels, first = " .. Describe(levels[1]))
+                    end
+                end
+                if C_MajorFactions.GetRenownRewardsForLevel then
+                    local ok, rewards = pcall(C_MajorFactions.GetRenownRewardsForLevel, id, 25)
+                    if ok and type(rewards) == "table" then
+                        Add("C_MajorFactions.GetRenownRewardsForLevel(25): " .. Describe(rewards[1]))
+                    end
+                end
+            end
+        end
+        if C_MajorFactions and C_MajorFactions.GetMajorFactionIDs then
+            local ok, ids = pcall(C_MajorFactions.GetMajorFactionIDs)
+            if ok and type(ids) == "table" then
+                Add("C_MajorFactions.GetMajorFactionIDs = " .. table.concat(ids, ", "))
+            end
+        end
+        if C_MajorFactions then
+            local funcs = {}
+            for k, v in pairs(C_MajorFactions) do if type(v) == "function" then table.insert(funcs, k) end end
+            table.sort(funcs)
+            Add("C_MajorFactions: " .. table.concat(funcs, ", "))
+        end
+        Add("")
         for _, sub in ipairs({ "RewardTrackPage", "ChallengesPage", "TreePage" }) do
             local page = frame[sub]
             if type(page) == "table" then
@@ -615,6 +673,21 @@ function ns:SkillsProbe()
     for _, name in ipairs({ "GetNumSkillLines", "GetSkillLineInfo", "ExpandSkillHeader", "GetProfessions",
         "GetProfessionInfo", "GetWeaponSkill", "UnitCharacterPoints" }) do
         Add(name .. ": " .. (type(_G[name]) == "function" and "yes" or "no"))
+    end
+    -- WoW Forever: the skill list is in C_SkillInfo
+    local S = C_SkillInfo
+    if S and S.GetNumSkillLines and S.GetSkillLineInfo then
+        local ok, count = pcall(S.GetNumSkillLines)
+        Add("")
+        Add("== C_SkillInfo skill list (" .. tostring(ok and count) .. " lines) ==")
+        for i = 1, math.min(ok and tonumber(count) or 0, 60) do
+            local res = { pcall(S.GetSkillLineInfo, i) }
+            if res[1] then
+                local parts = {}
+                for j = 2, #res do table.insert(parts, Describe(res[j])) end
+                Add(i .. ". " .. table.concat(parts, " | "))
+            end
+        end
     end
     if type(GetNumSkillLines) == "function" and type(GetSkillLineInfo) == "function" then
         local ok, count = pcall(GetNumSkillLines)

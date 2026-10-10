@@ -54,7 +54,8 @@ ns.CHANGELOG = {
                 .. "bordure (de la couleur voulue), et le noir et blanc, pour les blocs de Tessera, les lanceurs et les "
                 .. "blocs DataBroker. Le style Transparent utilise par défaut des icônes carrées de même taille.",
             "Après une mise à jour, une fenêtre propose de lire les nouveautés.",
-            "L'onglet Aide est maintenant découpé en sujets : un court résumé d'abord, puis tu choisis un sujet à gauche. Plusieurs infobulles ont été mises à jour.",
+            "L'onglet Aide est maintenant découpé en sujets : un court résumé d'abord, puis tu choisis un sujet "
+                .. "à gauche. Plusieurs infobulles ont été mises à jour.",
             "Prêt pour les traductions de la communauté avec l'outil de traduction de CurseForge.",
             "Les blocs affichés depuis les options se placent maintenant des deux côtés de la fenêtre, à parts "
                 .. "égales, et plus jamais sur les barres d'action, la minicarte ou la discussion de Blizzard.",

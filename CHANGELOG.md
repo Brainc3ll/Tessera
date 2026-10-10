@@ -11,6 +11,8 @@ All notable changes to Tessera. The in-game **Version** tab shows the same list
 - New "Bring blocks back on screen" button and /tessera recover command, for groups that stick out of the screen.
 - After an update, a window offers to read what's new.
 - Ready for community translations with CurseForge's localization tool.
+- Blocks shown from the options are now placed evenly on both sides of the window, and never over Blizzard's action bars, minimap or chat.
+- The placement banner steps aside while the options window is open, and remembers where it is dragged; it is not shown while Blizzard's Edit Mode is open.
 - Fix: hiding all blocks with the key binding during combat left their invisible click buttons active; the blocks are now hidden when combat ends.
 
 ## 1.0.0-rc1 — 2026-10-10

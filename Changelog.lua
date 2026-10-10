@@ -24,6 +24,10 @@ ns.CHANGELOG = {
                 .. "out of the screen.",
             "After an update, a window offers to read what's new.",
             "Ready for community translations with CurseForge's localization tool.",
+            "Blocks shown from the options are now placed evenly on both sides of the window, and never "
+                .. "over Blizzard's action bars, minimap or chat.",
+            "The placement banner steps aside while the options window is open, and remembers where it is "
+                .. "dragged; it is not shown while Blizzard's Edit Mode is open.",
             "Fix: hiding all blocks with the key binding during combat left their invisible click buttons "
                 .. "active; the blocks are now hidden when combat ends.",
         },
@@ -39,6 +43,10 @@ ns.CHANGELOG = {
                 .. "dépassent de l'écran.",
             "Après une mise à jour, une fenêtre propose de lire les nouveautés.",
             "Prêt pour les traductions de la communauté avec l'outil de traduction de CurseForge.",
+            "Les blocs affichés depuis les options se placent maintenant des deux côtés de la fenêtre, à parts "
+                .. "égales, et plus jamais sur les barres d'action, la minicarte ou la discussion de Blizzard.",
+            "Le bandeau de placement s'efface quand la fenêtre d'options est ouverte et retient l'endroit où tu "
+                .. "le poses ; il n'est pas affiché pendant le mode Édition de Blizzard.",
             "Correction : masquer tous les blocs avec le raccourci clavier pendant un combat laissait leurs "
                 .. "boutons de clic invisibles actifs ; les blocs sont maintenant masqués à la fin du combat.",
         },

@@ -158,6 +158,8 @@ function ns:PlaceNearOptions(key)
         pl, pb, pr, pt = ns:GetRectUI(panel)
         if pl then table.insert(taken, { pl, pb, pr, pt }) end
     end
+    -- Blizzard's action bars, minimap, chat...: a block placed on them could be hidden
+    for _, z in ipairs(ns:GetBlizzardRects()) do table.insert(taken, z) end
     local function Free(x, y)
         local l, b, r, t = x - 4, y - height - 4, x + width + 4, y + 18
         for _, z in ipairs(taken) do
@@ -176,17 +178,26 @@ function ns:PlaceNearOptions(key)
         left0 = screenW / 2 - 10 - width
         top = UIParent:GetHeight() / 2 + 160
     end
-    local columns = {}
+    -- highest free slot of a column, above the bottom of the screen (action bars area)
+    local BOTTOM = 140
+    local function FirstFree(cx)
+        if not cx then return nil end
+        for row = 0, math.floor((top - height - BOTTOM) / step) do
+            local cy = top - row * step
+            if Free(cx, cy) then return cy end
+        end
+    end
+    -- columns go in pairs (right n, left n): the side with the higher free slot wins, so
+    -- both sides of the window fill up evenly instead of one long column on the right
+    local x, y
     for i = 0, 12 do
         local rx, lx = right0 + i * (width + 16), left0 - i * (width + 16)
-        if rx + width <= screenW then table.insert(columns, rx) end
-        if lx >= 0 then table.insert(columns, lx) end
-    end
-    local x, y
-    for _, cx in ipairs(columns) do
-        for row = 0, math.floor((top - 60) / step) do
-            local cy = top - row * step
-            if Free(cx, cy) then x, y = cx, cy break end
+        local ry = (rx + width <= screenW) and FirstFree(rx) or nil
+        local ly = (lx >= 0) and FirstFree(lx) or nil
+        if ry and (not ly or ry >= ly) then
+            x, y = rx, ry
+        elseif ly then
+            x, y = lx, ly
         end
         if x then break end
     end

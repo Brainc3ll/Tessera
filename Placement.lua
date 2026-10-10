@@ -209,6 +209,20 @@ local BLIZZARD_FRAMES = {
 }
 
 -- Rectangles (UIParent units) a moved group can snap to; `exclude` = the moved group
+-- Rectangles (UIParent units) of the visible Blizzard frames of BLIZZARD_FRAMES
+-- (action bars, minimap, chat...), whatever the snapping option
+function ns:GetBlizzardRects()
+    local rects = {}
+    for _, name in ipairs(BLIZZARD_FRAMES) do
+        local frame = _G[name]
+        if frame and frame.IsVisible and frame:IsVisible() and frame.GetLeft then
+            local l, b, r, t = self:GetRectUI(frame)
+            if l and r - l > 1 and t - b > 1 then table.insert(rects, { l, b, r, t }) end
+        end
+    end
+    return rects
+end
+
 function ns:GetSnapRects(exclude)
     local rects = {}
     for key, other in pairs(self.frames) do

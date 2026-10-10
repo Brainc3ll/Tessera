@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Tessera. The in-game **Version** tab shows the same list
+All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
 ## 1.0.0-rc2 — 2026-10-10
@@ -12,6 +12,7 @@ All notable changes to Tessera. The in-game **Version** tab shows the same list
 - Icons (Frame tab): the same size for every block, a square or round frame with a thin border (the color you want), and black and white, for Tessera's blocks, launchers and DataBroker blocks. The Transparent style uses square icons of the same size by default.
 - After an update, a window offers to read what's new.
 - The Help tab is now split into topics: a short summary first, then pick a topic on the left. Several tooltips were updated.
+- The Version tab becomes About, laid out like the Help tab: an About topic (version, author, translators, license, source code) and a Changelog topic.
 - Ready for community translations with CurseForge's localization tool.
 - Blocks shown from the options are now placed evenly on both sides of the window, and never over Blizzard's action bars, minimap or chat.
 - The placement banner steps aside while the options window is open, and remembers where it is dragged; it is not shown while Blizzard's Edit Mode is open.

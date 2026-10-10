@@ -30,12 +30,12 @@ local L = ns.L
 --   Broker     share Tessera's blocks with DataBroker addons, DataBroker mode
 --   Profiles   profiles and reset
 --   Help       help topics (list on the left, selected topic on the right)
---   Version    installed version and changelog
--- In DataBroker mode (Broker.lua) only the Broker, Help and Version tabs are shown.
+--   About      author, translators, license, links, and the changelog (same layout as Help)
+-- In DataBroker mode (Broker.lua) only the Broker, Help and About tabs are shown.
 
 local panel
 local widgets = {}
-local PAGE_BLOCKS, PAGE_GENERAL, PAGE_LAUNCHERS, PAGE_BROKER, PAGE_PROFILES, PAGE_HELP, PAGE_VERSION = 1, 2, 3, 4, 5, 6, 7
+local PAGE_BLOCKS, PAGE_GENERAL, PAGE_LAUNCHERS, PAGE_BROKER, PAGE_PROFILES, PAGE_HELP, PAGE_ABOUT = 1, 2, 3, 4, 5, 6, 7
 local HIDDEN_IN_BROKER_MODE = { [PAGE_BLOCKS] = true, [PAGE_GENERAL] = true, [PAGE_LAUNCHERS] = true, [PAGE_PROFILES] = true }
 local pages, tabs, currentPage = {}, {}, PAGE_BLOCKS
 
@@ -1631,10 +1631,14 @@ local function SplitHelp(fullText)
 end
 ns.SplitHelp = SplitHelp -- used by tools/mock_run.lua
 
--- Help tab: a list of topics on the left, the selected topic on the right.
--- This keeps each screen short instead of one long wall of text.
+-- Topic page (Help and About tabs): a list of topics on the left, the selected
+-- topic on the right. This keeps each screen short instead of one long wall of text.
+-- getSections() returns a key and the list of { title, body, raw } sections; the
+-- topics are rebuilt only when the key changes. Unless "raw" is set, an empty line
+-- is added between the paragraphs of a topic. Returns the content frame, with
+-- Refresh() and ShowTopic(index).
 local TOPIC_W, TOPIC_H = 165, 22
-local function BuildHelpPage(page)
+local function BuildTopicPage(page, getSections)
     local topicList = CreateFrame("Frame", nil, page)
     topicList:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1] - 12, -6)
     topicList:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 24)
@@ -1675,8 +1679,8 @@ local function BuildHelpPage(page)
         local section = sections[index]
         if not section then return end
         title:SetText(section.title)
-        -- an empty line between paragraphs (each line of the help text), for more air
-        text:SetText((section.body:gsub("\n+", "\n\n")))
+        -- an empty line between paragraphs (each line of the text), for more air
+        text:SetText(section.raw and section.body or (section.body:gsub("\n+", "\n\n")))
         content:SetHeight(title:GetStringHeight() + 10 + text:GetStringHeight() + 20)
         if scroll.SetVerticalScroll then scroll:SetVerticalScroll(0) end
         for i, b in ipairs(buttons) do
@@ -1711,13 +1715,12 @@ local function BuildHelpPage(page)
         return b
     end
 
-    -- in DataBroker mode, only the help of that mode (how to leave it comes first)
-    local shownText
+    local shownKey
     content.Refresh = function()
-        local wanted = ns.brokerModeActive and L.HELP_TEXT_BROKER or L.HELP_TEXT
-        if wanted == shownText then return end
-        shownText = wanted
-        sections = SplitHelp(wanted)
+        local key, wanted = getSections()
+        if key == shownKey then return end
+        shownKey = key
+        sections = wanted
         local y = 0
         for i, section in ipairs(sections) do
             local b = TopicButton(i)
@@ -1731,14 +1734,30 @@ local function BuildHelpPage(page)
         for i = #sections + 1, #buttons do buttons[i]:Hide() end
         ShowSection(1)
     end
+    content.ShowTopic = function(_, index) ShowSection(index) end
     content:Refresh()
     Register(content)
+    return content
+end
+
+-- Help tab. In DataBroker mode, only the help of that mode (how to leave it comes first).
+local function BuildHelpPage(page)
+    local cache = {}
+    BuildTopicPage(page, function()
+        local wanted = ns.brokerModeActive and L.HELP_TEXT_BROKER or L.HELP_TEXT
+        cache[wanted] = cache[wanted] or SplitHelp(wanted)
+        return wanted, cache[wanted]
+    end)
 end
 
 ---------------------------------------------------------------------------
--- "Version" tab: installed version and changelog (Changelog.lua)
+-- "About" tab: author, translators, license, links (topic "About") and the
+-- changelog from Changelog.lua (topic "Changelog")
 ---------------------------------------------------------------------------
 local GetMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+local SOURCE_URL = "https://github.com/Brainc3ll/Tessera"
+local CHANGELOG_TOPIC = 2 -- second topic of the About tab
+local aboutContent -- content frame of the About tab, to open the changelog topic
 
 local function ChangelogText()
     local lang = GetLocale() == "frFR" and "fr" or "en"
@@ -1756,32 +1775,41 @@ local function ChangelogText()
     return table.concat(lines, "\n")
 end
 
-local function BuildVersionPage(page)
+local function AboutText()
+    local function InfoLine(label, value)
+        return ("|cffffd100%s|r  %s"):format(label, value)
+    end
     local version = GetMetadata and GetMetadata(ADDON, "Version") or "?"
-    local header = page:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    header:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1], -6)
-    header:SetText(L.VERSION_LABEL:format(version))
+    local author = GetMetadata and GetMetadata(ADDON, "Author") or "Braincell1980"
+    local lines = {
+        InfoLine(L.ABOUT_VERSION, version),
+        InfoLine(L.ABOUT_AUTHOR, author),
+    }
+    -- translators of the current language (empty in English: the line is hidden)
+    if L.ABOUT_TRANSLATORS and L.ABOUT_TRANSLATORS ~= "" then
+        table.insert(lines, InfoLine(L.ABOUT_TRANSLATION, L.ABOUT_TRANSLATORS))
+    end
+    table.insert(lines, InfoLine(L.ABOUT_GAME, "WoW Forever"))
+    table.insert(lines, InfoLine(L.ABOUT_LICENSE, "MIT"))
+    table.insert(lines, InfoLine(L.ABOUT_SOURCE, SOURCE_URL))
+    table.insert(lines, "")
+    table.insert(lines, L.ABOUT_AI)
+    table.insert(lines, "")
+    table.insert(lines, L.ABOUT_BUGS)
+    table.insert(lines, "")
+    table.insert(lines, L.ABOUT_TRANSLATE)
+    return table.concat(lines, "\n")
+end
 
-    local sub = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    sub:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -14)
-    sub:SetText(L.CHANGELOG_TITLE)
-
-    local ok, scroll = pcall(CreateFrame, "ScrollFrame", nil, page, "ScrollFrameTemplate")
-    if not ok then scroll = CreateFrame("ScrollFrame", nil, page, "UIPanelScrollFrameTemplate") end
-    scroll:SetPoint("TOPLEFT", sub, "BOTTOMLEFT", 0, -8)
-    scroll:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", -48, 24)
-
-    local content = CreateFrame("Frame", nil, scroll)
-    content:SetSize(FULL_W - 30, 10)
-    scroll:SetScrollChild(content)
-
-    local text = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    text:SetPoint("TOPLEFT")
-    text:SetWidth(FULL_W - 30)
-    text:SetJustifyH("LEFT")
-    text:SetSpacing(3)
-    text:SetText(ChangelogText())
-    content:SetHeight(text:GetStringHeight() + 20)
+local function BuildAboutPage(page)
+    local sections -- built once: the version and language do not change in a session
+    aboutContent = BuildTopicPage(page, function()
+        sections = sections or {
+            { title = L.TAB_ABOUT, body = AboutText(), raw = true },
+            { title = L.CHANGELOG_TITLE, body = ChangelogText(), raw = true },
+        }
+        return "about", sections
+    end)
 end
 
 -- Creates the main options window, its tabs and pages (called once, lazily)
@@ -1833,7 +1861,7 @@ local function BuildPanel()
         ns:RefreshOptions()
     end
 
-    local names = { L.TAB_BLOCK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.PROFILES, L.TAB_HELP, L.TAB_VERSION }
+    local names = { L.TAB_BLOCK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.PROFILES, L.TAB_HELP, L.TAB_ABOUT }
     for i, text in ipairs(names) do
         local tab = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
         tab:SetHeight(24)
@@ -1853,7 +1881,7 @@ local function BuildPanel()
     BuildBrokerPage(pages[PAGE_BROKER])
     BuildProfilesPage(pages[PAGE_PROFILES])
     BuildHelpPage(pages[PAGE_HELP])
-    BuildVersionPage(pages[PAGE_VERSION])
+    BuildAboutPage(pages[PAGE_ABOUT])
     ns.ShowOptionsPage = ShowPage
     ns:SkinOptions()
     ns:ApplyOptionsMode()
@@ -2119,7 +2147,7 @@ StaticPopupDialogs["TESSERA_WELCOME"] = {
     OnAccept = function() ns:OpenOptions(PAGE_HELP) end,
 }
 
--- After an update: offers to read what's new (Version tab), once per version
+-- After an update: offers to read what's new (About tab, Changelog topic), once per version
 StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
     text = L.WHATS_NEW_TEXT,
     button1 = L.WHATS_NEW_SHOW,
@@ -2127,7 +2155,10 @@ StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
-    OnAccept = function() ns:OpenOptions(PAGE_VERSION) end,
+    OnAccept = function()
+        ns:OpenOptions(PAGE_ABOUT)
+        if aboutContent then aboutContent:ShowTopic(CHANGELOG_TOPIC) end
+    end,
 }
 
 -- Shows the welcome popup once per saved-variables file (first install), or the

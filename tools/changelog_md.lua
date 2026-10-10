@@ -4,7 +4,7 @@ local ns = {}
 assert(loadfile("Changelog.lua"))("Tessera", ns)
 print("# Changelog")
 print("")
-print("All notable changes to Tessera. The in-game **Version** tab shows the same list")
+print("All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list")
 print("(from `Changelog.lua`), in English or French depending on the game language.")
 for _, entry in ipairs(ns.CHANGELOG) do
     print("")

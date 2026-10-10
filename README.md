@@ -90,7 +90,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Profiles.lua` | Profile export / import (text), duplicate, automatic dungeon / raid profile. |
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
-| `Changelog.lua` | Version history for the in-game Version tab (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
+| `Changelog.lua` | Version history for the in-game About tab (Changelog topic) (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
 | `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
 | `Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
 | `Spacers.lua` | Spacer blocks (empty, separator line or text). |

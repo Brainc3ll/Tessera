@@ -366,6 +366,11 @@ for _, step in ipairs({
             assert(total > #t * 0.8, "help text lost while splitting")
         end
     end,
+    -- what's new popup opens the About tab on the Changelog topic
+    function()
+        StaticPopupDialogs.TESSERA_WHATS_NEW.OnAccept()
+        assert(ns.L.ABOUT_AI and ns.L.TAB_ABOUT, "About strings missing")
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

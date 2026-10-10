@@ -27,6 +27,8 @@ ns.CHANGELOG = {
                 .. "The Transparent style uses square icons of the same size by default.",
             "After an update, a window offers to read what's new.",
             "The Help tab is now split into topics: a short summary first, then pick a topic on the left. Several tooltips were updated.",
+            "The Version tab becomes About, laid out like the Help tab: an About topic (version, author, "
+                .. "translators, license, source code) and a Changelog topic.",
             "Ready for community translations with CurseForge's localization tool.",
             "Blocks shown from the options are now placed evenly on both sides of the window, and never "
                 .. "over Blizzard's action bars, minimap or chat.",
@@ -56,6 +58,8 @@ ns.CHANGELOG = {
             "Après une mise à jour, une fenêtre propose de lire les nouveautés.",
             "L'onglet Aide est maintenant découpé en sujets : un court résumé d'abord, puis tu choisis un sujet "
                 .. "à gauche. Plusieurs infobulles ont été mises à jour.",
+            "L'onglet Version devient À propos, présenté comme l'aide : un sujet À propos (version, auteur, "
+                .. "traducteurs, licence, code source) et un sujet Changelog.",
             "Prêt pour les traductions de la communauté avec l'outil de traduction de CurseForge.",
             "Les blocs affichés depuis les options se placent maintenant des deux côtés de la fenêtre, à parts "
                 .. "égales, et plus jamais sur les barres d'action, la minicarte ou la discussion de Blizzard.",

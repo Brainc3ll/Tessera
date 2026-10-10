@@ -1,13 +1,15 @@
-<!-- Key bindings shown in the game's Key Bindings menu, under AddOns > Tessera.
-     The names and header are set in Placement.lua (BINDING_* globals). -->
+<!-- Key bindings shown in the game's Key Bindings menu, in their own "Tessera"
+     category (like other addons) instead of the shared AddOns category.
+     The category name comes from the BINDING_HEADER_TESSERA global and the
+     binding names from the BINDING_NAME_* globals, set in Placement.lua. -->
 <Bindings>
-    <Binding name="TESSERA_TOGGLE" header="TESSERA" category="ADDONS">
+    <Binding name="TESSERA_TOGGLE" category="BINDING_HEADER_TESSERA">
         Tessera_ToggleBlocks()
     </Binding>
-    <Binding name="TESSERA_LOCK" category="ADDONS">
+    <Binding name="TESSERA_LOCK" category="BINDING_HEADER_TESSERA">
         Tessera_ToggleLock()
     </Binding>
-    <Binding name="TESSERA_OPTIONS" category="ADDONS">
+    <Binding name="TESSERA_OPTIONS" category="BINDING_HEADER_TESSERA">
         Tessera_ToggleOptions()
     </Binding>
 </Bindings>

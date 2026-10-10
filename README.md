@@ -61,7 +61,7 @@ Help tab inside the game explains everything.
 | `/tessera recover` | Bring back blocks that stick out of the screen |
 
 Key bindings (show / hide all blocks, lock / unlock, options) are in the game's key bindings,
-AddOns category.
+Tessera category.
 
 When unlocked: drag a block to move it (or its whole group), drop it against another block to
 merge them, **Shift + drag** to detach it, **Ctrl + click** to hide it, **Ctrl + Z** to undo,

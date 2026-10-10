@@ -13,6 +13,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - After an update, a window offers to read what's new.
 - The Help tab is now split into topics: a short summary first, then pick a topic on the left. Several tooltips were updated.
 - The Version tab becomes About, laid out like the Help tab: an About topic (version, author, translators, license, source code) and a Changelog topic.
+- Key bindings now have their own Tessera category in the game's key bindings, like other addons.
 - Ready for community translations with CurseForge's localization tool.
 - Blocks shown from the options are now placed evenly on both sides of the window, and never over Blizzard's action bars, minimap or chat.
 - The placement banner steps aside while the options window is open, and remembers where it is dragged; it is not shown while Blizzard's Edit Mode is open.

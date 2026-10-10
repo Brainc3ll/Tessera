@@ -855,7 +855,8 @@ end
 function ns:UpdateGrid()
     local grid = self.db.grid or 0
     local g = self.gridFrame
-    if self:IsLocked() or grid <= 0 or self.brokerModeActive then
+    -- (Blizzard's Edit Mode draws its own grid)
+    if self:IsLocked() or grid <= 0 or self.brokerModeActive or self.db.unlockedByEditMode then
         if g then g:Hide() end
         return
     end

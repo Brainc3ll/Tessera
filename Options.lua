@@ -1852,8 +1852,10 @@ end
 
 -- Shows or hides the placement banner depending on the lock state (created on first use)
 function ns:UpdatePlacementBanner()
-    -- (never in DataBroker mode: Tessera shows no block of its own)
-    local show = self.db and not self:IsLocked() and not self.brokerModeActive and true or false
+    -- (never in DataBroker mode: Tessera shows no block of its own; nor while Blizzard's
+    -- Edit Mode unlocked the blocks: its own window is open at the same place)
+    local show = self.db and not self:IsLocked() and not self.brokerModeActive
+        and not self.db.unlockedByEditMode and true or false
 
     -- the options window is tucked away during placement and comes back on lock
     if show and not self.placementActive then

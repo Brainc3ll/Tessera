@@ -7,3 +7,8 @@ ignore:
     - .github
     - .luacheckrc
     - .pkgmeta
+
+# CurseForge and GitHub release notes: our own changelog rather than the commit list
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown

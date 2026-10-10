@@ -73,6 +73,8 @@ La règle IA de CurseForge ne vise que les images générées par IA : de vraies
 3. Les traducteurs travaillent ensuite sur le site.
 4. Pour mettre leurs traductions dans l'addon, dis-le-moi : je les intègre à la main dans une prochaine version, ou on met en place l'envoi automatique (GitHub Actions + packager BigWigs, qui récupère les traductions de CurseForge).
 
-## 4. Plus tard (facultatif) : publication automatique
+## 4. Publication automatique (en place)
 
-Avec le packager BigWigs dans GitHub Actions, il suffit de créer un tag sur GitHub pour que le zip soit fabriqué et envoyé sur CurseForge et sur GitHub. Le type est déduit du tag : un tag contenant « alpha » donne une alpha, « beta » une beta, tout le reste (comme `v1.0.0-rc1`) une release. Il faut pour cela l'identifiant du projet CurseForge (affiché sur sa page) et une clé d'API CurseForge enregistrée dans les secrets du dépôt. On pourra le faire une fois le projet créé.
+Le fichier `.github/workflows/release.yml` utilise le packager BigWigs. Quand un tag est créé sur GitHub (par exemple `v1.0.1`), GitHub fabrique le zip, crée la release GitHub et l'envoie sur CurseForge (projet 1736530, voir `Tessera.toc`), avec `CHANGELOG.md` comme notes de version. Le type est déduit du tag : « alpha » donne une Alpha, « beta » une Beta, tout le reste une Release.
+
+Pour une nouvelle version : mettre à jour la version dans `Tessera.toc`, `Changelog.lua` et `CHANGELOG.md`, puis créer le tag. Le secret `CF_API_KEY` (clé d'API CurseForge) doit exister dans Settings > Secrets and variables > Actions. Le résultat se suit dans l'onglet Actions du dépôt.

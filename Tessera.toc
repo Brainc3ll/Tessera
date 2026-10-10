@@ -3,7 +3,7 @@
 ## Notes: Customizable information and launcher blocks that merge like mosaic tiles: gold, bags, durability, FPS, latency, time, XP, professions, mail, reputation, minimap buttons, DataBroker and more.
 ## Notes-frFR: Blocs d'informations et lanceurs personnalisables qui s'assemblent comme une mosaïque : or, sacs, durabilité, FPS, latence, heure, XP, métiers, courrier, réputation, boutons de la minicarte, DataBroker et plus.
 ## Author: Braincell1980
-## Version: 1.0.0-rc1
+## Version: 1.0.0-rc2
 ## SavedVariables: TesseraDB
 ## OptionalDeps: FlareUI, EllesmereUI, ElvUI, LibStub, LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1
 ## X-License: MIT
@@ -12,6 +12,15 @@
 
 Locales\enUS.lua
 Locales\frFR.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\esMX.lua
+Locales\itIT.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\koKR.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
 Core.lua
 Themes.lua
 Merge.lua

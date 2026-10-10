@@ -24,7 +24,8 @@ local L = ns.L
 --      empties its text, and it disappears after a /reload.
 --   3. DataBroker mode: when a display addon is loaded, Tessera shows no block of
 --      its own and its options only offer what concerns the published objects.
---      The player can leave this mode (sv.brokerMode = false) and use both.
+--      The player can leave this mode and use both: that choice is remembered per display
+--      addon (see Choices below), so another display addon offers the mode again.
 --
 -- Data object fields used (LibDataBroker-1.1 specification): type, text, value,
 -- suffix, label, icon, iconCoords, iconR/G/B, tooltip (a frame), OnTooltipShow,
@@ -431,12 +432,60 @@ function ns:DetectBrokerDisplay()
     end
 end
 
--- Recomputes ns.brokerModeActive: on when a display addon is loaded (or the player
--- turned it on), unless the player turned it off. Never on without the library.
+-- The player's choices, account-wide (saved variables):
+--   sv.brokerRefused[display]  DataBroker mode refused for that display addon
+--   sv.brokerForced            DataBroker mode on even without a display addon
+--   sv.brokerNotified[display] the explanation popup was shown for that display addon
+-- So refusing it with Bazooka does not stop Titan Panel from offering it later.
+local function Choices()
+    local sv = ns.sv
+    sv.brokerRefused = sv.brokerRefused or {}
+    sv.brokerNotified = sv.brokerNotified or {}
+    -- 1.0.0-rc1 kept a single choice for every display addon (sv.brokerMode)
+    if sv.brokerMode ~= nil then
+        if sv.brokerMode == true then
+            sv.brokerForced = true
+        elseif ns.brokerDisplay then
+            sv.brokerRefused[ns.brokerDisplay] = true
+        end
+        sv.brokerMode = nil
+    end
+    -- the rc1 explanation popup was already seen: not shown again for this display addon
+    if sv.brokerModeNotified and ns.brokerDisplay then sv.brokerNotified[ns.brokerDisplay] = true end
+    sv.brokerModeNotified = nil
+    return sv
+end
+
+-- Should DataBroker mode be on? Never without the library.
+function ns:WantsBrokerMode()
+    if not (LDB() and self.sv) then return false end
+    local sv = Choices()
+    if sv.brokerForced then return true end
+    return self.brokerDisplay ~= nil and not sv.brokerRefused[self.brokerDisplay]
+end
+
+-- Did the player make a choice that differs from the automatic one?
+function ns:HasBrokerChoices()
+    if not self.sv then return false end
+    local sv = Choices()
+    return sv.brokerForced == true or next(sv.brokerRefused) ~= nil
+end
+
+-- One sentence describing the current state, for the Broker tab (nil without the library)
+function ns:GetBrokerStatus()
+    if not (LDB() and self.sv) then return nil end
+    local sv, display = Choices(), self.brokerDisplay
+    if self.brokerModeActive then
+        if display and not sv.brokerRefused[display] then return L.BROKER_STATUS_AUTO:format(display) end
+        return L.BROKER_STATUS_FORCED
+    end
+    if display and sv.brokerRefused[display] then return L.BROKER_STATUS_REFUSED:format(display) end
+    return L.BROKER_STATUS_NONE
+end
+
+-- Recomputes ns.brokerModeActive from the display addons and the player's choices
 function ns:RefreshBrokerMode()
-    local sv = self.sv or {}
-    local active = LDB() ~= nil and sv.brokerMode ~= false
-        and (sv.brokerMode == true or self.brokerDisplay ~= nil)
+    local active = self:WantsBrokerMode()
     local changed = (active and true or false) ~= (self.brokerModeActive and true or false)
     -- in combat, the secure click buttons of blocks cannot be hidden: wait for the end
     -- (not for the first decision at login: no secure button exists yet)
@@ -455,13 +504,8 @@ function ns:RefreshBrokerMode()
     return changed
 end
 
--- Turns DataBroker mode on or off (button in the options, /tessera broker)
-function ns:SetBrokerMode(on)
-    if on and not LDB() then
-        ns.Print(L.BROKER_NO_LIBRARY)
-        return
-    end
-    self.sv.brokerMode = on and true or false
+-- Applies a change asked by the player (now, or after combat) and tells the result
+local function Apply(self)
     self.brokerRequested = true -- the end-of-combat message is only for a change the player asked for
     self:RefreshBrokerMode()
     self:UpdatePublishing()
@@ -469,16 +513,47 @@ function ns:SetBrokerMode(on)
         ns.Print(L.BROKER_AFTER_COMBAT)
     else
         self.brokerRequested = nil -- applied at once: nothing to announce after combat
-        ns.Print(on and L.BROKER_MODE_ENABLED or L.BROKER_MODE_DISABLED)
+        ns.Print(self.brokerModeActive and L.BROKER_MODE_ENABLED or L.BROKER_MODE_DISABLED)
+        -- back to Tessera's own blocks: the matching style can now be offered
+        if not self.brokerModeActive and self.OfferStylesIfNeeded then
+            C_Timer.After(1, function() ns:OfferStylesIfNeeded() end)
+        end
     end
     if self.RefreshOptions then self:RefreshOptions() end
 end
 
+-- Turns DataBroker mode on or off (buttons in the options and the popup, /tessera broker).
+-- Off = refused for the display addon detected now; on = that refusal is lifted, or, with
+-- no display addon, forced on.
+function ns:SetBrokerMode(on)
+    if on and not LDB() then
+        ns.Print(L.BROKER_NO_LIBRARY)
+        return
+    end
+    local sv = Choices()
+    if on then
+        if self.brokerDisplay then sv.brokerRefused[self.brokerDisplay] = nil else sv.brokerForced = true end
+    else
+        sv.brokerForced = nil
+        if self.brokerDisplay then sv.brokerRefused[self.brokerDisplay] = true end
+    end
+    Apply(self)
+end
+
 -- (while a change waits for the end of combat, toggles the requested state)
 function ns:ToggleBrokerMode()
-    local current = self.brokerModeActive
-    if self.brokerRefreshPending then current = self.sv.brokerMode ~= false end
-    self:SetBrokerMode(not current)
+    self:SetBrokerMode(not self:WantsBrokerMode())
+end
+
+-- Forgets every choice: DataBroker mode follows the display addons again, and the
+-- explanation popup may be shown again
+function ns:ResetBrokerChoices()
+    local sv = Choices()
+    sv.brokerForced = nil
+    wipe(sv.brokerRefused)
+    wipe(sv.brokerNotified)
+    Apply(self)
+    self:NotifyBrokerModeIfNeeded()
 end
 
 -- Listens to the library's notifications (once it is loaded, possibly late)
@@ -508,12 +583,13 @@ function ns:InitBroker()
     self:NotifyBrokerModeIfNeeded()
 end
 
--- Explained once (popup), the first time a display addon turns DataBroker mode on by itself.
--- The popup marks itself as seen when it shows (sv.brokerModeNotified, see Options.lua),
--- so a /reload before it appears does not lose it.
+-- Explained once per display addon (popup), the first time it turns DataBroker mode on.
+-- The popup marks itself as seen when it shows (sv.brokerNotified, see Options.lua), so
+-- a /reload before it appears does not lose it.
 local notifyScheduled = false
 local function WantsNotice()
-    return ns.brokerModeActive and ns.sv.brokerMode == nil and not ns.sv.brokerModeNotified
+    local display = ns.brokerDisplay
+    return ns.brokerModeActive and display ~= nil and not Choices().brokerNotified[display]
 end
 function ns:NotifyBrokerModeIfNeeded()
     if notifyScheduled or not WantsNotice() then return end
@@ -521,7 +597,7 @@ function ns:NotifyBrokerModeIfNeeded()
     -- a few seconds after login, once the screen has settled
     C_Timer.After(5, function()
         notifyScheduled = false
-        if WantsNotice() then StaticPopup_Show("TESSERA_BROKER_MODE", ns.brokerDisplay or "DataBroker") end
+        if WantsNotice() then StaticPopup_Show("TESSERA_BROKER_MODE", ns.brokerDisplay) end
     end)
 end
 
@@ -539,6 +615,10 @@ loader:SetScript("OnEvent", function(_, event)
                 ns.Print(ns.brokerModeActive and L.BROKER_MODE_ENABLED or L.BROKER_MODE_DISABLED)
             end
             ns:NotifyBrokerModeIfNeeded()
+            -- back to Tessera's own blocks: the matching style can now be offered
+            if not ns.brokerModeActive and ns.OfferStylesIfNeeded then
+                C_Timer.After(1, function() ns:OfferStylesIfNeeded() end)
+            end
         end
         ns.brokerRequested = nil
         return

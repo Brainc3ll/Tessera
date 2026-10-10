@@ -442,6 +442,7 @@ local PROFILE_DEFAULTS = {
     tooltipHints = true,     -- blue help lines about clicks at the bottom of tooltips
     snap = true,
     snapBlizzard = true,     -- also snap to some Blizzard frames (minimap, chat, bars...)
+    editModeSync = true,     -- Blizzard's Edit Mode also unlocks the blocks
     scale = 1,               -- global scale of all blocks
     merge = true,
     grid = 0,
@@ -1031,27 +1032,10 @@ function ns:EnsureFrame(key)
     return self.frames[key] or CreateBlock(key)
 end
 
--- Applies a block's saved settings to its frame: size, strata, position
--- (docked, default-layout anchor, saved point or default point), skin,
--- font, icon/text layout. Then refreshes visibility and the group layout.
-function ns:ApplyStyle(key)
-    local f, cfg = self.frames[key], self.db.blocks[key]
-    if not f or not cfg then return end
-
-    f:SetScale(self:GetBlockScale(key))
-    f:SetSize(cfg.width, cfg.height)
-    f:SetFrameStrata(cfg.strata)
-
-    f:ClearAllPoints()
-    if not self:AnchorDocked(f, cfg) and not self:AnchorToFrame(f, cfg) then
-        if cfg.point then
-            f:SetPoint(cfg.point[1], UIParent, cfg.point[2], cfg.point[3], cfg.point[4])
-        else
-            local p, rp, x, y = DefaultPoint(key)
-            f:SetPoint(p, UIParent, rp, x, y)
-        end
-    end
-
+-- Background, border and font of a block frame from its settings (also used for the
+-- style previews of Options.lua). f needs a .text FontString. Returns the inset: the
+-- space the border takes inside the frame.
+function ns:SkinBlockFrame(f, cfg)
     local bg = self:FindMedia("background", cfg.bg)
     local border = self:FindMedia("border", cfg.border)
     -- colors after the class-color and high-contrast options
@@ -1102,6 +1086,31 @@ function ns:ApplyStyle(key)
     local tc = (cfg.classColorText and self:GetClassColor()) or cfg.textColor
     f.text:SetTextColor(tc.r, tc.g, tc.b, tc.a)
     f.text:SetJustifyH(cfg.justify)
+    return inset
+end
+
+-- Applies a block's saved settings to its frame: size, strata, position
+-- (docked, default-layout anchor, saved point or default point), skin,
+-- font, icon/text layout. Then refreshes visibility and the group layout.
+function ns:ApplyStyle(key)
+    local f, cfg = self.frames[key], self.db.blocks[key]
+    if not f or not cfg then return end
+
+    f:SetScale(self:GetBlockScale(key))
+    f:SetSize(cfg.width, cfg.height)
+    f:SetFrameStrata(cfg.strata)
+
+    f:ClearAllPoints()
+    if not self:AnchorDocked(f, cfg) and not self:AnchorToFrame(f, cfg) then
+        if cfg.point then
+            f:SetPoint(cfg.point[1], UIParent, cfg.point[2], cfg.point[3], cfg.point[4])
+        else
+            local p, rp, x, y = DefaultPoint(key)
+            f:SetPoint(p, UIParent, rp, x, y)
+        end
+    end
+
+    local inset = self:SkinBlockFrame(f, cfg)
 
     -- Icon to the left of the text, or alone in the center (launcher without label)
     local launcherLike = ns.IsLauncherKey(key) or (cfg.broker and cfg.broker.kind == "launcher")
@@ -1236,11 +1245,12 @@ function ns:RefreshLockState()
     self:RequestOverlaySync()
 end
 
-function ns:SetLocked(locked)
+-- (silent: no chat message, e.g. when Blizzard's Edit Mode opens or closes)
+function ns:SetLocked(locked, silent)
     self.db.locked = locked
     self:RefreshLockState()
     if self.RefreshOptions then self:RefreshOptions() end
-    Print(locked and L.CMD_LOCKED or L.CMD_UNLOCKED)
+    if not silent then Print(locked and L.CMD_LOCKED or L.CMD_UNLOCKED) end
 end
 
 -- Refreshes a block's text and icon from its module. mod.update(cfg, key)
@@ -1871,6 +1881,12 @@ local function Build()
     end)
 
     ns.built = true
+    -- blocks left unlocked by Edit Mode (reload or logout while it was open): lock again
+    if ns.db.unlockedByEditMode then
+        ns.db.unlockedByEditMode = nil
+        ns.db.locked = true
+    end
+    if ns.HookEditMode then ns:HookEditMode() end
     -- DataBroker: detect display addons (DataBroker mode), listen to data objects
     if ns.InitBroker then ns:InitBroker() end
     ns:RefreshAllBlocks()
@@ -1883,6 +1899,10 @@ local function Build()
     if ns.UpdatePlacementBanner then ns:UpdatePlacementBanner() end
     C_Timer.After(5, function()
         if ns.ShowWelcomeIfNeeded then ns:ShowWelcomeIfNeeded() end
+    end)
+    -- the style of an interface installed since last time is offered (after the popups above)
+    C_Timer.After(8, function()
+        if ns.OfferStylesIfNeeded then ns:OfferStylesIfNeeded() end
     end)
 
     -- An addon loaded later registers a media: re-apply the styles
@@ -2004,6 +2024,9 @@ RunCommand = function(msg)
         ns.sv.previewThemes = not ns.sv.previewThemes or nil
         Print(ns.sv.previewThemes and "aperçus des styles activés." or "aperçus des styles désactivés.")
         if ns.RefreshOptions then ns:RefreshOptions() end
+    elseif msg == "recover" or msg == "recuperer" or msg == "récupérer" then
+        -- groups that stick out of the screen come back inside
+        ns:RecoverBlocksCommand()
     elseif msg == "broker" then
         -- DataBroker mode on / off (also in the options, DataBroker tab)
         if ns.ToggleBrokerMode then ns:ToggleBrokerMode() end

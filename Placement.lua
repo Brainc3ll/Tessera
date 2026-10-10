@@ -474,10 +474,119 @@ BINDING_NAME_TESSERA_OPTIONS = L.BINDING_OPTIONS
 -- Shows or hides every block at once (for this session)
 function Tessera_ToggleBlocks()
     if not ns.built then return end
+    -- In combat the invisible secure click buttons on blocks cannot be hidden: hiding the
+    -- blocks would leave clickable holes. Hiding is done when combat ends (pressing the key
+    -- again cancels it); showing them works at once.
+    if InCombatLockdown() and not ns.allHidden then
+        ns.hideAfterCombat = not ns.hideAfterCombat or nil
+        ns.Print(ns.hideAfterCombat and ns.L.TOGGLE_AFTER_COMBAT or ns.L.TOGGLE_CANCELLED)
+        return
+    end
+    ns.hideAfterCombat = nil
     ns.allHidden = not ns.allHidden
     ns:UpdateAllVisibility()
     ns:RequestOverlaySync()
 end
+
+---------------------------------------------------------------------------
+-- Blocks out of the screen, Blizzard's Edit Mode
+---------------------------------------------------------------------------
+-- Moves back inside the screen every free group (not attached to another frame) that
+-- sticks out of it, e.g. after a resolution or scale change. Returns how many moved.
+function ns:RecoverOffscreenBlocks()
+    local W, H = UIParent:GetWidth(), UIParent:GetHeight()
+    local moved = 0
+    local pushed = false
+    for key, cfg in pairs(self.db.blocks) do
+        local f = self.frames[key]
+        if f and f:IsShown() and self:GetRoot(key) == key and not cfg.anchor then
+            -- the whole group's rectangle, second rows hanging from it included
+            local group = self:GetSubtree(key)
+            for k, c in pairs(self.db.blocks) do
+                local hang = ns.HangTarget(c.anchor)
+                if hang and group[hang] then
+                    for sub in pairs(self:GetSubtree(k)) do group[sub] = true end
+                end
+            end
+            local gl, gb, gr, gt
+            for k in pairs(group) do
+                local o = self.frames[k]
+                local l, b, r, t
+                if o and o:IsShown() then l, b, r, t = self:GetRectUI(o) end
+                if l then
+                    gl, gb = math.min(gl or l, l), math.min(gb or b, b)
+                    gr, gt = math.max(gr or r, r), math.max(gt or t, t)
+                end
+            end
+            if gl then
+                local dx = (gl < 0 and -gl) or (gr > W and math.max(W - gr, -gl)) or 0
+                local dy = (gb < 0 and -gb) or (gt > H and math.max(H - gt, -gb)) or 0
+                if dx ~= 0 or dy ~= 0 then
+                    if not pushed then
+                        self:PushUndo()
+                        pushed = true
+                    end
+                    local l, b, r, t = self:GetRectUI(f)
+                    cfg.point = self:MakeRelativePoint(l + dx, b + dy, r + dx, t + dy, UnitRatio(f))
+                    self:ApplyStyle(key)
+                    moved = moved + 1
+                end
+            end
+        end
+    end
+    if moved > 0 then self:RequestLayout() end
+    return moved
+end
+
+-- Command and button: tells the result in the chat
+function ns:RecoverBlocksCommand()
+    if self.allHidden then
+        ns.Print(ns.L.RECOVER_ALL_HIDDEN)
+        return
+    end
+    local moved = self:RecoverOffscreenBlocks()
+    ns.Print(moved > 0 and ns.L.RECOVER_DONE:format(moved) or ns.L.RECOVER_NONE)
+end
+
+-- Blizzard's Edit Mode: opening it also unlocks Tessera's blocks (option, on by default),
+-- closing it locks them again if Edit Mode was what unlocked them. HookScript adds to
+-- Blizzard's handlers without replacing them.
+function ns:HookEditMode()
+    local frame = EditModeManagerFrame
+    if self.editModeHooked or not (frame and frame.HookScript) then return end
+    self.editModeHooked = true
+    -- (db.unlockedByEditMode is saved: a reload while Edit Mode is open locks again at login)
+    frame:HookScript("OnShow", function()
+        if ns.db and ns.db.editModeSync ~= false and ns.db.locked and not ns.brokerModeActive then
+            ns.db.unlockedByEditMode = true
+            ns:SetLocked(false, true)
+        end
+    end)
+    frame:HookScript("OnHide", function()
+        if ns.db and ns.db.unlockedByEditMode then
+            ns.db.unlockedByEditMode = nil
+            if not ns.db.locked then ns:SetLocked(true, true) end
+        end
+    end)
+end
+
+-- Blocks hidden with the key binding during combat: hidden when combat ends
+-- (also: Edit Mode may be loaded after Tessera on some clients)
+local combatEnd = CreateFrame("Frame")
+combatEnd:RegisterEvent("PLAYER_REGEN_ENABLED")
+combatEnd:RegisterEvent("ADDON_LOADED")
+combatEnd:SetScript("OnEvent", function(_, event)
+    if event == "ADDON_LOADED" then
+        if ns.built then ns:HookEditMode() end
+        return
+    end
+    if ns.hideAfterCombat and ns.built then
+        ns.hideAfterCombat = nil
+        ns.allHidden = true
+        ns:UpdateAllVisibility()
+        ns:RequestOverlaySync()
+    end
+end)
 
 function Tessera_ToggleLock()
     if ns.built then ns:SetLocked(not ns.db.locked) end

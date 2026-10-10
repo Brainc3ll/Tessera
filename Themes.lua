@@ -335,10 +335,12 @@ function ns:ApplyTheme(key)
     return true
 end
 
--- The automatic style (no style picked by the player) follows the installed UI: when it
--- changes, e.g. FlareUI 1.x updated to 2.x, the blocks are restyled once. Called by
--- Core.lua when a profile is loaded, before the blocks are drawn. db.autoTheme remembers
--- which style the blocks were given.
+-- The automatic style (no style picked by the player) is the one of the installed UI.
+-- Tessera never changes the look of existing blocks without asking: when the automatic
+-- style changes (e.g. FlareUI 1.x updated to 2.x, or a UI installed later), the current
+-- look is kept as the profile's choice and the new style is offered in a popup
+-- (ns:OfferStylesIfNeeded, Options.lua). Called by Core.lua when a profile is loaded,
+-- before the blocks are drawn. db.autoTheme remembers which style the blocks were given.
 function ns:SyncAutoTheme()
     local db = self.db
     if not db then return end
@@ -347,6 +349,15 @@ function ns:SyncAutoTheme()
     db.flareStylesSplit = true
     if db.theme then return end
     local key = self:GetTheme()
+    -- an interface whose style was replaced while it was missing (disabled for one
+    -- session or one character) is back: its style comes back too
+    if db.autoThemeMissing then
+        if db.autoThemeMissing == key then
+            RestyleProfile(self, key, false)
+            db.autoTheme, db.autoThemeMissing = key, nil
+            return
+        end
+    end
     local applied = db.autoTheme
     if applied == nil then
         -- profile from an earlier version: its blocks have the FlareUI 1.x bronze if that was the style
@@ -357,5 +368,58 @@ function ns:SyncAutoTheme()
         applied = old and "flareui" or key
     end
     db.autoTheme = key
-    if applied ~= key then RestyleProfile(self, key, false) end
+    if applied == key then return end
+    if byKey[applied] and byKey[applied].available() then
+        db.theme = applied -- keep the current look; the new style is offered instead
+    else
+        -- the old style is unavailable (its interface is missing): replaced for now, and
+        -- given back automatically if that interface returns
+        RestyleProfile(self, key, false)
+        db.autoThemeMissing = db.autoThemeMissing or applied
+    end
+end
+
+-- Styles of the UIs installed now (FlareUI in its installed version), by priority
+function ns:GetDetectedUIStyles()
+    local list = {}
+    local flare = (FlareUIMajor() or 2) >= 2 and "flareui2" or "flareui"
+    for _, key in ipairs({ flare, "ellesmere", "elvui" }) do
+        if IsInstalled(byKey[key]) then table.insert(list, key) end
+    end
+    return list
+end
+
+-- Name of the UI behind a style, with FlareUI's version (e.g. "FlareUI 2.0")
+function ns:GetUIName(key)
+    if key == "flareui" or key == "flareui2" then
+        local get = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+        local ok, version = false, nil
+        if get then ok, version = pcall(get, "FlareUI", "Version") end
+        if ok and type(version) == "string" and version ~= "" then return "FlareUI " .. version end
+        return "FlareUI"
+    end
+    return byKey[key] and byKey[key].name or key
+end
+
+-- Styles of installed UIs that were never offered (account-wide memory sv.uiOffered).
+-- A UI whose style is already in use counts as offered.
+function ns:GetStylesToOffer()
+    local list = {}
+    if not (self.sv and self.db) then return list end
+    self.sv.uiOffered = self.sv.uiOffered or {}
+    local current = self:GetTheme()
+    for _, key in ipairs(self:GetDetectedUIStyles()) do
+        if key == current then
+            self.sv.uiOffered[key] = true
+        elseif not self.sv.uiOffered[key] then
+            table.insert(list, key)
+        end
+    end
+    return list
+end
+
+-- Remembers that these styles were offered (accepted or not): they are not offered again
+function ns:MarkStylesOffered(list)
+    self.sv.uiOffered = self.sv.uiOffered or {}
+    for _, key in ipairs(list) do self.sv.uiOffered[key] = true end
 end

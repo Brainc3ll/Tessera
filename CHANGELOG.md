@@ -3,6 +3,16 @@
 All notable changes to Tessera. The in-game **Version** tab shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0-rc2 — 2026-10-10
+
+- When an interface with a matching style is installed (FlareUI 1.x or 2.x, ElvUI, EllesmereUI), a window shows that style on sample blocks and offers it. Tessera no longer changes the style of your blocks on its own.
+- DataBroker mode: turning it off now only applies to the display addon detected at that moment (another one installed later offers the mode again, with its explanation window). The Broker tab shows the current state and can go back to the automatic choice.
+- Opening Blizzard's Edit Mode also unlocks the blocks (option in the General tab).
+- New "Bring blocks back on screen" button and /tessera recover command, for groups that stick out of the screen.
+- After an update, a window offers to read what's new.
+- Ready for community translations with CurseForge's localization tool.
+- Fix: hiding all blocks with the key binding during combat left their invisible click buttons active; the blocks are now hidden when combat ends.
+
 ## 1.0.0-rc1 — 2026-10-10
 
 - First public version (release candidate).

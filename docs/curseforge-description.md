@@ -33,6 +33,7 @@ Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains e
 | /tessera minimap | Show or hide the minimap button |
 | /tessera preview | Sample values in every block (for screenshots) |
 | /tessera broker | DataBroker mode on or off |
+| /tessera recover | Bring back blocks that stick out of the screen |
 | /tessera bug | Report to copy into a bug report |
 
 ## Bugs and ideas
@@ -82,6 +83,7 @@ Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** expli
 | /tessera minimap | Afficher ou masquer le bouton de la minicarte |
 | /tessera preview | Valeurs d'exemple dans tous les blocs (pour les captures) |
 | /tessera broker | Activer ou désactiver le mode DataBroker |
+| /tessera recover | Ramener les blocs qui dépassent de l'écran |
 | /tessera bug | Rapport à copier dans un signalement de bug |
 
 ## Bugs et idées

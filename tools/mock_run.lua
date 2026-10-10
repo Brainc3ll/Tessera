@@ -263,19 +263,64 @@ for _, step in ipairs({
     end,
     function() for _, t in ipairs(ns:GetAvailableThemes()) do ns:ApplyTheme(t.key); ns:UpdateLayout() end end,
     function() for _, t in ipairs(ns.themes) do t.block({}); assert(t.window().title, t.key) end end,
-    -- a profile styled with FlareUI 1.x (old "flareui" choice) moves to the 2.x look automatically
+    -- a profile styled with FlareUI 1.x keeps its look, and FlareUI 2.x is offered in a window
     function()
         local has = ns.HasFlareUIMedia
         ns.HasFlareUIMedia = function() return true end
         ns.db.theme, ns.db.flareStylesSplit, ns.db.autoTheme = "flareui", nil, nil
         ns:ApplyThemeToCfg(ns.db.blocks.gold, "flareui")
+        ns.sv.uiOffered = nil
         ns:SyncAutoTheme()
-        assert(ns.db.theme == nil and ns:GetTheme() == "flareui2", "automatic style not FlareUI 2")
-        assert(math.abs(ns.db.blocks.gold.borderColor.r - 0.80) < 0.01, "blocks not restyled")
-        ns:ApplyTheme("flareui") -- an explicit choice afterwards is kept
-        ns:SyncAutoTheme()
-        assert(ns:GetTheme() == "flareui", "explicit FlareUI 1.x choice lost")
+        assert(ns.db.theme == "flareui", "current look not kept")
+        local offer = ns:GetStylesToOffer()
+        assert(offer[1] == "flareui2", "FlareUI 2 not offered")
+        ns:ShowStyleOffer({ "flareui2", "elvui" })
+        local frame = _G.TesseraStyleOffer
+        frame:Hide()
+        frame:GetScript("OnHide")(frame) -- the mock does not fire OnHide by itself
+        assert(#ns:GetStylesToOffer() == 0, "offered twice")
+        ns:ApplyTheme("flareui2")
         ns.HasFlareUIMedia = has
+    end,
+    -- an interface missing for one session gets its style back when it returns
+    function()
+        local has = ns.HasFlareUIMedia
+        ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing = nil, "flareui2", nil
+        ns.HasFlareUIMedia = function() return false end
+        ns:SyncAutoTheme()
+        assert(ns.db.autoThemeMissing == "flareui2" and ns.db.theme == nil, "missing style not remembered")
+        ns.HasFlareUIMedia = function() return true end
+        ns:SyncAutoTheme()
+        assert(ns.db.autoThemeMissing == nil and ns:GetTheme() == "flareui2", "style not given back")
+        assert(math.abs(ns.db.blocks.gold.borderColor.r - 0.80) < 0.01, "blocks not restyled back")
+        ns.HasFlareUIMedia = has
+    end,
+    -- DataBroker mode choices are remembered per display addon
+    function()
+        local was = ns.brokerDisplay
+        ns.brokerDisplay = "Bazooka"
+        ns.sv.brokerMode = false -- 1.0.0-rc1 setting: migrated
+        ns:RefreshBrokerMode()
+        assert(ns.sv.brokerRefused.Bazooka and not ns.brokerModeActive, "rc1 refusal not migrated")
+        ns.brokerDisplay = "Titan Panel"
+        ns:RefreshBrokerMode()
+        assert(ns.brokerModeActive, "another display addon should offer the mode again")
+        assert(ns:GetBrokerStatus():find("Titan"), "status line")
+        ns:SetBrokerMode(false)
+        assert(ns.sv.brokerRefused["Titan Panel"] and not ns.brokerModeActive, "refusal for Titan")
+        ns:ResetBrokerChoices()
+        assert(not ns:HasBrokerChoices() and ns.brokerModeActive, "reset")
+        ns.brokerDisplay = was
+        ns:ResetBrokerChoices()
+        ns:SetBrokerMode(false)
+    end,
+    -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
+    function()
+        ns:RecoverBlocksCommand()
+        ns:HookEditMode()
+        ns.sv.welcomed, ns.sv.lastVersion = true, "old"
+        ns:ShowWelcomeIfNeeded()
+        Tessera_ToggleBlocks(); Tessera_ToggleBlocks()
     end,
 }) do
     local ok5, err5 = pcall(step) if not ok5 then print("STEP ERROR: " .. tostring(err5)) end

@@ -1096,6 +1096,9 @@ local function BuildGeneralPage(page)
     Place(CreateCheck(page, L.SNAP_BLIZZARD,
         function() return ns.db.snapBlizzard end,
         function(v) ns.db.snapBlizzard = v end, nil, L.TIP_SNAP_BLIZZARD), 1)
+    Place(CreateCheck(page, L.EDIT_MODE_SYNC,
+        function() return ns.db.editModeSync ~= false end,
+        function(v) ns.db.editModeSync = v end, nil, L.TIP_EDIT_MODE_SYNC), 1)
     Place(CreateCheck(page, L.MERGE,
         function() return ns.db.merge end,
         function(v) ns.db.merge = v end, nil, L.TIP_MERGE), 1)
@@ -1107,6 +1110,8 @@ local function BuildGeneralPage(page)
         { key = 32, name = "32 px" },
     }, function() return ns.db.grid or 0 end,
        function(v) ns.db.grid = v; ns:UpdateGrid() end, nil, nil, L.TIP_GRID), 1)
+    Place(CreateButton(page, L.RECOVER_BUTTON, function() ns:RecoverBlocksCommand() end,
+        nil, nil, L.TIP_RECOVER), 1)
 
     -- Right column: combat
     Place(CreateHeader(page, L.SECTION_COMBAT), 2)
@@ -1310,12 +1315,20 @@ local function BuildBrokerPage(page)
     end
     P.Gap(1, height)
 
+    -- current state in one sentence (e.g. "off: your choice for Bazooka")
+    local status = Place(CreateNote(page, "\n"), 1)
+    status.isShown = hasLib
+    status.Refresh = function() status.fs:SetText("|cffffd100" .. (ns:GetBrokerStatus() or "") .. "|r") end
+
     -- mode button: leave or enter DataBroker mode (same slot)
     local leave = Place(CreateButton(page, L.BROKER_MODE_OFF_BUTTON, function() ns:SetBrokerMode(false) end,
         function() return ns.brokerModeActive end, nil, L.TIP_BROKER_MODE_OFF), 1)
     local enter = CreateButton(page, L.BROKER_MODE_ON_BUTTON, function() ns:SetBrokerMode(true) end,
         function() return hasLib() and not ns.brokerModeActive end, nil, L.TIP_BROKER_MODE_ON)
     enter:SetPoint("TOPLEFT", leave, "TOPLEFT")
+    -- forget the choices made for each display addon
+    Place(CreateButton(page, L.BROKER_RESET_CHOICES, function() ns:ResetBrokerChoices() end,
+        function() return hasLib() and ns:HasBrokerChoices() end, nil, L.TIP_BROKER_RESET_CHOICES), 1)
 
     Place(CreateCheck(page, L.BROKER_SHARE_ALL,
         function() return ns.sv.brokerShare end,
@@ -1352,7 +1365,8 @@ local function BuildBrokerPage(page)
         ns:UpdatePublishing()
     end, sharing, L.TIP_COLORIZE), 1)
     local reload = Place(CreateNote(page, L.BROKER_RELOAD_NOTE), 1)
-    reload.isShown = sharing
+    -- also shown with the Reload button below, which it explains
+    reload.isShown = function() return sharing() or ns:BrokerNeedsReload() end
     -- only useful once a published block was unshared
     Place(CreateButton(page, L.RELOAD_SHORT, function() ReloadUI() end,
         function() return ns:BrokerNeedsReload() end, nil, L.TIP_BROKER_RELOAD), 1)
@@ -1958,9 +1972,30 @@ StaticPopupDialogs["TESSERA_WELCOME"] = {
     OnAccept = function() ns:OpenOptions(PAGE_HELP) end,
 }
 
--- Shows the welcome popup once per saved-variables file
+-- After an update: offers to read what's new (Version tab), once per version
+StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
+    text = L.WHATS_NEW_TEXT,
+    button1 = L.WHATS_NEW_SHOW,
+    button2 = L.WELCOME_LATER,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function() ns:OpenOptions(PAGE_VERSION) end,
+}
+
+-- Shows the welcome popup once per saved-variables file (first install), or the
+-- "what's new" popup when the installed version changed since last time
 function ns:ShowWelcomeIfNeeded()
-    if not self.sv or self.sv.welcomed then return end
+    if not self.sv then return end
+    local version = GetMetadata and GetMetadata(ADDON, "Version") or nil
+    -- (welcomed but no version saved: installed before this popup existed, i.e. updated)
+    if self.sv.welcomed and version and self.sv.lastVersion ~= version then
+        self.sv.lastVersion = version
+        StaticPopup_Show("TESSERA_WHATS_NEW", version)
+        return
+    end
+    if version then self.sv.lastVersion = version end
+    if self.sv.welcomed then return end
     self.sv.welcomed = true
     if self.brokerModeActive then return end -- the DataBroker mode popup says what matters
     StaticPopup_Show("TESSERA_WELCOME")
@@ -1975,11 +2010,170 @@ StaticPopupDialogs["TESSERA_BROKER_MODE"] = {
     timeout = 0,
     whileDead = true,
     hideOnEscape = false,
-    OnShow = function() ns.sv.brokerModeNotified = true end,
+    OnShow = function()
+        if ns.brokerDisplay and ns.sv.brokerNotified then ns.sv.brokerNotified[ns.brokerDisplay] = true end
+    end,
     OnCancel = function(_, _, reason)
         if reason == nil or reason == "clicked" then ns:SetBrokerMode(false) end
     end,
 }
+
+---------------------------------------------------------------------------
+-- Style offer: when an interface with a matching style is installed (FlareUI,
+-- EllesmereUI, ElvUI), a window shows that style on sample blocks and offers to apply
+-- it. Each interface is offered once (ns:GetStylesToOffer, Themes.lua).
+---------------------------------------------------------------------------
+local offer
+local PREVIEW_SAMPLES = { { "gold", "1234" }, { "fps", "60 i/s" }, { "time", "20:45" } }
+
+-- A sample block: same frame parts as a real block (Core.lua CreateBlock)
+local function PreviewBlock(parent)
+    local f = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    f.icon = f:CreateTexture(nil, "ARTWORK")
+    f.text = f:CreateFontString(nil, "OVERLAY")
+    f.text:SetWordWrap(false)
+    return f
+end
+
+-- Draws the sample blocks in a style, side by side and centered
+local function DrawPreview(key)
+    local x = 0
+    for i, f in ipairs(offer.blocks) do
+        local cfg = ns:GetBlockDefaults(PREVIEW_SAMPLES[i][1])
+        ns:ApplyThemeToCfg(cfg, key)
+        cfg.showIcon, cfg.showLabel = true, false
+        local inset = ns:SkinBlockFrame(f, cfg)
+        local mod = ns.modules[PREVIEW_SAMPLES[i][1]]
+        ns:SetIcon(f.icon, mod and type(mod.icon) ~= "function" and mod.icon or 134400)
+        local iconSize = math.max(8, cfg.height - 2 * inset - 4)
+        f.icon:SetSize(iconSize, iconSize)
+        f.icon:ClearAllPoints()
+        f.icon:SetPoint("LEFT", f, "LEFT", 4 + inset, 0)
+        f.text:ClearAllPoints()
+        f.text:SetPoint("LEFT", f.icon, "RIGHT", 4, 0)
+        f.text:SetText(PREVIEW_SAMPLES[i][2])
+        local width = math.ceil(f.text:GetStringWidth()) + iconSize + 12 + 2 * inset
+        f:SetSize(math.max(width, 60), cfg.height)
+        f:ClearAllPoints()
+        f:SetPoint("LEFT", offer.preview, "LEFT", x, 0)
+        x = x + f:GetWidth() + 6
+    end
+    offer.preview:SetWidth(math.max(1, x - 6))
+end
+
+local function UpdateOffer()
+    local key = offer.selected
+    offer.text:SetText(L.STYLE_OFFER_TEXT:format(ns:GetUIName(key)))
+    for _, b in ipairs(offer.choices) do b:SetEnabled(b.key ~= key) end
+    DrawPreview(key)
+end
+
+local function BuildOffer()
+    local f = CreateFrame("Frame", "TesseraStyleOffer", UIParent, "BackdropTemplate")
+    f:SetSize(460, 250)
+    f:SetPoint("CENTER", 0, 120)
+    f:SetFrameStrata("DIALOG")
+    f:SetToplevel(true)
+    f:SetClampedToScreen(true)
+    f:EnableMouse(true)
+    f:SetMovable(true)
+    f:RegisterForDrag("LeftButton")
+    f:SetScript("OnDragStart", f.StartMoving)
+    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    table.insert(UISpecialFrames, f:GetName()) -- Escape = keep the current style
+
+    f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    f.title:SetPoint("TOP", 0, -18)
+    f.title:SetText("Tessera")
+    f.text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    f.text:SetPoint("TOP", f.title, "BOTTOM", 0, -10)
+    f.text:SetWidth(420)
+    f.choices = {}
+    f.preview = CreateFrame("Frame", nil, f)
+    f.preview:SetHeight(30)
+    f.blocks = {}
+    for i = 1, #PREVIEW_SAMPLES do f.blocks[i] = PreviewBlock(f.preview) end
+    f.note = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    f.note:SetWidth(420)
+    f.note:SetText(L.STYLE_OFFER_NOTE)
+
+    local apply = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    apply:SetSize(200, 24)
+    apply:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -6, 18)
+    apply:SetText(L.STYLE_OFFER_APPLY)
+    apply:SetScript("OnClick", function()
+        local key = offer.selected
+        if ns:ApplyTheme(key) then
+            ns.Print(L.STYLE_APPLIED:format(ns:GetUIName(key)))
+            ns:RefreshOptions()
+        end
+        f:Hide()
+    end)
+    local keep = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    keep:SetSize(200, 24)
+    keep:SetPoint("BOTTOMLEFT", f, "BOTTOM", 6, 18)
+    keep:SetText(L.STYLE_OFFER_KEEP)
+    keep:SetScript("OnClick", function() f:Hide() end)
+
+    -- accepted, kept or closed: these interfaces are not offered again
+    f:SetScript("OnHide", function() if f.list then ns:MarkStylesOffered(f.list) end end)
+    f:Hide()
+    return f
+end
+
+-- Shows the window for a list of style keys (several = one button per interface)
+function ns:ShowStyleOffer(list)
+    if not offer then offer = BuildOffer() end
+    offer.list, offer.selected = list, list[1]
+    ns:SkinWindow(offer, offer.title)
+    for _, b in ipairs(offer.choices) do b:Hide() end
+    local y = -84
+    if #list > 1 then
+        local width = math.floor((420 - 6 * (#list - 1)) / #list)
+        for i, key in ipairs(list) do
+            local b = offer.choices[i]
+            if not b then
+                b = CreateFrame("Button", nil, offer, "UIPanelButtonTemplate")
+                b:SetHeight(22)
+                b:SetScript("OnClick", function(button)
+                    offer.selected = button.key
+                    UpdateOffer()
+                end)
+                offer.choices[i] = b
+            end
+            b.key = key
+            b:SetWidth(width)
+            b:SetText(ns:GetUIName(key))
+            b:ClearAllPoints()
+            b:SetPoint("TOPLEFT", offer, "TOPLEFT", 20 + (i - 1) * (width + 6), y)
+            b:Show()
+        end
+        y = y - 34
+    end
+    offer.preview:ClearAllPoints()
+    offer.preview:SetPoint("TOP", offer, "TOP", 0, y - 6)
+    offer.note:ClearAllPoints()
+    offer.note:SetPoint("TOP", offer, "TOP", 0, y - 50)
+    offer:SetHeight(-y + 50 + 30 + 60)
+    UpdateOffer()
+    offer:Show()
+end
+
+-- Offers the style of a newly detected interface (not in DataBroker mode: Tessera then
+-- shows no block of its own; not in combat: retried a bit later)
+function ns:OfferStylesIfNeeded()
+    if not self.built or self.brokerModeActive then return end
+    if offer and offer:IsShown() then return end
+    -- not on top of Tessera's other popups (welcome, DataBroker mode, what's new)
+    local busy = StaticPopup_Visible and (StaticPopup_Visible("TESSERA_WELCOME")
+        or StaticPopup_Visible("TESSERA_BROKER_MODE") or StaticPopup_Visible("TESSERA_WHATS_NEW"))
+    if InCombatLockdown() or busy then
+        C_Timer.After(10, function() ns:OfferStylesIfNeeded() end)
+        return
+    end
+    local list = self:GetStylesToOffer()
+    if #list > 0 then self:ShowStyleOffer(list) end
+end
 
 ---------------------------------------------------------------------------
 -- Diagnostics: /tessera debug (state useful for development, and dropdown tracing)
@@ -2067,9 +2261,12 @@ function ns:BugReport()
     for _, key in ipairs(ns:GetBlockKeys()) do
         if ns.IsBrokerKey(key) then table.insert(brokers, key:sub(#ns.BROKER_PREFIX + 1)) end
     end
-    Add("DataBroker: library %s - display addon: %s - mode: %s (setting %s) - sharing: %s - blocks: %s",
+    local refused = {}
+    for name in pairs(ns.sv.brokerRefused or {}) do table.insert(refused, name) end
+    Add("DataBroker: library %s - display addon: %s - mode: %s (forced %s, refused for: %s) - sharing: %s - blocks: %s",
         tostring(ns.GetLDB() ~= nil), tostring(ns.brokerDisplay or "none"), tostring(ns.brokerModeActive),
-        tostring(ns.sv.brokerMode), tostring(ns:IsSharing() and true or false),
+        tostring(ns.sv.brokerForced == true), #refused > 0 and table.concat(refused, ", ") or "none",
+        tostring(ns:IsSharing() and true or false),
         #brokers > 0 and table.concat(brokers, ", ") or "none")
 
     -- shown blocks, with how they are placed

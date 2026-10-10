@@ -53,6 +53,7 @@ Help tab inside the game explains everything.
 | `/tessera preview` | Sample values in every block (for screenshots) |
 | `/tessera bug` | Report to copy into a bug report |
 | `/tessera broker` | DataBroker mode on or off |
+| `/tessera recover` | Bring back blocks that stick out of the screen |
 
 Key bindings (show / hide all blocks, lock / unlock, options) are in the game's key bindings,
 AddOns category.
@@ -165,9 +166,16 @@ block in `blocks[key]` (see `BLOCK_DEFAULTS` in `Core.lua`).
 
 ### Translations
 
-`Locales/enUS.lua` defines every key. A translation only overrides keys and falls back to
-English for anything missing; add its file to `Tessera.toc` after `enUS.lua`. Community
-translations are meant to go through CurseForge's localization tool.
+`Locales/enUS.lua` defines every key; every other language only overrides keys and falls
+back to English for anything missing.
+
+- English and French are written in the repository (`enUS.lua`, `frFR.lua`).
+- Every other language is translated by the community with CurseForge's localization tool.
+  Its file (e.g. `Locales/deDE.lua`) only holds a `--@localization(...)@` line that the
+  BigWigs packager replaces with the translated strings when it builds the release zip, so
+  a copy installed straight from GitHub simply shows those languages in English.
+- `docs/localization/` holds the English and French strings in the format CurseForge imports;
+  new English strings must be imported there before they can be translated.
 
 ### Checking your changes
 

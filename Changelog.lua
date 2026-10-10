@@ -10,6 +10,40 @@ local _, ns = ...
 
 ns.CHANGELOG = {
     {
+        version = "1.0.0-rc2",
+        date = "2026-10-10",
+        en = {
+            "When an interface with a matching style is installed (FlareUI 1.x or 2.x, ElvUI, EllesmereUI), a "
+                .. "window shows that style on sample blocks and offers it. Tessera no longer changes the style "
+                .. "of your blocks on its own.",
+            "DataBroker mode: turning it off now only applies to the display addon detected at that moment "
+                .. "(another one installed later offers the mode again, with its explanation window). The "
+                .. "Broker tab shows the current state and can go back to the automatic choice.",
+            "Opening Blizzard's Edit Mode also unlocks the blocks (option in the General tab).",
+            "New \"Bring blocks back on screen\" button and /tessera recover command, for groups that stick "
+                .. "out of the screen.",
+            "After an update, a window offers to read what's new.",
+            "Ready for community translations with CurseForge's localization tool.",
+            "Fix: hiding all blocks with the key binding during combat left their invisible click buttons "
+                .. "active; the blocks are now hidden when combat ends.",
+        },
+        fr = {
+            "Quand une interface qui a un style assorti est installée (FlareUI 1.x ou 2.x, ElvUI, EllesmereUI), "
+                .. "une fenêtre montre ce style sur des blocs d'exemple et te le propose. Tessera ne change plus "
+                .. "le style de tes blocs tout seul.",
+            "Mode DataBroker : le désactiver ne vaut plus que pour l'addon d'affichage détecté à ce moment-là "
+                .. "(un autre installé plus tard propose à nouveau le mode, avec sa fenêtre d'explication). "
+                .. "L'onglet Broker affiche l'état actuel et permet de revenir au choix automatique.",
+            "Ouvrir le mode Édition de Blizzard déverrouille aussi les blocs (option dans l'onglet Général).",
+            "Nouveau bouton « Ramener les blocs à l'écran » et commande /tessera recover, pour les groupes qui "
+                .. "dépassent de l'écran.",
+            "Après une mise à jour, une fenêtre propose de lire les nouveautés.",
+            "Prêt pour les traductions de la communauté avec l'outil de traduction de CurseForge.",
+            "Correction : masquer tous les blocs avec le raccourci clavier pendant un combat laissait leurs "
+                .. "boutons de clic invisibles actifs ; les blocs sont maintenant masqués à la fin du combat.",
+        },
+    },
+    {
         version = "1.0.0-rc1",
         date = "2026-10-10",
         en = {

@@ -623,10 +623,10 @@ function ns:LegacyProbe()
             end
         end
         if C_MajorFactions then
-            local funcs = {}
-            for k, v in pairs(C_MajorFactions) do if type(v) == "function" then table.insert(funcs, k) end end
-            table.sort(funcs)
-            Add("C_MajorFactions: " .. table.concat(funcs, ", "))
+            local mfFuncs = {}
+            for k, v in pairs(C_MajorFactions) do if type(v) == "function" then table.insert(mfFuncs, k) end end
+            table.sort(mfFuncs)
+            Add("C_MajorFactions: " .. table.concat(mfFuncs, ", "))
         end
         Add("")
         for _, sub in ipairs({ "RewardTrackPage", "ChallengesPage", "TreePage" }) do

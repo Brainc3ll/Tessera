@@ -1491,6 +1491,15 @@ local function Professions()
     return result
 end
 
+-- Macro that clicks one of Blizzard's micro buttons when this client has it (WoW Forever
+-- has ProfessionMicroButton, TalentMicroButton, LegacyMicroButton...), else the fallback.
+-- Clicking the real button opens the panel from Blizzard's own code, without taint.
+local function MicroButtonMacro(button, fallback)
+    if _G[button] then return "/click " .. button end
+    return fallback
+end
+local SKILL_FRAME_MACRO = "/run if ToggleCharacter then ToggleCharacter('SkillFrame') end"
+
 local function SkillTooltip(tt, list)
     for _, s in ipairs(list) do
         local color = s.rank >= s.max and "|cff4dff4d" or "|cffffffff"
@@ -1537,12 +1546,13 @@ for _, def in ipairs(PROFESSION_BLOCKS) do
             if p then SkillTooltip(tt, { p }) else tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
         end,
         -- click: opens the profession window (/cast <profession>); gathering professions
-        -- have none, so the skill window opens instead. Rebuilt out of combat when it changes.
+        -- have none, so the professions book opens instead (the skill window on clients
+        -- without it). Rebuilt out of combat when it changes.
         secureMacro = function()
             local p = Current()
             local info = p and ProfessionInfo(p.name)
             if p and info and not info.gathering then return "/cast " .. p.name end
-            return "/run if ToggleCharacter then ToggleCharacter('SkillFrame') end"
+            return MicroButtonMacro("ProfessionMicroButton", SKILL_FRAME_MACRO)
         end,
         clickHint = L.HINT_PROFESSION,
     })
@@ -1561,6 +1571,9 @@ local function CurrentWeaponSkill(weapons)
     return best
 end
 
+-- Weapon skills only exist on clients with the classic skill list (not on WoW Forever,
+-- whose weapons have no skill): the block is offered only there
+if GetNumSkillLines and GetSkillLineInfo then
 ns:RegisterModule("weaponSkills", {
     label = "WEAPON_SKILLS",
     icon = "Interface\\Icons\\INV_Sword_04",
@@ -1577,9 +1590,10 @@ ns:RegisterModule("weaponSkills", {
         return w and w.max > 0 and w.rank / w.max or nil
     end,
     tooltip = function(tt) SkillTooltip(tt, SkillLines().weapons) end,
-    secureMacro = "/run if ToggleCharacter then ToggleCharacter('SkillFrame') end",
+    secureMacro = SKILL_FRAME_MACRO,
     clickHint = L.HINT_SKILLS,
 })
+end
 
 ---------------------------------------------------------------------------
 -- Unspent talent points (shows only when some are left)
@@ -1602,7 +1616,9 @@ ns:RegisterModule("talents", {
     tooltip = function(tt)
         tt:AddDoubleLine(L.TT_FREE_TALENTS, tostring(FreeTalentPoints()), 1, 1, 1, 1, 1, 1)
     end,
-    secureMacro = "/run if ToggleTalentFrame then ToggleTalentFrame() end",
+    secureMacro = function()
+        return MicroButtonMacro("TalentMicroButton", "/run if ToggleTalentFrame then ToggleTalentFrame() end")
+    end,
     clickHint = L.HINT_TALENTS,
 })
 

@@ -13,6 +13,7 @@ All notable changes to Tessera. The in-game **Version** tab shows the same list
 - Ready for community translations with CurseForge's localization tool.
 - Blocks shown from the options are now placed evenly on both sides of the window, and never over Blizzard's action bars, minimap or chat.
 - The placement banner steps aside while the options window is open, and remembers where it is dragged; it is not shown while Blizzard's Edit Mode is open.
+- Professions: a click on a gathering profession (herbalism, mining, skinning) opens the professions book on WoW Forever; the talents block opens the talents with Blizzard's own button. The weapon skills block is only offered on clients that have weapon skills.
 - Fix: hiding all blocks with the key binding during combat left their invisible click buttons active; the blocks are now hidden when combat ends.
 
 ## 1.0.0-rc1 — 2026-10-10

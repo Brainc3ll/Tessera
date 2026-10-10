@@ -28,6 +28,9 @@ ns.CHANGELOG = {
                 .. "over Blizzard's action bars, minimap or chat.",
             "The placement banner steps aside while the options window is open, and remembers where it is "
                 .. "dragged; it is not shown while Blizzard's Edit Mode is open.",
+            "Professions: a click on a gathering profession (herbalism, mining, skinning) opens the professions "
+                .. "book on WoW Forever; the talents block opens the talents with Blizzard's own button. The weapon "
+                .. "skills block is only offered on clients that have weapon skills.",
             "Fix: hiding all blocks with the key binding during combat left their invisible click buttons "
                 .. "active; the blocks are now hidden when combat ends.",
         },
@@ -47,6 +50,9 @@ ns.CHANGELOG = {
                 .. "égales, et plus jamais sur les barres d'action, la minicarte ou la discussion de Blizzard.",
             "Le bandeau de placement s'efface quand la fenêtre d'options est ouverte et retient l'endroit où tu "
                 .. "le poses ; il n'est pas affiché pendant le mode Édition de Blizzard.",
+            "Métiers : un clic sur un métier de récolte (herboristerie, minage, dépeçage) ouvre le livre des "
+                .. "métiers sur WoW Forever ; le bloc talents ouvre les talents avec le bouton de Blizzard. Le bloc "
+                .. "compétences d'armes n'est proposé que sur les clients qui en ont.",
             "Correction : masquer tous les blocs avec le raccourci clavier pendant un combat laissait leurs "
                 .. "boutons de clic invisibles actifs ; les blocs sont maintenant masqués à la fin du combat.",
         },

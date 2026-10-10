@@ -1744,10 +1744,13 @@ local function ChangelogText()
     local lang = GetLocale() == "frFR" and "fr" or "en"
     local lines = {}
     for _, entry in ipairs(ns.CHANGELOG or {}) do
+        -- an empty line after the version title and between changes, for more air
         table.insert(lines, ("|cffffd100%s|r  |cff999999%s|r"):format(entry.version, entry.date or ""))
         for _, change in ipairs(entry[lang] or entry.en or {}) do
+            table.insert(lines, "")
             table.insert(lines, "- " .. change)
         end
+        table.insert(lines, "")
         table.insert(lines, "")
     end
     return table.concat(lines, "\n")

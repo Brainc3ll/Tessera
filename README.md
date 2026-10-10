@@ -1,0 +1,187 @@
+# Tessera
+
+Tessera is a World of Warcraft addon for **WoW Forever** that shows small information blocks
+(gold, bags, durability, FPS, latency, time, XP, quests...) and launcher blocks (minimap and
+addon compartment buttons). Each block can be styled and placed on its own, and blocks placed
+against each other **merge** into a single frame, like the tiles (*tesserae*) of a mosaic.
+
+It only uses data provided by the game itself, and embeds no library. LibSharedMedia is used
+when another addon provides it, to offer that addon's fonts, backgrounds and borders, and
+LibDataBroker to exchange data with DataBroker addons.
+
+## About this project
+
+Tessera was designed by Braincell1980, who came up with the ideas, the features and the look,
+and tested every version in game. The code was written with the help of an AI (Claude, by
+Anthropic). It has been reviewed and tested, but it may still contain bugs: please report them
+(see "Reporting a bug" below). Contributions and code reviews from developers are welcome.
+
+- Interface: `16001` (WoW Forever)
+- Languages: English, French (other languages can be added through CurseForge's localization tool)
+- Saved variables: `TesseraDB`
+- Optional addons it adapts to: FlareUI (default look and placement under its XP bar),
+  EllesmereUI, ElvUI, LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
+  display addons (Titan Panel, ChocolateBar, Bazooka...)
+
+## For players
+
+Copy the `Tessera` folder into the `Interface/AddOns/` folder of your WoW Forever
+installation (or let CurseForge do it). Type `/tessera` (or `/tes`) to open the options; the
+Help tab inside the game explains everything.
+
+**Highlights**
+
+- More than 35 blocks: gold (with history), bags (with junk value), durability, FPS and latency
+  (with graphs), time, XP, rested XP, coordinates, zone, friends, guild, group, quests,
+  reputation, currencies, professions (one block each), weapon skills, talents, hearthstone, mail, whispers,
+  reagents, ammo, item level, speed, volume, instances, played time, goal...
+- Blocks that have nothing to show hide themselves (in a second row under the main bar).
+- Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks.
+- Per-block style, opacity, scale, progress bar, thresholds, show on hover, alerts, click actions.
+- DataBroker: other addons' DataBroker objects as blocks; Tessera's blocks shared with Titan
+  Panel, ChocolateBar, Bazooka...; a DataBroker mode, on automatically when such an addon is
+  installed (Tessera then shows nothing itself), that can be turned off to use both.
+- Themes matching FlareUI (2.x or 1.x), ElvUI, EllesmereUI or Blizzard's look, plus Clean and Transparent; profiles with export/import,
+  ready-made layouts and an automatic dungeon/raid profile; accessibility options.
+
+| Command | Effect |
+|---|---|
+| `/tessera` | Open or close the options |
+| `/tessera lock` / `unlock` | Lock the blocks, or unlock them to move them |
+| `/tessera reset` | Back to the default layout |
+| `/tessera minimap` | Show or hide the minimap button |
+| `/tessera preview` | Sample values in every block (for screenshots) |
+| `/tessera bug` | Report to copy into a bug report |
+| `/tessera broker` | DataBroker mode on or off |
+
+Key bindings (show / hide all blocks, lock / unlock, options) are in the game's key bindings,
+AddOns category.
+
+When unlocked: drag a block to move it (or its whole group), drop it against another block to
+merge them, **Shift + drag** to detach it, **Ctrl + click** to hide it, **Ctrl + Z** to undo,
+**Alt + right-click** for the quick menu. When locked: hover for the tooltip, left-click to open
+the related game window, **Shift + click** to copy the value to the chat, right-click for the
+block's settings.
+
+**Reporting a bug:** type `/tessera bug`, copy the report from the window that opens and paste it
+into a new issue (a template is provided).
+
+## For developers
+
+The code is plain Lua with no build step and no embedded libraries. Every file starts with a
+header explaining its role, and the tricky parts (secure clicks, secret values, border seams)
+are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and `Merge.lua`.
+
+### Files (in load order, see `Tessera.toc`)
+
+| File | Role |
+|---|---|
+| `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
+| `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
+| `Core.lua` | Shared namespace, media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
+| `Themes.lua` | Visual themes (FlareUI 2.x and 1.x, EllesmereUI, ElvUI, Blizzard modern/classic, clean, transparent). |
+| `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, centering, second row), unlock-mode name tags, border seams and corner joins. |
+| `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
+| `Profiles.lua` | Profile export / import (text), duplicate, automatic dungeon / raid profile. |
+| `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
+| `Changelog.lua` | Version history for the in-game Version tab (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
+| `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
+| `Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
+| `Spacers.lua` | Spacer blocks (empty, separator line or text). |
+| `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
+| `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
+| `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, General, Launchers, Broker (DataBroker), Profiles, Help, Version), widgets, placement banner, text window (export / import / debug), welcome popup, debug report, Blizzard Settings page. |
+
+The `docs/` folder (not shipped in the addon) holds the release guide, the CurseForge
+description and the strings to import into CurseForge's localization tool.
+
+### How a value gets on screen
+
+1. `Modules.lua` registers each block with `ns:RegisterModule(key, def)`.
+2. At login, `Core.lua` loads the profile from `TesseraDB`, creates one frame per block and
+   applies its style (`ns:ApplyStyle`), position and docking (`Merge.lua`).
+3. A block is refreshed by `ns:UpdateBlock(key)` when one of its `events` fires, or by the
+   shared timer every `interval` seconds while it is shown.
+4. `UpdateBlock` calls the module's `update(cfg)`, which returns a text and an optional level
+   (1 good, 2 warning, 3 bad). Core colors it, adds the label and icon if enabled, and asks
+   for a layout pass when the text size changes.
+5. The layout pass (`ns:UpdateLayout` in `Merge.lua`) sizes every block to its text, equalizes
+   merged groups, centers anchored groups and redraws the borders where blocks touch.
+
+### Adding a data block
+
+Open `Modules.lua`: its header documents every field a block can define, with a minimal
+example. In short:
+
+```lua
+ns:RegisterModule("level", {
+    label = "LEVEL",                          -- display name = L.LEVEL
+    icon = "Interface\\Icons\\INV_Misc_Note_01",
+    events = { "PLAYER_LEVEL_UP" },           -- or interval = seconds
+    defaultEnabled = false,                   -- hidden until the player enables it
+    update = function(cfg)
+        return tostring(UnitLevel("player")), 1
+    end,
+    tooltip = function(tt, cfg)
+        tt:AddLine("Some detail", 1, 1, 1)
+    end,
+})
+```
+
+Then add `LEVEL = "Level"` to `Locales/enUS.lua` and `L.LEVEL = "Niveau"` to
+`Locales/frFR.lua`. Never rename a block key once released: it is stored in players' saved
+variables. The block appears automatically in the options.
+
+To open a Blizzard window on click, use `secureMacro` (a macro run by a secure button) rather
+than calling the function from Lua: on this client, opening UI panels from addon code taints
+them.
+
+### DataBroker
+
+`Broker.lua` explains it in its header. In short: blocks under keys `broker:<object name>` show
+another addon's data object (looked up by name each time, so a disabled addon only hides the
+block); every data block with `brokerShare` is published as `Tessera_<block key>` while sharing
+is on; DataBroker mode (`ns.brokerModeActive`) hides all of Tessera's frames. A module needs
+nothing special to be shared: its `update`, `tooltip` and `onClick` are reused. Blocks that open
+Blizzard windows through `secureMacro` cannot do so from another addon's bar.
+
+### WoW-specific constraints to keep in mind
+
+- **Taint and secret values.** This client uses the Midnight-era API, where some values are
+  "secret" and comparing them from addon code raises an error. Values that may be secret are
+  read inside `pcall`. Blizzard panels are opened through secure macro buttons
+  (`SecureClicks.lua`).
+- **Combat lockdown.** Secure buttons cannot be created, moved or hidden in combat; they are
+  positioned in screen coordinates and re-synced after combat.
+- **Modern vs classic API.** The code tries the modern `C_*` functions first and falls back to
+  the classic globals, so a block keeps working whichever one this client provides.
+
+### Saved variables
+
+`TesseraDB` holds the profiles (`profiles[name]`, see `PROFILE_DEFAULTS` in `Core.lua`), the
+profile mode (`useGlobal`, `globalProfile`, `charProfiles`), each character's gold (`chars`),
+and a few account-wide options. Each profile stores its general settings and one table per
+block in `blocks[key]` (see `BLOCK_DEFAULTS` in `Core.lua`).
+
+### Translations
+
+`Locales/enUS.lua` defines every key. A translation only overrides keys and falls back to
+English for anything missing; add its file to `Tessera.toc` after `enUS.lua`. Community
+translations are meant to go through CurseForge's localization tool.
+
+### Checking your changes
+
+```sh
+luacheck .                       # static checks (uses the provided .luacheckrc)
+lua5.1 tools/mock_run.lua .      # loads the addon in a rough WoW API mock, prints Lua errors
+```
+
+The mock only catches Lua errors (nil calls, typos, load order); it does not replace testing
+in game.
+
+Then test in game. `/tessera debug` toggles debug mode and prints a report of the blocks and
+their merges, which can be copied from a window.
+
+## License
+
+MIT — see `LICENSE`.

@@ -838,3 +838,140 @@ end
 function Tessera_ToggleOptions()
     if ns.built then ns:ToggleOptions() end
 end
+
+---------------------------------------------------------------------------
+-- Development: shape test (/tessera debug formes)
+---------------------------------------------------------------------------
+-- Arranges a few visible blocks into "exotic" shapes (L, T, tetris S / Z,
+-- square, cross, U, stairs, ring...) to check merging, shared widths and
+-- heights, and hidden borders between touching blocks. Each call shows the
+-- next shape in the middle of the screen; "fin" puts every block back.
+-- The layout before the test is kept in the saved variables, so a /reload in
+-- the middle of a test can still be undone. Not mentioned in the UI or help.
+--
+-- A shape is a list of links: links[i] = { parent index, side } means block i
+-- is docked to block "parent" on that side (block 1 is the root). The side is
+-- where block i sits relative to its parent (see Merge.lua).
+local SHAPES = {
+    { name = "L",          links = { {}, { 1, "BOTTOM" }, { 2, "BOTTOM" }, { 3, "RIGHT" } } },
+    { name = "J",          links = { {}, { 1, "BOTTOM" }, { 2, "BOTTOM" }, { 3, "LEFT" } } },
+    { name = "T",          links = { {}, { 1, "RIGHT" }, { 2, "RIGHT" }, { 2, "BOTTOM" } } },
+    { name = "S",          links = { {}, { 1, "RIGHT" }, { 1, "BOTTOM" }, { 3, "LEFT" } } },
+    { name = "Z",          links = { {}, { 1, "RIGHT" }, { 2, "BOTTOM" }, { 3, "RIGHT" } } },
+    -- 4 touches 2 from below without being docked to it
+    { name = "carré",      links = { {}, { 1, "RIGHT" }, { 1, "BOTTOM" }, { 3, "RIGHT" } } },
+    { name = "croix",      links = { {}, { 1, "TOP" }, { 1, "RIGHT" }, { 1, "BOTTOM" }, { 1, "LEFT" } } },
+    { name = "U",          links = { {}, { 1, "BOTTOM" }, { 2, "RIGHT" }, { 3, "RIGHT" }, { 4, "TOP" } } },
+    { name = "escalier",   links = { {}, { 1, "RIGHT" }, { 2, "BOTTOM" }, { 3, "RIGHT" }, { 4, "BOTTOM" } } },
+    { name = "peigne",     links = { {}, { 1, "BOTTOM" }, { 2, "BOTTOM" }, { 1, "RIGHT" }, { 3, "RIGHT" } } },
+    -- a closed loop: 8 touches 1 without being docked to it
+    { name = "anneau",     links = { {}, { 1, "RIGHT" }, { 2, "RIGHT" }, { 3, "BOTTOM" }, { 4, "BOTTOM" },
+                                     { 5, "LEFT" }, { 6, "LEFT" }, { 7, "TOP" } } },
+    { name = "colonne",    links = { {}, { 1, "BOTTOM" }, { 2, "BOTTOM" }, { 3, "BOTTOM" }, { 4, "BOTTOM" } } },
+}
+ns.SHAPES = SHAPES -- used by tools/mock_run.lua
+
+local function SnapshotPositions(self)
+    local snap = {}
+    for key, cfg in pairs(self.db.blocks) do
+        local s = {}
+        for _, field in ipairs(POSITION_FIELDS) do s[field] = self.DeepCopy(cfg[field]) end
+        snap[key] = s
+    end
+    return snap
+end
+
+local function RestorePositions(self, snap)
+    for key, s in pairs(snap) do
+        local cfg = self.db.blocks[key]
+        if cfg then
+            for _, field in ipairs(POSITION_FIELDS) do cfg[field] = self.DeepCopy(s[field]) end
+        end
+    end
+    self:ReanchorAll()
+    self:RequestLayout()
+end
+
+-- Information blocks currently shown (no spacers, launchers or DataBroker
+-- blocks, which may have very different sizes), in display order
+local function ShapeCandidates(self)
+    local keys = {}
+    for _, key in ipairs(self:GetBlockKeys()) do
+        local f = self.frames[key]
+        if f and f:IsShown() and not self.IsSpacerKey(key) and not self.IsForwardingKey(key) then
+            table.insert(keys, key)
+        end
+    end
+    return keys
+end
+
+function ns:ShapeTest(arg)
+    local backup = self.sv.shapeTestBackup
+    if arg == "fin" or arg == "stop" then
+        if not backup then
+            self.Print("[test] aucun test de formes en cours.")
+            return
+        end
+        RestorePositions(self, backup)
+        self.sv.shapeTestBackup, self.sv.shapeTestIndex = nil, nil
+        self:ClearUndo()
+        self.Print("[test] disposition d'origine remise.")
+        return
+    end
+    if InCombatLockdown() then
+        self.Print("[test] pas pendant un combat.")
+        return
+    end
+
+    local candidates = ShapeCandidates(self)
+    -- chosen shape: by name, or the next one
+    local index
+    for i, shape in ipairs(SHAPES) do
+        if arg and arg ~= "" and shape.name == arg then index = i end
+    end
+    index = index or ((self.sv.shapeTestIndex or 0) % #SHAPES) + 1
+    -- skip shapes that need more blocks than shown
+    for _ = 1, #SHAPES do
+        if #SHAPES[index].links <= #candidates then break end
+        index = (index % #SHAPES) + 1
+    end
+    local shape = SHAPES[index]
+    if #shape.links > #candidates then
+        self.Print(("[test] pas assez de blocs affichés (%d) pour une forme."):format(#candidates))
+        return
+    end
+
+    -- first shape: keep the current layout, and start from it for every shape
+    if not backup then
+        self.sv.shapeTestBackup = SnapshotPositions(self)
+    else
+        RestorePositions(self, backup)
+    end
+    self.sv.shapeTestIndex = index
+    self:ClearUndo()
+
+    local used, usedSet = {}, {}
+    for i = 1, #shape.links do
+        used[i] = candidates[i]
+        usedSet[candidates[i]] = true
+    end
+    -- other blocks docked to the used ones stay where they are, on their own
+    for key, cfg in pairs(self.db.blocks) do
+        if not usedSet[key] and cfg.dock and usedSet[cfg.dock.to] then self:Detach(key) end
+    end
+    for i, key in ipairs(used) do
+        local cfg = self.db.blocks[key]
+        local link = shape.links[i]
+        cfg.anchor = nil
+        if link[1] then
+            cfg.dock = { to = used[link[1]], side = link[2] }
+        else
+            cfg.dock = nil
+            cfg.point = { "CENTER", "CENTER", 0, 120 }
+        end
+    end
+    self:ReanchorAll()
+    self:RequestLayout()
+    self.Print(("[test] forme %d/%d : %s (%d blocs). /tes debug formes : la suivante ; "
+        .. "/tes debug formes fin : tout remettre."):format(index, #SHAPES, shape.name, #shape.links))
+end

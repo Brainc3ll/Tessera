@@ -371,6 +371,16 @@ for _, step in ipairs({
         StaticPopupDialogs.TESSERA_WHATS_NEW.OnAccept()
         assert(ns.L.ABOUT_AI and ns.L.TAB_ABOUT, "About strings missing")
     end,
+    -- shape test: every shape, then back to the original layout
+    function()
+        local before = ns.DeepCopy(ns.db.blocks.gold.dock)
+        for _ = 1, #ns.SHAPES do ns:ShapeTest("") end
+        ns:ShapeTest("croix")
+        ns:ShapeTest("fin")
+        assert(not ns.sv.shapeTestBackup, "shape test backup not cleared")
+        local after = ns.db.blocks.gold.dock
+        assert((before == nil) == (after == nil), "layout not restored after the shape test")
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

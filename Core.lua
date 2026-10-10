@@ -2091,6 +2091,9 @@ RunCommand = function(msg)
         else
             Print("[debug] exemple : /tessera debug raccord 0.4")
         end
+    elseif msg:match("^debug formes") then
+        -- Development: blocks arranged into exotic shapes to check merging (Placement.lua)
+        ns:ShapeTest(strtrim(msg:match("^debug formes(.*)") or ""))
     elseif msg == "atelier" then
         -- Hidden developer toggle: theme previews in the options (see Themes.lua)
         ns.sv.previewThemes = not ns.sv.previewThemes or nil

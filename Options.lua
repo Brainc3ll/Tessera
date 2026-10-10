@@ -902,6 +902,18 @@ local function BuildBlockPage(page)
         P.Place(Dropdown(sub, L.BACKGROUND, function() return ns:GetMediaList("background") end, "bg", L.TIP_BACKGROUND), 1)
         P.Place(Color(sub, L.BG_COLOR, true, "bgColor", L.TIP_BG_COLOR), 1)
 
+        -- the icon: same size, frame and colors for every block (e.g. with "All blocks")
+        P.Gap(1, 8)
+        P.Place(CreateHeader(sub, L.SECTION_ICON), 1)
+        P.Place(Slider(sub, L.ICON_SIZE, 0, 40, "iconSize", L.TIP_ICON_SIZE), 1)
+        P.Place(Dropdown(sub, L.ICON_SHAPE, {
+            { key = "none", name = L.ICON_SHAPE_NONE },
+            { key = "square", name = L.ICON_SHAPE_SQUARE },
+            { key = "round", name = L.ICON_SHAPE_ROUND },
+        }, "iconShape", L.TIP_ICON_SHAPE), 1)
+        P.Place(Color(sub, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR), 1)
+        P.Place(Check(sub, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), 1)
+
         P.Place(CreateHeader(sub, L.BORDER), 2)
         -- picking a border also restores its original thickness
         P.Place(CreateDropdown(sub, L.BORDER, function() return ns:GetMediaList("border") end,

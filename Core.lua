@@ -351,6 +351,60 @@ function ns:SetIcon(tex, icon)
     end
 end
 
+-- Icon frame, shape and color (Frame tab, "Icon" section), applied after SetIcon:
+--   square: icon cropped (no built-in edge) inside a thin colored square
+--   round:  icon cut into a circle inside a thin colored ring
+--   black and white: desaturated icon
+local CIRCLE_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
+function ns:StyleIcon(f, cfg)
+    local tex, shape = f.icon, cfg.iconShape or "none"
+    if tex.SetDesaturated then tex:SetDesaturated(cfg.iconDesaturate and true or false) end
+    -- crop the icon's own edge when it gets a frame (only if it is not cropped already)
+    if shape ~= "none" and tex.GetTexCoord then
+        local l, t, _, _, _, _, r, b = tex:GetTexCoord()
+        if l and r and b and l <= 0.01 and r >= 0.99 then
+            local dx, dy = (r - l) * 0.08, (b - t) * 0.08
+            tex:SetTexCoord(l + dx, r - dx, t + dy, b - dy)
+        end
+    end
+    -- the frame: a colored texture just larger than the icon, behind it
+    if not f.iconBorder then
+        f.iconBorder = f:CreateTexture(nil, "ARTWORK", nil, -1)
+        f.iconBorder:SetTexture("Interface\\Buttons\\WHITE8X8")
+    end
+    local border = f.iconBorder
+    local edge = self:PixelSize(1, f)
+    border:ClearAllPoints()
+    border:SetPoint("TOPLEFT", tex, "TOPLEFT", -edge, edge)
+    border:SetPoint("BOTTOMRIGHT", tex, "BOTTOMRIGHT", edge, -edge)
+    local c = cfg.iconBorderColor or {}
+    border:SetVertexColor(c.r or 0, c.g or 0, c.b or 0, c.a or 1)
+    border:SetShown(shape ~= "none" and tex:IsShown())
+    -- round: a circle mask on both the icon and its frame
+    if f.CreateMaskTexture and tex.AddMaskTexture then
+        if not f.iconMask then
+            f.iconMask = f:CreateMaskTexture()
+            if not f.iconMask then return end
+            f.iconMask:SetTexture(CIRCLE_MASK, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+            f.iconMask:SetAllPoints(tex)
+            f.borderMask = f:CreateMaskTexture()
+            f.borderMask:SetTexture(CIRCLE_MASK, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+            f.borderMask:SetAllPoints(border)
+        end
+        local round = shape == "round"
+        if round ~= (f.iconMasked or false) then
+            if round then
+                tex:AddMaskTexture(f.iconMask)
+                border:AddMaskTexture(f.borderMask)
+            else
+                tex:RemoveMaskTexture(f.iconMask)
+                border:RemoveMaskTexture(f.borderMask)
+            end
+            f.iconMasked = round
+        end
+    end
+end
+
 -- Places the tooltip below or above the block, toward the screen center
 function ns.AnchorTooltip(owner, tooltip)
     tooltip = tooltip or GameTooltip
@@ -408,6 +462,10 @@ local BLOCK_DEFAULTS = {
     hideWhenResting = false, -- in an inn or a capital city
     classColorText = false,
     classColorBorder = false,
+    iconSize = 0,             -- icon size in pixels, 0 = follows the block's height
+    iconShape = "none",       -- icon frame: none (as is), square, round
+    iconBorderColor = { r = 0, g = 0, b = 0, a = 1 },
+    iconDesaturate = false,   -- black and white icon
     width = 60,   -- minimum width: the block grows if its text is longer
     autoWidth = true, -- false: fixed width, overly long text is cut off
     height = 24,
@@ -432,6 +490,7 @@ local BLOCK_DEFAULTS = {
 local STYLE_KEYS = {
     "height", "justify", "strata", "font", "fontSize", "outline", "textColor",
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "alpha",
+    "iconSize", "iconShape", "iconBorderColor", "iconDesaturate",
 }
 
 -- Per-profile settings
@@ -1116,7 +1175,9 @@ function ns:ApplyStyle(key)
     -- Icon to the left of the text, or alone in the center (launcher without label)
     local launcherLike = ns.IsLauncherKey(key) or (cfg.broker and cfg.broker.kind == "launcher")
     local iconOnly = cfg.showIcon and launcherLike and not cfg.showLabel
-    local iconSize = math.max(8, cfg.height - 2 * inset - 4)
+    -- icon size: chosen in pixels (to make every icon the same), or following the height
+    local iconSize = (cfg.iconSize or 0) > 0 and math.min(cfg.iconSize, cfg.height * 2)
+        or math.max(8, cfg.height - 2 * inset - 4)
     f.inset, f.iconSize, f.iconOnly = inset, iconSize, iconOnly
     f.borderKey = cfg.border
     f.lineReach = self:GetBorderReach(cfg.border)
@@ -1134,6 +1195,7 @@ function ns:ApplyStyle(key)
         f.text:SetPoint("RIGHT", f, "RIGHT", -4 - inset, 0)
     end
     f.icon:SetShown(cfg.showIcon)
+    self:StyleIcon(f, cfg)
     f.text:SetShown(not iconOnly)
 
     -- separator line of a spacer block in "line" mode
@@ -1329,7 +1391,10 @@ function ns:UpdateBlock(key)
             if mod.getIcon then return mod.getIcon(cfg) end
             return mod.icon
         end)
-        if okIcon and icon then self:SetIcon(f.icon, icon) end
+        if okIcon and icon then
+            self:SetIcon(f.icon, icon)
+            self:StyleIcon(f, cfg)
+        end
     end
 end
 

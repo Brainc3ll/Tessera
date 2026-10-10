@@ -30,6 +30,7 @@ local methods = {
     GetEffectiveScale = function() return 1 end, GetScale = function() return 1 end,
     GetName = function(self) return self.__name end,
     CreateTexture = function() return NewObject("Texture") end,
+    CreateMaskTexture = function() return NewObject("MaskTexture") end,
     CreateFontString = function() return NewObject("FontString") end,
     CreateAnimationGroup = function() return NewObject("AnimGroup") end,
     CreateAnimation = function() return NewObject("Anim") end,
@@ -242,6 +243,15 @@ for _, step in ipairs({
     function() SlashCmdList.TESSERA("bug") end,
     function() SlashCmdList.TESSERA("debug legacy") end,
     function() SlashCmdList.TESSERA("debug skills") end,
+    -- icon frames: round, square, black and white, fixed size, then back to normal
+    function()
+        local cfg = ns.db.blocks.gold
+        for _, shape in ipairs({ "round", "square", "none" }) do
+            cfg.iconShape, cfg.iconDesaturate, cfg.iconSize = shape, shape ~= "none", shape == "none" and 0 or 18
+            ns:ApplyStyle("gold")
+            ns:UpdateBlock("gold")
+        end
+    end,
     -- the Legacy and weapon skill blocks read the WoW Forever APIs
     function()
         for _, key in ipairs({ "legacy", "weaponSkills" }) do

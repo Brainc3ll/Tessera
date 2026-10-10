@@ -18,7 +18,7 @@ Made for **WoW Forever**. English and French.
   - when such an addon is installed, Tessera switches to a DataBroker mode (your display addon shows Tessera's blocks). This mode is explained on first use and can be turned off at any time, to use both.
 - **Merging in every direction**, with alignment guides, snapping (also to Blizzard frames), undo (Ctrl + Z), frozen groups, spacers (empty, separator line or text), global and per-group scale. Blizzard's Edit Mode can unlock the blocks too, and one click brings back blocks lost off screen.
 - **Styles** matching FlareUI 2.x and 1.x (the one matching your version is the default), ElvUI, EllesmereUI and Blizzard, plus Clean and Transparent (text and icons only). When a supported interface is installed, Tessera shows its style on sample blocks and offers it; it never changes your style on its own.
-- **Per-block settings**: text, frame, opacity, progress bar, color thresholds, show on hover, alerts, Shift + click and middle-click actions.
+- **Per-block settings**: text, frame, icons (same size for all, square or round frame, black and white), opacity, progress bar, color thresholds, show on hover, alerts, Shift + click and middle-click actions.
 - **Profiles**: per account or per character, export / import as text, ready-made layouts (top bar, bottom bar, left column, compact), automatic dungeon / raid profile.
 - **Accessibility**: colorblind-friendly colors, high contrast, minimum text size.
 
@@ -69,7 +69,7 @@ Conçu pour **WoW Forever**. En anglais et en français.
   - quand un tel addon est installé, Tessera passe en mode DataBroker (ton addon d'affichage montre les blocs de Tessera). Ce mode est expliqué à la première utilisation et se désactive à tout moment, pour utiliser les deux.
 - **Fusion dans tous les sens**, avec guides d'alignement, aimantation (aussi aux cadres de Blizzard), annulation (Ctrl + Z), groupes figés, espaces (vide, ligne de séparation ou texte), échelle globale et par groupe. Le mode Édition de Blizzard peut aussi déverrouiller les blocs, et un clic ramène les blocs perdus hors de l'écran.
 - **Styles** assortis à FlareUI 2.x et 1.x (celui de ta version est choisi par défaut), ElvUI, EllesmereUI et Blizzard, plus Épuré et Transparent (seulement le texte et les icônes). Quand une interface prise en charge est installée, Tessera montre son style sur des blocs d'exemple et te le propose ; il ne change jamais ton style tout seul.
-- **Réglages par bloc** : texte, cadre, opacité, barre de progression, couleurs de seuil, affichage au survol, alertes, actions du Maj + clic et du clic milieu.
+- **Réglages par bloc** : texte, cadre, icônes (même taille pour toutes, cadre carré ou rond, noir et blanc), opacité, barre de progression, couleurs de seuil, affichage au survol, alertes, actions du Maj + clic et du clic milieu.
 - **Profils** : par compte ou par personnage, export / import en texte, dispositions toutes prêtes (barre en haut, barre en bas, colonne à gauche, compacte), profil automatique en donjon / raid.
 - **Accessibilité** : couleurs pour daltoniens, contraste renforcé, taille de texte minimale.
 

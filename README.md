@@ -41,7 +41,8 @@ Help tab inside the game explains everything.
   open Forever's own windows.
 - Blocks that have nothing to show hide themselves (in a second row under the main bar).
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks.
-- Per-block style, opacity, scale, progress bar, thresholds, show on hover, alerts, click actions.
+- Per-block style, icons (same size, square or round frame, black and white), opacity, scale,
+  progress bar, thresholds, show on hover, alerts, click actions.
 - DataBroker: other addons' DataBroker objects as blocks; Tessera's blocks shared with Titan
   Panel, ChocolateBar, Bazooka...; a DataBroker mode, on automatically when such an addon is
   installed (Tessera then shows nothing itself), that can be turned off to use both.

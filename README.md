@@ -33,7 +33,7 @@ Help tab inside the game explains everything.
 
 - More than 35 blocks: gold (with history), bags (with junk value), durability, FPS and latency
   (with graphs), time, XP, rested XP, coordinates, zone, friends, guild, group, quests,
-  reputation, currencies, professions (one block each), weapon skills, talents, hearthstone, mail, whispers,
+  reputation, currencies, professions (one block each), weapon skills, talents, Legacy points, hearthstone, mail, whispers,
   reagents, ammo, item level, speed, volume, instances, played time, goal...
 - Blocks that have nothing to show hide themselves (in a second row under the main bar).
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks.

@@ -1406,8 +1406,26 @@ ns:RegisterModule("instances", {
 --   weapon skills cannot, and their cap is 5 x the character's level.
 -- Skills under a collapsed header in the skill window are not listed by the game.
 -- Returns { professions = {...}, weapons = {...} }, each entry { name, rank, max }.
+local WEAPON_CATEGORY = 6 -- C_SkillInfo: skill line category of the weapon skills
 local function SkillLines()
     local result = { professions = {}, weapons = {} }
+    -- WoW Forever: C_SkillInfo returns one table per line (name, rank, maxRank, isHeader,
+    -- isAbandonable, skillLineCategoryID, skillID...)
+    local S = C_SkillInfo
+    if S and S.GetNumSkillLines and S.GetSkillLineInfo then
+        for i = 1, Try(S.GetNumSkillLines) or 0 do
+            local info = Try(S.GetSkillLineInfo, i)
+            if type(info) == "table" and info.name and not info.isHeader then
+                local entry = { name = info.name, rank = info.rank or 0, max = info.maxRank or 0, id = info.skillID }
+                if info.isAbandonable then
+                    table.insert(result.professions, entry)
+                elseif info.skillLineCategoryID == WEAPON_CATEGORY then
+                    table.insert(result.weapons, entry)
+                end
+            end
+        end
+        return result
+    end
     if not (GetNumSkillLines and GetSkillLineInfo) then return result end
     local weaponCap = (UnitLevel("player") or 1) * 5
     for i = 1, Try(GetNumSkillLines) or 0 do
@@ -1566,14 +1584,19 @@ local function CurrentWeaponSkill(weapons)
     local best
     for _, w in ipairs(weapons) do
         if subType and (subType:find(w.name, 1, true) or w.name:find(subType, 1, true)) then return w end
-        if not best or (w.max - w.rank) > (best.max - best.rank) then best = w end
+        -- (defense, skill 95, is listed with the weapons but is not one)
+        if w.id ~= 95 and (not best or (w.max - w.rank) > (best.max - best.rank)) then best = w end
     end
     return best
 end
 
--- Weapon skills only exist on clients with the classic skill list (not on WoW Forever,
--- whose weapons have no skill): the block is offered only there
-if GetNumSkillLines and GetSkillLineInfo then
+-- Weapon skills only exist on clients with a skill list (classic globals, or C_SkillInfo
+-- on WoW Forever): the block is offered only there
+local HAS_SKILL_LIST = (GetNumSkillLines and GetSkillLineInfo)
+    or (C_SkillInfo and C_SkillInfo.GetNumSkillLines and C_SkillInfo.GetSkillLineInfo)
+-- WoW Forever's skills window is SkillsFrame, a tab of the character window
+local SKILLS_MACRO = "/run if ToggleCharacter then ToggleCharacter(SkillsFrame and 'SkillsFrame' or 'SkillFrame') end"
+if HAS_SKILL_LIST then
 ns:RegisterModule("weaponSkills", {
     label = "WEAPON_SKILLS",
     icon = "Interface\\Icons\\INV_Sword_04",
@@ -1590,8 +1613,98 @@ ns:RegisterModule("weaponSkills", {
         return w and w.max > 0 and w.rank / w.max or nil
     end,
     tooltip = function(tt) SkillTooltip(tt, SkillLines().weapons) end,
-    secureMacro = SKILL_FRAME_MACRO,
+    secureMacro = SKILLS_MACRO,
     clickHint = L.HINT_SKILLS,
+})
+end
+
+---------------------------------------------------------------------------
+-- WoW Forever: Legacy points ("Parcours Héritage")
+---------------------------------------------------------------------------
+-- The Legacy reward track is a renown track (Blizzard's major factions system): the
+-- points are its renown level, its rewards are renown rewards. Found with the
+-- /tessera debug legacy probe (Placement.lua); no official documentation yet.
+local LEGACY_FACTION = 2802
+local LEGACY_ICON = 4279397 -- icon of the Legacy micro button
+
+local function LegacyData()
+    if not (C_MajorFactions and C_MajorFactions.GetMajorFactionData) then return nil end
+    local data = Try(C_MajorFactions.GetMajorFactionData, LEGACY_FACTION)
+    if type(data) ~= "table" or type(data.renownLevel) ~= "number" then return nil end
+    return data
+end
+
+-- Reward levels of the track, each { level, name, reached }
+local function LegacyRewards(points)
+    local list = {}
+    local levels = C_MajorFactions.GetRenownLevels and Try(C_MajorFactions.GetRenownLevels, LEGACY_FACTION)
+    for _, info in ipairs(type(levels) == "table" and levels or {}) do
+        local rewards = C_MajorFactions.GetRenownRewardsForLevel
+            and Try(C_MajorFactions.GetRenownRewardsForLevel, LEGACY_FACTION, info.level)
+        local reward = type(rewards) == "table" and rewards[1]
+        table.insert(list, { level = info.level, name = reward and reward.name or "?", reached = points >= info.level })
+    end
+    table.sort(list, function(a, b) return a.level < b.level end)
+    return list
+end
+
+local function NextLegacyReward(points)
+    for _, r in ipairs(LegacyRewards(points)) do
+        if not r.reached then return r end
+    end
+end
+
+-- Offered on clients with the Legacy system only (WoW Forever)
+if C_MajorFactions and (ToggleLegacySystemUI or LegacySystemFrame_LoadUI) then
+ns:RegisterModule("legacy", {
+    label = "LEGACY",
+    icon = LEGACY_ICON,
+    events = { "MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "MAJOR_FACTION_UNLOCKED", "UPDATE_FACTION" },
+    interval = 60, -- in case the renown events are not sent for this track
+    defaultEnabled = false,
+    update = function()
+        local data = LegacyData()
+        if not data then return L.NA end
+        return tostring(data.renownLevel)
+    end,
+    -- progress toward the next reward
+    progress = function()
+        local data = LegacyData()
+        if not data then return nil end
+        local previous, nextReward = 0, nil
+        for _, r in ipairs(LegacyRewards(data.renownLevel)) do
+            if r.reached then previous = r.level elseif not nextReward then nextReward = r end
+        end
+        if not nextReward then return 1 end
+        return (data.renownLevel - previous) / math.max(1, nextReward.level - previous)
+    end,
+    tooltip = function(tt)
+        local data = LegacyData()
+        if not data then
+            tt:AddLine(L.NA, 0.8, 0.8, 0.8)
+            return
+        end
+        WHITE(tt, L.LEGACY, tostring(data.renownLevel))
+        local nextReward = NextLegacyReward(data.renownLevel)
+        if nextReward then
+            tt:AddLine(L.TT_LEGACY_NEXT:format(nextReward.name, nextReward.level), 1, 0.82, 0, true)
+        else
+            tt:AddLine(L.TT_LEGACY_ALL, 0.3, 1, 0.3)
+        end
+        tt:AddLine(" ")
+        for _, r in ipairs(LegacyRewards(data.renownLevel)) do
+            local color = r.reached and "|cff4dff4d" or "|cff999999"
+            tt:AddDoubleLine(color .. r.name .. "|r", color .. r.level .. "|r")
+        end
+    end,
+    chatText = function()
+        local data = LegacyData()
+        return data and (L.LEGACY .. " : " .. data.renownLevel) or nil
+    end,
+    secureMacro = function()
+        return MicroButtonMacro("LegacyMicroButton", "/run if ToggleLegacySystemUI then ToggleLegacySystemUI() end")
+    end,
+    clickHint = L.HINT_LEGACY,
 })
 end
 
@@ -2001,6 +2114,7 @@ local MORE_SAMPLES = {
     profession1  = function() return (L.PROFESSION_1 or "") .. " 215 / 225" end,
     cooking      = function() return "150 / 150", GOOD end,
     weaponSkills = function() return "115/120", WARN end,
+    legacy       = function() return "16" end,
 }
 for key, sample in pairs(MORE_SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

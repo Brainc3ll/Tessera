@@ -531,3 +531,7 @@ L["TIP_EDIT_MODE_SYNC"] = "Opening Blizzard's Edit Mode also unlocks Tessera's b
 L["WHATS_NEW_TEXT"] = "Tessera has been updated to version %s.\n\nSee what's new?"
 L["WHATS_NEW_SHOW"] = "See what's new"
 L["RECOVER_ALL_HIDDEN"] = "All blocks are hidden (key binding): show them first."
+L["LEGACY"] = "Legacy points"
+L["TT_LEGACY_NEXT"] = "Next reward: %s (%d points)"
+L["TT_LEGACY_ALL"] = "Every reward earned"
+L["HINT_LEGACY"] = "Click: open the Legacy panel"

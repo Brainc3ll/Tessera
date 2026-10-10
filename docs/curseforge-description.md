@@ -8,7 +8,7 @@ Made for **WoW Forever**. English and French.
 
 ## Features
 
-- **More than 35 information blocks**: gold (with a 7-day history and your characters' gold), bags (with junk value), durability, FPS and latency (with graphs), local and server time, XP and rested XP, coordinates, zone, friends, guild, group, quests, reputation, currencies, one block per profession, weapon skills, talents, hearthstone, mail, whispers, reagents, ammo, item level, speed, volume, instances, played time, a personal goal...
+- **More than 35 information blocks**: gold (with a 7-day history and your characters' gold), bags (with junk value), durability, FPS and latency (with graphs), local and server time, XP and rested XP, coordinates, zone, friends, guild, group, quests, reputation, currencies, one block per profession, weapon skills, talents, Legacy points, hearthstone, mail, whispers, reagents, ammo, item level, speed, volume, instances, played time, a personal goal...
 - **Blocks that hide themselves** when they have nothing to show (mail, whispers, reputation...), in a second row under the main bar.
 - **Launcher blocks** made from minimap buttons and addon compartment entries.
 - **DataBroker support**:
@@ -58,7 +58,7 @@ Conçu pour **WoW Forever**. En anglais et en français.
 
 ## Fonctions
 
-- **Plus de 35 blocs d'informations** : or (avec l'historique sur 7 jours et l'or de tes personnages), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale et du serveur, XP et XP de repos, coordonnées, zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier, compétences d'armes, talents, pierre de foyer, courrier, chuchotements, composants, munitions, niveau d'objet, vitesse, volume, instances, temps de jeu, objectif personnel...
+- **Plus de 35 blocs d'informations** : or (avec l'historique sur 7 jours et l'or de tes personnages), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale et du serveur, XP et XP de repos, coordonnées, zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier, compétences d'armes, talents, points d'héritage, pierre de foyer, courrier, chuchotements, composants, munitions, niveau d'objet, vitesse, volume, instances, temps de jeu, objectif personnel...
 - **Des blocs qui se masquent** quand ils n'ont rien à montrer (courrier, chuchotements, réputation...), dans une deuxième rangée sous la barre principale.
 - **Des blocs lanceurs** créés à partir des boutons de la minicarte et du compartiment d'addons.
 - **Support DataBroker** :

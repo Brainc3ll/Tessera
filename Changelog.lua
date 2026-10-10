@@ -30,7 +30,9 @@ ns.CHANGELOG = {
                 .. "dragged; it is not shown while Blizzard's Edit Mode is open.",
             "Professions: a click on a gathering profession (herbalism, mining, skinning) opens the professions "
                 .. "book on WoW Forever; the talents block opens the talents with Blizzard's own button. The weapon "
-                .. "skills block is only offered on clients that have weapon skills.",
+                .. "skills block now works on WoW Forever.",
+            "New Legacy points block (WoW Forever): your points, the next reward and every reward of the "
+                .. "track in the tooltip, a progress bar toward the next reward, and a click opens the Legacy panel.",
             "Fix: hiding all blocks with the key binding during combat left their invisible click buttons "
                 .. "active; the blocks are now hidden when combat ends.",
         },
@@ -52,7 +54,10 @@ ns.CHANGELOG = {
                 .. "le poses ; il n'est pas affiché pendant le mode Édition de Blizzard.",
             "Métiers : un clic sur un métier de récolte (herboristerie, minage, dépeçage) ouvre le livre des "
                 .. "métiers sur WoW Forever ; le bloc talents ouvre les talents avec le bouton de Blizzard. Le bloc "
-                .. "compétences d'armes n'est proposé que sur les clients qui en ont.",
+                .. "compétences d'armes fonctionne maintenant sur WoW Forever.",
+            "Nouveau bloc Points d'héritage (WoW Forever) : tes points, la prochaine récompense et toutes celles "
+                .. "du parcours dans l'infobulle, une barre de progression vers la prochaine, et un clic ouvre le "
+                .. "panneau Héritage.",
             "Correction : masquer tous les blocs avec le raccourci clavier pendant un combat laissait leurs "
                 .. "boutons de clic invisibles actifs ; les blocs sont maintenant masqués à la fin du combat.",
         },

@@ -535,6 +535,10 @@ local L = {
     WHATS_NEW_TEXT = "Tessera has been updated to version %s.\n\nSee what's new?",
     WHATS_NEW_SHOW = "See what's new",
     RECOVER_ALL_HIDDEN = "All blocks are hidden (key binding): show them first.",
+    LEGACY = "Legacy points",
+    TT_LEGACY_NEXT = "Next reward: %s (%d points)",
+    TT_LEGACY_ALL = "Every reward earned",
+    HINT_LEGACY = "Click: open the Legacy panel",
 }
 
 ns.L = L

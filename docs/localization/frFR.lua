@@ -531,3 +531,7 @@ L["TIP_EDIT_MODE_SYNC"] = "Ouvrir le mode Édition de Blizzard déverrouille aus
 L["WHATS_NEW_TEXT"] = "Tessera a été mis à jour en version %s.\n\nVoir les nouveautés ?"
 L["WHATS_NEW_SHOW"] = "Voir les nouveautés"
 L["RECOVER_ALL_HIDDEN"] = "Tous les blocs sont masqués (raccourci clavier) : affiche-les d'abord."
+L["LEGACY"] = "Points d'héritage"
+L["TT_LEGACY_NEXT"] = "Prochaine récompense : %s (%d points)"
+L["TT_LEGACY_ALL"] = "Toutes les récompenses obtenues"
+L["HINT_LEGACY"] = "Clic : ouvrir le panneau Héritage"

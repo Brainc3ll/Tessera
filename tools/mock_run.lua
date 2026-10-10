@@ -87,6 +87,22 @@ C_Container = { GetContainerNumSlots = function() return 16 end, GetContainerNum
 C_AddOns = { GetAddOnMetadata = function() return "test" end, GetNumAddOns = function() return 0 end,
     IsAddOnLoaded = function(name) return arg[3] == "broker" and name == "ChocolateBar" end }
 
+-- WoW Forever APIs: skill list, Legacy renown track
+C_SkillInfo = {
+    GetNumSkillLines = function() return 3 end,
+    GetSkillLineInfo = function(i)
+        return ({ { name = "Weapon skills", isHeader = true },
+                  { name = "Staves", rank = 50, maxRank = 65, skillLineCategoryID = 6, skillID = 136 },
+                  { name = "Herbalism", rank = 21, maxRank = 75, isAbandonable = true, skillLineCategoryID = 11 } })[i]
+    end,
+}
+C_MajorFactions = {
+    GetMajorFactionData = function() return { renownLevel = 16, maxLevel = 90, name = "Legacy" } end,
+    GetRenownLevels = function() return { { level = 15 }, { level = 25 }, { level = 40 } } end,
+    GetRenownRewardsForLevel = function(_, level) return { { name = "Reward " .. level } } end,
+}
+ToggleLegacySystemUI = function() end
+
 -- LibStub with a small LibDataBroker-1.1 (same API and callbacks as the real one)
 do
     local libs, callbacks = {}, {}
@@ -226,6 +242,17 @@ for _, step in ipairs({
     function() SlashCmdList.TESSERA("bug") end,
     function() SlashCmdList.TESSERA("debug legacy") end,
     function() SlashCmdList.TESSERA("debug skills") end,
+    -- the Legacy and weapon skill blocks read the WoW Forever APIs
+    function()
+        for _, key in ipairs({ "legacy", "weaponSkills" }) do
+            local mod = ns.modules[key]
+            assert(mod, key .. " not registered")
+            local value = mod.update(ns.db.blocks[key])
+            assert(value and value ~= ns.L.NA and value ~= ns.L.NONE, key .. " has no value")
+            mod.tooltip(GameTooltip, ns.db.blocks[key])
+            assert(mod.progress(ns.db.blocks[key]), key .. " progress")
+        end
+    end,
     function() local k = ns:AddSpacer(); ns:OpenOptionsFor(k); ns:RemoveSpacer(k) end,
     function() ns:UpdateVehicleState() end,
     -- DataBroker: add every source, update, tooltip, click, then remove one

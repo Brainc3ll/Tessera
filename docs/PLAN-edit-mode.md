@@ -85,6 +85,19 @@ La fonction doit marcher à toutes les résolutions et à toutes les échelles d
 - **Haut de l'écran** : minimap (x 1647 à 1920, jusqu'en haut), buffs (x 1265 à 1665, haut à 1070), compteur de dégâts (x 0 à 400, jusqu'en haut). Une barre pleine largeur en haut les recouvre.
 - FlareUI n'était pas chargé pendant ce relevé : à refaire avec FlareUI.
 
+## Relevé du 11 octobre 2026, 2ᵉ passage (FlareUI 2.0.3 + « Modern++ »)
+
+- **Dispositions de base** : 3 (Moderne, Classique, Manette). `activeLayout` = 3 + le rang de la disposition perso.
+- **Accroches en bas** (dans « Modern++ ») :
+  - menu (MicroMenu) : BOTTOM de l'écran, +116,5 / +6 ;
+  - barre d'action principale : accrochée au menu (BOTTOMRIGHT sur BOTTOMLEFT du menu) ; sacs : accrochés au menu ;
+  - gryphon gauche : accroché à la barre principale ; **gryphon droit : position fixe** (TOPLEFT de l'écran, 1516,5 / -987) ;
+  - barres en bas à gauche / à droite et barres d'XP : « position par défaut » (le jeu les place lui-même au-dessus de la barre principale) ;
+  - barres de familier, de posture et de totems : accrochées aux barres du bas.
+  - Conséquence : pour une barre Tessera de hauteur H en bas, remonter le menu de H et le gryphon droit de H ; le reste suit par ses accroches. Les barres « par défaut » devraient suivre : à vérifier en jeu.
+- **Noms** : IsValidLayoutName accepte tout (même un nom vide et 64 caractères) ; il ne vérifie donc pas la longueur. Choix prudent : un nom court, « Ma dispo (Tessera 1) ».
+- **FlareUI** : bibliothèque « FlareEditMode » (LibStub) et réglages dans FlareUI_DB ; ses cadres (FlareUI_UF_Player, FlareUI_XPBar, FlareUI_Buffs…) remplacent ceux de Blizzard, qui sont masqués. Les barres d'action, le menu et les sacs restent ceux de Blizzard (dans la disposition du mode Édition). Ce que permet FlareEditMode : relevé v3 à faire.
+
 ## Étapes prévues
 
 1. **Relevé en jeu** (commande de debug, comme pour l'héritage) : fonctions `C_EditMode` présentes sur Forever, structure d'une disposition (systèmes, ancrages, décalages), noms et limites, présence de LibEditMode ou d'un équivalent chez FlareUI.

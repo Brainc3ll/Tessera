@@ -5,11 +5,6 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.0-rc3 — 
 
-- Fix: choosing a ready-made layout showed the "reset everything" message in the chat; it now says which layout was applied.
-- Fix: switching to another layout or profile could raise a Lua error ("Cannot anchor to a region dependent on it") when two blocks swapped places.
-- Fix: a column stuck to the bottom of the screen piled up its blocks; the whole column now stays visible above the edge.
-- Fix: spacers did not follow the layer (strata), opacity or hide options chosen for all blocks, and could stay hidden behind the action bars.
-- Releases: the English and French strings are sent to CurseForge's localization tool automatically, and community translations are added to the addon.
 - New ready-made layout "Around the gryphons": two groups in the bottom corners of the screen, on both sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list (Look tab), with a description of each one.
 - New "Replace with..." (quick menu, or next to the block list in the Blocks tab): puts another block exactly in a block's place, with its look, without moving the others; or swaps two shown blocks.
 - Screen edges: drop a group against an edge and Tessera offers to stick it there (no border on that side, stays put on any screen). Along the top or bottom, a bar can be stretched over the whole width: spacer blocks fill the room (blocks on the left, center, right or spread) and the blocks keep their size. Setting in the Look tab (ask, always, never).
@@ -24,6 +19,12 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Blizzard's Edit Mode: when a Tessera bar stuck to the top or bottom covers Blizzard frames (action bars, menu, minimap...), Tessera offers a copy of your Edit Mode layout, "My layout (Tessera 1)", where only those frames move, and activates it. Your layout is never changed. "Back to my layout" and "Delete the copies" (only Tessera's unchanged copies, never a layout of yours) are in the Look tab. Tested on Blizzard's interface (Modern, Classic) and FlareUI unchanged; with FlareUI, its own frames go back to their default place in the copy (Tessera warns before). With another interface, results may be unexpected.
 - New blocks and ready-made layouts are drawn above Blizzard's action bars (layer "High"), so a bar along the bottom passes in front of the gryphons; the layer can still be changed (Blocks tab, Display). Existing blocks keep their layer.
 - The Broker tab becomes the DataBroker tab, in two parts: "Plugins as blocks" (other addons' DataBroker plugins as Tessera blocks, moved from the Launchers tab) and "Sharing and mode" (sharing Tessera's blocks with Titan Panel, Bazooka..., DataBroker mode). The Launchers tab keeps the minimap buttons.
+- Help rewritten with one topic per tab (Blocks, Look, Blizzard's Edit Mode, General, Launchers, DataBroker, Profiles, Help and About), tooltips updated, and /tessera preview forever (the WoW Forever blocks with sample values) added to the help and the command list. Button texts too long for their button (in any language) are made smaller instead of spilling out.
+- Fix: choosing a ready-made layout showed the "reset everything" message in the chat; it now says which layout was applied.
+- Fix: switching to another layout or profile could raise a Lua error ("Cannot anchor to a region dependent on it") when two blocks swapped places.
+- Fix: a column stuck to the bottom of the screen piled up its blocks; the whole column now stays visible above the edge.
+- Fix: spacers did not follow the layer (strata), opacity or hide options chosen for all blocks, and could stay hidden behind the action bars.
+- Releases: the English and French strings are sent to CurseForge's localization tool automatically, and community translations are added to the addon.
 
 ## 1.0.0-rc2 — 2026-10-11
 

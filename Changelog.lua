@@ -13,16 +13,6 @@ ns.CHANGELOG = {
         version = "1.0.0-rc3",
         date = "", -- set when the version is published
         en = {
-            "Fix: choosing a ready-made layout showed the \"reset everything\" message in the chat; it now says "
-                .. "which layout was applied.",
-            "Fix: switching to another layout or profile could raise a Lua error (\"Cannot anchor to a region "
-                .. "dependent on it\") when two blocks swapped places.",
-            "Fix: a column stuck to the bottom of the screen piled up its blocks; the whole column now stays "
-                .. "visible above the edge.",
-            "Fix: spacers did not follow the layer (strata), opacity or hide options chosen for all blocks, and could "
-                .. "stay hidden behind the action bars.",
-            "Releases: the English and French strings are sent to CurseForge's localization tool automatically, "
-                .. "and community translations are added to the addon.",
             "New ready-made layout \"Around the gryphons\": two groups in the bottom corners of the screen, on both "
                 .. "sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list "
                 .. "(Look tab), with a description of each one.",
@@ -70,18 +60,22 @@ ns.CHANGELOG = {
             "The Broker tab becomes the DataBroker tab, in two parts: \"Plugins as blocks\" (other addons' DataBroker "
                 .. "plugins as Tessera blocks, moved from the Launchers tab) and \"Sharing and mode\" (sharing Tessera's "
                 .. "blocks with Titan Panel, Bazooka..., DataBroker mode). The Launchers tab keeps the minimap buttons.",
+            "Help rewritten with one topic per tab (Blocks, Look, Blizzard's Edit Mode, General, Launchers, DataBroker, "
+                .. "Profiles, Help and About), tooltips updated, and /tessera preview forever (the WoW Forever blocks with "
+                .. "sample values) added to the help and the command list. Button texts too long for their button (in any "
+                .. "language) are made smaller instead of spilling out.",
+            "Fix: choosing a ready-made layout showed the \"reset everything\" message in the chat; it now says "
+                .. "which layout was applied.",
+            "Fix: switching to another layout or profile could raise a Lua error (\"Cannot anchor to a region "
+                .. "dependent on it\") when two blocks swapped places.",
+            "Fix: a column stuck to the bottom of the screen piled up its blocks; the whole column now stays "
+                .. "visible above the edge.",
+            "Fix: spacers did not follow the layer (strata), opacity or hide options chosen for all blocks, and could "
+                .. "stay hidden behind the action bars.",
+            "Releases: the English and French strings are sent to CurseForge's localization tool automatically, "
+                .. "and community translations are added to the addon.",
         },
         fr = {
-            "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
-                .. "réinitialiser » ; il indique maintenant la disposition appliquée.",
-            "Correction : changer de disposition ou de profil pouvait provoquer une erreur Lua (« Cannot anchor to "
-                .. "a region dependent on it ») quand deux blocs échangeaient leur place.",
-            "Correction : une colonne collée en bas de l'écran empilait ses blocs ; toute la colonne reste maintenant "
-                .. "visible au-dessus du bord.",
-            "Correction : les espaces ne suivaient pas le plan d'affichage (strata), l'opacité ni les options de "
-                .. "masquage choisis pour tous les blocs, et pouvaient rester cachés derrière les barres d'action.",
-            "Publications : l'anglais et le français sont envoyés automatiquement à l'outil de traduction de "
-                .. "CurseForge, et les traductions de la communauté sont ajoutées à l'addon.",
             "Nouvelle disposition toute prête « Autour des gryphons » : deux groupes dans les coins bas de l'écran, "
                 .. "de part et d'autre des barres d'action, blocs WoW Forever compris. Les dispositions toutes prêtes "
                 .. "se choisissent maintenant dans une liste (onglet Apparence), avec la description de chacune.",
@@ -138,6 +132,20 @@ ns.CHANGELOG = {
                 .. "des autres addons en blocs Tessera, déplacés depuis l'onglet Lanceurs) et « Partage et mode » (partager "
                 .. "les blocs de Tessera avec Titan Panel, Bazooka..., mode DataBroker). L'onglet Lanceurs garde les "
                 .. "boutons de la minicarte.",
+            "Aide réécrite avec un sujet par onglet (Blocs, Apparence, Mode Édition de Blizzard, Général, Lanceurs, "
+                .. "DataBroker, Profils, Aide et À propos), infobulles mises à jour, et /tessera preview forever (les blocs "
+                .. "WoW Forever avec des valeurs d'exemple) ajouté à l'aide et à la liste des commandes. Les textes trop "
+                .. "longs pour leur bouton (dans toutes les langues) sont réduits au lieu de déborder.",
+            "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
+                .. "réinitialiser » ; il indique maintenant la disposition appliquée.",
+            "Correction : changer de disposition ou de profil pouvait provoquer une erreur Lua (« Cannot anchor to "
+                .. "a region dependent on it ») quand deux blocs échangeaient leur place.",
+            "Correction : une colonne collée en bas de l'écran empilait ses blocs ; toute la colonne reste maintenant "
+                .. "visible au-dessus du bord.",
+            "Correction : les espaces ne suivaient pas le plan d'affichage (strata), l'opacité ni les options de "
+                .. "masquage choisis pour tous les blocs, et pouvaient rester cachés derrière les barres d'action.",
+            "Publications : l'anglais et le français sont envoyés automatiquement à l'outil de traduction de "
+                .. "CurseForge, et les traductions de la communauté sont ajoutées à l'addon.",
         },
     },
     {

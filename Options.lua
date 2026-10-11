@@ -1667,7 +1667,6 @@ local function BuildLookPage(page)
         function() return ns.db.jointGap or 3 end,
         function(v) ns.db.jointGap = v; ns:ReanchorAll(); ns:RequestLayout() end,
         nil, L.TIP_JOINT_GAP), 1) -- always shown: a single group can use tiles too
-    Place(CreateNote(page, L.MERGE_HINT), 1)
 
     -- sharing the style or the layout alone (the import window reads both, and profiles)
     P.Gap(1, 10)

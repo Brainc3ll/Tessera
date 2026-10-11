@@ -53,14 +53,19 @@ Help tab inside the game explains everything.
   reputation, currencies, professions (one block each), talents, hearthstone, mail, whispers,
   reagents, ammo, item level, speed, volume, instances, played time, goal...
 - Blocks that have nothing to show hide themselves (in a second row under the main bar).
-- Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks.
+- Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks; groups
+  fused, as tiles with joints, or separate; replace a block in place from the quick menu.
 - Per-block style, icons (same size, square or round frame, black and white), opacity, scale,
   progress bar, thresholds, show on hover, alerts, click actions.
 - DataBroker: other addons' DataBroker objects as blocks; Tessera's blocks shared with Titan
   Panel, ChocolateBar, Bazooka...; a DataBroker mode, on automatically when such an addon is
   installed (Tessera then shows nothing itself), that can be turned off to use both.
-- Themes matching FlareUI (2.x or 1.x), ElvUI, EllesmereUI or Blizzard's look, plus Clean and Transparent; profiles with export/import,
-  ready-made layouts and an automatic dungeon/raid profile; accessibility options.
+- Themes matching FlareUI (2.x or 1.x), ElvUI, EllesmereUI or Blizzard's look, Square styles, plus Clean and
+  Transparent; profiles with export/import, ready-made layouts and an automatic dungeon/raid profile;
+  accessibility options.
+- Share only a style or only a layout as text; the import lists what is missing on your computer
+  (other addons' blocks, media, WoW Forever blocks) before applying anything.
+- A quick tour on first launch (again from the Help tab).
 
 | Command | Effect |
 |---|---|

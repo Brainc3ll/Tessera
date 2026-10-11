@@ -210,6 +210,8 @@ local function CleanBlock(self, key, block, keys)
                 if value[side] == true then e[side] = true end
             end
             if next(e) then clean.edges = e end
+        elseif field == "look" and (value == "fused" or value == "tiles" or value == "separate") then
+            clean.look = value
         elseif field == "stretch" and (value == "TOP" or value == "BOTTOM") then
             clean.stretch = value
         end
@@ -263,6 +265,12 @@ function ns:SanitizeProfile(profile)
     end
     if clean.scale and (clean.scale < 0.5 or clean.scale > 3) then clean.scale = nil end
     if type(profile.theme) == "string" then clean.theme = profile.theme end
+    -- group look (Look tab), absent from profiles made before it
+    local look = profile.groupLook
+    if look == "fused" or look == "tiles" or look == "separate" then clean.groupLook = look end
+    if IsNumber(profile.jointGap) and profile.jointGap >= 2 and profile.jointGap <= 12 then
+        clean.jointGap = profile.jointGap
+    end
 
     -- which block keys can exist: game modules, launchers, spacers
     local keys = {}
@@ -315,6 +323,206 @@ function ns:ImportProfile(text, name)
     if name == "" or self.sv.profiles[name] then return false, L.PROFILE_EXISTS end
     self.sv.profiles[name] = profile
     self:SetProfile(name)
+    return true
+end
+
+---------------------------------------------------------------------------
+-- Sharing only a style or only a layout
+---------------------------------------------------------------------------
+-- Same text format as a profile, with a "kind" field: "style" (the look only:
+-- fonts, colors, frames, icons, group look) or "layout" (the placement only:
+-- which blocks, where, how they are grouped, stuck to edges, stretched). One
+-- import window reads all three kinds. Before anything is applied, the import
+-- lists what the text needs and this computer lacks (see FindMissing).
+local LAYOUT_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look",
+    "width", "autoWidth", "height", "frozen" }
+
+local function Pick(src, fields)
+    local t = {}
+    for _, field in ipairs(fields) do
+        if src[field] ~= nil then t[field] = ns.DeepCopy(src[field]) end
+    end
+    return t
+end
+
+local function Encode(data)
+    local out = {}
+    Serialize(data, out)
+    return EXPORT_PREFIX .. Encode64(table.concat(out))
+end
+
+-- Reads any exported text without cleaning it: the raw table, or nil
+local function DecodeRaw(text)
+    if type(text) ~= "string" then return nil end
+    text = strtrim(text)
+    if text:sub(1, #EXPORT_PREFIX) ~= EXPORT_PREFIX then return nil end
+    local raw = Decode64(text:sub(#EXPORT_PREFIX + 1))
+    if not raw then return nil end
+    local ok, data = pcall(Deserialize, raw, 1, 0)
+    if not ok or type(data) ~= "table" or type(data.blocks) ~= "table" then return nil end
+    return data
+end
+
+-- "profile", "style" or "layout", or nil if the text is not valid
+function ns:GetExportKind(text)
+    local data = DecodeRaw(text)
+    if not data then return nil end
+    if data.kind == "style" or data.kind == "layout" then return data.kind end
+    return "profile"
+end
+
+-- The look of all blocks. Blocks the other player does not have take the look
+-- of a reference block ("base": the first shown data block).
+function ns:ExportStyle()
+    local data = { kind = "style", theme = self.db.theme, groupLook = self.db.groupLook,
+        jointGap = self.db.jointGap, blocks = {} }
+    local keys = {}
+    for key, cfg in pairs(self.db.blocks) do
+        data.blocks[key] = Pick(cfg, self.STYLE_KEYS)
+        table.insert(keys, key)
+    end
+    table.sort(keys)
+    for _, key in ipairs(keys) do
+        local cfg = self.db.blocks[key]
+        if self.modules[key] and cfg.enabled ~= false then
+            data.base = key
+            break
+        end
+    end
+    return Encode(data)
+end
+
+-- The placement of all blocks (launchers, DataBroker blocks and spacers carry
+-- what is needed to create them on the other side)
+function ns:ExportLayout()
+    local data = { kind = "layout", blocks = {} }
+    for key, cfg in pairs(self.db.blocks) do
+        local b = self.IsSpacerKey(key) and self.DeepCopy(cfg) or Pick(cfg, LAYOUT_FIELDS)
+        b.enabled = cfg.enabled ~= false
+        if cfg.launcher then b.launcher = self.DeepCopy(cfg.launcher) end
+        if cfg.broker then b.broker = self.DeepCopy(cfg.broker) end
+        data.blocks[key] = b
+    end
+    return Encode(data)
+end
+
+-- What a text needs and this computer lacks, as lines of text (empty list: nothing
+-- missing): other addons' DataBroker blocks and minimap buttons, media from
+-- LibSharedMedia, the UI a style matches, WoW Forever blocks.
+function ns:FindMissing(text)
+    local data = DecodeRaw(text)
+    local lines = {}
+    if not data then return lines end
+    local brokers, launchers, media, forever = {}, {}, {}, 0
+    local isForever = {}
+    for _, key in ipairs(self.FOREVER_KEYS or {}) do isForever[key] = true end
+    local LSM, prefix = self:GetLSM(), self.LSM_PREFIX
+    for key, cfg in pairs(data.blocks) do
+        if type(key) == "string" and type(cfg) == "table" and cfg.enabled ~= false then
+            if self.IsBrokerKey(key) then
+                if not self:IsBrokerAvailable(cfg) then
+                    local b = type(cfg.broker) == "table" and cfg.broker or {}
+                    local who = tostring(b.addon or b.name or key)
+                    brokers[who] = (brokers[who] or 0) + 1
+                end
+            elseif self.IsLauncherKey(key) then
+                if not self:IsLauncherAvailable(cfg) then
+                    local l = type(cfg.launcher) == "table" and cfg.launcher or {}
+                    launchers[tostring(l.label or l.source or key)] = true
+                end
+            elseif isForever[key] and not self.modules[key] then
+                forever = forever + 1
+            end
+            for kind, field in pairs({ font = "font", background = "bg", border = "border" }) do
+                local v = cfg[field]
+                if type(v) == "string" and v:sub(1, #prefix) == prefix then
+                    local name = v:sub(#prefix + 1)
+                    if not (LSM and LSM:Fetch(kind, name, true)) then media[name] = true end
+                end
+            end
+        end
+    end
+    local function Sorted(t)
+        local list = {}
+        for k in pairs(t) do table.insert(list, k) end
+        table.sort(list)
+        return list
+    end
+    for _, who in ipairs(Sorted(brokers)) do table.insert(lines, L.MISSING_BROKER:format(who, brokers[who])) end
+    for _, who in ipairs(Sorted(launchers)) do table.insert(lines, L.MISSING_LAUNCHER:format(who)) end
+    for _, name in ipairs(Sorted(media)) do table.insert(lines, L.MISSING_MEDIA:format(name)) end
+    if type(data.theme) == "string" then
+        local t = self:GetThemeInfo(data.theme)
+        if t and not self:IsThemeInstalled(data.theme) then table.insert(lines, L.MISSING_UI:format(t.name)) end
+    end
+    if forever > 0 then table.insert(lines, L.MISSING_FOREVER:format(forever)) end
+    return lines
+end
+
+-- Applies a style text to the blocks of the active profile; placement is untouched
+function ns:ImportStyle(text)
+    local data = DecodeRaw(text)
+    if not data or data.kind ~= "style" then return false end
+    local clean = self:SanitizeProfile({ blocks = data.blocks, groupLook = data.groupLook, jointGap = data.jointGap })
+    local base = type(data.base) == "string" and clean.blocks[data.base] or nil
+    for key, cfg in pairs(self.db.blocks) do
+        local src = clean.blocks[key] or base
+        if src then
+            for _, field in ipairs(self.STYLE_KEYS) do
+                if src[field] ~= nil then cfg[field] = self.DeepCopy(src[field]) end
+            end
+        end
+    end
+    if type(data.theme) == "string" and self:GetThemeInfo(data.theme) then self.db.theme = data.theme end
+    if clean.groupLook then self:SetGroupLook(clean.groupLook) end
+    self.db.jointGap = clean.jointGap
+    self:RefreshAllBlocks()
+    return true
+end
+
+-- Applies a layout text: blocks of the layout take its placement (missing
+-- launchers and DataBroker blocks are skipped), the others are hidden. The look
+-- is untouched. Ctrl + Z undoes it.
+function ns:ImportLayout(text)
+    local data = DecodeRaw(text)
+    if not data or data.kind ~= "layout" then return false end
+    -- leave out what cannot be shown here, so nothing stays docked to it
+    local usable = {}
+    for key, cfg in pairs(data.blocks) do
+        if type(key) == "string" and type(cfg) == "table" then
+            local ok = true
+            if self.IsBrokerKey(key) then ok = self:IsBrokerAvailable(cfg)
+            elseif self.IsLauncherKey(key) then ok = self:IsLauncherAvailable(cfg) end
+            if ok then usable[key] = cfg end
+        end
+    end
+    local clean = self:SanitizeProfile({ blocks = usable })
+    if self.PushUndo then self:PushUndo() end
+    for key, cfg in pairs(self.db.blocks) do
+        if not clean.blocks[key] then
+            cfg.enabled = false
+            cfg.point, cfg.dock, cfg.anchor, cfg.edges, cfg.stretch, cfg.look = nil, nil, nil, nil, nil, nil
+        end
+    end
+    for key, src in pairs(clean.blocks) do
+        local cfg = self.db.blocks[key]
+        if not cfg then
+            cfg = self:GetBlockDefaults(key)
+            if self.IsSpacerKey(key) then
+                for field, value in pairs(src) do cfg[field] = self.DeepCopy(value) end
+            end
+            cfg.launcher, cfg.broker = self.DeepCopy(src.launcher), self.DeepCopy(src.broker)
+            self.db.blocks[key] = cfg
+        end
+        -- position fields follow the layout (absent = not set); sizes only if given
+        for _, field in ipairs({ "point", "dock", "anchor", "edges", "stretch", "look" }) do
+            cfg[field] = self.DeepCopy(src[field])
+        end
+        for _, field in ipairs({ "enabled", "width", "autoWidth", "height", "frozen" }) do
+            if src[field] ~= nil then cfg[field] = src[field] end
+        end
+    end
+    self:RefreshAllBlocks()
     return true
 end
 

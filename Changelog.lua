@@ -25,13 +25,13 @@ ns.CHANGELOG = {
                 .. "and community translations are added to the addon.",
             "New ready-made layout \"Around the gryphons\": two groups in the bottom corners of the screen, on both "
                 .. "sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list "
-                .. "(Profiles tab), with a description of each one.",
+                .. "(Look tab), with a description of each one.",
             "New \"Replace with...\" (quick menu, or next to the block list in the Blocks tab): puts another block "
                 .. "exactly in a block's place, with its look, without moving the others; or swaps two shown blocks.",
             "Screen edges: drop a group against an edge and Tessera offers to stick it there (no border on that "
                 .. "side, stays put on any screen). Along the top or bottom, a bar can be stretched over the whole "
                 .. "width: spacer blocks fill the room (blocks on the left, center, right or spread) and the blocks "
-                .. "keep their size. Setting in the General tab (ask, always, never).",
+                .. "keep their size. Setting in the Look tab (ask, always, never).",
             "New ready-made layouts in the spirit of desktop taskbars and menu bars: Stormwind Stained Glass, Cathedral "
                 .. "Rose Window, Tirisfal Orchard and Gnomeregan, with the "
                 .. "clock, FPS, latency and volume where you expect them.",
@@ -40,6 +40,20 @@ ns.CHANGELOG = {
             "New styles \"FlareUI Square\", \"Blizzard Modern Square\" and \"Blizzard Classic Square\": square corners, a "
                 .. "plain dark background, a thin border and a thin line between merged blocks. The line is also an option "
                 .. "of every style (Frame tab, Separators), on by default in the layouts showing the WoW Forever blocks.",
+            "New Look tab: the style of the blocks, how groups look, screen edges, ready-made layouts and sharing are "
+                .. "now in one place (they were spread over the General and Profiles tabs). The options window is larger "
+                .. "and roomier, and shrinks on small screens so blocks still fit on both sides of it.",
+            "Group look (Look tab): fused (one bar, one border, as before), tiles (each block keeps its frame, with a "
+                .. "small adjustable joint, like a mosaic) or separate (each block keeps its whole frame and blocks no "
+                .. "longer merge; replaces the \"Merge blocks\" option). A single group can have its own look: quick "
+                .. "menu, Group look. Existing profiles keep their look.",
+            "Share only a style (the look) or only a layout (the placement) as text, from the Look tab. One import "
+                .. "window reads a style, a layout or a whole profile, and first lists what is missing on this computer "
+                .. "(another addon's blocks, LibSharedMedia fonts or frames, the interface a style matches, WoW Forever "
+                .. "blocks): those parts are skipped or replaced by the default font or frame.",
+            "Quick tour: seven short steps on first launch, and again from the Help tab. The help was reviewed for the "
+                .. "new tab, and the placement banner and the tooltip of unlocked blocks now mention what the quick menu "
+                .. "offers (add a spacer, replace with..., group look).",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -54,14 +68,14 @@ ns.CHANGELOG = {
                 .. "CurseForge, et les traductions de la communauté sont ajoutées à l'addon.",
             "Nouvelle disposition toute prête « Autour des gryphons » : deux groupes dans les coins bas de l'écran, "
                 .. "de part et d'autre des barres d'action, blocs WoW Forever compris. Les dispositions toutes prêtes "
-                .. "se choisissent maintenant dans une liste (onglet Profils), avec la description de chacune.",
+                .. "se choisissent maintenant dans une liste (onglet Apparence), avec la description de chacune.",
             "Nouveau « Remplacer par... » (menu rapide, ou à côté de la liste des blocs dans l'onglet Blocs) : met un "
                 .. "autre bloc exactement à la place d'un bloc, avec son apparence, sans bouger les autres ; ou échange "
                 .. "deux blocs affichés.",
             "Bords de l'écran : lâche un groupe contre un bord et Tessera propose de l'y coller (plus de bordure de "
                 .. "ce côté, il reste en place sur tous les écrans). En haut ou en bas, une barre peut être étirée sur "
                 .. "toute la largeur : des blocs espace comblent la place (blocs à gauche, au centre, à droite ou "
-                .. "répartis) et les blocs gardent leur taille. Réglage dans l'onglet Général (demander, toujours, jamais).",
+                .. "répartis) et les blocs gardent leur taille. Réglage dans l'onglet Apparence (demander, toujours, jamais).",
             "Nouvelles dispositions toutes prêtes façon barres des tâches et barres de menus : Vitraux de Hurlevent, "
                 .. "Rosace de la cathédrale, Vergers de Tirisfal et Gnomeregan, avec "
                 .. "l'horloge, les FPS, la latence et le volume là où on les attend.",
@@ -72,6 +86,24 @@ ns.CHANGELOG = {
                 .. "carrés, fond sombre uni, bordure fine et fine ligne entre les blocs fusionnés. Cette ligne est aussi une "
                 .. "option de tous les styles (onglet Cadre, Séparateurs), activée par défaut dans les dispositions qui "
                 .. "mettent en avant les blocs WoW Forever.",
+            "Nouvel onglet Apparence : le style des blocs, l'apparence des groupes, les bords de l'écran, les "
+                .. "dispositions toutes prêtes et le partage sont maintenant au même endroit (ils étaient répartis entre "
+                .. "les onglets Général et Profils). La fenêtre d'options est plus grande et plus aérée, et rétrécit sur "
+                .. "les petits écrans pour laisser la place à des blocs de chaque côté.",
+            "Apparence des groupes (onglet Apparence) : fusionnés (une barre, une bordure, comme avant), tuiles "
+                .. "(chaque bloc garde son cadre, avec un petit joint réglable, comme une mosaïque) ou séparés (chaque "
+                .. "bloc garde tout son cadre et les blocs ne fusionnent plus ; remplace l'option « Fusionner les "
+                .. "blocs »). Un groupe peut avoir sa propre apparence : menu rapide, Apparence du groupe. Les profils "
+                .. "existants gardent leur apparence.",
+            "Partager seulement un style (l'allure) ou seulement une disposition (le placement) en texte, depuis "
+                .. "l'onglet Apparence. Une seule fenêtre d'import lit un style, une disposition ou un profil entier, et "
+                .. "liste d'abord ce qui manque sur cet ordinateur (blocs d'un autre addon, polices ou cadres "
+                .. "LibSharedMedia, interface assortie à un style, blocs WoW Forever) : ces éléments sont ignorés ou "
+                .. "remplacés par la police ou le cadre par défaut.",
+            "Visite rapide : sept courtes étapes au premier lancement, et à nouveau depuis l'onglet Aide. L'aide a été "
+                .. "revue pour le nouvel onglet, et le bandeau de placement et l'infobulle des blocs déverrouillés "
+                .. "indiquent maintenant ce que propose le menu rapide (ajouter un espace, remplacer par..., apparence du "
+                .. "groupe).",
         },
     },
     {

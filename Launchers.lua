@@ -159,6 +159,15 @@ local function Resolve(cfg)
     end
 end
 
+-- Is the minimap button behind this launcher present? (checked on import)
+function ns:IsLauncherAvailable(cfg)
+    if type(cfg) ~= "table" or type(cfg.launcher) ~= "table" or type(cfg.launcher.source) ~= "string" then
+        return false
+    end
+    local ok, a, b, c = pcall(Resolve, cfg)
+    return ok and (a or b or c) ~= nil
+end
+
 -- Converts an icon value (atlas name, file path or file ID) into the block icon format
 local function IconFromValue(icon, extra)
     if not icon then return nil end

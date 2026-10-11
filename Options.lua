@@ -25,7 +25,8 @@ local L = ns.L
 
 -- Options window tabs:
 --   Blocks     selection (all blocks, all launchers or a single block) and its settings
---   General    theme, moving, combat, chat, minimap
+--   Look       style, how groups look, ready-made layouts, screen edges
+--   General    moving, combat, chat, minimap, accessibility
 --   Launchers  add and edit launcher blocks and DataBroker blocks
 --   Broker     share Tessera's blocks with DataBroker addons, DataBroker mode
 --   Profiles   profiles and reset
@@ -35,16 +36,19 @@ local L = ns.L
 
 local panel
 local widgets = {}
-local PAGE_BLOCKS, PAGE_GENERAL, PAGE_LAUNCHERS, PAGE_BROKER, PAGE_PROFILES, PAGE_HELP, PAGE_ABOUT = 1, 2, 3, 4, 5, 6, 7
-local HIDDEN_IN_BROKER_MODE = { [PAGE_BLOCKS] = true, [PAGE_GENERAL] = true, [PAGE_LAUNCHERS] = true, [PAGE_PROFILES] = true }
+local PAGE_BLOCKS, PAGE_LOOK, PAGE_GENERAL, PAGE_LAUNCHERS, PAGE_BROKER, PAGE_PROFILES, PAGE_HELP, PAGE_ABOUT =
+    1, 2, 3, 4, 5, 6, 7, 8
+local HIDDEN_IN_BROKER_MODE = { [PAGE_BLOCKS] = true, [PAGE_LOOK] = true, [PAGE_GENERAL] = true,
+    [PAGE_LAUNCHERS] = true, [PAGE_PROFILES] = true }
 local pages, tabs, currentPage = {}, {}, PAGE_BLOCKS
 
--- Layout: 600 px window, two 250 px columns, 32 px left margin
-local PANEL_W, PANEL_H = 600, 670
-local COL_W = 250
-local COL_X = { 32, 318 }
+-- Layout: 720 px window, two 300 px columns, 40 px margins (scaled down on small
+-- screens, see FitPanelToScreen)
+local PANEL_W, PANEL_H = 720, 710
+local COL_W = 300
+local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
-local SPACING = 6 -- vertical space between two settings
+local SPACING = 9 -- vertical space between two settings
 local dropdowns = {} -- { label, dd } entries, for the debug report
 
 local ALL = "*all"            -- selection value "All blocks"
@@ -309,17 +313,17 @@ end
 -- Section header: gold text with a thin line underneath
 local function CreateHeader(parent, text)
     local holder = CreateFrame("Frame", nil, parent)
-    holder:SetSize(COL_W, 24)
+    holder:SetSize(COL_W, 30) -- room above the text: sections stand apart
     local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    fs:SetPoint("BOTTOMLEFT", 0, 4)
+    fs:SetPoint("BOTTOMLEFT", 0, 5)
     fs:SetText(text)
     local line = holder:CreateTexture(nil, "ARTWORK")
-    line:SetColorTexture(1, 0.82, 0, 0.25)
+    line:SetColorTexture(1, 0.82, 0, 0.4)
     line:SetHeight(1)
     line:SetPoint("BOTTOMLEFT")
     line:SetPoint("BOTTOMRIGHT")
     holder.Refresh = function() end
-    holder.layoutHeight = 30
+    holder.layoutHeight = 34
     return Register(holder)
 end
 
@@ -606,6 +610,8 @@ local function NewLayout(page, top)
     function layout.Place(w, col)
         w:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[col], y[col])
         y[col] = y[col] - w.layoutHeight - SPACING
+        -- lowest point reached by any page (checked by tools/mock_run.lua: must fit the window)
+        if not layout.untracked then ns.optionsLowestY = math.min(ns.optionsLowestY or 0, (page.layoutBase or 0) + y[col] + SPACING) end
         return w
     end
     function layout.Gap(col, h) y[col] = y[col] - h end
@@ -709,6 +715,7 @@ local function BuildModuleOptions(sub, P, col, keys, condition)
         end
         if #list > 0 then hasOptions[key] = true end
         local firstWidget = #widgets + 1
+        P.untracked = true -- stacked widgets: measured when packed (relayout below)
         for _, opt in ipairs(list) do
             local shown = function()
                 if SelectedModuleKey() ~= key then return false end
@@ -755,6 +762,7 @@ local function BuildModuleOptions(sub, P, col, keys, condition)
         for w = firstWidget, #widgets do table.insert(stack, widgets[w]) end
         table.insert(stacks, stack)
         P.Gap(col, P.Bottom(col) - stackTop) -- back to the top for the next module
+        P.untracked = nil
     end
     -- packs the visible widgets of each stack from the top (called after every refresh)
     table.insert(relayouts, function()
@@ -765,6 +773,7 @@ local function BuildModuleOptions(sub, P, col, keys, condition)
                     w:ClearAllPoints()
                     w:SetPoint("TOPLEFT", sub, "TOPLEFT", COL_X[col], y)
                     y = y - w.layoutHeight - SPACING
+                    ns.optionsLowestY = math.min(ns.optionsLowestY or 0, (sub.layoutBase or 0) + y + SPACING)
                 end
             end
         end
@@ -845,6 +854,7 @@ local function BuildBlockPage(page)
         buttons[i] = b
         local sub = CreateFrame("Frame", nil, page)
         sub:SetPoint("TOPLEFT", page, "TOPLEFT", 0, subY - 36)
+        sub.layoutBase = subY - 36
         sub:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", 0, 56)
         subs[i] = sub
     end
@@ -945,10 +955,6 @@ local function BuildBlockPage(page)
         }, "iconShape", L.TIP_ICON_SHAPE), 1)
         P.Place(Color(sub, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR), 1)
         P.Place(Check(sub, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), 1)
-        -- thin lines between merged blocks
-        P.Place(CreateHeader(sub, L.SECTION_SEPARATORS), 1)
-        P.Place(Check(sub, L.SEPARATORS, "separators", L.TIP_SEPARATORS), 1)
-        P.Place(Color(sub, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), 1)
 
         P.Place(CreateHeader(sub, L.BORDER), 2)
         -- picking a border also restores its original thickness
@@ -1005,6 +1011,11 @@ local function BuildBlockPage(page)
         P.Place(corner, 2)
         P.Place(Color(sub, L.BORDER_COLOR, true, "borderColor", L.TIP_BORDER_COLOR), 2)
         P.Place(Check(sub, L.CLASS_COLOR_BORDER, "classColorBorder", L.TIP_CLASS_COLOR_BORDER), 2)
+        -- thin lines between merged blocks
+        P.Gap(2, 8)
+        P.Place(CreateHeader(sub, L.SECTION_SEPARATORS), 2)
+        P.Place(Check(sub, L.SEPARATORS, "separators", L.TIP_SEPARATORS), 2)
+        P.Place(Color(sub, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), 2)
     end
 
     -- 4. Behaviour: settings specific to the selected block (left), visibility and
@@ -1130,21 +1141,7 @@ local function BuildGeneralPage(page)
     local P = NewLayout(page)
     local function Place(w, col) return P.Place(w, col) end
 
-    -- Left column: theme and moving
-    Place(CreateHeader(page, L.SECTION_THEME), 1)
-    Place(CreateNote(page, L.THEME_HINT), 1)
-    Place(CreateDropdown(page, L.THEME, function()
-        local list = {}
-        for _, t in ipairs(ns:GetAvailableThemes()) do
-            table.insert(list, { key = t.key, name = t.name })
-        end
-        return list
-    end, function() return ns:GetTheme() end,
-       function(v) ns:ApplyTheme(v); ns:RefreshOptions() end, nil, nil, L.TIP_THEME), 1)
-    Place(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
-        function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
-        function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), 1)
-    P.Gap(1, 8)
+    -- Left column: moving
     Place(CreateHeader(page, L.SECTION_MOVE), 1)
     Place(CreateCheck(page, L.LOCKED,
         function() return ns.db.locked end,
@@ -1158,17 +1155,6 @@ local function BuildGeneralPage(page)
     Place(CreateCheck(page, L.EDIT_MODE_SYNC,
         function() return ns.db.editModeSync ~= false end,
         function(v) ns.db.editModeSync = v end, nil, L.TIP_EDIT_MODE_SYNC), 1)
-    Place(CreateDropdown(page, L.EDGE_SNAP, {
-            { key = "ask", name = L.EDGE_SNAP_ASK },
-            { key = "always", name = L.EDGE_SNAP_ALWAYS },
-            { key = "never", name = L.EDGE_SNAP_NEVER },
-        },
-        function() return ns.db.edgeSnap or "ask" end,
-        function(v) ns.db.edgeSnap = v end, nil, nil, L.TIP_EDGE_SNAP), 1)
-    Place(CreateCheck(page, L.MERGE,
-        function() return ns.db.merge end,
-        function(v) ns.db.merge = v end, nil, L.TIP_MERGE), 1)
-    Place(CreateNote(page, L.MERGE_HINT), 1)
     Place(CreateDropdown(page, L.GRID, {
         { key = 0, name = L.GRID_OFF },
         { key = 8, name = "8 px" },
@@ -1510,15 +1496,56 @@ StaticPopupDialogs["TESSERA_IMPORT_PROFILE"] = NamePopup(L.IMPORT_PROFILE_PROMPT
     end
 end)
 
--- Window where the player pastes a profile text; then asks for the new profile's name
+-- Confirmation before an import: what the text needs and this computer lacks,
+-- then what will happen. data = { text, kind }
+StaticPopupDialogs["TESSERA_IMPORT_CONFIRM"] = {
+    text = "%s",
+    button1 = YES,
+    button2 = NO,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function(_, data) ns:FinishImport(data.text, data.kind) end,
+}
+
+-- Applies a checked import text: a style or a layout at once, a profile after
+-- asking for its name
+function ns:FinishImport(text, kind)
+    if kind == "style" then
+        if self:ImportStyle(text) then self.Print(L.STYLE_IMPORTED) end
+    elseif kind == "layout" then
+        if self:ImportLayout(text) then self.Print(L.LAYOUT_IMPORTED) end
+    else
+        StaticPopup_Show("TESSERA_IMPORT_PROFILE", nil, nil, text)
+    end
+    self:RefreshOptions()
+end
+
+-- Window where the player pastes an exported text (profile, style or layout:
+-- the kind is read from the text); then confirms, or names the new profile
 function ns:OpenImportWindow(prefill)
     self:ShowTextWindow(L.IMPORT_TITLE, prefill or "", function(text)
-        if not ns:DecodeProfile(text) then
+        local kind = ns:GetExportKind(text)
+        if not kind or (kind == "profile" and not ns:DecodeProfile(text)) then
             ns.Print(L.IMPORT_INVALID)
             return
         end
-        ns:HideTextWindow() -- the name popup would be hidden behind this window
-        StaticPopup_Show("TESSERA_IMPORT_PROFILE", nil, nil, text)
+        ns:HideTextWindow() -- the popups would be hidden behind this window
+        local missing = ns:FindMissing(text)
+        local msg = {}
+        if #missing > 0 then table.insert(msg, L.IMPORT_MISSING:format(table.concat(missing, "\n"))) end
+        if kind == "style" then
+            table.insert(msg, L.IMPORT_CONFIRM_STYLE)
+        elseif kind == "layout" then
+            table.insert(msg, L.IMPORT_CONFIRM_LAYOUT)
+        elseif #missing > 0 then
+            table.insert(msg, L.IMPORT_CONFIRM_PROFILE)
+        end
+        if #msg == 0 then
+            ns:FinishImport(text, kind)
+        else
+            StaticPopup_Show("TESSERA_IMPORT_CONFIRM", table.concat(msg, "\n\n"), nil, { text = text, kind = kind })
+        end
     end, L.IMPORT_BUTTON)
 end
 
@@ -1543,6 +1570,100 @@ StaticPopupDialogs["TESSERA_RESET_PROFILE"] = {
     hideOnEscape = true,
     OnAccept = function() ns:ResetEverything() end,
 }
+
+---------------------------------------------------------------------------
+-- "Look" tab: style of the blocks, how groups look, ready-made layouts, screen edges
+---------------------------------------------------------------------------
+local function BuildLookPage(page)
+    local P = NewLayout(page)
+    local function Place(w, col) return P.Place(w, col) end
+
+    -- Left column: style and how groups look
+    Place(CreateHeader(page, L.SECTION_THEME), 1)
+    Place(CreateNote(page, L.THEME_HINT), 1)
+    Place(CreateDropdown(page, L.THEME, function()
+        local list = {}
+        for _, t in ipairs(ns:GetAvailableThemes()) do
+            table.insert(list, { key = t.key, name = t.name })
+        end
+        return list
+    end, function() return ns:GetTheme() end,
+       function(v) ns:ApplyTheme(v); ns:RefreshOptions() end, nil, nil, L.TIP_THEME), 1)
+    Place(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
+        function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
+        function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), 1)
+
+    P.Gap(1, 10)
+    Place(CreateHeader(page, L.SECTION_GROUP_LOOK), 1)
+    Place(CreateDropdown(page, L.GROUP_LOOK, {
+            { key = "fused", name = L.GROUP_LOOK_FUSED },
+            { key = "tiles", name = L.GROUP_LOOK_TILES },
+            { key = "separate", name = L.GROUP_LOOK_SEPARATE },
+        },
+        function() return ns:GetGroupLook() end,
+        function(v) ns:SetGroupLook(v); ns:RefreshOptions() end, nil, nil, L.TIP_GROUP_LOOK), 1)
+    Place(CreateSlider(page, L.JOINT_GAP, 2, 12, 1,
+        function() return ns.db.jointGap or 3 end,
+        function(v) ns.db.jointGap = v; ns:ReanchorAll(); ns:RequestLayout() end,
+        nil, L.TIP_JOINT_GAP), 1) -- always shown: a single group can use tiles too
+    Place(CreateNote(page, L.MERGE_HINT), 1)
+
+    -- sharing the style or the layout alone (the import window reads both, and profiles)
+    P.Gap(1, 10)
+    Place(CreateHeader(page, L.SECTION_SHARE), 1)
+    -- the two exports side by side
+    local half = (COL_W - 6) / 2
+    local exportStyle = Place(CreateButton(page, L.EXPORT_STYLE, function()
+        ns:ShowTextWindow(L.EXPORT_STYLE_TITLE, ns:ExportStyle())
+    end, nil, half, L.TIP_EXPORT_STYLE), 1)
+    CreateButton(page, L.EXPORT_LAYOUT, function()
+        ns:ShowTextWindow(L.EXPORT_LAYOUT_TITLE, ns:ExportLayout())
+    end, nil, half, L.TIP_EXPORT_LAYOUT):SetPoint("LEFT", exportStyle, "RIGHT", 6, 0)
+    Place(CreateButton(page, L.IMPORT_SHARED, function() ns:OpenImportWindow() end,
+        nil, nil, L.TIP_IMPORT_SHARED), 1)
+
+    -- Right column: screen edges and ready-made layouts
+    Place(CreateHeader(page, L.SECTION_EDGES), 2)
+    Place(CreateDropdown(page, L.EDGE_SNAP, {
+            { key = "ask", name = L.EDGE_SNAP_ASK },
+            { key = "always", name = L.EDGE_SNAP_ALWAYS },
+            { key = "never", name = L.EDGE_SNAP_NEVER },
+        },
+        function() return ns.db.edgeSnap or "ask" end,
+        function(v) ns.db.edgeSnap = v end, nil, nil, L.TIP_EDGE_SNAP), 2)
+
+    -- ready-made layouts: pick one in the list, then apply it (replaces the current
+    -- profile after a confirmation). The note below the list describes the choice.
+    P.Gap(2, 10)
+    Place(CreateHeader(page, L.SECTION_PRESETS), 2)
+    Place(CreateNote(page, L.PRESETS_HINT), 2)
+    local chosenPreset = ns.PRESETS[1]
+    local presetOptions = {}
+    for _, preset in ipairs(ns.PRESETS) do
+        table.insert(presetOptions, { key = preset, name = L["PRESET_" .. preset:upper()] })
+    end
+    -- the note keeps the height of the longest description, so nothing moves
+    local longest = ""
+    for _, preset in ipairs(ns.PRESETS) do
+        local tip = L["TIP_PRESET_" .. preset:upper()] or ""
+        if #tip > #longest then longest = tip end
+    end
+    local presetNote = CreateNote(page, longest)
+    presetNote.Refresh = function()
+        presetNote.fs:SetText(L["TIP_PRESET_" .. chosenPreset:upper()] or "")
+    end
+    Place(CreateDropdown(page, L.PRESET_CHOOSE, presetOptions,
+        function() return chosenPreset end,
+        function(v)
+            chosenPreset = v
+            presetNote:Refresh()
+        end, nil, nil, L.PRESETS_HINT), 2)
+    Place(presetNote, 2)
+    presetNote:Refresh()
+    Place(CreateButton(page, L.PRESET_APPLY, function()
+        StaticPopup_Show("TESSERA_APPLY_PRESET", nil, nil, chosenPreset)
+    end, nil, nil, L.TIP_PRESET_APPLY), 2)
+end
 
 -- Builds the "Profiles" tab
 local function BuildProfilesPage(page)
@@ -1602,37 +1723,6 @@ local function BuildProfilesPage(page)
         StaticPopup_Show("TESSERA_RESET_PROFILE")
     end, nil, nil, L.TIP_RESET_PROFILE), 2)
 
-    -- ready-made layouts: pick one in the list, then apply it (replaces the current
-    -- profile after a confirmation). The note below the list describes the choice.
-    P.Gap(2, 8)
-    Place(CreateHeader(page, L.SECTION_PRESETS), 2)
-    Place(CreateNote(page, L.PRESETS_HINT), 2)
-    local chosenPreset = ns.PRESETS[1]
-    local presetOptions = {}
-    for _, preset in ipairs(ns.PRESETS) do
-        table.insert(presetOptions, { key = preset, name = L["PRESET_" .. preset:upper()] })
-    end
-    -- the note keeps the height of the longest description, so nothing moves
-    local longest = ""
-    for _, preset in ipairs(ns.PRESETS) do
-        local tip = L["TIP_PRESET_" .. preset:upper()] or ""
-        if #tip > #longest then longest = tip end
-    end
-    local presetNote = CreateNote(page, longest)
-    presetNote.Refresh = function()
-        presetNote.fs:SetText(L["TIP_PRESET_" .. chosenPreset:upper()] or "")
-    end
-    Place(CreateDropdown(page, L.PRESET_CHOOSE, presetOptions,
-        function() return chosenPreset end,
-        function(v)
-            chosenPreset = v
-            presetNote:Refresh()
-        end, nil, nil, L.PRESETS_HINT), 2)
-    Place(presetNote, 2)
-    presetNote:Refresh()
-    Place(CreateButton(page, L.PRESET_APPLY, function()
-        StaticPopup_Show("TESSERA_APPLY_PRESET", nil, nil, chosenPreset)
-    end, nil, nil, L.TIP_PRESET_APPLY), 2)
 end
 
 ---------------------------------------------------------------------------
@@ -1706,7 +1796,7 @@ local TOPIC_W, TOPIC_H = 165, 22
 local function BuildTopicPage(page, getSections)
     local topicList = CreateFrame("Frame", nil, page)
     topicList:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1] - 12, -6)
-    topicList:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 24)
+    topicList:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 44)
     topicList:SetWidth(TOPIC_W)
 
     -- thin vertical line between the topics and the text
@@ -1813,6 +1903,14 @@ local function BuildHelpPage(page)
         cache[wanted] = cache[wanted] or SplitHelp(wanted)
         return wanted, cache[wanted]
     end)
+    -- the quick tour can be started again from here (not in DataBroker mode: no blocks)
+    local tour = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
+    tour:SetSize(TOPIC_W, 22)
+    tour:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 14)
+    tour:SetText(L.TUTORIAL_START)
+    tour:SetScript("OnClick", function() ns:StartTutorial() end)
+    AttachTip(tour, L.TUTORIAL_START, L.TIP_TUTORIAL_START)
+    Register(tour, function() return not ns.brokerModeActive end)
 end
 
 ---------------------------------------------------------------------------
@@ -1877,6 +1975,17 @@ local function BuildAboutPage(page)
     end)
 end
 
+-- Small screens: the window shrinks so a column of blocks still fits on each side
+-- of it (blocks shown from the options appear left and right of the window), and
+-- it never gets taller than the screen. Full size on large screens.
+local SIDE_ROOM = 200 -- UI units kept free on each side
+local function FitPanelToScreen()
+    local w, h = UIParent:GetWidth(), UIParent:GetHeight()
+    if not (w and h and w > 0 and h > 0) then return end
+    local scale = math.min(1, (w - 2 * SIDE_ROOM) / PANEL_W, (h - 40) / PANEL_H)
+    panel:SetScale(math.max(0.6, scale))
+end
+
 -- Creates the main options window, its tabs and pages (called once, lazily)
 local function BuildPanel()
     ValidateSelection()
@@ -1893,7 +2002,10 @@ local function BuildPanel()
     panel:SetScript("OnDragStop", panel.StopMovingOrSizing)
     table.insert(UISpecialFrames, panel:GetName()) -- close with Escape
     -- the placement banner steps aside while this window is open
-    panel:HookScript("OnShow", function() ns:UpdatePlacementBanner() end)
+    panel:HookScript("OnShow", function()
+        FitPanelToScreen()
+        ns:UpdatePlacementBanner()
+    end)
     panel:HookScript("OnHide", function() ns:UpdatePlacementBanner() end)
 
     panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -1926,7 +2038,8 @@ local function BuildPanel()
         ns:RefreshOptions()
     end
 
-    local names = { L.TAB_BLOCK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.PROFILES, L.TAB_HELP, L.TAB_ABOUT }
+    local names = { L.TAB_BLOCK, L.TAB_LOOK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.PROFILES, L.TAB_HELP,
+        L.TAB_ABOUT }
     for i, text in ipairs(names) do
         local tab = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
         tab:SetHeight(24)
@@ -1941,6 +2054,7 @@ local function BuildPanel()
     end
 
     BuildBlockPage(pages[PAGE_BLOCKS])
+    BuildLookPage(pages[PAGE_LOOK])
     BuildGeneralPage(pages[PAGE_GENERAL])
     BuildLaunchersPage(pages[PAGE_LAUNCHERS], function() ShowPage(PAGE_BLOCKS) end)
     BuildBrokerPage(pages[PAGE_BROKER])
@@ -2204,13 +2318,87 @@ end
 ---------------------------------------------------------------------------
 StaticPopupDialogs["TESSERA_WELCOME"] = {
     text = L.WELCOME_TEXT,
-    button1 = L.WELCOME_HELP,
+    button1 = L.TUTORIAL_START,
     button2 = L.WELCOME_LATER,
+    button3 = L.WELCOME_HELP,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
-    OnAccept = function() ns:OpenOptions(PAGE_HELP) end,
+    OnAccept = function() ns:StartTutorial() end,
+    OnAlt = function() ns:OpenOptions(PAGE_HELP) end,
 }
+
+---------------------------------------------------------------------------
+-- Quick tour: a few short steps in a small window (first launch, or the button
+-- of the Help tab). Some steps offer a button that does the action for the player.
+---------------------------------------------------------------------------
+local TUTORIAL_STEPS = {
+    { text = "TUTORIAL_1" },
+    { text = "TUTORIAL_2", action = "TUTORIAL_DO_UNLOCK", run = function() ns:SetLocked(false) end },
+    { text = "TUTORIAL_3" },
+    { text = "TUTORIAL_4" },
+    { text = "TUTORIAL_5" },
+    { text = "TUTORIAL_6", action = "TUTORIAL_DO_LOOK", run = function() ns:OpenOptions(PAGE_LOOK) end },
+    { text = "TUTORIAL_7", action = "TUTORIAL_DO_LOCK", run = function() ns:SetLocked(true) end },
+}
+local tutorial
+
+local function ShowTutorialStep(index)
+    local step = TUTORIAL_STEPS[index]
+    tutorial.index = index
+    tutorial.title:SetText(L.TUTORIAL_TITLE:format(index, #TUTORIAL_STEPS))
+    tutorial.text:SetText(L[step.text])
+    tutorial.back:SetEnabled(index > 1)
+    tutorial.next:SetText(index < #TUTORIAL_STEPS and L.TUTORIAL_NEXT or L.TUTORIAL_DONE)
+    tutorial.action:SetShown(step.action ~= nil)
+    if step.action then tutorial.action:SetText(L[step.action]) end
+    tutorial:SetHeight(tutorial.text:GetStringHeight() + 96)
+end
+
+function ns:StartTutorial()
+    if self.brokerModeActive then return end -- no blocks of its own to place
+    if not tutorial then
+        tutorial = CreateFrame("Frame", "TesseraTutorial", UIParent, "BackdropTemplate")
+        tutorial:SetSize(380, 160)
+        tutorial:SetPoint("TOP", UIParent, "TOP", 0, -160)
+        tutorial:SetFrameStrata("FULLSCREEN_DIALOG")
+        tutorial:SetClampedToScreen(true)
+        tutorial:SetMovable(true)
+        tutorial:EnableMouse(true)
+        tutorial:RegisterForDrag("LeftButton")
+        tutorial:SetScript("OnDragStart", tutorial.StartMoving)
+        tutorial:SetScript("OnDragStop", tutorial.StopMovingOrSizing)
+        tutorial.title = tutorial:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        tutorial.title:SetPoint("TOPLEFT", 16, -14)
+        tutorial.text = tutorial:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        tutorial.text:SetPoint("TOPLEFT", 16, -38)
+        tutorial.text:SetWidth(348)
+        tutorial.text:SetJustifyH("LEFT")
+        tutorial.text:SetSpacing(3)
+        local close = CreateFrame("Button", nil, tutorial, "UIPanelCloseButton")
+        close:SetPoint("TOPRIGHT", -4, -4)
+        local function Button(label, onClick)
+            local b = CreateFrame("Button", nil, tutorial, "UIPanelButtonTemplate")
+            b:SetSize(96, 22)
+            b:SetText(label)
+            b:SetScript("OnClick", onClick)
+            return b
+        end
+        tutorial.next = Button(L.TUTORIAL_NEXT, function()
+            if tutorial.index < #TUTORIAL_STEPS then ShowTutorialStep(tutorial.index + 1) else tutorial:Hide() end
+        end)
+        tutorial.next:SetPoint("BOTTOMRIGHT", -14, 14)
+        tutorial.back = Button(L.TUTORIAL_BACK, function() ShowTutorialStep(tutorial.index - 1) end)
+        tutorial.back:SetPoint("RIGHT", tutorial.next, "LEFT", -6, 0)
+        tutorial.action = Button("", function() TUTORIAL_STEPS[tutorial.index].run() end)
+        tutorial.action:SetSize(150, 22)
+        tutorial.action:SetPoint("BOTTOMLEFT", 14, 14)
+    end
+    self:SkinWindow(tutorial, tutorial.title)
+    if panel and panel:IsShown() then panel:Hide() end -- the blocks must be visible
+    ShowTutorialStep(1)
+    tutorial:Show()
+end
 
 -- After an update: offers to read what's new (About tab, Changelog topic), once per version
 StaticPopupDialogs["TESSERA_WHATS_NEW"] = {

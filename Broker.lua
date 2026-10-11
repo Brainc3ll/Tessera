@@ -84,6 +84,12 @@ local function Resolve(cfg)
     return lib:GetDataObjectByName(b.name)
 end
 
+-- Is the addon providing this DataBroker block loaded? (checked on import)
+function ns:IsBrokerAvailable(cfg)
+    local ok, obj = pcall(Resolve, cfg)
+    return ok and obj ~= nil
+end
+
 ---------------------------------------------------------------------------
 -- 1. Consumer: other addons' objects as blocks
 ---------------------------------------------------------------------------

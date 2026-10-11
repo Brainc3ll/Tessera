@@ -96,6 +96,7 @@ ns.fonts = {
 local BUILTIN = { background = ns.backgrounds, border = ns.borders, font = ns.fonts }
 -- Saved media keys starting with this prefix refer to a LibSharedMedia entry
 local LSM_PREFIX = "lsm:"
+ns.LSM_PREFIX = LSM_PREFIX -- media from LibSharedMedia (checked on import, Profiles.lua)
 
 -- Returns LibSharedMedia if some addon loaded it (silent = true: no error if missing)
 function ns:GetLSM()
@@ -494,6 +495,7 @@ local STYLE_KEYS = {
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
 }
+ns.STYLE_KEYS = STYLE_KEYS -- also what a style export carries (Profiles.lua)
 
 -- Gives block "to" the look of block "from" (size, font, frame...): used for spacers
 -- added to a bar so they blend in
@@ -979,6 +981,7 @@ local function ShowPlacementHelp(self)
     GameTooltip:AddLine(L.HINT_DRAG, 1, 1, 1)
     GameTooltip:AddLine(L.HINT_SHIFT_DRAG, 1, 1, 1)
     GameTooltip:AddLine(L.HINT_CTRL_CLICK, 1, 1, 1)
+    GameTooltip:AddLine(L.HINT_QUICK_MENU_PLACEMENT, 1, 1, 1, true)
     GameTooltip:AddLine(L.HINT_UNDO, 1, 1, 1)
     if ns:IsFrozen(self.key) then GameTooltip:AddLine(L.HINT_FROZEN, 0.7, 0.7, 0.7) end
     GameTooltip:Show()

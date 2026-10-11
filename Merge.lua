@@ -239,6 +239,61 @@ end
 ---------------------------------------------------------------------------
 -- Anchoring, detaching
 ---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+-- How groups look (Look tab): "fused" (one frame, borders between blocks
+-- hidden), "tiles" (mosaic with joints: each block keeps its frame, a small gap
+-- between them, the group still moves as one) or "separate" (no merging at all,
+-- the old "Merge blocks" option turned off). Saved in db.groupLook; profiles from
+-- before it only have db.merge, read as "fused" or "separate".
+-- A group can override it (quick menu): cfg.look on the group's head block. The
+-- override only changes the drawing; merging new blocks follows the global look.
+---------------------------------------------------------------------------
+local LOOKS = { fused = true, tiles = true, separate = true }
+ns.GROUP_LOOKS = { "fused", "tiles", "separate" }
+
+-- key: optional, any block of a group, to read that group's own look
+function ns:GetGroupLook(key)
+    if key and self.db then
+        local cfg = self.db.blocks[self:GetRoot(key)]
+        if cfg and LOOKS[cfg.look] then return cfg.look end
+    end
+    local look = self.db and self.db.groupLook
+    if LOOKS[look] then return look end
+    return (self.db and self.db.merge == false) and "separate" or "fused"
+end
+
+-- Sets (or clears, look = nil) the look of the group containing key
+function ns:SetGroupOwnLook(key, look)
+    local cfg = self.db.blocks[self:GetRoot(key)]
+    if not cfg then return end
+    cfg.look = LOOKS[look] and look or nil
+    self:ReanchorAll()
+    self:RequestLayout()
+end
+
+-- True if another block is docked to this block's group
+function ns:IsInGroup(key)
+    local root = self:GetRoot(key)
+    for other in pairs(self.db.blocks) do
+        if other ~= root and self:GetRoot(other) == root and self:GetDockTarget(other) then return true end
+    end
+    return false
+end
+
+function ns:SetGroupLook(look)
+    self.db.groupLook = look
+    self.db.merge = look ~= "separate"
+    self:ReanchorAll()
+    self:RequestLayout()
+end
+
+-- Gap between docked blocks: the joint width in "tiles" mode, else none. At least
+-- 2 pixels, more than the tolerance that hides borders between touching blocks.
+function ns:JointGap(key)
+    if self:GetGroupLook(key) ~= "tiles" then return 0 end
+    return math.max(2, self.db.jointGap or 3)
+end
+
 -- Anchors a docked block to its effective target. Vertical docks are
 -- left-aligned, horizontal docks are top-aligned. Returns false if the block
 -- is not docked (or its dock was dropped because it would form a loop).
@@ -260,14 +315,15 @@ function ns:AnchorDocked(f, cfg)
     target = self:GetEffectiveDock(f.key)
     f.anchoredTo = target
     local t = self.frames[target]
+    local g = self:JointGap(f.key)
     if side == "LEFT" then
-        f:SetPoint("TOPRIGHT", t, "TOPLEFT", 0, 0)
+        f:SetPoint("TOPRIGHT", t, "TOPLEFT", -g, 0)
     elseif side == "RIGHT" then
-        f:SetPoint("TOPLEFT", t, "TOPRIGHT", 0, 0)
+        f:SetPoint("TOPLEFT", t, "TOPRIGHT", g, 0)
     elseif side == "TOP" then
-        f:SetPoint("BOTTOMLEFT", t, "TOPLEFT", 0, 0)
+        f:SetPoint("BOTTOMLEFT", t, "TOPLEFT", 0, g)
     else
-        f:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, 0)
+        f:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -g)
     end
     return true
 end
@@ -488,6 +544,7 @@ function ns:UpdateLayout()
         if not horizontal or #members == 0 then return end
         local sum = 0
         for _, k in ipairs(members) do sum = sum + need[k][1] end
+        sum = sum + self:JointGap(rootKey) * (#members - 1) -- the joints between tiles take their share
         local extra = math.floor(total - sum)
         if extra <= 0 then return end
         local takers = members
@@ -671,8 +728,10 @@ function ns:UpdateSeams(active)
             -- portions of each side touched by another block of the same group.
             -- hA..hB: horizontal overlap, measured from my left edge;
             -- vA..vB: vertical overlap, measured downward from my top edge.
+            -- "separate" look: every block keeps its whole frame
+            local fused = self:GetGroupLook(key) ~= "separate"
             for other, o in pairs(rects) do
-                if other ~= key and o.root == me.root then
+                if fused and other ~= key and o.root == me.root then
                     local hA, hB = math.max(o.l, me.l) - me.l, math.min(o.r, me.r) - me.l
                     local vA, vB = me.t - math.min(o.t, me.t), me.t - math.max(o.b, me.b)
                     if hB - hA > SEAM_TOL then
@@ -1065,6 +1124,7 @@ end
 -- Returns the group's total width and the head's x offset from the group's left edge.
 local function GroupExtent(self, head, width)
     local x = { [head] = 0 }
+    local g = self:JointGap(head)
     local changed = true
     while changed do
         changed = false
@@ -1073,9 +1133,9 @@ local function GroupExtent(self, head, width)
                 local target, side = self:GetEffectiveDock(key)
                 if target and x[target] ~= nil and width[target] then
                     if side == "RIGHT" then
-                        x[key] = x[target] + width[target]
+                        x[key] = x[target] + width[target] + g
                     elseif side == "LEFT" then
-                        x[key] = x[target] - width[key]
+                        x[key] = x[target] - width[key] - g
                     else
                         x[key] = x[target]
                     end

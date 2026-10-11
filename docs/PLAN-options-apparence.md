@@ -1,6 +1,6 @@
 # Projet : onglet Apparence, fenêtre d'options aérée, apparence des groupes
 
-État : **idées validées, pas encore codées** (11 octobre 2026). Maquette à montrer avant de coder.
+État : **codé pour la 1.0.0-rc3** (11 octobre 2026), sauf la maquette (sautée à la demande de Braincell1980). À tester en jeu à plusieurs résolutions.
 
 ## 1. Onglet « Apparence » et nouveau rangement
 

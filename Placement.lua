@@ -159,7 +159,7 @@ end
 -- Undo (placement mode)
 ---------------------------------------------------------------------------
 local UNDO_LIMIT = 30
-local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch" }
+local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look" }
 
 -- Remembers the position of every block, before a move / merge / detach / hide
 function ns:PushUndo()
@@ -490,6 +490,17 @@ function ns:OpenQuickMenu(key)
             if sub.SetScrollMode then sub:SetScrollMode(400) end
             for _, other in ipairs(self:GetReplacementChoices(key)) do
                 sub:CreateButton(other.name, function() self:AskReplaceBlock(key, other.key) end)
+            end
+        end
+        -- this group's own look (fused, tiles, separate), or the one of the Look tab
+        if self:IsInGroup(key) then
+            local sub = root:CreateButton(L.MENU_GROUP_LOOK)
+            local function Own() return self.db.blocks[self:GetRoot(key)].look end
+            sub:CreateRadio(L.GROUP_LOOK_DEFAULT, function() return Own() == nil end,
+                function() self:PushUndo(); self:SetGroupOwnLook(key, nil) end)
+            for _, look in ipairs(ns.GROUP_LOOKS) do
+                sub:CreateRadio(L["GROUP_LOOK_" .. look:upper()], function() return Own() == look end,
+                    function() self:PushUndo(); self:SetGroupOwnLook(key, look) end)
             end
         end
         root:CreateCheckbox(L.MENU_FREEZE,
@@ -1048,6 +1059,7 @@ end
 -- block back. The layout before is kept in the saved variables (like the shape
 -- test), so a /reload in between can still be undone.
 local FOREVER_KEYS = { "legacy", "comprehension", "camping", "honor", "weaponSkills" }
+ns.FOREVER_KEYS = FOREVER_KEYS -- also checked on import (Profiles.lua)
 local FOREVER_MODES = { "row", "apart", "column" }
 local EXTRA_FIELDS = { "showIcon", "showLabel" }
 
@@ -1173,10 +1185,11 @@ function ns:GroupRectUI(rootKey)
                     local k = f:GetEffectiveScale() / UIParent:GetEffectiveScale()
                     local w, h = f:GetWidth() * k, f:GetHeight() * k
                     local l, t = tp.l, tp.t
-                    if side == "RIGHT" then l = tp.l + tp.w
-                    elseif side == "LEFT" then l = tp.l - w
-                    elseif side == "BOTTOM" then t = tp.t - tp.h
-                    else t = tp.t + h end
+                    local g = self:JointGap(key) * k
+                    if side == "RIGHT" then l = tp.l + tp.w + g
+                    elseif side == "LEFT" then l = tp.l - w - g
+                    elseif side == "BOTTOM" then t = tp.t - tp.h - g
+                    else t = tp.t + h + g end
                     pos[key] = { l = l, t = t, w = w, h = h }
                     changed = true
                 end

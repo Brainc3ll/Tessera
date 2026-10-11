@@ -35,7 +35,16 @@ local methods = {
     CreateAnimationGroup = function() return NewObject("AnimGroup") end,
     CreateAnimation = function() return NewObject("Anim") end,
     GetStringWidth = function() return 40 end, GetUnboundedStringWidth = function() return 40 end,
-    GetStringHeight = function() return 12 end,
+    -- rough wrapped height (about 5.6 px per character, 13 px per line), so the
+    -- options pages can be checked against the window height
+    GetStringHeight = function(self)
+        local text = tostring(self.__text or "")
+        local lines = 0
+        for para in (text .. "\n"):gmatch("([^\n]*)\n") do
+            lines = lines + math.max(1, math.ceil(#para * 5.6 / math.max(40, self.__w or 250)))
+        end
+        return 13 * lines
+    end,
     SetFont = function() return true end,
     GetText = function(self) return self.__text or "" end, SetText = function(self, t) self.__text = t end,
     NumLines = function() return 3 end,
@@ -84,6 +93,8 @@ CreateFrame = function(kind, name) local f = NewObject(kind); f.__name = name; i
 C_Timer = { After = function(_, fn) table.insert(_G.__timers, fn) end, NewTicker = function(_, fn) table.insert(_G.__tickers, fn); return NewObject("Ticker") end }
 __timers, __tickers = {}, {}
 GetLocale = function() return arg[2] or "frFR" end
+GetZoneText = function() return "Stormwind City" end
+GetSubZoneText = function() return "Trade District" end
 GetTime = function() return 1000 end
 GetFramerate = function() return 60 end
 GetNetStats = function() return 1, 1, 50, 60 end
@@ -220,7 +231,11 @@ end
 -- open options, every page and sub-tab, select every block
 local ok, err = xpcall(function() ns:ToggleOptions() end, debug.traceback)
 if not ok then print("OPTIONS ERROR: " .. tostring(err)) end
-for i = 1, 7 do local ok2, err2 = xpcall(function() ns.ShowOptionsPage(i) end, debug.traceback) if not ok2 then print("PAGE ERROR " .. i .. ": " .. tostring(err2)) end end
+for i = 1, 8 do local ok2, err2 = xpcall(function() ns.ShowOptionsPage(i) end, debug.traceback) if not ok2 then print("PAGE ERROR " .. i .. ": " .. tostring(err2)) end end
+-- every options page must fit in the window (pages start 98 px below its top)
+if -(ns.optionsLowestY or 0) > TesseraOptions:GetHeight() - 98 - 12 then
+    print("STEP ERROR: options page too tall: " .. -ns.optionsLowestY .. " px for " .. (TesseraOptions:GetHeight() - 110))
+end
 for _, key in ipairs(ns:GetBlockKeys()) do
     local ok3, err3 = pcall(function() ns:OpenOptionsFor(key); ns:UpdateBlock(key) end)
     if not ok3 then print("BLOCK ERROR " .. key .. ": " .. tostring(err3)) end
@@ -328,7 +343,7 @@ for _, step in ipairs({
         obj.OnClick(nil, "RightButton")
         ns:SetBrokerMode(true)
         assert(ns.brokerModeActive, "broker mode not on")
-        for i = 1, 7 do ns.ShowOptionsPage(i) end
+        for i = 1, 8 do ns.ShowOptionsPage(i) end
         ns:OpenOptionsFor("gold")
         ns:SetBrokerMode(false)
         assert(not ns.brokerModeActive, "broker mode not off")
@@ -567,6 +582,79 @@ for _, step in ipairs({
         ns:ResetProfile("gnomeregan")
         assert(ns.db.blocks.time.separators == true, "Forever layouts: separators on")
         ns:UpdateLayout()
+        ns:ResetProfile("top")
+    end,
+    -- a single group's own look, from the quick menu
+    function()
+        ns:ResetProfile("top")
+        local a, b = "gold", "fps"
+        ns.db.blocks[b].dock = { to = a, side = "RIGHT" }
+        ns.db.blocks[b].enabled, ns.db.blocks[a].enabled = true, true
+        assert(ns:IsInGroup(a) and ns:IsInGroup(b), "two docked blocks form a group")
+        ns:SetGroupOwnLook(b, "tiles")
+        assert(ns:GetGroupLook(a) == "tiles" and ns:JointGap(a) >= 2, "the group has its own look")
+        assert(ns:GetGroupLook() ~= "tiles" or ns.db.groupLook == "tiles", "the general look is untouched")
+        ns:OpenQuickMenu(a)
+        ns:UpdateLayout()
+        ns:SetGroupOwnLook(a, nil)
+        assert(ns.db.blocks[a].look == nil, "back to the Look tab's choice")
+        ns:ResetProfile("top")
+    end,
+    -- sharing a style or a layout: export, missing parts, import
+    function()
+        ns:ResetProfile("top")
+        ns.db.blocks.gold.font = "lsm:SomeMissingFont"
+        ns.db.blocks.gold.fontSize = 17
+        local style = ns:ExportStyle()
+        assert(ns:GetExportKind(style) == "style", "style text recognized")
+        local missing = ns:FindMissing(style)
+        local listed = false
+        for _, line in ipairs(missing) do listed = listed or line:find("SomeMissingFont") ~= nil end
+        assert(listed, "missing font listed")
+        -- a fake layout with a launcher and a DataBroker block nobody has here
+        ns.db.blocks.fps.point = { "CENTER", "CENTER", 10, 20 }
+        local layoutText = ns:ExportLayout()
+        assert(ns:GetExportKind(layoutText) == "layout", "layout text recognized")
+        assert(ns:GetExportKind(ns:ExportProfile()) == "profile", "profile text recognized")
+        assert(ns:GetExportKind("nonsense") == nil, "invalid text")
+        -- change things, then import both back
+        ns.db.blocks.gold.fontSize = 9
+        ns.db.blocks.fps.point = { "CENTER", "CENTER", 0, 0 }
+        assert(ns:ImportStyle(style) and ns.db.blocks.gold.fontSize == 17, "style imported")
+        assert(ns:ImportLayout(layoutText) and ns.db.blocks.fps.point[3] == 10, "layout imported")
+        assert(ns.db.blocks.gold.fontSize == 17, "layout import keeps the look")
+        assert(not ns:ImportStyle(layoutText) and not ns:ImportLayout(style), "kinds are not mixed up")
+        ns:UpdateLayout()
+        ns:Undo()
+        -- the import window routes each kind (popups are mocked)
+        ns:OpenImportWindow(style)
+        ns:FinishImport(layoutText, "layout")
+        ns:FinishImport(style, "style")
+        ns:ResetProfile("top")
+    end,
+    -- quick tour
+    function()
+        ns:StartTutorial()
+        for _ = 1, 8 do TesseraTutorial.next:GetScript("OnClick")() end
+    end,
+    -- group looks: fused, tiles (joint between blocks), separate; old profiles keep their choice
+    function()
+        ns.db.groupLook = nil
+        ns.db.merge = false
+        assert(ns:GetGroupLook() == "separate", "old profile without merge reads as separate")
+        ns.db.merge = true
+        assert(ns:GetGroupLook() == "fused", "old profile with merge reads as fused")
+        ns:SetGroupLook("tiles")
+        assert(ns.db.merge == true and ns:JointGap() >= 2, "tiles keep the groups, with a joint")
+        ns.db.jointGap = 6
+        ns:UpdateLayout()
+        ns:ResetProfile("stormwind")
+        ns:UpdateLayout()
+        ns:SetGroupLook("separate")
+        assert(ns.db.merge == false and ns:JointGap() == 0, "separate: no joint")
+        ns:UpdateLayout()
+        ns:SetGroupLook("fused")
+        ns.db.jointGap = nil
         ns:ResetProfile("top")
     end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle

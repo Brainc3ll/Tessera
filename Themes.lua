@@ -226,9 +226,9 @@ ns.themes = {
             cfg.bgColor = { r = 0.04, g = 0.035, b = 0.03, a = 0.92 }
             cfg.border = "solid"
             cfg.borderSize = 2
-            cfg.borderColor = { r = 0.80, g = 0.60, b = 0.34, a = 1 }
+            cfg.borderColor = { r = 0.48, g = 0.35, b = 0.19, a = 1 } -- dark bronze
             cfg.separators = true
-            cfg.separatorColor = { r = 0.80, g = 0.60, b = 0.34, a = 0.5 }
+            cfg.separatorColor = { r = 0.62, g = 0.46, b = 0.25, a = 0.5 }
             cfg.font, cfg.outline = "friz", "OUTLINE"
         end,
         window = function()
@@ -244,9 +244,9 @@ ns.themes = {
             cfg.bgColor = { r = 0.025, g = 0.05, b = 0.11, a = 0.92 }
             cfg.border = "solid"
             cfg.borderSize = 2
-            cfg.borderColor = { r = 1, g = 0.77, b = 0.25, a = 1 }
+            cfg.borderColor = { r = 0.56, g = 0.41, b = 0.13, a = 1 } -- dark gold
             cfg.separators = true
-            cfg.separatorColor = { r = 0.59, g = 0.43, b = 0.16, a = 0.8 }
+            cfg.separatorColor = { r = 0.50, g = 0.37, b = 0.14, a = 0.7 }
             cfg.font, cfg.outline = "friz", "OUTLINE"
         end,
         window = function()
@@ -262,9 +262,9 @@ ns.themes = {
             cfg.bgColor = { r = 0.05, g = 0.05, b = 0.05, a = 0.9 }
             cfg.border = "solid"
             cfg.borderSize = 2
-            cfg.borderColor = { r = 1, g = 0.82, b = 0, a = 1 }
+            cfg.borderColor = { r = 0.55, g = 0.44, b = 0.06, a = 1 } -- dark gold
             cfg.separators = true
-            cfg.separatorColor = { r = 1, g = 0.82, b = 0, a = 0.4 }
+            cfg.separatorColor = { r = 0.70, g = 0.57, b = 0.10, a = 0.4 }
             cfg.font, cfg.outline = "friz", "OUTLINE"
         end,
         window = function()
@@ -334,6 +334,12 @@ end
 local function IsInstalled(t)
     if t.installed then return t.installed() end
     return t.available()
+end
+
+-- Is the UI this theme matches loaded? (checked on import)
+function ns:IsThemeInstalled(key)
+    local t = byKey[key]
+    return t ~= nil and IsInstalled(t)
 end
 
 -- Themes offered in the menu: those whose UI is installed, plus Blizzard and Flat

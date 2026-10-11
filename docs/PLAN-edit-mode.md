@@ -34,6 +34,36 @@ Plutôt que de demander au joueur de tout déplacer à la main, Tessera propose 
 - Modifier le mode Édition depuis un addon peut provoquer des erreurs d'interface protégée (« taint ») : ne le faire que sur un clic du joueur, hors combat, et tester soigneusement.
 - La copie reflète l'état au moment de sa création : si le joueur change ensuite « Ma dispo », la copie ne suit pas.
 
+## Améliorations retenues
+
+1. **Ne décaler que ce qui gêne vraiment** : comparer la place des barres Tessera avec celle de chaque élément du mode Édition, et ne décaler que ceux qui se superposent, du minimum nécessaire (barre en bas : remonter ce qui est accroché en bas, barres d'action, barre d'XP, sacs ; barre en haut : descendre ce qui est en haut, minicarte, buffs). Le reste ne bouge pas.
+2. **Montrer avant d'appliquer** : la question liste ce qui va bouger (« Barre d'action 1, Barre d'action 2, barre d'XP : remontées de 24 px »).
+3. **Réutiliser la copie** créée par Tessera pour la même disposition d'origine et la même disposition Tessera, plutôt que d'en créer une nouvelle (« Tessera 2 », « Tessera 3 »…) : liste propre, limite du jeu respectée.
+4. **Bouton « Revenir à ma disposition »** dans les options de Tessera : réactive l'originale en un clic.
+5. **Lier la copie à la disposition Tessera** : en changeant de disposition ou de profil Tessera, proposer de basculer la disposition du mode Édition qui va avec, ou de revenir à l'originale.
+6. **Faire le ménage** : Tessera propose de supprimer les copies qu'il a créées, et seulement celles-là (voir « Sécurité du ménage »).
+7. **Vérifier et revenir en arrière** : après l'enregistrement, vérifier que la copie est active et les éléments au bon endroit ; en cas d'échec, réactiver l'originale et le dire.
+8. **Même type de disposition** que l'originale (compte ou personnage).
+9. **Résolution ou échelle changée** : proposer de recalculer (voir « Résolutions et échelles »).
+10. **Rapport de bug** : `/tessera bug` indique la disposition active du mode Édition et s'il s'agit d'une copie Tessera.
+
+## Sécurité du ménage
+
+Un joueur peut créer lui-même une disposition qui porte exactement le nom d'une copie Tessera. Tessera ne doit **jamais** la supprimer :
+
+- Tessera ne reconnaît pas ses copies à leur nom, mais à une **empreinte** enregistrée au moment de la création (dans ses variables sauvegardées) : nom, type (compte / personnage) et contenu exact de la disposition (positions de chaque élément).
+- Avant de supprimer, Tessera recalcule l'empreinte : si la disposition n'existe plus, a été modifiée, ou ne correspond pas à ce que Tessera a enregistré, elle est **laissée intacte** (une copie modifiée par le joueur devient la sienne).
+- Jamais de suppression sans confirmation, avec la liste exacte des dispositions concernées ; jamais la disposition active ; jamais une disposition que Tessera n'a pas créée lui-même.
+
+## Résolutions et échelles
+
+La fonction doit marcher à toutes les résolutions et à toutes les échelles d'interface, ce qui est difficile à tester entièrement en jeu :
+
+- **Calculs en unités de l'interface**, à partir de la taille réelle des barres Tessera et des éléments au moment de l'application, jamais avec des valeurs en pixels écrites en dur.
+- **Tests automatiques** sur une série de résolutions et d'échelles simulées (1280 × 720 à 3840 × 2160, échelles 0,64 à 1,15, écrans larges et ultralarges), pour vérifier les calculs sans dépendre des tests en jeu.
+- **Vérification en jeu après application** : Tessera mesure le résultat réel. S'il reste une superposition, ou si un élément sort de l'écran, il le **signale par un message** (et propose de revenir à l'originale) plutôt que de supposer que tout va bien.
+- En cas de doute (résolution ou échelle inhabituelle, autre interface détectée), le message avant application le dit clairement.
+
 ## Interfaces testées et avertissement
 
 - La fonction sera testée sur :

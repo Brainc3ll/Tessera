@@ -1,0 +1,36 @@
+# Sends the English and French strings to CurseForge's localization tool, without
+# publishing a version (the release workflow does the same before packaging).
+# Start it with "Run workflow" in the Actions tab, or `gh workflow run localization.yml`.
+# Phrases that no longer exist in the addon are kept on CurseForge ("DoNothing"), so no
+# translator's work is ever deleted by mistake. Needs the CF_API_KEY repository secret.
+name: Send strings to CurseForge
+
+on:
+  workflow_dispatch:
+
+env:
+  CF_PROJECT: "1736530"
+
+jobs:
+  localization:
+    runs-on: ubuntu-latest
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Send the English and French strings to CurseForge
+        run: |
+          set -e
+          url="https://wow.curseforge.com/api/projects/${CF_PROJECT}/localization/import"
+          for lang in enUS frFR; do
+            echo "Sending ${lang}..."
+            code=$(curl -sS -o response.txt -w '%{http_code}' -X POST \
+              -H "X-Api-Token: ${CF_API_KEY}" \
+              -F "metadata={ \"language\": \"${lang}\", \"formatType\": \"TableAdditions\", \"missing-phrase-handling\": \"DoNothing\" }" \
+              -F "localizations=<docs/localization/${lang}.lua" \
+              "${url}")
+            echo "HTTP ${code}: $(head -c 300 response.txt)"
+            if [ "${code}" -lt 200 ] || [ "${code}" -ge 300 ]; then exit 1; fi
+          done

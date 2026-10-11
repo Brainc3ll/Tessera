@@ -2272,13 +2272,14 @@ ns:RegisterModule("camping", {
     end,
     update = function()
         local perks = PlayerAura(CAMP_PERKS)
-        if perks and perks.left then return ShortDuration(perks.left), GOOD end
+        -- each value says what it is: camp buffs, resting countdown or campfire kit
+        if perks and perks.left then return L.CAMP_BUFFS_LEFT:format(ShortDuration(perks.left)), GOOD end
         local welcoming = PlayerAura(CAMP_WELCOMING)
         if welcoming and welcoming.left then return L.CAMP_RESTING:format(ShortTime(welcoming.left)), WARN end
         if KitCount() > 0 then
             local cd = KitCooldown()
-            if cd > 0 then return ShortTime(cd), WARN end
-            return L.TT_READY, GOOD
+            if cd > 0 then return L.CAMP_KIT_COOLDOWN:format(ShortTime(cd)), WARN end
+            return L.CAMP_KIT_READY, GOOD
         end
         return L.NONE
     end,
@@ -2404,7 +2405,7 @@ local MORE_SAMPLES = {
     weaponSkills = function() return "115/120", WARN end,
     legacy       = function() return "16" end,
     comprehension = function() return "42/65", WARN end,
-    camping      = function() return "52m", GOOD end,
+    camping      = function() return L.CAMP_BUFFS_LEFT:format("52m"), GOOD end,
     honor        = function() return "3 250" end,
 }
 for key, sample in pairs(MORE_SAMPLES) do

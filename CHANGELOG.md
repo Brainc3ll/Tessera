@@ -3,6 +3,11 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0-rc4 — 
+
+- New logo, drawn in high definition: sharp in the addon list, on the minimap button and on large screens.
+- About tab: a fuller account of how Tessera is made, what the author does and what the AI does.
+
 ## 1.0.0-rc3 — 2026-10-11
 
 - New ready-made layout "Around the gryphons": two groups in the bottom corners of the screen, on both sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list (Look tab), with a description of each one.

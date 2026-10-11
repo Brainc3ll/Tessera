@@ -10,6 +10,20 @@ local _, ns = ...
 
 ns.CHANGELOG = {
     {
+        version = "1.0.0-rc4",
+        date = "", -- set when the version is published
+        en = {
+            "New logo, drawn in high definition: sharp in the addon list, on the minimap button and on large screens.",
+            "About tab: a fuller account of how Tessera is made, what the author does and what the AI does.",
+        },
+        fr = {
+            "Nouveau logo, dessiné en haute définition : net dans la liste des addons, sur le bouton de la minicarte "
+                .. "et sur les grands écrans.",
+            "Onglet À propos : un récit plus complet de la façon dont Tessera est fait, ce que fait l'auteur et ce que "
+                .. "fait l'IA.",
+        },
+    },
+    {
         version = "1.0.0-rc3",
         date = "2026-10-11",
         en = {

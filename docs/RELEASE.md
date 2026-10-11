@@ -78,3 +78,5 @@ La règle IA de CurseForge ne vise que les images générées par IA : de vraies
 Le fichier `.github/workflows/release.yml` utilise le packager BigWigs. Quand un tag est créé sur GitHub (par exemple `v1.0.1`), GitHub fabrique le zip, crée la release GitHub et l'envoie sur CurseForge (projet 1736530, voir `Tessera.toc`), avec `CHANGELOG.md` comme notes de version. Le type est déduit du tag : « alpha » donne une Alpha, « beta » une Beta, tout le reste une Release.
 
 Pour une nouvelle version : mettre à jour la version dans `Tessera.toc`, `Changelog.lua` et `CHANGELOG.md`, puis créer le tag. Le secret `CF_API_KEY` (clé d'API CurseForge) doit exister dans Settings > Secrets and variables > Actions. Le résultat se suit dans l'onglet Actions du dépôt.
+
+Traductions : pour l'instant le packager tourne avec l'option `-l` (dans `release.yml`), qui saute la récupération des traductions sur CurseForge. Tant que les textes anglais ne sont pas importés dans l'outil de traduction de CurseForge, cette récupération échoue et bloque toute la publication. Une fois l'import fait (section 3), retirer `-l` pour que les traductions de la communauté soient ajoutées automatiquement.

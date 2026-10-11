@@ -29,3 +29,9 @@ jobs:
 
       - name: Package and upload
         uses: BigWigsMods/packager@v2
+        with:
+          # -l: no @localization@ replacement for now. The CurseForge localization tool has
+          # no strings yet, and fetching them stops the packager. Remove "-l" once the
+          # English strings are imported on CurseForge (docs/localization/enUS.lua), so the
+          # community translations get packaged into the Locales stub files.
+          args: -l

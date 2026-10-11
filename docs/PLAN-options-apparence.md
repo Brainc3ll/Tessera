@@ -42,9 +42,18 @@ Points à prévoir :
 - le passage d'une apparence à l'autre ne doit pas casser une disposition existante (les accroches entre blocs ne changent pas, seul le dessin change) ;
 - aide, infobulles et chaînes en anglais et en français.
 
+## 4. Aide revue et mini tutoriel
+
+Constat (11 octobre 2026) : « Remplacer par... » et « Ajouter un espace » existent dans le menu rapide (Alt + clic droit), mais rien ne l'indique en mode placement ; même l'auteur ne les a pas trouvés.
+
+- **Revoir toute l'aide** : vérifier que chaque fonction y figure, au bon endroit, avec des mots simples ; réorganiser les sujets après le passage à l'onglet Apparence.
+- **Rendre les actions visibles** : le bandeau de placement et les infobulles des blocs déverrouillés citent le menu rapide et ce qu'il contient (masquer, détacher, figer, ajouter un espace, remplacer par...).
+- **Mini tutoriel** (premier lancement, et relançable depuis l'aide) : quelques étapes courtes, par exemple déverrouiller, déplacer et fusionner un bloc, ouvrir le menu rapide, remplacer un bloc, ajouter un espace, coller une barre au bord, verrouiller.
+- **Plus tard** : un tutoriel interactif (étapes guidées en jeu, qui attendent que le joueur fasse l'action).
+
 ## Étapes prévues
 
 1. Maquette de la nouvelle fenêtre (onglet par onglet) et des trois apparences de groupe, à valider.
 2. Code : nouvel onglet et déplacement des réglages, fenêtre adaptée à l'écran, apparence des groupes.
-3. Aide, infobulles, README, description CurseForge.
+3. Aide revue, mini tutoriel, infobulles, README, description CurseForge.
 4. Tests automatiques, puis test en jeu à plusieurs résolutions.

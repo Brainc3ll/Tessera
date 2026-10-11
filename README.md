@@ -1,4 +1,4 @@
-# Tessera
+# Tessera – Mosaic Info Bars & Data Blocks
 
 **Download:** [CurseForge](https://www.curseforge.com/wow/addons/tessera) · [GitHub releases](https://github.com/Brainc3ll/Tessera/releases)
 

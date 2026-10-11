@@ -1,4 +1,4 @@
-# Tessera
+# Tessera – Mosaic Info Bars & Data Blocks
 
 **Customizable information and launcher blocks that merge like mosaic tiles, made for WoW Forever.**
 
@@ -83,7 +83,7 @@ Tessera is a collaboration between me, a player, and an AI.
 
 ---
 
-# Tessera (français)
+# Tessera – Barres d'infos en mosaïque (français)
 
 **Des blocs d'informations et des lanceurs personnalisables qui s'assemblent comme une mosaïque, conçus pour WoW Forever.**
 

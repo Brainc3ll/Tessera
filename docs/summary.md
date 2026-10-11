@@ -1,14 +1,18 @@
 # Short texts
 
+## Title (CurseForge)
+
+Tessera – Mosaic Info Bars & Data Blocks
+
 ## CurseForge summary (one line, English)
 
-Info and launcher blocks that merge like mosaic tiles, with blocks for WoW Forever's own systems (Legacy, camping, Comprehension, honor), also shared with your DataBroker bar.
+Place info blocks anywhere and merge them like mosaic tiles: bars, columns, corners. Gold, bags, FPS, latency, professions, WoW Forever's Legacy and more.
 
 ## GitHub "About" (repository description)
 
-Info and launcher blocks that merge like mosaic tiles, for WoW Forever: Legacy points, camping, Comprehension, honor, gold, bags, FPS, minimap buttons, DataBroker.
+Mosaic info bars & data blocks for WoW Forever: place info blocks anywhere and merge them like mosaic tiles. Gold, bags, FPS, professions, Legacy, camping, Comprehension, minimap buttons, DataBroker.
 
-Topics: world-of-warcraft, wow-addon, wow-forever, lua, databroker
+Topics: world-of-warcraft, world-of-warcraft-addon, wow-forever, wow-forever-addon, lua, databroker, info-bar, data-broker-display
 
 ## Résumé en français (quelques lignes)
 

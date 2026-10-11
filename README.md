@@ -53,6 +53,9 @@ Help tab inside the game explains everything.
 
 **Highlights**
 
+- **Mosaic placement:** blocks are placed anywhere and merge in every direction when dropped
+  against each other: a bar, a column, a corner, an L shape... Bars can be stuck to a screen edge
+  and stretched like a taskbar, and ready-made layouts give a starting point.
 - **Blocks made for WoW Forever's own systems**, which can also be shared with DataBroker
   display addons (Titan Panel, ChocolateBar, Bazooka...):
   - Legacy points: your points, the next reward, every reward of the track and your Legacy
@@ -73,9 +76,14 @@ Help tab inside the game explains everything.
   fused, as tiles with joints, or separate; replace a block in place from the quick menu.
 - Per-block style, icons (same size, square or round frame, black and white), opacity, scale,
   progress bar, thresholds, show on hover, alerts, click actions.
-- DataBroker: other addons' DataBroker objects as blocks; Tessera's blocks shared with Titan
-  Panel, ChocolateBar, Bazooka...; a DataBroker mode, on automatically when such an addon is
-  installed (Tessera then shows nothing itself), that can be turned off to use both.
+- DataBroker tab: other addons' DataBroker objects as blocks ("Plugins as blocks"); Tessera's
+  blocks shared with Titan Panel, ChocolateBar, Bazooka... ("Sharing and mode"); a DataBroker mode,
+  on automatically when such an addon is installed (Tessera then shows nothing itself), that can
+  be turned off to use both.
+- Look tab: styles, how groups look, screen edges, ready-made layouts, Blizzard's Edit Mode and
+  sharing, in one place.
+- Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
+  with FlareUI, Tessera is in FlareUI's addon bag instead.
 - Themes matching FlareUI (2.x or 1.x), ElvUI, EllesmereUI or Blizzard's look, Square styles, plus Clean and
   Transparent; profiles with export/import, ready-made layouts and an automatic dungeon/raid profile;
   accessibility options.
@@ -93,9 +101,11 @@ Help tab inside the game explains everything.
 | `/tessera reset` | Reset everything: empties the saved variables, then reloads the interface |
 | `/tessera minimap` | Show or hide the minimap button |
 | `/tessera preview` | Sample values in every block (for screenshots) |
+| `/tessera preview forever` | The WoW Forever blocks alone, with sample values |
 | `/tessera bug` | Report to copy into a bug report |
 | `/tessera broker` | DataBroker mode on or off |
 | `/tessera recover` | Bring back blocks that stick out of the screen |
+| `/tessera help` | The list of commands in the chat |
 
 Key bindings (show / hide all blocks, lock / unlock, options) are in the game's key bindings,
 Tessera category.
@@ -123,10 +133,11 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
 | `Core.lua` | Shared namespace, media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
-| `Themes.lua` | Visual themes (FlareUI 2.x and 1.x, EllesmereUI, ElvUI, Blizzard modern/classic, clean, transparent). |
+| `Themes.lua` | Visual themes (FlareUI 2.x and 1.x, EllesmereUI, ElvUI, Blizzard modern/classic, the Square styles, clean, transparent). |
 | `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, centering, second row), unlock-mode name tags, border seams and corner joins. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
-| `Profiles.lua` | Profile export / import (text), duplicate, automatic dungeon / raid profile. |
+| `EditMode.lua` | Blizzard's Edit Mode: a copy of the player's layout with room for Tessera's bars stuck to the top or bottom edge, back to the original, cleanup of Tessera's copies (recognized by a fingerprint). |
+| `Profiles.lua` | Profile export / import (text), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
 | `Changelog.lua` | Version history for the in-game About tab (Changelog topic) (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
 | `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
@@ -134,10 +145,14 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Spacers.lua` | Spacer blocks (empty, separator line or text). |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
-| `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, General, Launchers, Broker (DataBroker), Profiles, Help, Version), widgets, placement banner, text window (export / import / debug), welcome popup, debug report, Blizzard Settings page. |
+| `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / debug), welcome popup and quick tour, debug report, Blizzard Settings page. |
 
 The `docs/` folder (not shipped in the addon) holds the release guide, the CurseForge
-description and the strings to import into CurseForge's localization tool.
+description, the strings sent to CurseForge's localization tool, the project plans and ideas
+(in French), and the logo in large sizes (`docs/art`).
+
+Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
+with a small imitation of the game API and runs every page and feature; lint with `luacheck .`.
 
 ### How a value gets on screen
 

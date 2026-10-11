@@ -17,12 +17,18 @@ ns.CHANGELOG = {
                 .. "which layout was applied.",
             "Releases: the English and French strings are sent to CurseForge's localization tool automatically, "
                 .. "and community translations are added to the addon.",
+            "New ready-made layout \"Around the gryphons\": two groups at the bottom of the screen, on both sides "
+                .. "of the main action bar, WoW Forever blocks included. Ready-made layouts are now picked in a list "
+                .. "(Profiles tab), with a description of each one.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
                 .. "réinitialiser » ; il indique maintenant la disposition appliquée.",
             "Publications : l'anglais et le français sont envoyés automatiquement à l'outil de traduction de "
                 .. "CurseForge, et les traductions de la communauté sont ajoutées à l'addon.",
+            "Nouvelle disposition toute prête « Autour des gryphons » : deux groupes en bas de l'écran, de part et "
+                .. "d'autre de la barre d'action principale, blocs WoW Forever compris. Les dispositions toutes prêtes "
+                .. "se choisissent maintenant dans une liste (onglet Profils), avec la description de chacune.",
         },
     },
     {

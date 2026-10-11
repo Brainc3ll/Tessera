@@ -7,6 +7,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Fix: choosing a ready-made layout showed the "reset everything" message in the chat; it now says which layout was applied.
 - Releases: the English and French strings are sent to CurseForge's localization tool automatically, and community translations are added to the addon.
+- New ready-made layout "Around the gryphons": two groups at the bottom of the screen, on both sides of the main action bar, WoW Forever blocks included. Ready-made layouts are now picked in a list (Profiles tab), with a description of each one.
 
 ## 1.0.0-rc2 — 2026-10-11
 

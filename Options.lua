@@ -1559,15 +1559,37 @@ local function BuildProfilesPage(page)
         StaticPopup_Show("TESSERA_RESET_PROFILE")
     end, nil, nil, L.TIP_RESET_PROFILE), 2)
 
-    -- ready-made layouts: replace the current profile after a confirmation
+    -- ready-made layouts: pick one in the list, then apply it (replaces the current
+    -- profile after a confirmation). The note below the list describes the choice.
     P.Gap(2, 8)
     Place(CreateHeader(page, L.SECTION_PRESETS), 2)
     Place(CreateNote(page, L.PRESETS_HINT), 2)
+    local chosenPreset = ns.PRESETS[1]
+    local presetOptions = {}
     for _, preset in ipairs(ns.PRESETS) do
-        Place(CreateButton(page, L["PRESET_" .. preset:upper()], function()
-            StaticPopup_Show("TESSERA_APPLY_PRESET", nil, nil, preset)
-        end, nil, nil, L["TIP_PRESET_" .. preset:upper()]), 2)
+        table.insert(presetOptions, { key = preset, name = L["PRESET_" .. preset:upper()] })
     end
+    -- the note keeps the height of the longest description, so nothing moves
+    local longest = ""
+    for _, preset in ipairs(ns.PRESETS) do
+        local tip = L["TIP_PRESET_" .. preset:upper()] or ""
+        if #tip > #longest then longest = tip end
+    end
+    local presetNote = CreateNote(page, longest)
+    presetNote.Refresh = function()
+        presetNote.fs:SetText(L["TIP_PRESET_" .. chosenPreset:upper()] or "")
+    end
+    Place(CreateDropdown(page, L.PRESET_CHOOSE, presetOptions,
+        function() return chosenPreset end,
+        function(v)
+            chosenPreset = v
+            presetNote:Refresh()
+        end, nil, nil, L.PRESETS_HINT), 2)
+    Place(presetNote, 2)
+    presetNote:Refresh()
+    Place(CreateButton(page, L.PRESET_APPLY, function()
+        StaticPopup_Show("TESSERA_APPLY_PRESET", nil, nil, chosenPreset)
+    end, nil, nil, L.TIP_PRESET_APPLY), 2)
 end
 
 ---------------------------------------------------------------------------

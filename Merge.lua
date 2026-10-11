@@ -1020,7 +1020,8 @@ end
 function ns:CenterAnchoredGroups(width)
     for key in pairs(width) do
         local cfg, f = self.db.blocks[key], self.frames[key]
-        if cfg.anchor and not self:GetDockTarget(key) then
+        -- groups placed beside the action bar keep their corner against it: not centered
+        if cfg.anchor and not cfg.anchor.beside and not self:GetDockTarget(key) then
             local groupWidth, headX = GroupExtent(self, key, width)
             local offset
             if ns.HangTarget(cfg.anchor) then

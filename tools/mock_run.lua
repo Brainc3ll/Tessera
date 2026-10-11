@@ -406,6 +406,29 @@ for _, step in ipairs({
         assert(ns.db.blocks.gold.enabled == goldEnabled, "blocks not restored after the forever preview")
         assert(not ns.previewMode, "preview mode left on")
     end,
+    -- "around the gryphons" layout: groups beside the action bar's gryphons
+    function()
+        local function Cap() local c = CreateFrame("Frame"); c.GetLeft = function() return 500 end
+            c.IsVisible = function() return true end; c.GetWidth = function() return 40 end; return c end
+        MainActionBar = { EndCaps = { LeftEndCap = Cap(), RightEndCap = Cap() } }
+        ns:ResetProfile("gryphons")
+        ns:UpdateLayout()
+        local b = ns.db.blocks
+        assert(b.legacy.anchor and b.legacy.anchor.beside == "LEFT", "legacy should head the left group")
+        assert(b.honor.anchor and b.honor.anchor.beside == "RIGHT", "honor should head the right group")
+        assert(b.camping.dock and b.camping.dock.to == "comprehension" and b.camping.dock.side == "LEFT", "camping dock")
+        assert(b.durability.dock and b.durability.dock.to == "legacy" and b.durability.dock.side == "TOP", "top row")
+        assert(b.gold.dock and b.gold.dock.to == "bags", "gold dock")
+        assert(b.mail.anchor and b.mail.anchor.above == "durability", "left hidden row")
+        assert(b.friends.anchor and b.friends.anchor.above == "time", "right hidden row")
+        assert(b.coords and not b.coords.enabled, "other blocks hidden")
+        local exported = ns:SanitizeProfile(ns:DecodeProfile(ns:ExportProfile()))
+        assert(exported and exported.blocks.legacy.anchor.beside == "LEFT", "beside lost by export")
+        MainActionBar = nil
+        ns:ResetProfile("gryphons")
+        ns:UpdateLayout()
+        ns:ResetProfile("top")
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

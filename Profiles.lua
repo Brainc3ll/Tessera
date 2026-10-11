@@ -183,6 +183,7 @@ local function CleanBlock(self, key, block, keys)
             end
             if type(value.frame) == "string" then a.frame = value.frame end
             if type(value.fill) == "boolean" then a.fill = value.fill end
+            if value.beside == "LEFT" or value.beside == "RIGHT" then a.beside = value.beside end
             for _, k in ipairs({ "below", "above" }) do
                 if type(value[k]) == "string" and keys[value[k]] and value[k] ~= key then a[k] = value[k] end
             end

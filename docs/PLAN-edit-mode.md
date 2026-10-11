@@ -34,9 +34,21 @@ Plutôt que de demander au joueur de tout déplacer à la main, Tessera propose 
 - Modifier le mode Édition depuis un addon peut provoquer des erreurs d'interface protégée (« taint ») : ne le faire que sur un clic du joueur, hors combat, et tester soigneusement.
 - La copie reflète l'état au moment de sa création : si le joueur change ensuite « Ma dispo », la copie ne suit pas.
 
+## Interfaces testées et avertissement
+
+- La fonction sera testée sur :
+  - l'interface de base de Blizzard, dispositions « Moderne » et « Classique » ;
+  - l'interface de base de FlareUI, sans modification.
+- Avec une autre interface (ElvUI, EllesmereUI, etc.), **des résultats inattendus peuvent survenir** : ces interfaces déplacent ou remplacent les éléments de Blizzard à leur façon.
+- Cet avertissement doit apparaître :
+  - dans le message affiché avant de créer la copie (quand une autre interface est détectée, le dire clairement) ;
+  - dans l'aide et l'infobulle de la fonction ;
+  - dans la description CurseForge / le README, au moment de la sortie de la fonction.
+- Plus tard : Braincell1980 testera les interfaces populaires ; la liste des interfaces testées sera alors complétée.
+
 ## Étapes prévues
 
 1. **Relevé en jeu** (commande de debug, comme pour l'héritage) : fonctions `C_EditMode` présentes sur Forever, structure d'une disposition (systèmes, ancrages, décalages), noms et limites, présence de LibEditMode ou d'un équivalent chez FlareUI.
 2. **Schéma** à valider : quels éléments sont décalés, de combien, pour chaque disposition Tessera concernée.
 3. **Code** : création de la copie, nom unique, décalage, activation, message, aide, infobulles, chaînes EN et FR.
-4. **Tests** : tests automatiques (simulation de `C_EditMode`), puis test en jeu avec et sans FlareUI.
+4. **Tests** : tests automatiques (simulation de `C_EditMode`), puis test en jeu sur l'interface de base de Blizzard (« Moderne » et « Classique ») et sur FlareUI non modifié.

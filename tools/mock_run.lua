@@ -443,6 +443,33 @@ for _, step in ipairs({
         assert(exported and exported.blocks.mail.anchor.align == "LEFT", "align lost by export")
         ns:ResetProfile("top")
     end,
+    -- replace a block in place, then swap two shown blocks
+    function()
+        ns:ResetProfile("top")
+        local b = ns.db.blocks
+        local goldDock, goldAnchor = ns.DeepCopy(b.gold.dock), ns.DeepCopy(b.gold.anchor)
+        local bagsTo = b.bags.dock and b.bags.dock.to
+        assert(not b.zone.enabled, "zone starts hidden")
+        assert(ns:ReplaceBlock("gold", "zone"), "replace refused")
+        assert(b.zone.enabled and not b.gold.enabled, "zone shown, gold hidden")
+        assert((b.zone.anchor ~= nil) == (goldAnchor ~= nil) and (b.zone.dock ~= nil) == (goldDock ~= nil), "zone took gold's place")
+        if bagsTo == "gold" then assert(b.bags.dock.to == "zone", "neighbour follows the new block") end
+        for k, c in pairs(b) do
+            assert(not (c.dock and c.dock.to == "gold"), k .. " still docked to the hidden block")
+        end
+        -- swap two shown blocks: bags and time
+        local bagsDock, timeDock = ns.DeepCopy(b.bags.dock), ns.DeepCopy(b.time.dock)
+        assert(ns:ReplaceBlock("bags", "time"), "swap refused")
+        assert(b.bags.enabled and b.time.enabled, "both stay shown in a swap")
+        assert(b.time.dock and bagsDock and (b.time.dock.side == bagsDock.side), "time took bags' side")
+        assert(b.bags.dock and timeDock and (b.bags.dock.side == timeDock.side), "bags took time's side")
+        for k, c in pairs(b) do
+            assert(not (c.dock and c.dock.to == k), k .. " docked to itself")
+        end
+        ns:GetReplacementChoices("time")
+        ns:AskReplaceBlock("time", "fps")
+        ns:ResetProfile("top")
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

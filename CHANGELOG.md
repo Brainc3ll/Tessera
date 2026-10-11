@@ -9,6 +9,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Fix: switching to another layout or profile could raise a Lua error ("Cannot anchor to a region dependent on it") when two blocks swapped places.
 - Releases: the English and French strings are sent to CurseForge's localization tool automatically, and community translations are added to the addon.
 - New ready-made layout "Around the gryphons": two groups in the bottom corners of the screen, on both sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list (Profiles tab), with a description of each one.
+- New "Replace with..." (quick menu, or next to the block list in the Blocks tab): puts another block exactly in a block's place, with its look, without moving the others; or swaps two shown blocks.
 
 ## 1.0.0-rc2 — 2026-10-11
 

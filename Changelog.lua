@@ -22,6 +22,8 @@ ns.CHANGELOG = {
             "New ready-made layout \"Around the gryphons\": two groups in the bottom corners of the screen, on both "
                 .. "sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list "
                 .. "(Profiles tab), with a description of each one.",
+            "New \"Replace with...\" (quick menu, or next to the block list in the Blocks tab): puts another block "
+                .. "exactly in a block's place, with its look, without moving the others; or swaps two shown blocks.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -33,6 +35,9 @@ ns.CHANGELOG = {
             "Nouvelle disposition toute prête « Autour des gryphons » : deux groupes dans les coins bas de l'écran, "
                 .. "de part et d'autre des barres d'action, blocs WoW Forever compris. Les dispositions toutes prêtes "
                 .. "se choisissent maintenant dans une liste (onglet Profils), avec la description de chacune.",
+            "Nouveau « Remplacer par... » (menu rapide, ou à côté de la liste des blocs dans l'onglet Blocs) : met un "
+                .. "autre bloc exactement à la place d'un bloc, avec son apparence, sans bouger les autres ; ou échange "
+                .. "deux blocs affichés.",
         },
     },
     {

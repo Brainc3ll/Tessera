@@ -783,13 +783,28 @@ local function BuildBlockPage(page)
     -- Block selection, full width
     local top = NewLayout(page)
     local ShowSub -- defined below (sub-tabs); a spacer's settings are in the Behaviour tab
-    top.Place(CreateDropdown(page, L.SELECTION, SelectionOptions,
+    local REPLACE_W = 140
+    local selection = CreateDropdown(page, L.SELECTION, SelectionOptions,
         function() return selected end,
         function(v)
             selected = v
             if ns.IsSpacerKey(v) and ShowSub then ShowSub(4) end
             ns:RefreshOptions()
-        end, nil, FULL_W, L.TIP_SELECTION), 1)
+        end, nil, FULL_W - REPLACE_W, L.TIP_SELECTION)
+    top.Place(selection, 1)
+    -- "Replace with...": another block takes the selected block's place
+    local replace = CreateButton(page, L.REPLACE_BLOCK, function(self)
+        if not (MenuUtil and MenuUtil.CreateContextMenu) then return end
+        local key = selected
+        MenuUtil.CreateContextMenu(self, function(_, root)
+            if root.SetScrollMode then root:SetScrollMode(400) end
+            root:CreateTitle(L.REPLACE_TITLE:format(ns:GetBlockName(key)))
+            for _, other in ipairs(ns:GetReplacementChoices(key)) do
+                root:CreateButton(other.name, function() ns:AskReplaceBlock(key, other.key) end)
+            end
+        end)
+    end, function() return single() and not ns.IsSpacerKey(selected) end, REPLACE_W - 8, L.TIP_REPLACE_BLOCK)
+    replace:SetPoint("BOTTOMLEFT", selection, "BOTTOMRIGHT", 0, 1)
     top.Place(CreateNote(page, L.GROUP_HINT, FULL_W), 1)
 
     -- Sub-tabs

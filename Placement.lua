@@ -468,6 +468,14 @@ function ns:OpenQuickMenu(key)
                 end)
             end
         end
+        -- put another block in this one's place (or swap with it if it is shown)
+        if not self:IsFrozen(key) and not ns.IsSpacerKey(key) then
+            local sub = root:CreateButton(L.MENU_REPLACE)
+            if sub.SetScrollMode then sub:SetScrollMode(400) end
+            for _, other in ipairs(self:GetReplacementChoices(key)) do
+                sub:CreateButton(other.name, function() self:AskReplaceBlock(key, other.key) end)
+            end
+        end
         root:CreateCheckbox(L.MENU_FREEZE,
             function() return self:IsFrozen(key) end,
             function() self:SetFrozen(key, not self:IsFrozen(key)) end)
@@ -475,6 +483,44 @@ function ns:OpenQuickMenu(key)
             function() self:SetLocked(not self.db.locked) end)
         root:CreateButton(L.MENU_COPY_CHAT, function() InsertInChat(self:GetChatText(key)) end)
     end)
+end
+
+-- Blocks that can take a block's place: every other block except spacers,
+-- sorted by name; blocks already shown are marked (choosing one swaps them)
+function ns:GetReplacementChoices(key)
+    local list = {}
+    for _, other in ipairs(self:GetBlockKeys()) do
+        local cfg = self.db.blocks[other]
+        if other ~= key and cfg and not ns.IsSpacerKey(other) then
+            local name = self:GetBlockName(other)
+            if cfg.enabled then name = name .. "  |cff999999(" .. L.REPLACE_SWAP_MARK .. ")|r" end
+            table.insert(list, { key = other, name = name, sort = self:GetBlockName(other) })
+        end
+    end
+    table.sort(list, function(a, b) return a.sort < b.sort end)
+    return list
+end
+
+-- Asks before replacing (or swapping) a block
+StaticPopupDialogs["TESSERA_REPLACE_BLOCK"] = {
+    text = L.REPLACE_CONFIRM,
+    button1 = YES,
+    button2 = NO,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function(_, data)
+        if data and ns:ReplaceBlock(data.old, data.new) and ns.RefreshOptions then ns:RefreshOptions() end
+    end,
+}
+
+function ns:AskReplaceBlock(oldKey, newKey)
+    if InCombatLockdown() then
+        self.Print(L.REPLACE_IN_COMBAT)
+        return
+    end
+    StaticPopup_Show("TESSERA_REPLACE_BLOCK", self:GetBlockName(newKey), self:GetBlockName(oldKey),
+        { old = oldKey, new = newKey })
 end
 
 ---------------------------------------------------------------------------

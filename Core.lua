@@ -1572,6 +1572,61 @@ end
 -- merges, visibility, group scale): otherwise the block and every block merged
 -- with it would jump to a default spot.
 local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen", "launcher", "broker", "brokerShare" }
+-- Puts block newKey exactly where block oldKey is, without moving anything else:
+--   * newKey takes oldKey's place (its dock, or its free position / anchor if it
+--     heads a group, with the group's scale and frozen state), and every block
+--     docked or hanging on oldKey now follows newKey;
+--   * newKey takes oldKey's look (size, font, frame...) so it fits in the group;
+--   * oldKey is hidden. If newKey was shown somewhere else, the two blocks swap
+--     places instead (each keeps its own look).
+-- Undoable with Ctrl + Z in placement mode. Returns true when done.
+local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen" }
+function ns:ReplaceBlock(oldKey, newKey)
+    local blocks = self.db.blocks
+    local old, new = blocks[oldKey], blocks[newKey]
+    if not old or not new or oldKey == newKey or InCombatLockdown() then return false end
+    self:PushUndo()
+    local swap = new.enabled and self.frames[newKey] ~= nil
+    -- every reference to one of the two blocks now points to the other
+    -- (a swap) or to the new one (a replacement)
+    local function Relabel(k)
+        if k == oldKey then return newKey end
+        if swap and k == newKey then return oldKey end
+        return k
+    end
+    for _, cfg in pairs(blocks) do
+        if cfg.dock then cfg.dock.to = Relabel(cfg.dock.to) end
+        if cfg.anchor then
+            if cfg.anchor.below then cfg.anchor.below = Relabel(cfg.anchor.below) end
+            if cfg.anchor.above then cfg.anchor.above = Relabel(cfg.anchor.above) end
+        end
+    end
+    -- then the place itself moves (both ways for a swap)
+    local oldPlace, newPlace = {}, {}
+    for _, field in ipairs(PLACE_FIELDS) do
+        oldPlace[field], newPlace[field] = old[field], new[field]
+    end
+    for _, field in ipairs(PLACE_FIELDS) do
+        new[field] = oldPlace[field]
+        old[field] = swap and newPlace[field] or nil
+    end
+    new.enabled = true
+    if not swap then
+        old.enabled = false
+        -- the new block blends in: same size and look as the one it replaces
+        for _, k in ipairs(STYLE_KEYS) do new[k] = DeepCopy(old[k]) end
+        new.width = old.width
+    end
+    self:RefreshAllBlocks()
+    self:RequestLayout()
+    if swap then
+        Print(L.REPLACE_SWAPPED:format(self:GetBlockName(oldKey), self:GetBlockName(newKey)))
+    else
+        Print(L.REPLACE_DONE:format(self:GetBlockName(newKey), self:GetBlockName(oldKey)))
+    end
+    return true
+end
+
 function ns:ResetBlock(key)
     local cfg = self:GetBlockDefaults(key)
     local old = self.db.blocks[key]

@@ -3,6 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.1.0-alpha1 — 
+
+- Test version (alpha) for other game clients: Classic Era, Burning Crusade Classic (Anniversary), Mists of Pandaria Classic and the current game (Midnight). Not for WoW Forever, which keeps the 1.0 versions.
+- The WoW Forever blocks (Legacy points, Comprehension, Camping, Honor) only exist on WoW Forever; blocks with nothing to show on a client hide themselves (ammo, class reagents, weapon skills...).
+- Professions read from the profession slots, and unspent talents counted, on Mists of Pandaria Classic and the current game.
+- Please report anything that does not work with /tessera bug: this version has been tested much less than the WoW Forever one.
+
 ## 1.0.0-rc3 — 2026-10-11
 
 - New ready-made layout "Around the gryphons": two groups in the bottom corners of the screen, on both sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list (Look tab), with a description of each one.

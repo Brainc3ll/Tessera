@@ -37,6 +37,19 @@
 local ADDON, ns = ...
 local L = ns.L
 
+-- Which game client runs Tessera, from its interface number: WoW Forever (16xxx), the
+-- current game ("retail", 100000 and more), Mists of Pandaria Classic (5xxxx),
+-- Burning Crusade Classic (2xxxx) or Classic Era (1xxxx). Blocks and features that
+-- only exist on one client check it (e.g. the WoW Forever blocks).
+ns.INTERFACE = select(4, GetBuildInfo()) or 0
+ns.CLIENT = (ns.INTERFACE >= 16000 and ns.INTERFACE < 17000 and "forever")
+    or (ns.INTERFACE >= 100000 and "retail")
+    or (ns.INTERFACE >= 50000 and ns.INTERFACE < 60000 and "mists")
+    or (ns.INTERFACE >= 20000 and ns.INTERFACE < 30000 and "tbc")
+    or (ns.INTERFACE >= 11000 and ns.INTERFACE < 16000 and "classic")
+    or "other"
+ns.IS_FOREVER = ns.CLIENT == "forever"
+
 ns.modules = {}
 ns.order = {}
 ns.frames = {}

@@ -10,6 +10,33 @@ local _, ns = ...
 
 ns.CHANGELOG = {
     {
+        version = "1.1.0-alpha1",
+        date = "",
+        en = {
+            "Test version (alpha) for other game clients: Classic Era, Burning Crusade Classic (Anniversary), "
+                .. "Mists of Pandaria Classic and the current game (Midnight). Not for WoW Forever, which keeps the "
+                .. "1.0 versions.",
+            "The WoW Forever blocks (Legacy points, Comprehension, Camping, Honor) only exist on WoW Forever; blocks "
+                .. "with nothing to show on a client hide themselves (ammo, class reagents, weapon skills...).",
+            "Professions read from the profession slots, and unspent talents counted, on Mists of Pandaria Classic and "
+                .. "the current game.",
+            "Please report anything that does not work with /tessera bug: this version has been tested much less than "
+                .. "the WoW Forever one.",
+        },
+        fr = {
+            "Version de test (alpha) pour les autres versions du jeu : Classic Era, Burning Crusade Classic "
+                .. "(Anniversary), Mists of Pandaria Classic et le jeu actuel (Midnight). Pas pour WoW Forever, qui "
+                .. "garde les versions 1.0.",
+            "Les blocs WoW Forever (points d'héritage, Compréhension, Camping, Honneur) n'existent que sur WoW "
+                .. "Forever ; les blocs sans rien à montrer sur une version du jeu se masquent (munitions, réactifs de "
+                .. "classe, compétences d'armes...).",
+            "Métiers lus dans les emplacements de métiers, et talents non dépensés comptés, sur Mists of Pandaria "
+                .. "Classic et le jeu actuel.",
+            "Signale tout ce qui ne marche pas avec /tessera bug : cette version a été bien moins testée que celle de "
+                .. "WoW Forever.",
+        },
+    },
+    {
         version = "1.0.0-rc3",
         date = "2026-10-11",
         en = {

@@ -187,6 +187,41 @@ C_MajorFactions = {
 }
 ToggleLegacySystemUI = function() end
 
+-- Other game clients (TESSERA_FLAVOR=classic|tbc|mists|retail): the interface number
+-- changes and the APIs those clients do not have are removed, so missing functions
+-- show up as errors here rather than in game
+do
+    local flavor = os.getenv("TESSERA_FLAVOR")
+    local INTERFACE = { classic = 11509, tbc = 20506, mists = 50504, retail = 120100 }
+    if flavor and INTERFACE[flavor] then
+        GetBuildInfo = function() return "1", "2", "3", INTERFACE[flavor] end
+        -- WoW Forever only
+        C_MajorFactions, ToggleLegacySystemUI, C_SkillInfo = nil, nil, nil
+        if flavor == "classic" or flavor == "tbc" then
+            -- no Edit Mode, classic skill list as globals
+            C_EditMode, EditModeManagerFrame, EditModePresetLayoutManager = nil, nil, nil
+            GetNumSkillLines = function() return 2 end
+            GetSkillLineInfo = function(i)
+                if i == 1 then return "Weapon Skills", true end
+                return "Swords", false, false, 120, 0, 0, 150
+            end
+        else
+            GetNumSkillLines, GetSkillLineInfo = nil, nil
+            GetProfessions = function() return 1, nil, nil, 2, 3 end
+            GetProfessionInfo = function(i)
+                return ({ "Herbalism", "Fishing", "Cooking" })[i] or "Fishing", 136246, 75, 150
+            end
+            GetNumUnspentTalents = function() return flavor == "mists" and 1 or 0 end
+            UnitCharacterPoints = nil
+        end
+        if flavor == "retail" then
+            -- no ammo slot, Midnight's protected values
+            issecretvalue = function() return false end
+        end
+        print("mock flavor: " .. flavor)
+    end
+end
+
 -- LibStub with a small LibDataBroker-1.1 (same API and callbacks as the real one)
 do
     local libs, callbacks = {}, {}
@@ -341,6 +376,7 @@ for _, step in ipairs({
     end,
     -- the Legacy and weapon skill blocks read the WoW Forever APIs
     function()
+        if not ns.IS_FOREVER then return end
         for _, key in ipairs({ "legacy", "weaponSkills" }) do
             local mod = ns.modules[key]
             assert(mod, key .. " not registered")
@@ -483,6 +519,16 @@ for _, step in ipairs({
         ns:ResetProfile("gryphons")
         ns:UpdateLayout()
         local b = ns.db.blocks
+        if not ns.IS_FOREVER then
+            -- other clients: no WoW Forever blocks, the two groups still exist
+            local heads = 0
+            for _, cfg in pairs(b) do
+                if cfg.enabled and cfg.point and not cfg.dock then heads = heads + 1 end
+            end
+            assert(heads >= 2, "gryphons layout without the WoW Forever blocks: " .. heads .. " group(s)")
+            ns:ResetProfile("top")
+            return
+        end
         assert(b.legacy.point and b.legacy.point[1] == "BOTTOMLEFT" and not b.legacy.dock, "legacy heads the left group")
         assert(b.honor.point and b.honor.point[1] == "BOTTOMRIGHT" and not b.honor.dock, "honor heads the right group")
         assert(b.comprehension.dock and b.comprehension.dock.to == "legacy" and b.comprehension.dock.side == "RIGHT", "row 1")
@@ -690,6 +736,10 @@ for _, step in ipairs({
     end,
     -- Edit Mode: a copy of the layout with room for a bar stuck to the bottom
     function()
+        if not EditModePresetLayoutManager then
+            assert(ns:OfferEditModeRoom() == false, "no Edit Mode on this client: nothing offered")
+            return
+        end
         assert(ns.EditModeCopyName("Modern++", {}) == "Modern++ (Tessera 1)", "copy name")
         assert(ns.EditModeCopyName("Modern++", { ["Modern++ (Tessera 1)"] = true }) == "Modern++ (Tessera 2)", "next number")
         local long = ns.EditModeCopyName(("é"):rep(40), {})

@@ -1426,7 +1426,19 @@ local function SkillLines()
         end
         return result
     end
-    if not (GetNumSkillLines and GetSkillLineInfo) then return result end
+    if not (GetNumSkillLines and GetSkillLineInfo) then
+        -- Mists of Pandaria Classic and the current game: no skill list, but the
+        -- profession slots (no weapon skills on those clients)
+        if GetProfessions and GetProfessionInfo then
+            for _, index in ipairs({ Try(GetProfessions) }) do
+                if index then
+                    local name, _, rank, max = Try(GetProfessionInfo, index)
+                    if name then table.insert(result.professions, { name = name, rank = rank or 0, max = max or 0 }) end
+                end
+            end
+        end
+        return result
+    end
     local weaponCap = (UnitLevel("player") or 1) * 5
     for i = 1, Try(GetNumSkillLines) or 0 do
         local name, isHeader, _, rank, _, _, max, abandonable = Try(GetSkillLineInfo, i)
@@ -1512,8 +1524,12 @@ end
 -- Macro that clicks one of Blizzard's micro buttons when this client has it (WoW Forever
 -- has ProfessionMicroButton, TalentMicroButton, LegacyMicroButton...), else the fallback.
 -- Clicking the real button opens the panel from Blizzard's own code, without taint.
+-- button: a micro button name, or a list of names (they differ between game clients:
+-- e.g. TalentMicroButton, PlayerSpellsMicroButton on the current game)
 local function MicroButtonMacro(button, fallback)
-    if _G[button] then return "/click " .. button end
+    for _, name in ipairs(type(button) == "table" and button or { button }) do
+        if _G[name] then return "/click " .. name end
+    end
     return fallback
 end
 local SKILL_FRAME_MACRO = "/run if ToggleCharacter then ToggleCharacter('SkillFrame') end"
@@ -1570,7 +1586,7 @@ for _, def in ipairs(PROFESSION_BLOCKS) do
             local p = Current()
             local info = p and ProfessionInfo(p.name)
             if p and info and not info.gathering then return "/cast " .. p.name end
-            return MicroButtonMacro("ProfessionMicroButton", SKILL_FRAME_MACRO)
+            return MicroButtonMacro({ "ProfessionMicroButton", "SpellbookMicroButton" }, SKILL_FRAME_MACRO)
         end,
         clickHint = L.HINT_PROFESSION,
     })
@@ -1693,7 +1709,7 @@ local function NextLegacyReward(points)
 end
 
 -- Offered on clients with the Legacy system only (WoW Forever)
-if C_MajorFactions and (ToggleLegacySystemUI or LegacySystemFrame_LoadUI) then
+if ns.IS_FOREVER and C_MajorFactions and (ToggleLegacySystemUI or LegacySystemFrame_LoadUI) then
 ns:RegisterModule("legacy", {
     label = "LEGACY",
     icon = LEGACY_ICON,
@@ -1759,8 +1775,13 @@ end
 ---------------------------------------------------------------------------
 -- Unspent talent points (shows only when some are left)
 ---------------------------------------------------------------------------
+-- Unspent talent points: classic clients (UnitCharacterPoints), Mists of Pandaria
+-- Classic (GetNumUnspentTalents). The current game has no simple count: 0, the block
+-- stays hidden there.
 local function FreeTalentPoints()
-    return (UnitCharacterPoints and Try(UnitCharacterPoints, "player")) or 0
+    if UnitCharacterPoints then return Try(UnitCharacterPoints, "player") or 0 end
+    if GetNumUnspentTalents then return Try(GetNumUnspentTalents) or 0 end
+    return 0
 end
 
 ns:RegisterModule("talents", {
@@ -1778,7 +1799,8 @@ ns:RegisterModule("talents", {
         tt:AddDoubleLine(L.TT_FREE_TALENTS, tostring(FreeTalentPoints()), 1, 1, 1, 1, 1, 1)
     end,
     secureMacro = function()
-        return MicroButtonMacro("TalentMicroButton", "/run if ToggleTalentFrame then ToggleTalentFrame() end")
+        return MicroButtonMacro({ "TalentMicroButton", "PlayerSpellsMicroButton" },
+            "/run if ToggleTalentFrame then ToggleTalentFrame() end")
     end,
     clickHint = L.HINT_TALENTS,
 })
@@ -2116,7 +2138,7 @@ ns:RegisterModule("whispers", {
 -- These systems have no documented API yet: the IDs below were found in game
 -- with a debug probe on the WoW Forever beta (October 2026) and may change.
 -- The blocks are offered only on WoW Forever (where the Legacy system exists).
-local IS_FOREVER = C_MajorFactions and (ToggleLegacySystemUI or LegacySystemFrame_LoadUI) and true or false
+local IS_FOREVER = ns.IS_FOREVER and C_MajorFactions and (ToggleLegacySystemUI or LegacySystemFrame_LoadUI) and true or false
 
 local COMPREHENSION_SKILL = 3012    -- secondary skill: reading magical scrolls
 local COMPREHENSION_SPELL = 1296017 -- "Scroll Comprehension"

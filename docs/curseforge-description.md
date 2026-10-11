@@ -58,9 +58,26 @@ Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains e
 
 Type **/tessera bug**, copy the report and post it on the [GitHub issue tracker](https://github.com/Brainc3ll/Tessera/issues) (or in the comments here). Ideas are welcome too, especially about WoW Forever systems Tessera could show.
 
-## About this project
+## About this project: how Tessera is made
 
-Tessera was designed by Braincell1980, who came up with the ideas, the features and the look, and tested every version in game. The code was written with the help of an AI (Claude, by Anthropic). It has been reviewed and tested, but it may still contain bugs: please report them. The source code is on [GitHub](https://github.com/Brainc3ll/Tessera) under the MIT license; contributions and code reviews are welcome.
+Tessera is a collaboration between me, a player, and an AI.
+
+**Me (Braincell1980).** I don't write code. Life never gave me the chance to learn programming, and AI finally lets me give free rein to my addon ideas. It is not "one prompt and the AI does everything": I also use the AI to learn quickly how things work and why (GitHub, CurseForge, WoW's Lua and its interface, what a clean release looks like) so I can make the decisions myself and understand what is done. What I do:
+- I had the idea of Tessera and I decide what it does: every feature, block, option and layout comes from my requests or was approved by me.
+- I choose the look: styles, colors, layouts, names, what goes in the menus.
+- I test a lot, on WoW Forever: every version, with strange experiments, unusual placements and odd setups, to find the problems before you do.
+- I try to think ahead, for every kind of player: other interfaces, other screens, other languages, other habits.
+- I run the in-game checks (debug versions) used to find out how WoW Forever works, and I report bugs with screenshots.
+- I review the texts, the French translation and the help.
+- I decide when a version is published, and I manage the CurseForge and GitHub pages.
+
+**Claude (an AI by Anthropic)** writes everything else, from my instructions:
+- all the code of the addon (Lua), and the automatic tests that run it outside the game;
+- the English and French texts: options, tooltips, help, changelog, this page;
+- the release tools (GitHub workflows, CurseForge upload) and the debug versions;
+- the banner images.
+
+**What this means for you.** The code is checked by automatic tests and by my many tests in game, but it has not been reviewed line by line by a human programmer. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, on [GitHub](https://github.com/Brainc3ll/Tessera)) and to suggest improvements.
 
 **Translations**: English and French are included. Other languages can be added by the community through the CurseForge localization tool.
 
@@ -126,8 +143,25 @@ Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** expli
 
 Tape **/tessera bug**, copie le rapport et poste-le sur [GitHub](https://github.com/Brainc3ll/Tessera/issues) (ou dans les commentaires ici). Les idées sont les bienvenues aussi, surtout sur les systèmes de WoW Forever que Tessera pourrait afficher.
 
-## À propos du projet
+## À propos du projet : comment Tessera est fait
 
-Tessera a été conçu par Braincell1980, qui a apporté les idées, les fonctions et le style, et a testé chaque version en jeu. Le code a été écrit avec l'aide d'une IA (Claude, d'Anthropic). Il a été relu et testé, mais peut encore contenir des bugs : merci de les signaler. Le code source est sur [GitHub](https://github.com/Brainc3ll/Tessera) sous licence MIT ; les contributions et relectures sont les bienvenues.
+Tessera est une collaboration entre moi, un joueur, et une IA.
+
+**Moi (Braincell1980).** Je ne code pas. Les aléas de la vie ne m'ont pas permis d'apprendre la programmation, et l'IA me permet enfin de laisser libre cours à mes idées d'addons. Ce n'est pas « un prompt et l'IA fait tout » : je me sers aussi de l'IA pour apprendre vite comment les choses fonctionnent et pourquoi (GitHub, CurseForge, le Lua de WoW et son interface, les bonnes manières de faire une publication propre) afin de prendre moi-même les décisions et de comprendre ce qui est fait. Ce que je fais :
+- J'ai eu l'idée de Tessera et je décide de ce qu'il fait : chaque fonction, bloc, option et disposition vient de mes demandes ou a été validé par moi.
+- Je choisis l'allure : styles, couleurs, dispositions, noms, contenu des menus.
+- Je teste beaucoup, sur WoW Forever : chaque version, avec des essais étranges, des placements inhabituels et des configurations improbables, pour trouver les problèmes avant toi.
+- J'essaie de voir plus loin, pour tous les joueurs : autres interfaces, autres écrans, autres langues, autres habitudes.
+- Je fais les relevés en jeu (versions debug) qui servent à comprendre le fonctionnement de WoW Forever, et je signale les bugs avec des captures.
+- Je relis les textes, la traduction française et l'aide.
+- Je décide quand une version est publiée, et je gère les pages CurseForge et GitHub.
+
+**Claude (une IA d'Anthropic)** écrit tout le reste, à partir de mes consignes :
+- tout le code de l'addon (Lua), et les tests automatiques qui le font tourner hors du jeu ;
+- les textes en anglais et en français : options, infobulles, aide, changelog, cette page ;
+- les outils de publication (workflows GitHub, envoi sur CurseForge) et les versions debug ;
+- les images de la bannière.
+
+**Ce que ça veut dire pour toi.** Le code est vérifié par des tests automatiques et par mes nombreux tests en jeu, mais il n'a pas été relu ligne par ligne par un programmeur. Des bugs peuvent rester : signale-les avec `/tessera bug`. Les développeurs sont les bienvenus pour lire le code (licence MIT, sur [GitHub](https://github.com/Brainc3ll/Tessera)) et proposer des améliorations.
 
 **Traductions** : l'anglais et le français sont inclus. D'autres langues peuvent être ajoutées par la communauté avec l'outil de traduction de CurseForge.

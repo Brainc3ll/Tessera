@@ -15,12 +15,28 @@ LibDataBroker to exchange data with DataBroker addons.
 > systems (Legacy, camping, Comprehension, PvP) have no official addon documentation yet and may
 > change before or after release; a block may then need an update.
 
-## About this project
+## About this project: how Tessera is made
 
-Tessera was designed by Braincell1980, who came up with the ideas, the features and the look,
-and tested every version in game. The code was written with the help of an AI (Claude, by
-Anthropic). It has been reviewed and tested, but it may still contain bugs: please report them
-(see "Reporting a bug" below). Contributions and code reviews from developers are welcome.
+Tessera is a collaboration between me, a player, and an AI.
+
+**Me (Braincell1980).** I don't write code. Life never gave me the chance to learn programming, and AI finally lets me give free rein to my addon ideas. It is not "one prompt and the AI does everything": I also use the AI to learn quickly how things work and why (GitHub, CurseForge, WoW's Lua and its interface, what a clean release looks like) so I can make the decisions myself and understand what is done. What I do:
+- I had the idea of Tessera and I decide what it does: every feature, block, option and layout comes from my requests or was approved by me.
+- I choose the look: styles, colors, layouts, names, what goes in the menus.
+- I test a lot, on WoW Forever: every version, with strange experiments, unusual placements and odd setups, to find the problems before you do.
+- I try to think ahead, for every kind of player: other interfaces, other screens, other languages, other habits.
+- I run the in-game checks (debug versions) used to find out how WoW Forever works, and I report bugs with screenshots.
+- I review the texts, the French translation and the help.
+- I decide when a version is published, and I manage the CurseForge and GitHub pages.
+
+**Claude (an AI by Anthropic)** writes everything else, from my instructions:
+- all the code of the addon (Lua), and the automatic tests that run it outside the game;
+- the English and French texts: options, tooltips, help, changelog, this page;
+- the release tools (GitHub workflows, CurseForge upload) and the debug versions;
+- the banner images.
+
+**What this means for you.** The code is checked by automatic tests and by my many tests in game, but it has not been reviewed line by line by a human programmer. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
+
+## At a glance
 
 - Interface: `16001` (WoW Forever)
 - Languages: English, French (other languages can be added through CurseForge's localization tool)

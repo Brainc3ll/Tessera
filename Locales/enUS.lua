@@ -583,6 +583,7 @@ local L = {
     CAMP_BUFFS_LEFT = "Buffs %s",
     CAMP_KIT_COOLDOWN = "Kit %s",
     CAMP_KIT_READY = "Kit ready",
+    PRESET_APPLIED = "Layout applied to the current profile: %s.",
 }
 
 ns.L = L

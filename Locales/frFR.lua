@@ -586,3 +586,4 @@ L.RESET_IN_COMBAT = "Pas pendant un combat : réinitialise tout une fois le comb
 L.CAMP_BUFFS_LEFT = "Buffs %s"
 L.CAMP_KIT_COOLDOWN = "Kit %s"
 L.CAMP_KIT_READY = "Kit prêt"
+L.PRESET_APPLIED = "Disposition appliquée au profil actuel : %s."

@@ -3,6 +3,11 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0-rc3 — 
+
+- Fix: choosing a ready-made layout showed the "reset everything" message in the chat; it now says which layout was applied.
+- Releases: the English and French strings are sent to CurseForge's localization tool automatically, and community translations are added to the addon.
+
 ## 1.0.0-rc2 — 2026-10-11
 
 - When an interface with a matching style is installed (FlareUI 1.x or 2.x, ElvUI, EllesmereUI), a window shows that style on sample blocks and offers it. Tessera no longer changes the style of your blocks on its own.

@@ -1875,10 +1875,12 @@ function ns:ResetEverything()
     ReloadUI()
 end
 
+-- Replaces the current profile with a ready-made layout (preset: one of ns.PRESETS)
 function ns:ResetProfile(preset)
     self.sv.profiles[self.profileName] = { pendingPreset = preset }
     self:LoadProfile()
-    Print(L.CMD_RESET)
+    local name = L["PRESET_" .. (preset or "top"):upper()] or preset
+    Print(L.PRESET_APPLIED:format(name))
 end
 
 ---------------------------------------------------------------------------

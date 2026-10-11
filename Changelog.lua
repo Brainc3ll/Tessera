@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- ========================================================================
--- Changelog.lua: version history shown in the options "Version" tab
+-- Changelog.lua: version history shown in the options "About" tab (Changelog topic)
 -- ========================================================================
 -- Newest entry first. Each entry has a version, a date (YYYY-MM-DD) and the
 -- list of changes in English (en) and French (fr). Players see the French
@@ -9,6 +9,22 @@ local _, ns = ...
 -- Keep CHANGELOG.md (for GitHub and CurseForge) in sync with this file.
 
 ns.CHANGELOG = {
+    {
+        version = "1.0.0-rc3",
+        date = "", -- set when the version is published
+        en = {
+            "Fix: choosing a ready-made layout showed the \"reset everything\" message in the chat; it now says "
+                .. "which layout was applied.",
+            "Releases: the English and French strings are sent to CurseForge's localization tool automatically, "
+                .. "and community translations are added to the addon.",
+        },
+        fr = {
+            "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
+                .. "réinitialiser » ; il indique maintenant la disposition appliquée.",
+            "Publications : l'anglais et le français sont envoyés automatiquement à l'outil de traduction de "
+                .. "CurseForge, et les traductions de la communauté sont ajoutées à l'addon.",
+        },
+    },
     {
         version = "1.0.0-rc2",
         date = "2026-10-11",

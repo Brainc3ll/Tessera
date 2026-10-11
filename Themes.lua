@@ -259,16 +259,17 @@ ns.themes = {
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
-            cfg.bgColor = { r = 0.05, g = 0.05, b = 0.05, a = 0.9 }
+            -- the classic tooltip's colors: dark blue background, grey border
+            cfg.bgColor = { r = 0.07, g = 0.07, b = 0.15, a = 0.9 }
             cfg.border = "solid"
             cfg.borderSize = 2
-            cfg.borderColor = { r = 0.55, g = 0.44, b = 0.06, a = 1 } -- dark gold
+            cfg.borderColor = { r = 0.47, g = 0.47, b = 0.47, a = 1 } -- grey
             cfg.separators = true
-            cfg.separatorColor = { r = 0.70, g = 0.57, b = 0.10, a = 0.4 }
+            cfg.separatorColor = { r = 0.62, g = 0.62, b = 0.62, a = 0.45 }
             cfg.font, cfg.outline = "friz", "OUTLINE"
         end,
         window = function()
-            return FlatWindow({ 0.06, 0.06, 0.06, 0.96 }, { 1, 0.82, 0, 1 })
+            return FlatWindow({ 0.07, 0.07, 0.15, 0.96 }, { 0.55, 0.55, 0.55, 1 }, { 1, 0.82, 0 })
         end,
     },
     {

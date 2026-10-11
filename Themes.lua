@@ -215,6 +215,62 @@ ns.themes = {
             }
         end,
     },
+    -- "Square" styles: square corners, a plain dark background, a thin solid border
+    -- and a thin line between merged blocks (the look of Tessera's banners)
+    {
+        key = "flareSquare",
+        name = L.THEME_FLARE_SQUARE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.04, g = 0.035, b = 0.03, a = 0.92 }
+            cfg.border = "solid"
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 0.80, g = 0.60, b = 0.34, a = 1 }
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.80, g = 0.60, b = 0.34, a = 0.5 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+        end,
+        window = function()
+            return FlatWindow({ 0.055, 0.047, 0.04, 0.96 }, { 0.80, 0.60, 0.34, 1 }, { 0.80, 0.60, 0.34 })
+        end,
+    },
+    {
+        key = "modernSquare",
+        name = L.THEME_MODERN_SQUARE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.025, g = 0.05, b = 0.11, a = 0.92 }
+            cfg.border = "solid"
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 1, g = 0.77, b = 0.25, a = 1 }
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.59, g = 0.43, b = 0.16, a = 0.8 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+        end,
+        window = function()
+            return FlatWindow({ 0.03, 0.07, 0.16, 0.96 }, { 1, 0.77, 0.25, 1 }, { 1, 0.77, 0.25 })
+        end,
+    },
+    {
+        key = "classicSquare",
+        name = L.THEME_CLASSIC_SQUARE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.05, g = 0.05, b = 0.05, a = 0.9 }
+            cfg.border = "solid"
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 1, g = 0.82, b = 0, a = 1 }
+            cfg.separators = true
+            cfg.separatorColor = { r = 1, g = 0.82, b = 0, a = 0.4 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+        end,
+        window = function()
+            return FlatWindow({ 0.06, 0.06, 0.06, 0.96 }, { 1, 0.82, 0, 1 })
+        end,
+    },
     {
         key = "flat",
         name = L.THEME_FLAT,
@@ -312,6 +368,7 @@ function ns:ApplyThemeToCfg(cfg, key)
     local theme = byKey[key or self:GetTheme()] or byKey.blizzard
     cfg.iconShape, cfg.iconSize = "none", 0
     cfg.iconBorderColor = { r = 0, g = 0, b = 0, a = 1 }
+    cfg.separators = false -- only the "Square" styles draw lines between merged blocks
     theme.block(cfg)
 end
 
@@ -319,7 +376,7 @@ end
 -- group and launcher defaults (restyle = also apply it to the frames now)
 local function RestyleProfile(self, key, restyle)
     for _, field in ipairs({ "bg", "bgColor", "border", "borderSize", "borderColor", "font", "outline",
-                             "iconShape", "iconSize", "iconBorderColor" }) do
+                             "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end

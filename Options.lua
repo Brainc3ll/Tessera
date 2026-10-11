@@ -945,6 +945,10 @@ local function BuildBlockPage(page)
         }, "iconShape", L.TIP_ICON_SHAPE), 1)
         P.Place(Color(sub, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR), 1)
         P.Place(Check(sub, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), 1)
+        -- thin lines between merged blocks
+        P.Place(CreateHeader(sub, L.SECTION_SEPARATORS), 1)
+        P.Place(Check(sub, L.SEPARATORS, "separators", L.TIP_SEPARATORS), 1)
+        P.Place(Color(sub, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), 1)
 
         P.Place(CreateHeader(sub, L.BORDER), 2)
         -- picking a border also restores its original thickness

@@ -15,6 +15,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Screen edges: drop a group against an edge and Tessera offers to stick it there (no border on that side, stays put on any screen). Along the top or bottom, a bar can be stretched over the whole width: spacer blocks fill the room (blocks on the left, center, right or spread) and the blocks keep their size. Setting in the General tab (ask, always, never).
 - New ready-made layouts in the spirit of desktop taskbars and menu bars: Stormwind Stained Glass, Cathedral Rose Window, Tirisfal Orchard and Gnomeregan, with the clock, FPS, latency and volume where you expect them.
 - New "Add a spacer" (quick menu): an empty block on the left, right, above or below a block, slipped in between if another block is already there; in a stretched bar it takes room from the other spacers.
+- New styles "FlareUI Square", "Blizzard Modern Square" and "Blizzard Classic Square": square corners, a plain dark background, a thin border and a thin line between merged blocks. The line is also an option of every style (Frame tab, Separators), on by default in the layouts showing the WoW Forever blocks.
 
 ## 1.0.0-rc2 — 2026-10-11
 

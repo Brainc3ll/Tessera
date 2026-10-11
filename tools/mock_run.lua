@@ -555,6 +555,20 @@ for _, step in ipairs({
         ns:RemoveSpacer(k)
         ns.db.groupDefaults.strata = nil
     end,
+    -- "Square" styles and separators
+    function()
+        for _, key in ipairs({ "flareSquare", "modernSquare", "classicSquare" }) do
+            ns:ApplyTheme(key)
+            ns:UpdateLayout()
+            assert(ns.db.blocks.gold.separators == true, key .. ": separators on")
+        end
+        ns:ApplyTheme("flat")
+        assert(ns.db.blocks.gold.separators == false, "other styles: no separators")
+        ns:ResetProfile("gnomeregan")
+        assert(ns.db.blocks.time.separators == true, "Forever layouts: separators on")
+        ns:UpdateLayout()
+        ns:ResetProfile("top")
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

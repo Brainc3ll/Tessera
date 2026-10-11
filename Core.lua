@@ -466,6 +466,8 @@ local BLOCK_DEFAULTS = {
     iconShape = "none",       -- icon frame: none (as is), square, round
     iconBorderColor = { r = 0, g = 0, b = 0, a = 1 },
     iconDesaturate = false,   -- black and white icon
+    separators = false,       -- thin line between merged blocks (see Merge.lua, DrawSeparators)
+    separatorColor = { r = 0.8, g = 0.6, b = 0.34, a = 0.5 },
     width = 60,   -- minimum width: the block grows if its text is longer
     autoWidth = true, -- false: fixed width, overly long text is cut off
     height = 24,
@@ -490,7 +492,7 @@ local BLOCK_DEFAULTS = {
 local STYLE_KEYS = {
     "height", "justify", "strata", "font", "fontSize", "outline", "textColor",
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "alpha",
-    "iconSize", "iconShape", "iconBorderColor", "iconDesaturate",
+    "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
 }
 
 -- Gives block "to" the look of block "from" (size, font, frame...): used for spacers
@@ -1951,14 +1953,27 @@ end
 
 function ns:ApplyBaseLayout(p, preset)
     preset = preset or "top"
+    -- layouts showing off the WoW Forever blocks: lines between merged blocks, in
+    -- the color of the style's border
+    local function WithSeparators()
+        for _, cfg in pairs(p.blocks) do
+            if not cfg.launcher then
+                local c = cfg.borderColor or { r = 1, g = 1, b = 1 }
+                cfg.separators = true
+                cfg.separatorColor = { r = c.r, g = c.g, b = c.b, a = 0.5 }
+            end
+        end
+    end
     if OS_LAYOUTS[preset] then
         self:ApplyOSLayout(p, preset)
         FinishBaseLayout(self, p)
+        WithSeparators()
         return
     end
     if preset == "gryphons" then
         self:ApplyGryphonsLayout(p)
         FinishBaseLayout(self, p)
+        WithSeparators()
         return
     end
     local vertical = preset == "left"

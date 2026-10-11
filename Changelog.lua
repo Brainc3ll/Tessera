@@ -37,6 +37,9 @@ ns.CHANGELOG = {
                 .. "clock, FPS, latency and volume where you expect them.",
             "New \"Add a spacer\" (quick menu): an empty block on the left, right, above or below a block, slipped in "
                 .. "between if another block is already there; in a stretched bar it takes room from the other spacers.",
+            "New styles \"FlareUI Square\", \"Blizzard Modern Square\" and \"Blizzard Classic Square\": square corners, a "
+                .. "plain dark background, a thin border and a thin line between merged blocks. The line is also an option "
+                .. "of every style (Frame tab, Separators), on by default in the layouts showing the WoW Forever blocks.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -65,6 +68,10 @@ ns.CHANGELOG = {
             "Nouveau « Ajouter un espace » (menu rapide) : un bloc vide à gauche, à droite, au-dessus ou en dessous "
                 .. "d'un bloc, glissé entre les deux si un autre bloc est déjà là ; dans une barre étirée, il prend la "
                 .. "place sur les autres espaces.",
+            "Nouveaux styles « FlareUI Carré », « Blizzard Moderne Carré » et « Blizzard Classique Carré » : coins "
+                .. "carrés, fond sombre uni, bordure fine et fine ligne entre les blocs fusionnés. Cette ligne est aussi une "
+                .. "option de tous les styles (onglet Cadre, Séparateurs), activée par défaut dans les dispositions qui "
+                .. "mettent en avant les blocs WoW Forever.",
         },
     },
     {

@@ -714,6 +714,7 @@ function ns:UpdateSeams(active)
                 end
             end
             self:ApplySeams(f, cov)
+            self:DrawSeparators(f, cov)
         end
     end
 end
@@ -811,6 +812,45 @@ local function CopyPiece(f, pool, id, src, name, e, along)
 end
 
 -- Hides every texture of a pool
+-- Separators: a thin line where two merged blocks touch (cfg.separators). Drawn
+-- by the block on its right and bottom sides only, so each line is drawn once,
+-- a little shorter than the side so it does not touch the group's border.
+-- Spacers draw none (a stretched bar stays clean).
+function ns:DrawSeparators(f, cov)
+    local cfg = self.db.blocks[f.key]
+    f.separatorPool = f.separatorPool or {}
+    local used = 0
+    if cfg and cfg.separators and not ns.IsSpacerKey(f.key) then
+        local c = cfg.separatorColor or { r = 1, g = 1, b = 1, a = 0.4 }
+        local thick = self:PixelSize(1, f)
+        local function Line(side, a, b)
+            local len = b - a
+            local inset = math.min(6, len / 4)
+            if len - 2 * inset < 2 then return end
+            used = used + 1
+            local tex = f.separatorPool[used]
+            if not tex then
+                tex = f:CreateTexture(nil, "OVERLAY", nil, 2)
+                tex:SetTexture("Interface\\Buttons\\WHITE8X8")
+                f.separatorPool[used] = tex
+            end
+            tex:SetVertexColor(c.r, c.g, c.b, c.a)
+            tex:ClearAllPoints()
+            if side == "RIGHT" then
+                tex:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -(a + inset))
+                tex:SetSize(thick, len - 2 * inset)
+            else
+                tex:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", a + inset, 0)
+                tex:SetSize(len - 2 * inset, thick)
+            end
+            tex:Show()
+        end
+        for _, iv in ipairs(cov.RIGHT or {}) do Line("RIGHT", iv[1], iv[2]) end
+        for _, iv in ipairs(cov.BOTTOM or {}) do Line("BOTTOM", iv[1], iv[2]) end
+    end
+    for i = used + 1, #f.separatorPool do f.separatorPool[i]:Hide() end
+end
+
 local function HidePool(f, pool)
     for _, tex in pairs(f[pool] or {}) do tex:Hide() end
 end

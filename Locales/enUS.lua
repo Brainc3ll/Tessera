@@ -625,6 +625,14 @@ local L = {
     SPACER_SIDE_BOTTOM = "Below",
     SPACER_NO_ROOM = "No room left on this bar: replace or remove a block first.",
     SPACER_NO_ROW = "A bar stretched over the screen width stays on one row: add the spacer on the left or on the right.",
+    THEME_FLARE_SQUARE = "FlareUI Square",
+    THEME_MODERN_SQUARE = "Blizzard Modern Square",
+    THEME_CLASSIC_SQUARE = "Blizzard Classic Square",
+    SECTION_SEPARATORS = "Separators",
+    SEPARATORS = "Line between merged blocks",
+    TIP_SEPARATORS = "Draws a thin line where two merged blocks touch, as in the \"Square\" styles. Spacers draw none.",
+    SEPARATOR_COLOR = "Line color",
+    TIP_SEPARATOR_COLOR = "Color and opacity of the lines between merged blocks.",
 }
 
 ns.L = L

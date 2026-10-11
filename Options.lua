@@ -44,7 +44,7 @@ local pages, tabs, currentPage = {}, {}, PAGE_BLOCKS
 
 -- Layout: 720 px window, two 300 px columns, 40 px margins (scaled down on small
 -- screens, see FitPanelToScreen)
-local PANEL_W, PANEL_H = 720, 710
+local PANEL_W, PANEL_H = 720, 735
 local COL_W = 300
 local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
@@ -570,10 +570,28 @@ local function CreateEditBox(parent, label, getter, setter, isShown, tip, numeri
     return Register(holder, isShown)
 end
 
+-- A button text longer than the button (translations can be long): smaller font,
+-- then cut with "..." (the tooltip keeps the full text)
+local function FitButtonText(b)
+    local fs = b.GetFontString and b:GetFontString()
+    local w = b:GetWidth()
+    if not (fs and w and w > 0) then return end
+    if fs:GetStringWidth() > w - 14 then
+        b:SetNormalFontObject("GameFontNormalSmall")
+        b:SetHighlightFontObject("GameFontHighlightSmall")
+        b:SetDisabledFontObject("GameFontDisableSmall")
+        fs = b:GetFontString() or fs
+        fs:SetWidth(w - 10)
+        if fs.SetWordWrap then fs:SetWordWrap(false) end
+    end
+end
+ns.FitButtonText = FitButtonText
+
 local function CreateButton(parent, text, onClick, isShown, width, tip)
     local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     b:SetSize(width or COL_W, 24)
     b:SetText(text)
+    FitButtonText(b)
     b:SetScript("OnClick", onClick)
     AttachTip(b, text, tip)
     b.Refresh = function() end
@@ -1611,14 +1629,12 @@ local function BuildLookPage(page)
     -- sharing the style or the layout alone (the import window reads both, and profiles)
     P.Gap(1, 10)
     Place(CreateHeader(page, L.SECTION_SHARE), 1)
-    -- the two exports side by side
-    local half = (COL_W - 6) / 2
-    local exportStyle = Place(CreateButton(page, L.EXPORT_STYLE, function()
+    Place(CreateButton(page, L.EXPORT_STYLE, function()
         ns:ShowTextWindow(L.EXPORT_STYLE_TITLE, ns:ExportStyle())
-    end, nil, half, L.TIP_EXPORT_STYLE), 1)
-    CreateButton(page, L.EXPORT_LAYOUT, function()
+    end, nil, nil, L.TIP_EXPORT_STYLE), 1)
+    Place(CreateButton(page, L.EXPORT_LAYOUT, function()
         ns:ShowTextWindow(L.EXPORT_LAYOUT_TITLE, ns:ExportLayout())
-    end, nil, half, L.TIP_EXPORT_LAYOUT):SetPoint("LEFT", exportStyle, "RIGHT", 6, 0)
+    end, nil, nil, L.TIP_EXPORT_LAYOUT), 1)
     Place(CreateButton(page, L.IMPORT_SHARED, function() ns:OpenImportWindow() end,
         nil, nil, L.TIP_IMPORT_SHARED), 1)
 
@@ -1669,11 +1685,10 @@ local function BuildLookPage(page)
     Place(CreateHeader(page, L.SECTION_EDITMODE), 2)
     Place(CreateButton(page, L.EDITMODE_ROOM, function() ns:OfferEditModeRoom() end,
         nil, nil, L.TIP_EDITMODE_ROOM), 2)
-    -- (half: the width of two buttons side by side, see the share section)
-    local revert = Place(CreateButton(page, L.EDITMODE_REVERT, function() ns:RevertEditModeLayout() end,
-        nil, half, L.TIP_EDITMODE_REVERT), 2)
-    CreateButton(page, L.EDITMODE_CLEANUP, function() ns:OfferEditModeCleanup() end,
-        nil, half, L.TIP_EDITMODE_CLEANUP):SetPoint("LEFT", revert, "RIGHT", 6, 0)
+    Place(CreateButton(page, L.EDITMODE_REVERT, function() ns:RevertEditModeLayout() end,
+        nil, nil, L.TIP_EDITMODE_REVERT), 2)
+    Place(CreateButton(page, L.EDITMODE_CLEANUP, function() ns:OfferEditModeCleanup() end,
+        nil, nil, L.TIP_EDITMODE_CLEANUP), 2)
 end
 
 -- Builds the "Profiles" tab
@@ -2094,6 +2109,7 @@ function ns:ApplyOptionsMode()
     local tabW = (FULL_W - gap * (#visible - 1)) / #visible
     for n, i in ipairs(visible) do
         tabs[i]:SetWidth(tabW)
+        FitButtonText(tabs[i])
         tabs[i]:ClearAllPoints()
         tabs[i]:SetPoint("TOPLEFT", panel, "TOPLEFT", COL_X[1] + (n - 1) * (tabW + gap), -58)
     end

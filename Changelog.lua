@@ -64,6 +64,9 @@ ns.CHANGELOG = {
                 .. "Tested on Blizzard's interface (Modern, Classic) and FlareUI unchanged; with FlareUI, its own frames "
                 .. "go back to their default place in the copy (Tessera warns before). With another interface, results "
                 .. "may be unexpected.",
+            "New blocks and ready-made layouts are drawn above Blizzard's action bars (layer \"High\"), so a bar "
+                .. "along the bottom passes in front of the gryphons; the layer can still be changed (Blocks tab, Display). "
+                .. "Existing blocks keep their layer.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -125,6 +128,9 @@ ns.CHANGELOG = {
                 .. "l'interface de Blizzard (Moderne, Classique) et FlareUI non modifié ; avec FlareUI, ses propres "
                 .. "cadres reviennent à leur place par défaut dans la copie (Tessera prévient avant). Avec une autre "
                 .. "interface, des résultats inattendus peuvent survenir.",
+            "Les nouveaux blocs et les dispositions toutes prêtes s'affichent au-dessus des barres d'action de "
+                .. "Blizzard (plan « Haut ») : une barre en bas passe devant les gryphons ; le plan se change toujours "
+                .. "(onglet Blocs, Affichage). Les blocs existants gardent leur plan.",
         },
     },
     {

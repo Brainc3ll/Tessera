@@ -148,15 +148,31 @@ local function SystemFrame(sys)
     return ok and f or nil
 end
 
--- Readable name of a system frame, for the confirmation
+-- Plain names for the kinds of frames, used in the messages ("action bars",
+-- "menu"...) rather than the game's technical names
+local FRIENDLY = { ActionBar = "EM_ACTION_BARS", MicroMenu = "EM_MENU", Bags = "EM_BAGS", Minimap = "EM_MINIMAP",
+    AuraFrame = "EM_BUFFS", StatusTrackingBar = "EM_XP_BAR", DamageMeter = "EM_DAMAGE_METER",
+    ChatFrame = "EM_CHAT", ObjectiveTracker = "EM_OBJECTIVES", UnitFrame = "EM_UNIT_FRAMES",
+    CastBar = "EM_CAST_BAR", MainActionBarEndCap = "EM_GRYPHONS", TotemActionBar = "EM_ACTION_BARS" }
+local FLARE_FRIENDLY = { XPBar = "EM_XP_BAR", Buffs = "EM_BUFFS", Debuffs = "EM_BUFFS", ObjectiveTracker = "EM_OBJECTIVES",
+    UF_Player = "EM_UNIT_FRAMES", UF_Target = "EM_UNIT_FRAMES", UF_Focus = "EM_UNIT_FRAMES", UF_Pet = "EM_UNIT_FRAMES",
+    UF_PlayerCastBar = "EM_CAST_BAR", Totems = "EM_TOTEMS", Toasts = "EM_TOASTS", LootRolls = "EM_LOOT_ROLLS" }
+
+-- The gryphons (end caps) are decoration: they follow the main action bar, and
+-- a bit of them under Tessera's bar (drawn in front of them) is no problem
+local DECORATION = { [26] = true } -- Enum.EditModeSystem.MainActionBarEndCap
+
+-- Readable name of a system frame, for the messages
 local function FrameLabel(f, sys)
-    if type(f.systemNameString) == "string" then return f.systemNameString end
-    local name = f.GetName and f:GetName()
-    if name then return name end
     for label, id in pairs(Enum and Enum.EditModeSystem or {}) do
-        if sys and id == sys.system then return label end
+        if sys and id == sys.system and FRIENDLY[label] then return L[FRIENDLY[label]] end
     end
-    return "?"
+    local name = type(f.systemNameString) == "string" and f.systemNameString or (f.GetName and f:GetName())
+    if name and name:find("%%d") then
+        local ok, text = pcall(string.format, name, sys and sys.systemIndex or 1)
+        name = ok and text or name:gsub("%%d", "")
+    end
+    return name or "?"
 end
 
 -- For each system anchored to the screen: how far it must move so that it and
@@ -205,7 +221,8 @@ function ns:PlanEditModeRoom(layout)
 
     local moves = {}
     for _, e in ipairs(entries) do
-        local up, down = Needed(e.frame)
+        local up, down = 0, 0
+        if not DECORATION[e.sys.system] then up, down = Needed(e.frame) end
         if up > 0 or (down or 0) > 0 then
             local root = RootOf(e)
             if root then
@@ -233,7 +250,13 @@ function ns:PlanEditModeRoom(layout)
     for name, f in pairs(_G) do
         if type(name) == "string" and name:find("^FlareUI_") and type(f) == "table" and f.GetRect then
             local ok, up, down = pcall(Needed, f)
-            if ok and (up > 0 or (down or 0) > 0) then table.insert(flare, (name:gsub("^FlareUI_", "FlareUI "))) end
+            if ok and (up > 0 or (down or 0) > 0) then
+                local short = name:gsub("^FlareUI_", "")
+                local label = FLARE_FRIENDLY[short] and L[FLARE_FRIENDLY[short]] or short
+                local seen = false
+                for _, v in ipairs(flare) do seen = seen or v == label end
+                if not seen then table.insert(flare, label) end
+            end
         end
     end
     table.sort(flare)
@@ -295,12 +318,13 @@ function ns:OfferEditModeRoom(quiet)
     pending = { base = base, source = source, own = saved and state.own or nil, moves = moves, flare = flare }
     local lines = {}
     for _, m in ipairs(moves) do
-        table.insert(lines, (m.dy > 0 and L.EDITMODE_MOVE_UP or L.EDITMODE_MOVE_DOWN):format(m.label, math.abs(m.dy)))
+        local what = m.label:sub(1, 1):upper() .. m.label:sub(2)
+        table.insert(lines, "- " .. (m.dy > 0 and L.EDITMODE_MOVE_UP or L.EDITMODE_MOVE_DOWN):format(what, math.abs(m.dy)))
     end
-    local text = L.EDITMODE_CONFIRM:format(source.layoutName, table.concat(lines, "\n"))
+    local text = L.EDITMODE_CONFIRM:format(source.layoutName, table.concat(lines, "\n"), source.layoutName)
     if IsLoaded and IsLoaded("FlareUI") then
         text = text .. "\n\n" .. L.EDITMODE_FLAREUI
-        if #flare > 0 then text = text .. "\n" .. L.EDITMODE_FLAREUI_COVERED:format(table.concat(flare, ", ")) end
+        if #flare > 0 then text = text .. " " .. L.EDITMODE_FLAREUI_COVERED:format(table.concat(flare, ", ")) end
     end
     for _, ui in ipairs(OTHER_UIS) do
         if IsLoaded and IsLoaded(ui) then
@@ -383,7 +407,8 @@ function ns:ApplyEditModeRoom()
         source = source.layoutName, sourceType = source.layoutType }
     self.sv.editModeOriginal = { name = source.layoutName, layoutType = source.layoutType }
     self.db.editModeLayout = copy.layoutName
-    self.Print(L.EDITMODE_DONE:format(source.layoutName, copy.layoutName))
+    self.Print(L.EDITMODE_DONE:format(copy.layoutName, source.layoutName))
+    if IsLoaded and IsLoaded("FlareUI") then self.Print(L.EDITMODE_FLAREUI_REMINDER) end
     -- check once the game has moved the frames
     C_Timer.After(1, function() self:CheckEditModeRoom() end)
     return true
@@ -397,7 +422,7 @@ function ns:CheckEditModeRoom()
     local off = {}
     local H, W = UIParent:GetHeight(), UIParent:GetWidth()
     for _, sys in ipairs(state.active.systems or {}) do
-        local f = SystemFrame(sys)
+        local f = not DECORATION[sys.system] and SystemFrame(sys)
         if f and f.IsShown and f:IsShown() then
             local l, b, r, t = self:GetRectUI(f)
             if l and (t > H + 1 or b < -1 - 4 or l < -1 or r > W + 1) and not sys.isInDefaultPosition then
@@ -406,9 +431,13 @@ function ns:CheckEditModeRoom()
         end
     end
     if #still == 0 and #off == 0 then return end
-    local names = {}
-    for _, m in ipairs(still) do table.insert(names, m.label) end
-    for _, n in ipairs(off) do table.insert(names, n) end
+    local names, seen = {}, {}
+    for _, m in ipairs(still) do
+        if not seen[m.label] then seen[m.label] = true table.insert(names, m.label) end
+    end
+    for _, n in ipairs(off) do
+        if not seen[n] then seen[n] = true table.insert(names, n) end
+    end
     StaticPopup_Show("TESSERA_EDITMODE_CHECK", table.concat(names, ", "))
 end
 

@@ -54,6 +54,9 @@ ns.CHANGELOG = {
             "Quick tour: seven short steps on first launch, and again from the Help tab. The help was reviewed for the "
                 .. "new tab, and the placement banner and the tooltip of unlocked blocks now mention what the quick menu "
                 .. "offers (add a spacer, replace with..., group look).",
+            "Round minimap button: click for the options, right-click to lock or unlock the blocks, drag it around "
+                .. "the minimap. With FlareUI, Tessera stays in FlareUI's addon bag instead (no duplicate). "
+                .. "/tessera minimap still hides or shows it.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -104,6 +107,9 @@ ns.CHANGELOG = {
                 .. "revue pour le nouvel onglet, et le bandeau de placement et l'infobulle des blocs déverrouillés "
                 .. "indiquent maintenant ce que propose le menu rapide (ajouter un espace, remplacer par..., apparence du "
                 .. "groupe).",
+            "Bouton rond sur la minicarte : clic pour les options, clic droit pour verrouiller ou déverrouiller les "
+                .. "blocs, glisser pour le déplacer autour de la minicarte. Avec FlareUI, Tessera reste dans le sac à "
+                .. "boutons de FlareUI à la place (pas de doublon). /tessera minimap le masque ou l'affiche toujours.",
         },
     },
     {

@@ -20,6 +20,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Group look (Look tab): fused (one bar, one border, as before), tiles (each block keeps its frame, with a small adjustable joint, like a mosaic) or separate (each block keeps its whole frame and blocks no longer merge; replaces the "Merge blocks" option). A single group can have its own look: quick menu, Group look. Existing profiles keep their look.
 - Share only a style (the look) or only a layout (the placement) as text, from the Look tab. One import window reads a style, a layout or a whole profile, and first lists what is missing on this computer (another addon's blocks, LibSharedMedia fonts or frames, the interface a style matches, WoW Forever blocks): those parts are skipped or replaced by the default font or frame.
 - Quick tour: seven short steps on first launch, and again from the Help tab. The help was reviewed for the new tab, and the placement banner and the tooltip of unlocked blocks now mention what the quick menu offers (add a spacer, replace with..., group look).
+- Round minimap button: click for the options, right-click to lock or unlock the blocks, drag it around the minimap. With FlareUI, Tessera stays in FlareUI's addon bag instead (no duplicate). /tessera minimap still hides or shows it.
 
 ## 1.0.0-rc2 — 2026-10-11
 

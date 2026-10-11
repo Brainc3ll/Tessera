@@ -88,7 +88,7 @@ end }
 local G = setmetatable({}, { __index = function(_, k) return _G[k] end })
 UIParent = NewObject("Frame"); UIParent.__w, UIParent.__h = 1366, 768
 GameTooltip = NewObject("GameTooltip"); GameTooltip.__name = "GameTooltip"
-Minimap = NewObject("Frame")
+Minimap = NewObject("Frame"); Minimap.__w, Minimap.__h = 140, 140
 CreateFrame = function(kind, name) local f = NewObject(kind); f.__name = name; if name then _G[name] = f end return f end
 C_Timer = { After = function(_, fn) table.insert(_G.__timers, fn) end, NewTicker = function(_, fn) table.insert(_G.__tickers, fn); return NewObject("Ticker") end }
 __timers, __tickers = {}, {}
@@ -631,6 +631,23 @@ for _, step in ipairs({
         ns:FinishImport(layoutText, "layout")
         ns:FinishImport(style, "style")
         ns:ResetProfile("top")
+    end,
+    -- round minimap button: shown, dragged, hidden, shown again
+    function()
+        ns.sv.hideMinimapButton = nil
+        ns:UpdateMinimapButton()
+        local b = _G.TesseraMinimapButton
+        assert(b, "round minimap button created")
+        GetCursorPosition = function() return 10, 10 end
+        b:GetScript("OnDragStart")(b)
+        b:GetScript("OnUpdate")(b)
+        b:GetScript("OnDragStop")(b)
+        assert(type(ns.sv.minimapAngle) == "number", "angle saved")
+        b:GetScript("OnEnter")(b)
+        b:GetScript("OnClick")(b, "RightButton")
+        b:GetScript("OnClick")(b, "RightButton")
+        ns:SetMinimapButtonShown(false)
+        ns:SetMinimapButtonShown(true)
     end,
     -- quick tour
     function()

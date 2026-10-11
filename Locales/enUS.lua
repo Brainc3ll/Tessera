@@ -282,7 +282,7 @@ local L = {
     TIP_QUIET = "Tessera writes nothing in the chat any more, except in reply to a command you type (/tessera …). Applies to all your characters.",
     SECTION_MINIMAP = "Minimap",
     SHOW_MINIMAP_BUTTON = "Show the minimap button",
-    TIP_MINIMAP_BUTTON = "Tessera's button in the addon compartment of the minimap (and in FlareUI's addon bag). Once hidden, type /tessera minimap to show it again.",
+    TIP_MINIMAP_BUTTON = "Tessera's round button on the edge of the minimap (drag it around the minimap), and its entry in the addon compartment. With FlareUI, the button is in FlareUI's addon bag instead. Once hidden, type /tessera minimap to show it again.",
     MINIMAP_SHOWN = "Minimap button shown.",
     MINIMAP_HIDDEN = "Minimap button hidden. Type /tessera minimap to show it again.",
     TAB_ABOUT = "About",
@@ -681,6 +681,10 @@ local L = {
     TUTORIAL_5 = "Drop a group against a screen edge: Tessera offers to stick it there, and along the top or bottom to stretch it over the whole width.",
     TUTORIAL_6 = "The Look tab gathers the style of the blocks, how groups look (fused, tiles, separate), ready-made layouts and sharing a style or a layout.",
     TUTORIAL_7 = "When everything is in place, lock the blocks. This tour can be started again from the Help tab.",
+    MINIMAP_TT_LEFT = "Click: options",
+    MINIMAP_TT_RIGHT_UNLOCK = "Right-click: unlock the blocks",
+    MINIMAP_TT_RIGHT_LOCK = "Right-click: lock the blocks",
+    MINIMAP_TT_DRAG = "Drag: move this button around the minimap",
 }
 
 ns.L = L

@@ -2410,17 +2410,97 @@ function Tessera_OnAddonCompartmentClick()
 end
 
 ---------------------------------------------------------------------------
--- Minimap button (addon compartment entry, also picked up by FlareUI's
--- button bag): can be hidden; /tessera minimap toggles it
+-- Minimap button: an entry in the addon compartment (also picked up by
+-- FlareUI's button bag) plus a round button on the edge of the minimap, which
+-- can be dragged around it. With FlareUI, its bag already shows the entry, so
+-- the round button is not created (no duplicate). Both can be hidden;
+-- /tessera minimap toggles them.
 ---------------------------------------------------------------------------
 local compartmentInfo
+local minimapButton
+
+local IsAddOnLoadedFn = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+local function FlareUIBag()
+    return IsAddOnLoadedFn and IsAddOnLoadedFn("FlareUI") and true or false
+end
+
+-- Places the button on the minimap's edge at the saved angle (degrees)
+local function PlaceMinimapButton()
+    local angle = math.rad(ns.sv.minimapAngle or 215)
+    local radius = (Minimap:GetWidth() / 2) + 5
+    minimapButton:ClearAllPoints()
+    minimapButton:SetPoint("CENTER", Minimap, "CENTER", math.cos(angle) * radius, math.sin(angle) * radius)
+end
+
+local function CreateMinimapButton()
+    local b = CreateFrame("Button", "TesseraMinimapButton", Minimap)
+    b:SetSize(31, 31)
+    b:SetFrameStrata("MEDIUM")
+    b:SetFrameLevel(8)
+    b:RegisterForClicks("AnyUp")
+    b:RegisterForDrag("LeftButton")
+    b:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
+    local bg = b:CreateTexture(nil, "BACKGROUND")
+    bg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+    bg:SetSize(20, 20)
+    bg:SetPoint("CENTER")
+    local icon = b:CreateTexture(nil, "ARTWORK")
+    icon:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
+    icon:SetSize(18, 18)
+    icon:SetPoint("CENTER")
+    local border = b:CreateTexture(nil, "OVERLAY")
+    border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+    border:SetSize(53, 53)
+    border:SetPoint("TOPLEFT")
+    b:SetScript("OnClick", function(_, button)
+        if button == "RightButton" then
+            ns:SetLocked(not ns.db.locked)
+        else
+            Tessera_OnAddonCompartmentClick()
+        end
+    end)
+    -- dragging moves the button around the minimap
+    b:SetScript("OnDragStart", function(self)
+        self:SetScript("OnUpdate", function()
+            local mx, my = Minimap:GetCenter()
+            local scale = Minimap:GetEffectiveScale()
+            local cx, cy = GetCursorPosition()
+            ns.sv.minimapAngle = math.deg(math.atan2(cy / scale - my, cx / scale - mx))
+            PlaceMinimapButton()
+        end)
+    end)
+    b:SetScript("OnDragStop", function(self) self:SetScript("OnUpdate", nil) end)
+    b:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+        GameTooltip:AddLine("Tessera", 1, 0.82, 0)
+        GameTooltip:AddLine(L.MINIMAP_TT_LEFT, 1, 1, 1)
+        GameTooltip:AddLine(ns:IsLocked() and L.MINIMAP_TT_RIGHT_UNLOCK or L.MINIMAP_TT_RIGHT_LOCK, 1, 1, 1)
+        GameTooltip:AddLine(L.MINIMAP_TT_DRAG, 0.7, 0.7, 0.7)
+        GameTooltip:Show()
+    end)
+    b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    return b
+end
+
+-- Shows or hides the round button as the setting (and FlareUI's presence) wants
+local function UpdateRoundButton(wanted)
+    if not Minimap then return end
+    wanted = wanted and not FlareUIBag()
+    if wanted and not minimapButton then minimapButton = CreateMinimapButton() end
+    if minimapButton then
+        if wanted then PlaceMinimapButton() end
+        minimapButton:SetShown(wanted)
+    end
+end
 
 -- Registers or removes Tessera's entry in the addon compartment, as the
 -- hideMinimapButton setting requires. Calls into Blizzard's frame are wrapped
 -- in pcall since its internals vary between client versions.
 function ns:UpdateMinimapButton()
+    if not self.sv then return end
+    UpdateRoundButton(not self.sv.hideMinimapButton)
     local frame = AddonCompartmentFrame
-    if not frame or not frame.RegisterAddon or not self.sv then return end
+    if not frame or not frame.RegisterAddon then return end
     local list = frame.registeredAddons or {}
     local index
     for i, entry in ipairs(list) do

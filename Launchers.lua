@@ -14,7 +14,7 @@ local L = ns.L
 -- Name patterns of minimap buttons that belong to the game (or FlareUI) and are not launchers
 local SKIP = {
     "^Minimap", "^MiniMap", "^GameTime", "^TimeManager", "^QueueStatus", "^Expansion",
-    "^GarrisonLandingPage", "^AddonCompartment", "^HybridMinimap", "^LibDBIcon10_", "^FlareUI",
+    "^GarrisonLandingPage", "^AddonCompartment", "^HybridMinimap", "^LibDBIcon10_", "^FlareUI", "^Tessera",
 }
 
 -- Decorative minimap button textures (frames, backgrounds), never the actual icon

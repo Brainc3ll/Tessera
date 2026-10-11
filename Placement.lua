@@ -810,7 +810,24 @@ function ns:HookEditMode()
             ns.db.unlockedByEditMode = nil
             if not ns.db.locked then ns:SetLocked(true, true) end
         end
+        -- the gryphons may have been shown or hidden: groups placed beside the
+        -- action bar look for its edge again
+        ns:ReanchorBesideActionBar()
     end)
+end
+
+-- Re-anchors the groups placed beside the action bar ("around the gryphons"),
+-- e.g. after the gryphons were hidden or shown in Edit Mode
+function ns:ReanchorBesideActionBar()
+    if not self.db then return end
+    for key, cfg in pairs(self.db.blocks) do
+        local f = self.frames[key]
+        if f and cfg.anchor and cfg.anchor.beside and not cfg.dock then
+            f:ClearAllPoints()
+            self:AnchorBesideActionBar(f, cfg.anchor)
+        end
+    end
+    self:RequestLayout()
 end
 
 -- Blocks hidden with the key binding during combat: hidden when combat ends

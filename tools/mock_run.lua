@@ -470,6 +470,44 @@ for _, step in ipairs({
         ns:AskReplaceBlock("time", "fps")
         ns:ResetProfile("top")
     end,
+    -- screen edges: stick and stretch a bar, undo it; OS-like layouts
+    function()
+        ns:ResetProfile("top")
+        local b = ns.db.blocks
+        local function Spacers()
+            local n = 0
+            for k in pairs(b) do if ns.IsSpacerKey(k) then n = n + 1 end end
+            return n
+        end
+        local root = ns:GetRoot("bags")
+        local before = Spacers()
+        ns:StickToEdges(root, { TOP = true }, "center")
+        ns:UpdateLayout()
+        assert(b[root].stretch == "TOP" and b[root].edges.LEFT and b[root].edges.RIGHT, "stretched bar")
+        assert(Spacers() >= before + 2, "centered bar gets spacers on both sides")
+        for k, c in pairs(b) do
+            assert(not (c.dock and c.dock.to == k), k .. " docked to itself")
+        end
+        ns:Undo()
+        assert(not b[root].stretch and Spacers() == before, "undo removes the stretch and its spacers")
+        ns:StickToEdges(root, { LEFT = true })
+        assert(b[root].edges.LEFT and not b[root].stretch, "left edge: stuck, not stretched")
+        local exported = ns:SanitizeProfile(ns:DecodeProfile(ns:ExportProfile()))
+        assert(exported.blocks[root].edges and exported.blocks[root].edges.LEFT, "edges lost by export")
+        for _, preset in ipairs({ "windows", "windows11", "macos", "gnome" }) do
+            ns:ResetProfile(preset)
+            ns:UpdateLayout()
+            b = ns.db.blocks
+            local stretched, spacers = 0, 0
+            for k, c in pairs(b) do
+                if c.stretch then stretched = stretched + 1 end
+                if ns.IsSpacerKey(k) and c.enabled then spacers = spacers + 1 end
+            end
+            assert(stretched == 1 and spacers >= 4, preset .. ": one stretched bar with several spacers")
+        end
+        assert(b.time.enabled and b.time.dock, "clock in the bar")
+        ns:ResetProfile("top")
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

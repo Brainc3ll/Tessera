@@ -159,7 +159,7 @@ end
 -- Undo (placement mode)
 ---------------------------------------------------------------------------
 local UNDO_LIMIT = 30
-local POSITION_FIELDS = { "point", "dock", "anchor", "enabled" }
+local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch" }
 
 -- Remembers the position of every block, before a move / merge / detach / hide
 function ns:PushUndo()
@@ -187,6 +187,13 @@ function ns:Undo()
         local cfg = self.db.blocks[key]
         if cfg then
             for _, field in ipairs(POSITION_FIELDS) do cfg[field] = self.DeepCopy(s[field]) end
+        end
+    end
+    -- spacers added since (a bar stretched over the screen width) go away
+    for key in pairs(self.db.blocks) do
+        if not snap[key] and ns.IsSpacerKey(key) then
+            self.db.blocks[key] = nil
+            if self.frames[key] then self.frames[key]:Hide() end
         end
     end
     self:ReanchorAll()
@@ -1117,4 +1124,179 @@ function ns:PreviewForever(arg)
     if self.brokerModeActive then
         self.Print("[preview] le mode DataBroker est actif : désactive-le (/tes broker) pour voir les blocs.")
     end
+end
+
+---------------------------------------------------------------------------
+-- Screen edges: sticking a group to an edge, stretching a bar over the width
+---------------------------------------------------------------------------
+-- A group dropped within EDGE_DISTANCE of a screen edge can be stuck to it
+-- (db.edgeSnap: "ask" with a small menu, "always" or "never"). A stuck group
+-- touches the edge exactly, stays there whatever the resolution (its position is
+-- saved from that edge), and loses its border along the edge (cfg.edges on the
+-- group's root, see UpdateSeams). Along the top or bottom edge, a single-row bar
+-- can also be stretched over the whole width (cfg.stretch): spacer blocks are
+-- added to align its blocks left, center, right or spread, and only those spacers
+-- stretch, so the blocks keep their size. Moving the group again unsticks it.
+local EDGE_DISTANCE = 10
+local SPACER_SLOT = 200 -- about one spacer per this many pixels of room (1 to 4)
+ns.STRETCH_ALIGNS = { "left", "center", "right", "spread" }
+
+-- Rectangle of a whole group (UIParent units), and its visible blocks
+function ns:GroupRectUI(rootKey)
+    local l, b, r, t
+    for key in pairs(self:GetSubtree(rootKey)) do
+        local f = self.frames[key]
+        if f and f:IsShown() then
+            local fl, fb, fr, ft = self:GetRectUI(f)
+            if fl then
+                l, b = math.min(l or fl, fl), math.min(b or fb, fb)
+                r, t = math.max(r or fr, fr), math.max(t or ft, ft)
+            end
+        end
+    end
+    return l, b, r, t
+end
+
+-- Screen edges a rectangle touches (nil when none)
+function ns:TouchedEdges(l, b, r, t)
+    if not l then return nil end
+    local W, H = UIParent:GetWidth(), UIParent:GetHeight()
+    local e = {
+        LEFT = l <= EDGE_DISTANCE or nil, RIGHT = r >= W - EDGE_DISTANCE or nil,
+        BOTTOM = b <= EDGE_DISTANCE or nil, TOP = t >= H - EDGE_DISTANCE or nil,
+    }
+    if next(e) then return e end
+end
+
+-- True when the group is one row of blocks (only merged left / right)
+function ns:IsSingleRow(rootKey)
+    for key in pairs(self:GetSubtree(rootKey)) do
+        local _, side = self:GetDockTarget(key)
+        if side == "TOP" or side == "BOTTOM" then return false end
+    end
+    return true
+end
+
+-- Saved point of a stuck group's head: offsets measured from the stuck edges, so
+-- the group stays against them on any screen
+local function EdgePoint(self, l, b, r, t, ratio, edges)
+    local pt = self:MakeRelativePoint(l, b, r, t, ratio)
+    local W, H = UIParent:GetWidth(), UIParent:GetHeight()
+    local h = (edges.LEFT and "LEFT") or (edges.RIGHT and "RIGHT") or (pt[1]:match("LEFT") or pt[1]:match("RIGHT") or "")
+    local v = (edges.TOP and "TOP") or (edges.BOTTOM and "BOTTOM") or (pt[1]:match("TOP") or pt[1]:match("BOTTOM") or "")
+    local cx, cy = (l + r) / 2, (b + t) / 2
+    local x = (h == "LEFT" and l) or (h == "RIGHT" and r - W) or (cx - W / 2)
+    local y = (v == "TOP" and t - H) or (v == "BOTTOM" and b) or (cy - H / 2)
+    local point = (v .. h ~= "") and (v .. h) or "CENTER"
+    return { point, point, math.floor(x / ratio + 0.5), math.floor(y / ratio + 0.5) }
+end
+
+-- Blocks of a one-row group, from left to right
+local function RowOrder(self, rootKey)
+    local list = {}
+    for key in pairs(self:GetSubtree(rootKey)) do
+        local f = self.frames[key]
+        local l = f and self:GetRectUI(f)
+        table.insert(list, { key = key, l = l or 0 })
+    end
+    table.sort(list, function(a, b) return a.l < b.l end)
+    local keys = {}
+    for _, e in ipairs(list) do table.insert(keys, e.key) end
+    return keys
+end
+
+-- Adds spacers to a one-row group so its blocks are aligned once the bar is
+-- stretched ("room": free width in UIParent units), then re-docks the row:
+-- blocks left of the head docked LEFT, the others RIGHT (the head stays put)
+local function AddStretchSpacers(self, rootKey, align, room)
+    local row = RowOrder(self, rootKey)
+    local gaps = {}  -- position (insert before row[i]; #row + 1 = at the end) -> room
+    if align == "left" then
+        gaps[#row + 1] = room
+    elseif align == "right" then
+        gaps[1] = room
+    elseif align == "center" then
+        gaps[1], gaps[#row + 1] = room / 2, room / 2
+    else -- spread: between the blocks
+        for i = 2, #row do gaps[i] = room / math.max(1, #row - 1) end
+        if #row < 2 then gaps[#row + 1] = room end
+    end
+    local function NewSpacer()
+        local n = 1
+        while self.db.blocks[self.SPACER_PREFIX .. n] do n = n + 1 end
+        local key = self.SPACER_PREFIX .. n
+        self.db.blocks[key] = self:GetBlockDefaults(key)
+        self:CopyBlockStyle(rootKey, key)
+        self.db.blocks[key].width = 8
+        return key
+    end
+    local ordered = {}
+    for i = 1, #row + 1 do
+        if gaps[i] then
+            local count = math.max(1, math.min(4, math.floor(gaps[i] / SPACER_SLOT + 0.5)))
+            for _ = 1, count do table.insert(ordered, NewSpacer()) end
+        end
+        if row[i] then table.insert(ordered, row[i]) end
+    end
+    local headIndex
+    for i, key in ipairs(ordered) do
+        if key == rootKey then headIndex = i end
+    end
+    for i, key in ipairs(ordered) do
+        local cfg = self.db.blocks[key]
+        cfg.anchor = nil
+        if i < headIndex then
+            cfg.dock = { to = ordered[i + 1], side = "LEFT" }
+        elseif i > headIndex then
+            cfg.dock = { to = ordered[i - 1], side = "RIGHT" }
+        end
+    end
+end
+
+-- Sticks a group to the given edges; align ("left", "center", "right", "spread")
+-- also stretches a one-row bar along the top or bottom edge
+function ns:StickToEdges(rootKey, edges, align)
+    local f, cfg = self.frames[rootKey], self.db.blocks[rootKey]
+    local l, b, r, t = self:GroupRectUI(rootKey)
+    if not (f and cfg and l) or InCombatLockdown() then return end
+    self:PushUndo()
+    local W, H = UIParent:GetWidth(), UIParent:GetHeight()
+    local dx = (edges.LEFT and -l) or (edges.RIGHT and W - r) or 0
+    local dy = (edges.BOTTOM and -b) or (edges.TOP and H - t) or 0
+    local rl, rb, rr, rt = self:GetRectUI(f)
+    local stretch = align and (edges.TOP or edges.BOTTOM) and self:IsSingleRow(rootKey)
+    if stretch then
+        AddStretchSpacers(self, rootKey, align, W - (r - l))
+        edges = { TOP = edges.TOP, BOTTOM = edges.BOTTOM, LEFT = true, RIGHT = true }
+    end
+    cfg.point = EdgePoint(self, rl + dx, rb + dy, rr + dx, rt + dy,
+        f:GetEffectiveScale() / UIParent:GetEffectiveScale(), edges)
+    cfg.edges = edges
+    cfg.stretch = stretch and (edges.TOP and "TOP" or "BOTTOM") or nil
+    self:RefreshAllBlocks()
+    self:RequestLayout()
+end
+
+-- After a drop: is the group against a screen edge? Then stick it, or ask how
+function ns:CheckScreenEdges(rootKey)
+    if not self.db or self:GetDockTarget(rootKey) then return end
+    local mode = self.db.edgeSnap or "ask"
+    if mode == "never" then return end
+    local edges = self:TouchedEdges(self:GroupRectUI(rootKey))
+    if not edges then return end
+    if mode == "always" or not (MenuUtil and MenuUtil.CreateContextMenu) then
+        self:StickToEdges(rootKey, edges)
+        return
+    end
+    MenuUtil.CreateContextMenu(UIParent, function(_, menu)
+        menu:CreateTitle(L.EDGE_TITLE)
+        menu:CreateButton(L.EDGE_STICK, function() self:StickToEdges(rootKey, edges) end)
+        if (edges.TOP or edges.BOTTOM) and self:IsSingleRow(rootKey) then
+            for _, align in ipairs(ns.STRETCH_ALIGNS) do
+                menu:CreateButton(L["EDGE_STRETCH_" .. align:upper()],
+                    function() self:StickToEdges(rootKey, edges, align) end)
+            end
+        end
+        menu:CreateButton(L.EDGE_LEAVE, function() end)
+    end)
 end

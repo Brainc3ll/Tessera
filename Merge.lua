@@ -481,17 +481,34 @@ function ns:UpdateLayout()
         table.sort(members)
         return members, horizontal
     end
-    local function Fill(rootKey, total)
+    -- spacersOnly: in a bar stretched over the screen width, only its spacers take
+    -- the extra room (the blocks keep their size); without spacers, all share it
+    local function Fill(rootKey, total, spacersOnly)
         local members, horizontal = GroupMembers(rootKey)
         if not horizontal or #members == 0 then return end
         local sum = 0
         for _, k in ipairs(members) do sum = sum + need[k][1] end
         local extra = math.floor(total - sum)
         if extra <= 0 then return end
-        local each = math.floor(extra / #members)
-        for _, k in ipairs(members) do need[k][1] = need[k][1] + each end
-        local first = need[rootKey] and rootKey or members[1]
-        need[first][1] = need[first][1] + extra - each * #members
+        local takers = members
+        if spacersOnly then
+            local spacers = {}
+            for _, k in ipairs(members) do
+                if ns.IsSpacerKey(k) then table.insert(spacers, k) end
+            end
+            if #spacers > 0 then takers = spacers end
+        end
+        local each = math.floor(extra / #takers)
+        for _, k in ipairs(takers) do need[k][1] = need[k][1] + each end
+        local first = (need[rootKey] and not spacersOnly) and rootKey or takers[1]
+        need[first][1] = need[first][1] + extra - each * #takers
+    end
+    -- bars stuck to the top or bottom edge and stretched over the screen width
+    for key, cfg in pairs(self.db.blocks) do
+        local f = self.frames[key]
+        if cfg.stretch and f and not self:GetDockTarget(key) then
+            Fill(key, UIParent:GetWidth() * UIParent:GetEffectiveScale() / f:GetEffectiveScale(), true)
+        end
     end
     for _, pass in ipairs({ "frame", "below" }) do
         for key, cfg in pairs(self.db.blocks) do
@@ -560,6 +577,7 @@ function ns:UpdateLayout()
         if cfg.anchor and not width[key] and self.frames[key] then width[key] = 0 end
     end
     self:CenterAnchoredGroups(width)
+    self:PlaceStretchedGroups(width)
     self:UpdateSeams(need)
     -- second pass a little later, once all positions have settled
     -- (avoids a border that is not redrawn in an unusual arrangement)
@@ -625,8 +643,20 @@ function ns:UpdateSeams(active)
         if f:IsShown() and l then rects[key] = { l = l, b = b, r = r, t = t, root = self:GetVisualRoot(key) } end
     end
 
-    -- is a point (just outside a corner) inside a block of the group?
-    local function Occupied(root, x, y)
+    -- groups stuck to screen edges (cfg.edges on their root): the screen counts as
+    -- a neighbour along those edges, so the border there disappears
+    local edgesOf = {}
+    for key, me in pairs(rects) do
+        local rootCfg = self.db.blocks[self:GetRoot(key)]
+        if rootCfg and rootCfg.edges then edgesOf[me.root] = rootCfg.edges end
+    end
+
+    -- is a point (just outside a corner) inside a block of the group? Off screen
+    -- along a stuck edge counts as occupied (no notch drawn at the screen's corner)
+    local function Occupied(root, x, y, sw, sh)
+        local edges = edgesOf[root]
+        if edges and ((edges.LEFT and x < 0) or (edges.RIGHT and x > sw)
+            or (edges.BOTTOM and y < 0) or (edges.TOP and y > sh)) then return true end
         for _, o in pairs(rects) do
             if o.root == root and x > o.l and x < o.r and y > o.b and y < o.t then return true end
         end
@@ -655,6 +685,16 @@ function ns:UpdateSeams(active)
                     end
                 end
             end
+            -- screen size in this block's units, for the stuck edges
+            local k = UIParent:GetEffectiveScale() / f:GetEffectiveScale()
+            local sw, sh = UIParent:GetWidth() * k, UIParent:GetHeight() * k
+            local edges = edgesOf[me.root]
+            if edges then
+                if edges.TOP and math.abs(me.t - sh) <= SEAM_TOL then table.insert(cov.TOP, { 0, W }) end
+                if edges.BOTTOM and math.abs(me.b) <= SEAM_TOL then table.insert(cov.BOTTOM, { 0, W }) end
+                if edges.LEFT and math.abs(me.l) <= SEAM_TOL then table.insert(cov.LEFT, { 0, H }) end
+                if edges.RIGHT and math.abs(me.r - sw) <= SEAM_TOL then table.insert(cov.RIGHT, { 0, H }) end
+            end
             for side, len in pairs({ TOP = W, BOTTOM = W, LEFT = H, RIGHT = H }) do
                 cov[side] = MergeIntervals(cov[side], len)
             end
@@ -670,7 +710,7 @@ function ns:UpdateSeams(active)
                 if Covered(cov[sides[2]], hEnd) and Covered(cov[sides[1]], vEnd) then
                     local cx = CX[sides[1] == "LEFT" and "Left" or "Right"]
                     local cy = CY[sides[2] == "TOP" and "Top" or "Bottom"]
-                    if not Occupied(me.root, cx, cy) then cov.cornerNotch[corner] = true end
+                    if not Occupied(me.root, cx, cy, sw, sh) then cov.cornerNotch[corner] = true end
                 end
             end
             self:ApplySeams(f, cov)
@@ -1012,6 +1052,23 @@ local function GroupExtent(self, head, width)
     -- total width, head's offset from the group's left edge, and every block's x
     -- relative to the head
     return maxX - minX, -minX, x
+end
+
+-- Bars stretched over the screen width: the group's left edge on the screen's
+-- left edge, on the top or bottom edge (the head may not be the leftmost block)
+function ns:PlaceStretchedGroups(width)
+    for key in pairs(width) do
+        local cfg, f = self.db.blocks[key], self.frames[key]
+        if cfg.stretch and f and not self:GetDockTarget(key) then
+            local _, headX = GroupExtent(self, key, width)
+            local point = (cfg.stretch == "BOTTOM" and "BOTTOM" or "TOP") .. "LEFT"
+            local p, rel, _, x, y = f:GetPoint(1)
+            if p ~= point or rel ~= UIParent or math.abs((x or 0) - headX) > 0.5 or (y or 0) ~= 0 then
+                f:ClearAllPoints()
+                f:SetPoint(point, UIParent, point, headX, 0)
+            end
+        end
+    end
 end
 
 -- Re-anchors each anchored group root so the whole group is centered on its

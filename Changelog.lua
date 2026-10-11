@@ -24,6 +24,12 @@ ns.CHANGELOG = {
                 .. "(Profiles tab), with a description of each one.",
             "New \"Replace with...\" (quick menu, or next to the block list in the Blocks tab): puts another block "
                 .. "exactly in a block's place, with its look, without moving the others; or swaps two shown blocks.",
+            "Screen edges: drop a group against an edge and Tessera offers to stick it there (no border on that "
+                .. "side, stays put on any screen). Along the top or bottom, a bar can be stretched over the whole "
+                .. "width: spacer blocks fill the room (blocks on the left, center, right or spread) and the blocks "
+                .. "keep their size. Setting in the General tab (ask, always, never).",
+            "New ready-made layouts inspired by operating systems: Windows, Windows 11, macOS and GNOME, with the "
+                .. "clock, FPS, latency and volume where you expect them.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -38,6 +44,12 @@ ns.CHANGELOG = {
             "Nouveau « Remplacer par... » (menu rapide, ou à côté de la liste des blocs dans l'onglet Blocs) : met un "
                 .. "autre bloc exactement à la place d'un bloc, avec son apparence, sans bouger les autres ; ou échange "
                 .. "deux blocs affichés.",
+            "Bords de l'écran : lâche un groupe contre un bord et Tessera propose de l'y coller (plus de bordure de "
+                .. "ce côté, il reste en place sur tous les écrans). En haut ou en bas, une barre peut être étirée sur "
+                .. "toute la largeur : des blocs espace comblent la place (blocs à gauche, au centre, à droite ou "
+                .. "répartis) et les blocs gardent leur taille. Réglage dans l'onglet Général (demander, toujours, jamais).",
+            "Nouvelles dispositions toutes prêtes inspirées des systèmes : Windows, Windows 11, macOS et GNOME, avec "
+                .. "l'horloge, les FPS, la latence et le volume là où on les attend.",
         },
     },
     {

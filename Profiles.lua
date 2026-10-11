@@ -204,6 +204,14 @@ local function CleanBlock(self, key, block, keys)
             clean[field] = value
         elseif field == "frozen" and type(value) == "boolean" then
             clean.frozen = value
+        elseif field == "edges" and type(value) == "table" then
+            local e = {}
+            for _, side in ipairs({ "TOP", "BOTTOM", "LEFT", "RIGHT" }) do
+                if value[side] == true then e[side] = true end
+            end
+            if next(e) then clean.edges = e end
+        elseif field == "stretch" and (value == "TOP" or value == "BOTTOM") then
+            clean.stretch = value
         end
     end
     -- sizes that could hide the block or break the layout

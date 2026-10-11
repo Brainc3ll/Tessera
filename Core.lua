@@ -493,6 +493,14 @@ local STYLE_KEYS = {
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate",
 }
 
+-- Gives block "to" the look of block "from" (size, font, frame...): used for spacers
+-- added to a bar so they blend in
+function ns:CopyBlockStyle(from, to)
+    local a, b = self.db.blocks[from], self.db.blocks[to]
+    if not a or not b then return end
+    for _, k in ipairs(STYLE_KEYS) do b[k] = DeepCopy(a[k]) end
+end
+
 -- Per-profile settings
 local PROFILE_DEFAULTS = {
     locked = true,
@@ -502,6 +510,7 @@ local PROFILE_DEFAULTS = {
     snap = true,
     snapBlizzard = true,     -- also snap to some Blizzard frames (minimap, chat, bars...)
     editModeSync = true,     -- Blizzard's Edit Mode also unlocks the blocks
+    edgeSnap = "ask",        -- a group dropped against a screen edge: "ask", "always" or "never" stick it
     scale = 1,               -- global scale of all blocks
     merge = true,
     grid = 0,
@@ -863,9 +872,11 @@ function ns:SnapAndSave(f)
         end
     end
 
-    -- A moved group is no longer tied to the automatic default-layout anchor
+    -- A moved group is no longer tied to the automatic default-layout anchor, nor
+    -- stuck to a screen edge (it may be stuck again below, once dropped)
     for key in pairs(group) do
-        if self.db.blocks[key] then self.db.blocks[key].anchor = nil end
+        local c = self.db.blocks[key]
+        if c then c.anchor, c.edges, c.stretch = nil, nil, nil end
     end
     if headKey ~= f.key then self:Reroot(headKey) end
     if dock then
@@ -907,6 +918,10 @@ function ns:SnapAndSave(f)
         end
     end
     self:RequestLayout()
+    -- dropped against a screen edge: offer to stick it there (once the layout settled)
+    if not dock then
+        C_Timer.After(0.1, function() ns:CheckScreenEdges(headKey) end)
+    end
 end
 
 -- Draws (or hides) the placement grid; only visible while blocks are unlocked.
@@ -1762,9 +1777,10 @@ end
 --   bottom   bar at the bottom of the screen, its second row above it
 --   left     column on the left of the screen, every block stacked
 --   compact  top bar with small blocks, sized to their content
---   gryphons two groups at the bottom, on both sides of the main action bar (its
---            gryphons), WoW Forever blocks included
-ns.PRESETS = { "top", "bottom", "left", "compact", "gryphons" }
+--   gryphons two groups in the bottom corners of the screen, WoW Forever blocks included
+--   windows, windows11, macos, gnome   bars stuck to a screen edge, inspired by
+--            those systems (see OS_LAYOUTS)
+ns.PRESETS = { "top", "bottom", "left", "compact", "gryphons", "windows", "windows11", "macos", "gnome" }
 
 -- Last step of every ready-made layout: icon without label on all data blocks
 -- (even hidden ones), the theme's look, remembered for future blocks
@@ -1854,8 +1870,91 @@ function ns:ApplyGryphonsLayout(p)
     end
 end
 
+-- Layouts inspired by operating systems. Each bar is a list of blocks from left
+-- to right (or top to bottom for a column); SPACER marks an empty spacer block,
+-- several in a row rather than one huge one, so each can later be replaced by a
+-- block ("Replace with..."). A bar along the top or bottom edge is stuck to it and
+-- stretched over the whole width: only its spacers stretch (see Merge.lua), the
+-- blocks keep their size. Placed like the real ones: clock at the right end of the
+-- taskbar / menu bar (center for GNOME), network (latency), volume and FPS next to it.
+local SPACER = "|spacer"
+local OS_LAYOUTS = {
+    windows = {
+        { edge = "BOTTOM", items = { "bags", "legacy", "comprehension", "camping", "honor",
+            SPACER, SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "mail", "whispers" } },
+    },
+    windows11 = {
+        { edge = "BOTTOM", items = { "zone", SPACER, SPACER, SPACER, "gold", "bags", "legacy", "comprehension",
+            "camping", SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "mail", "whispers" } },
+    },
+    macos = {
+        { edge = "TOP", items = { "zone", "subzone", "coords", SPACER, SPACER, SPACER, SPACER,
+            "bags", "durability", "fps", "latency", "volume", "time" } },
+        -- the Dock, on the left edge (an option of the real one): the bottom of the
+        -- screen belongs to the action bars
+        { edge = "LEFT", items = { "legacy", "comprehension", "camping", "honor", "weaponSkills", "gold" } },
+    },
+    gnome = {
+        { edge = "TOP", items = { "zone", SPACER, SPACER, SPACER, "time", SPACER, SPACER, SPACER,
+            "gold", "bags", "fps", "latency", "volume" } },
+    },
+}
+local OS_HIDE_EMPTY = { comprehension = true, camping = true, mail = true, whispers = true }
+local OS_WIDTH = 56
+
+function ns:ApplyOSLayout(p, preset)
+    local used = {}
+    local function NewSpacer()
+        local n = 1
+        while p.blocks[self.SPACER_PREFIX .. n] do n = n + 1 end
+        local key = self.SPACER_PREFIX .. n
+        p.blocks[key] = self:GetBlockDefaults(key)
+        p.blocks[key].width = 8 -- a stretched bar gives its spacers the room left
+        return key
+    end
+    for _, bar in ipairs(OS_LAYOUTS[preset] or {}) do
+        local keys = {}
+        for _, item in ipairs(bar.items) do
+            if item == SPACER then
+                table.insert(keys, NewSpacer())
+            elseif p.blocks[item] and self.modules[item] then
+                table.insert(keys, item)
+            end
+        end
+        local column = bar.edge == "LEFT" or bar.edge == "RIGHT"
+        for i, key in ipairs(keys) do
+            local cfg = p.blocks[key]
+            cfg.enabled = true
+            cfg.height = BASE_HEIGHT
+            if not self.IsSpacerKey(key) then cfg.width = OS_WIDTH end
+            cfg.anchor, cfg.point, cfg.dock, cfg.edges, cfg.stretch = nil, nil, nil, nil, nil
+            if OS_HIDE_EMPTY[key] then cfg.hideEmpty = true end
+            used[key] = true
+            if i > 1 then
+                cfg.dock = { to = keys[i - 1], side = column and "BOTTOM" or "RIGHT" }
+            elseif column then
+                cfg.point = { bar.edge, bar.edge, 0, 60 }
+                cfg.edges = { [bar.edge] = true }
+            else
+                local corner = bar.edge .. "LEFT"
+                cfg.point = { corner, corner, 0, 0 }
+                cfg.edges = { [bar.edge] = true, LEFT = true, RIGHT = true }
+                cfg.stretch = bar.edge
+            end
+        end
+    end
+    for key, cfg in pairs(p.blocks) do
+        if self.modules[key] and not used[key] then cfg.enabled = false end
+    end
+end
+
 function ns:ApplyBaseLayout(p, preset)
     preset = preset or "top"
+    if OS_LAYOUTS[preset] then
+        self:ApplyOSLayout(p, preset)
+        FinishBaseLayout(self, p)
+        return
+    end
     if preset == "gryphons" then
         self:ApplyGryphonsLayout(p)
         FinishBaseLayout(self, p)

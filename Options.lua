@@ -1137,6 +1137,13 @@ local function BuildGeneralPage(page)
     Place(CreateCheck(page, L.EDIT_MODE_SYNC,
         function() return ns.db.editModeSync ~= false end,
         function(v) ns.db.editModeSync = v end, nil, L.TIP_EDIT_MODE_SYNC), 1)
+    Place(CreateDropdown(page, L.EDGE_SNAP, {
+            { key = "ask", name = L.EDGE_SNAP_ASK },
+            { key = "always", name = L.EDGE_SNAP_ALWAYS },
+            { key = "never", name = L.EDGE_SNAP_NEVER },
+        },
+        function() return ns.db.edgeSnap or "ask" end,
+        function(v) ns.db.edgeSnap = v end, nil, nil, L.TIP_EDGE_SNAP), 1)
     Place(CreateCheck(page, L.MERGE,
         function() return ns.db.merge end,
         function(v) ns.db.merge = v end, nil, L.TIP_MERGE), 1)

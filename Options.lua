@@ -227,7 +227,7 @@ function ns:RefreshOptions()
     ValidateSelection()
     for _, w in ipairs(widgets) do
         if w.isShown then w:SetShown(w.isShown() and true or false) end
-        w:Refresh()
+        if w.Refresh then w:Refresh() end
     end
     if ns.RelayoutBlockOptions then ns.RelayoutBlockOptions() end
 end
@@ -1910,6 +1910,7 @@ local function BuildHelpPage(page)
     tour:SetText(L.TUTORIAL_START)
     tour:SetScript("OnClick", function() ns:StartTutorial() end)
     AttachTip(tour, L.TUTORIAL_START, L.TIP_TUTORIAL_START)
+    tour.Refresh = function() end
     Register(tour, function() return not ns.brokerModeActive end)
 end
 

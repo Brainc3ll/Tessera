@@ -2352,8 +2352,13 @@ local function ShowTutorialStep(index)
     tutorial.back:SetEnabled(index > 1)
     tutorial.next:SetText(index < #TUTORIAL_STEPS and L.TUTORIAL_NEXT or L.TUTORIAL_DONE)
     tutorial.action:SetShown(step.action ~= nil)
-    if step.action then tutorial.action:SetText(L[step.action]) end
-    tutorial:SetHeight(tutorial.text:GetStringHeight() + 96)
+    if step.action then
+        -- the button fits its text (translations can be long), on its own row
+        tutorial.action:SetText(L[step.action])
+        local w = (tutorial.action:GetFontString() and tutorial.action:GetFontString():GetStringWidth() or 120) + 32
+        tutorial.action:SetWidth(math.min(348, math.max(150, w)))
+    end
+    tutorial:SetHeight(tutorial.text:GetStringHeight() + 96 + (step.action and 30 or 0))
 end
 
 function ns:StartTutorial()
@@ -2392,8 +2397,7 @@ function ns:StartTutorial()
         tutorial.back = Button(L.TUTORIAL_BACK, function() ShowTutorialStep(tutorial.index - 1) end)
         tutorial.back:SetPoint("RIGHT", tutorial.next, "LEFT", -6, 0)
         tutorial.action = Button("", function() TUTORIAL_STEPS[tutorial.index].run() end)
-        tutorial.action:SetSize(150, 22)
-        tutorial.action:SetPoint("BOTTOMLEFT", 14, 14)
+        tutorial.action:SetPoint("BOTTOMLEFT", 16, 44) -- above the Back / Next row
     end
     self:SkinWindow(tutorial, tutorial.title)
     if panel and panel:IsShown() then panel:Hide() end -- the blocks must be visible

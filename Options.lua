@@ -1278,8 +1278,24 @@ local function BuildLaunchersPage(page, showBlockPage)
         return entries
     end, L.NO_LAUNCHER, L.TIP_EDIT_LAUNCHER), 1)
 
-    -- DataBroker blocks: other addons' data objects (Broker.lua), in their own menus
-    P.Gap(1, 10)
+end
+
+---------------------------------------------------------------------------
+-- "DataBroker" tab: sharing Tessera's blocks, DataBroker mode
+---------------------------------------------------------------------------
+-- Data blocks (game modules) sorted by name
+local function DataModuleKeys()
+    local keys = {}
+    for _, key in ipairs(ns.order) do table.insert(keys, key) end
+    table.sort(keys, function(a, b) return SortKey(ns:GetBlockName(a)) < SortKey(ns:GetBlockName(b)) end)
+    return keys
+end
+
+-- Other addons' DataBroker objects as Tessera blocks (Broker.lua): search, add, edit.
+-- First part of the DataBroker tab.
+local function BuildBrokerPlugins(page, showBlockPage)
+    local P = NewLayout(page)
+    local function Place(w, col) return P.Place(w, col) end
     Place(CreateHeader(page, L.BROKERS), 1)
     Place(CreateNote(page, L.BROKERS_HINT, FULL_W), 1)
     local noLib = Place(CreateNote(page, L.BROKER_NOTE_NONE, FULL_W), 1)
@@ -1348,18 +1364,45 @@ local function BuildLaunchersPage(page, showBlockPage)
     edit.isShown = hasLib
 end
 
----------------------------------------------------------------------------
--- "DataBroker" tab: sharing Tessera's blocks, DataBroker mode
----------------------------------------------------------------------------
--- Data blocks (game modules) sorted by name
-local function DataModuleKeys()
-    local keys = {}
-    for _, key in ipairs(ns.order) do table.insert(keys, key) end
-    table.sort(keys, function(a, b) return SortKey(ns:GetBlockName(a)) < SortKey(ns:GetBlockName(b)) end)
-    return keys
-end
+local function BuildBrokerPage(tabPage, showBlockPage)
+    -- two parts: other addons' plugins as blocks, and sharing Tessera's blocks
+    -- (with DataBroker mode). In DataBroker mode Tessera shows no block, so only
+    -- the second part is offered.
+    local SUB_TOP = -40
+    local subs, buttons, current = {}, {}, 1
+    local subNames = { L.BROKER_SUB_PLUGINS, L.BROKER_SUB_SHARE }
+    local subW = (FULL_W - 6) / 2
+    local function ShowSub(i)
+        if ns.brokerModeActive then i = 2 end
+        current = i
+        for n, sub in ipairs(subs) do
+            sub:SetShown(n == i)
+            buttons[n]:SetEnabled(n ~= i)
+        end
+    end
+    for i, name in ipairs(subNames) do
+        local b = CreateFrame("Button", nil, tabPage, "UIPanelButtonTemplate")
+        b:SetSize(subW, 22)
+        b:SetPoint("TOPLEFT", tabPage, "TOPLEFT", COL_X[1] + (i - 1) * (subW + 6), -6)
+        b:SetText(name)
+        FitButtonText(b)
+        b:SetScript("OnClick", function() ShowSub(i) end)
+        b.Refresh = function() end
+        Register(b, function() return not ns.brokerModeActive end)
+        buttons[i] = b
+        local sub = CreateFrame("Frame", nil, tabPage)
+        sub:SetPoint("TOPLEFT", tabPage, "TOPLEFT", 0, SUB_TOP)
+        sub:SetPoint("BOTTOMRIGHT", tabPage, "BOTTOMRIGHT", 0, 0)
+        sub.layoutBase = SUB_TOP
+        subs[i] = sub
+    end
+    -- keeps the right part shown when DataBroker mode changes
+    local keeper = CreateFrame("Frame", nil, tabPage)
+    keeper.Refresh = function() ShowSub(current) end
+    Register(keeper)
 
-local function BuildBrokerPage(page)
+    BuildBrokerPlugins(subs[1], showBlockPage)
+    local page = subs[2]
     local P = NewLayout(page)
     local function Place(w, col) return P.Place(w, col) end
     local sharing = function() return ns:IsSharing() and true or false end
@@ -2084,7 +2127,7 @@ local function BuildPanel()
     BuildLookPage(pages[PAGE_LOOK])
     BuildGeneralPage(pages[PAGE_GENERAL])
     BuildLaunchersPage(pages[PAGE_LAUNCHERS], function() ShowPage(PAGE_BLOCKS) end)
-    BuildBrokerPage(pages[PAGE_BROKER])
+    BuildBrokerPage(pages[PAGE_BROKER], function() ShowPage(PAGE_BLOCKS) end)
     BuildProfilesPage(pages[PAGE_PROFILES])
     BuildHelpPage(pages[PAGE_HELP])
     BuildAboutPage(pages[PAGE_ABOUT])

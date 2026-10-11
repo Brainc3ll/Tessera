@@ -67,6 +67,9 @@ ns.CHANGELOG = {
             "New blocks and ready-made layouts are drawn above Blizzard's action bars (layer \"High\"), so a bar "
                 .. "along the bottom passes in front of the gryphons; the layer can still be changed (Blocks tab, Display). "
                 .. "Existing blocks keep their layer.",
+            "The Broker tab becomes the DataBroker tab, in two parts: \"Plugins as blocks\" (other addons' DataBroker "
+                .. "plugins as Tessera blocks, moved from the Launchers tab) and \"Sharing and mode\" (sharing Tessera's "
+                .. "blocks with Titan Panel, Bazooka..., DataBroker mode). The Launchers tab keeps the minimap buttons.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -131,6 +134,10 @@ ns.CHANGELOG = {
             "Les nouveaux blocs et les dispositions toutes prêtes s'affichent au-dessus des barres d'action de "
                 .. "Blizzard (plan « Haut ») : une barre en bas passe devant les gryphons ; le plan se change toujours "
                 .. "(onglet Blocs, Affichage). Les blocs existants gardent leur plan.",
+            "L'onglet Broker devient l'onglet DataBroker, en deux parties : « Plugins en blocs » (les plugins DataBroker "
+                .. "des autres addons en blocs Tessera, déplacés depuis l'onglet Lanceurs) et « Partage et mode » (partager "
+                .. "les blocs de Tessera avec Titan Panel, Bazooka..., mode DataBroker). L'onglet Lanceurs garde les "
+                .. "boutons de la minicarte.",
         },
     },
     {

@@ -23,6 +23,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Round minimap button: click for the options, right-click to lock or unlock the blocks, drag it around the minimap. With FlareUI, Tessera stays in FlareUI's addon bag instead (no duplicate). /tessera minimap still hides or shows it.
 - Blizzard's Edit Mode: when a Tessera bar stuck to the top or bottom covers Blizzard frames (action bars, menu, minimap...), Tessera offers a copy of your Edit Mode layout, "My layout (Tessera 1)", where only those frames move, and activates it. Your layout is never changed. "Back to my layout" and "Delete the copies" (only Tessera's unchanged copies, never a layout of yours) are in the Look tab. Tested on Blizzard's interface (Modern, Classic) and FlareUI unchanged; with FlareUI, its own frames go back to their default place in the copy (Tessera warns before). With another interface, results may be unexpected.
 - New blocks and ready-made layouts are drawn above Blizzard's action bars (layer "High"), so a bar along the bottom passes in front of the gryphons; the layer can still be changed (Blocks tab, Display). Existing blocks keep their layer.
+- The Broker tab becomes the DataBroker tab, in two parts: "Plugins as blocks" (other addons' DataBroker plugins as Tessera blocks, moved from the Launchers tab) and "Sharing and mode" (sharing Tessera's blocks with Titan Panel, Bazooka..., DataBroker mode). The Launchers tab keeps the minimap buttons.
 
 ## 1.0.0-rc2 — 2026-10-11
 

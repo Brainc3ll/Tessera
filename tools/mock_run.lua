@@ -89,6 +89,45 @@ local G = setmetatable({}, { __index = function(_, k) return _G[k] end })
 UIParent = NewObject("Frame"); UIParent.__w, UIParent.__h = 1366, 768
 GameTooltip = NewObject("GameTooltip"); GameTooltip.__name = "GameTooltip"
 Minimap = NewObject("Frame"); Minimap.__w, Minimap.__h = 140, 140
+-- Blizzard's Edit Mode (EditMode.lua): two frames at the bottom of the screen and
+-- the chat, a "Modern" preset, the player's layouts saved by SaveLayouts
+Enum = { EditModeLayoutType = { Preset = 0, Account = 1, Character = 2, Override = 3 },
+    EditModeSystem = { ActionBar = 0, ChatFrame = 8, MicroMenu = 13 } }
+Constants = { EditModeConsts = { EditModeMaxLayoutsPerType = 5 } }
+local function RectFrame(name, l, b, w, h)
+    return { name = name, GetName = function() return name end, IsShown = function() return true end,
+        GetLeft = function() return l end, GetBottom = function() return b end,
+        GetRight = function() return l + w end, GetTop = function() return b + h end,
+        GetEffectiveScale = function() return 1 end, GetRect = function() return l, b, w, h end }
+end
+local EM_FRAMES = { ["13"] = RectFrame("MicroMenuContainer", 925, 6, 302, 40),
+    ["0.1"] = RectFrame("MainActionBar", 359, 2, 562, 45), ["8"] = RectFrame("ChatFrame1", 32, 153, 430, 170) }
+local function EMSystems()
+    return {
+        { system = 13, anchorInfo = { point = "BOTTOM", relativeTo = "UIParent", relativePoint = "BOTTOM", offsetX = 116.5, offsetY = 6 }, isInDefaultPosition = true, settings = {} },
+        { system = 0, systemIndex = 1, anchorInfo = { point = "BOTTOMRIGHT", relativeTo = "MicroMenuContainer", relativePoint = "BOTTOMLEFT", offsetX = -4.5, offsetY = -4 }, isInDefaultPosition = true, settings = {} },
+        { system = 8, anchorInfo = { point = "BOTTOMLEFT", relativeTo = "UIParent", relativePoint = "BOTTOMLEFT", offsetX = 32, offsetY = 153 }, isInDefaultPosition = false, settings = {} },
+    }
+end
+EM = { layouts = { activeLayout = 1, layouts = {} }, saves = 0 }
+EditModePresetLayoutManager = { GetCopyOfPresetLayouts = function()
+    return { { layoutName = "Moderne", layoutType = 0, systems = EMSystems() },
+        { layoutName = "Classique", layoutType = 0, systems = EMSystems() },
+        { layoutName = "Manette", layoutType = 0, systems = EMSystems() } }
+end }
+C_EditMode = {
+    GetLayouts = function()
+        local copy = { activeLayout = EM.layouts.activeLayout, layouts = {} }
+        for i, l in ipairs(EM.layouts.layouts) do copy.layouts[i] = l end
+        return copy
+    end,
+    SaveLayouts = function(info) EM.layouts = info; EM.saves = EM.saves + 1 end,
+    SetActiveLayout = function(i) EM.layouts.activeLayout = i end,
+}
+EditModeManagerFrame = { IsEditModeActive = function() return false end,
+    GetRegisteredSystemFrame = function(_, system, index)
+        return EM_FRAMES[tostring(system) .. (index and ("." .. index) or "")]
+    end }
 CreateFrame = function(kind, name) local f = NewObject(kind); f.__name = name; if name then _G[name] = f end return f end
 C_Timer = { After = function(_, fn) table.insert(_G.__timers, fn) end, NewTicker = function(_, fn) table.insert(_G.__tickers, fn); return NewObject("Ticker") end }
 __timers, __tickers = {}, {}
@@ -648,6 +687,52 @@ for _, step in ipairs({
         b:GetScript("OnClick")(b, "RightButton")
         ns:SetMinimapButtonShown(false)
         ns:SetMinimapButtonShown(true)
+    end,
+    -- Edit Mode: a copy of the layout with room for a bar stuck to the bottom
+    function()
+        assert(ns.EditModeCopyName("Modern++", {}) == "Modern++ (Tessera 1)", "copy name")
+        assert(ns.EditModeCopyName("Modern++", { ["Modern++ (Tessera 1)"] = true }) == "Modern++ (Tessera 2)", "next number")
+        local long = ns.EditModeCopyName(("é"):rep(40), {})
+        local _, chars = long:gsub("[^\128-\191]", "")
+        assert(chars == 30, "name cut to 30 characters: " .. chars)
+        ns:ResetProfile("stormwind")
+        local rect = ns.GroupRectUI
+        ns.GroupRectUI = function() return 0, 0, 1366, 24 end -- the bar along the bottom edge
+        local moves = ns:PlanEditModeRoom(EditModePresetLayoutManager:GetCopyOfPresetLayouts()[1])
+        assert(#moves == 1 and moves[1].sys.system == 13 and moves[1].dy == 24,
+            "only the micro menu moves, by what the main bar needs: " .. tostring(moves[1] and moves[1].dy))
+        assert(ns:OfferEditModeRoom() == true, "offer shown")
+        assert(ns:ApplyEditModeRoom() == true, "copy made")
+        local copy = EM.layouts.layouts[1]
+        assert(copy.layoutName == "Moderne (Tessera 1)" and copy.layoutType == 1, "copy of the preset, account type")
+        assert(EM.layouts.activeLayout == 4, "copy active (after the 3 presets)")
+        assert(copy.systems[1].anchorInfo.offsetY == 30 and copy.systems[1].isInDefaultPosition == false,
+            "micro menu moved up from its real place: " .. tostring(copy.systems[1].anchorInfo.offsetY))
+        assert(copy.systems[3].anchorInfo.offsetY == 153, "chat untouched")
+        assert(ns:GetEditModeStatus():find("Tessera copy"), "bug report knows the copy")
+        -- again from the copy: the same copy is updated, no new layout
+        ns:OfferEditModeRoom()
+        ns:ApplyEditModeRoom()
+        assert(#EM.layouts.layouts == 1, "copy reused")
+        -- back to the original, then cleaning up: a layout of the player with a
+        -- Tessera-like name is never deleted
+        assert(ns:RevertEditModeLayout() and EM.layouts.activeLayout == 1, "back to Moderne")
+        table.insert(EM.layouts.layouts, { layoutName = "Moderne (Tessera 2)", layoutType = 1, systems = EMSystems() })
+        local list = ns:GetEditModeCopies()
+        assert(#list == 1 and list[1] == "Moderne (Tessera 1)", "only Tessera's own copy is listed")
+        ns:OfferEditModeCleanup()
+        ns:DeleteEditModeCopies()
+        assert(#EM.layouts.layouts == 1 and EM.layouts.layouts[1].layoutName == "Moderne (Tessera 2)",
+            "the player's layout is kept")
+        -- full: nothing is made
+        for i = 1, 4 do table.insert(EM.layouts.layouts, { layoutName = "L" .. i, layoutType = 1, systems = EMSystems() }) end
+        ns:OfferEditModeRoom()
+        assert(ns:ApplyEditModeRoom() == false and #EM.layouts.layouts == 5, "limit respected")
+        ns:CheckEditModeRoom()
+        ns:CheckEditModeForProfile()
+        ns.GroupRectUI = rect
+        EM.layouts = { activeLayout = 1, layouts = {} }
+        ns:ResetProfile("top")
     end,
     -- quick tour
     function()

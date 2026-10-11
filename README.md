@@ -66,6 +66,9 @@ Help tab inside the game explains everything.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
 - A quick tour on first launch (again from the Help tab).
+- Blizzard's Edit Mode: a copy of your layout with room for Tessera's bars stuck to the top or
+  bottom edge (your layout is never changed). Tested on Blizzard's interface (Modern, Classic)
+  and FlareUI unchanged; with other interfaces, results may be unexpected.
 
 | Command | Effect |
 |---|---|

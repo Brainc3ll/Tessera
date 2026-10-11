@@ -57,6 +57,13 @@ ns.CHANGELOG = {
             "Round minimap button: click for the options, right-click to lock or unlock the blocks, drag it around "
                 .. "the minimap. With FlareUI, Tessera stays in FlareUI's addon bag instead (no duplicate). "
                 .. "/tessera minimap still hides or shows it.",
+            "Blizzard's Edit Mode: when a Tessera bar stuck to the top or bottom covers Blizzard frames (action bars, "
+                .. "menu, minimap...), Tessera offers a copy of your Edit Mode layout, \"My layout (Tessera 1)\", where "
+                .. "only those frames move, and activates it. Your layout is never changed. \"Back to my layout\" and "
+                .. "\"Delete the copies\" (only Tessera's unchanged copies, never a layout of yours) are in the Look tab. "
+                .. "Tested on Blizzard's interface (Modern, Classic) and FlareUI unchanged; with FlareUI, its own frames "
+                .. "go back to their default place in the copy (Tessera warns before). With another interface, results "
+                .. "may be unexpected.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -110,6 +117,14 @@ ns.CHANGELOG = {
             "Bouton rond sur la minicarte : clic pour les options, clic droit pour verrouiller ou déverrouiller les "
                 .. "blocs, glisser pour le déplacer autour de la minicarte. Avec FlareUI, Tessera reste dans le sac à "
                 .. "boutons de FlareUI à la place (pas de doublon). /tessera minimap le masque ou l'affiche toujours.",
+            "Mode Édition de Blizzard : quand une barre de Tessera collée en haut ou en bas recouvre des cadres de "
+                .. "Blizzard (barres d'action, menu, minicarte...), Tessera propose une copie de ta disposition du mode "
+                .. "Édition, « Ma dispo (Tessera 1) », où seuls ces cadres bougent, et l'active. Ta disposition n'est "
+                .. "jamais modifiée. « Revenir à ma disposition » et « Supprimer les copies » (seulement les copies de "
+                .. "Tessera non modifiées, jamais une disposition à toi) sont dans l'onglet Apparence. Testé sur "
+                .. "l'interface de Blizzard (Moderne, Classique) et FlareUI non modifié ; avec FlareUI, ses propres "
+                .. "cadres reviennent à leur place par défaut dans la copie (Tessera prévient avant). Avec une autre "
+                .. "interface, des résultats inattendus peuvent survenir.",
         },
     },
     {

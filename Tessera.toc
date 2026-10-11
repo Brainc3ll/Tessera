@@ -25,6 +25,7 @@ Core.lua
 Themes.lua
 Merge.lua
 Placement.lua
+EditMode.lua
 Profiles.lua
 SecureClicks.lua
 Changelog.lua

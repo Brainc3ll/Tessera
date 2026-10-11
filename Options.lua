@@ -1663,6 +1663,17 @@ local function BuildLookPage(page)
     Place(CreateButton(page, L.PRESET_APPLY, function()
         StaticPopup_Show("TESSERA_APPLY_PRESET", nil, nil, chosenPreset)
     end, nil, nil, L.TIP_PRESET_APPLY), 2)
+
+    -- Blizzard's Edit Mode: a copy of the player's layout with room for Tessera's bars
+    P.Gap(2, 10)
+    Place(CreateHeader(page, L.SECTION_EDITMODE), 2)
+    Place(CreateButton(page, L.EDITMODE_ROOM, function() ns:OfferEditModeRoom() end,
+        nil, nil, L.TIP_EDITMODE_ROOM), 2)
+    -- (half: the width of two buttons side by side, see the share section)
+    local revert = Place(CreateButton(page, L.EDITMODE_REVERT, function() ns:RevertEditModeLayout() end,
+        nil, half, L.TIP_EDITMODE_REVERT), 2)
+    CreateButton(page, L.EDITMODE_CLEANUP, function() ns:OfferEditModeCleanup() end,
+        nil, half, L.TIP_EDITMODE_CLEANUP):SetPoint("LEFT", revert, "RIGHT", 6, 0)
 end
 
 -- Builds the "Profiles" tab
@@ -2725,6 +2736,8 @@ function ns:BugReport()
     for key, err in pairs(ns.errors) do table.insert(errors, ("  %s: %s"):format(key, tostring(err))) end
     Add("Errors: %s", #errors == 0 and "none" or "")
     for _, line in ipairs(errors) do table.insert(lines, line) end
+
+    Add("Edit Mode layout: %s", ns.GetEditModeStatus and ns:GetEditModeStatus() or "?")
 
     -- other loaded addons (interface addons often explain display problems)
     local addons = {}

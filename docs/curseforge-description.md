@@ -35,6 +35,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 - **Per-block settings**: text, frame, icons (same size for all, square or round frame, black and white), opacity, progress bar, color thresholds, show on hover, alerts, Shift + click and middle-click actions.
 - **Profiles**: per account or per character, export / import as text, ready-made layouts (top bar, bottom bar, left column, compact, around the gryphons with the WoW Forever blocks, and taskbar or menu bar layouts: Stormwind Stained Glass, Cathedral Rose Window, Tirisfal Orchard, Gnomeregan), automatic dungeon / raid profile. "Reset everything" really starts again from scratch.
 - **Share a style or a layout**: export only the look or only the placement as text. On import, Tessera first lists what is missing on your computer (another addon's blocks, LibSharedMedia fonts or frames, WoW Forever blocks) and asks before applying.
+- **Blizzard's Edit Mode**: when a Tessera bar stuck to the top or bottom covers the action bars or the minimap, Tessera offers a copy of your Edit Mode layout with room for it; your own layout is never changed. Tested on Blizzard's interface (Modern, Classic) and on FlareUI unchanged; with another interface, unexpected results may occur.
 - **Help built in**: a quick tour on first launch, a Help tab split into short topics, and a tooltip on every option.
 - **Accessibility**: colorblind-friendly colors, high contrast, minimum text size.
 
@@ -102,6 +103,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 - **Réglages par bloc** : texte, cadre, icônes (même taille pour toutes, cadre carré ou rond, noir et blanc), opacité, barre de progression, couleurs de seuil, affichage au survol, alertes, actions du Maj + clic et du clic milieu.
 - **Profils** : par compte ou par personnage, export / import en texte, dispositions toutes prêtes (barre en haut, barre en bas, colonne à gauche, compacte, autour des gryphons avec les blocs WoW Forever, et des dispositions façon barre des tâches ou barre de menus : Vitraux de Hurlevent, Rosace de la cathédrale, Vergers de Tirisfal, Gnomeregan), profil automatique en donjon / raid. « Tout réinitialiser » repart vraiment de zéro.
 - **Partager un style ou une disposition** : exporte seulement l'allure ou seulement le placement en texte. À l'import, Tessera liste d'abord ce qui manque sur ton ordinateur (blocs d'un autre addon, polices ou cadres LibSharedMedia, blocs WoW Forever) et demande avant d'appliquer.
+- **Mode Édition de Blizzard** : quand une barre de Tessera collée en haut ou en bas recouvre les barres d'action ou la minicarte, Tessera propose une copie de ta disposition du mode Édition avec la place qu'il faut ; ta disposition n'est jamais modifiée. Testé sur l'interface de Blizzard (Moderne, Classique) et sur FlareUI non modifié ; avec une autre interface, des résultats inattendus peuvent survenir.
 - **Aide intégrée** : une visite rapide au premier lancement, un onglet Aide découpé en sujets courts, et une infobulle sur chaque option.
 - **Accessibilité** : couleurs pour daltoniens, contraste renforcé, taille de texte minimale.
 

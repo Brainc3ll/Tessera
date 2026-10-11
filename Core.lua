@@ -752,6 +752,8 @@ function ns:SetProfile(name)
         self.sv.charProfiles[self.charKey] = name
     end
     self:LoadProfile()
+    -- the Edit Mode layout made for this profile, if any (EditMode.lua)
+    C_Timer.After(1, function() if ns.CheckEditModeForProfile then ns:CheckEditModeForProfile() end end)
 end
 
 -- Switches between account-wide and per-character profiles, keeping the current one
@@ -2152,6 +2154,8 @@ function ns:ResetProfile(preset)
     self:LoadProfile()
     local name = L["PRESET_" .. (preset or "top"):upper()] or preset
     Print(L.PRESET_APPLIED:format(name))
+    -- a bar stuck to an edge may cover Blizzard frames: offer to make room (EditMode.lua)
+    C_Timer.After(1.5, function() if ns.OfferEditModeRoom then ns:OfferEditModeRoom(true) end end)
 end
 
 ---------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 # Projet : adapter les dispositions du mode Édition (Blizzard / FlareUI)
 
-État : **idée validée, pas encore codée** (11 octobre 2026). À reprendre après le relevé décrit plus bas.
+État : **codé pour la 1.0.0-rc3** (11 octobre 2026), à tester en jeu. Nom de disposition limité à 30 caractères (mesuré en jeu). FlareUI remet ses cadres à leur place par défaut dans une copie (testé en jeu) : Tessera prévient avant.
 
 ## Le besoin
 

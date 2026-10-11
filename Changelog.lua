@@ -17,6 +17,8 @@ ns.CHANGELOG = {
                 .. "which layout was applied.",
             "Fix: switching to another layout or profile could raise a Lua error (\"Cannot anchor to a region "
                 .. "dependent on it\") when two blocks swapped places.",
+            "Fix: a column stuck to the bottom of the screen piled up its blocks; the whole column now stays "
+                .. "visible above the edge.",
             "Releases: the English and French strings are sent to CurseForge's localization tool automatically, "
                 .. "and community translations are added to the addon.",
             "New ready-made layout \"Around the gryphons\": two groups in the bottom corners of the screen, on both "
@@ -39,6 +41,8 @@ ns.CHANGELOG = {
                 .. "réinitialiser » ; il indique maintenant la disposition appliquée.",
             "Correction : changer de disposition ou de profil pouvait provoquer une erreur Lua (« Cannot anchor to "
                 .. "a region dependent on it ») quand deux blocs échangeaient leur place.",
+            "Correction : une colonne collée en bas de l'écran empilait ses blocs ; toute la colonne reste maintenant "
+                .. "visible au-dessus du bord.",
             "Publications : l'anglais et le français sont envoyés automatiquement à l'outil de traduction de "
                 .. "CurseForge, et les traductions de la communauté sont ajoutées à l'addon.",
             "Nouvelle disposition toute prête « Autour des gryphons » : deux groupes dans les coins bas de l'écran, "

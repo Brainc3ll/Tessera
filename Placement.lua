@@ -1150,18 +1150,43 @@ local EDGE_DISTANCE = 10
 local SPACER_SLOT = 200 -- about one spacer per this many pixels of room (1 to 4)
 ns.STRETCH_ALIGNS = { "left", "center", "right", "spread" }
 
--- Rectangle of a whole group (UIParent units), and its visible blocks
+-- Rectangle of a whole group (UIParent units). It is rebuilt from the head's
+-- position and the dock links, not read from each block: a block pushed off the
+-- screen is held at the edge by the game (clamped), so reading it would give a
+-- wrong rectangle (e.g. a tall column dragged to the bottom edge).
 function ns:GroupRectUI(rootKey)
-    local l, b, r, t
-    for key in pairs(self:GetSubtree(rootKey)) do
-        local f = self.frames[key]
-        if f and f:IsShown() then
-            local fl, fb, fr, ft = self:GetRectUI(f)
-            if fl then
-                l, b = math.min(l or fl, fl), math.min(b or fb, fb)
-                r, t = math.max(r or fr, fr), math.max(t or ft, ft)
+    local head = self.frames[rootKey]
+    if not head then return nil end
+    local hl, hb, hr, ht = self:GetRectUI(head)
+    if not hl then return nil end
+    local pos = { [rootKey] = { l = hl, t = ht, w = hr - hl, h = ht - hb } }
+    local members = self:GetSubtree(rootKey)
+    local changed = true
+    while changed do
+        changed = false
+        for key in pairs(members) do
+            local f = self.frames[key]
+            if not pos[key] and f and f:IsShown() then
+                local target, side = self:GetEffectiveDock(key)
+                local tp = target and pos[target]
+                if tp then
+                    local k = f:GetEffectiveScale() / UIParent:GetEffectiveScale()
+                    local w, h = f:GetWidth() * k, f:GetHeight() * k
+                    local l, t = tp.l, tp.t
+                    if side == "RIGHT" then l = tp.l + tp.w
+                    elseif side == "LEFT" then l = tp.l - w
+                    elseif side == "BOTTOM" then t = tp.t - tp.h
+                    else t = tp.t + h end
+                    pos[key] = { l = l, t = t, w = w, h = h }
+                    changed = true
+                end
             end
         end
+    end
+    local l, b, r, t
+    for _, p in pairs(pos) do
+        l, b = math.min(l or p.l, p.l), math.min(b or (p.t - p.h), p.t - p.h)
+        r, t = math.max(r or (p.l + p.w), p.l + p.w), math.max(t or p.t, p.t)
     end
     return l, b, r, t
 end

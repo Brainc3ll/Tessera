@@ -492,6 +492,16 @@ for _, step in ipairs({
         assert(not b[root].stretch and Spacers() == before, "undo removes the stretch and its spacers")
         ns:StickToEdges(root, { LEFT = true })
         assert(b[root].edges.LEFT and not b[root].stretch, "left edge: stuck, not stretched")
+        -- a column stuck to the bottom: its head (at the top) stays above the column's height
+        ns:ResetProfile("left")
+        b = ns.db.blocks
+        local col = ns:GetRoot("bags")
+        ns:StickToEdges(col, { BOTTOM = true })
+        assert(b[col].point[1]:find("BOTTOM") and b[col].point[4] > 0, "column stuck to the bottom keeps its height")
+        ns:ResetProfile("top")
+        b = ns.db.blocks
+        root = ns:GetRoot("bags")
+        ns:StickToEdges(root, { LEFT = true })
         local exported = ns:SanitizeProfile(ns:DecodeProfile(ns:ExportProfile()))
         assert(exported.blocks[root].edges and exported.blocks[root].edges.LEFT, "edges lost by export")
         for _, preset in ipairs({ "stormwind", "cathedral", "tirisfal", "gnomeregan" }) do

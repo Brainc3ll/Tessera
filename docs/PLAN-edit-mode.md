@@ -96,6 +96,7 @@ La fonction doit marcher à toutes les résolutions et à toutes les échelles d
   - barres de familier, de posture et de totems : accrochées aux barres du bas.
   - Conséquence : pour une barre Tessera de hauteur H en bas, remonter le menu de H et le gryphon droit de H ; le reste suit par ses accroches. Les barres « par défaut » devraient suivre : à vérifier en jeu.
 - **Noms** : IsValidLayoutName accepte tout (même un nom vide et 64 caractères) ; il ne vérifie donc pas la longueur. Choix prudent : un nom court, « Ma dispo (Tessera 1) ».
+- **Disposition de base « Moderne »** (3ᵉ passage) : tout est en « position par défaut » ; menu au bas de l'écran (+116,5 / +6), barre principale et sacs accrochés au menu, gryphon gauche à la barre principale, **gryphon droit accroché aux sacs** (dans « Modern++ », le joueur l'avait déplacé, d'où sa position fixe). Dans « Moderne », remonter le menu suffit donc pour tout le bas.
 - **FlareUI** : bibliothèque « FlareEditMode » (LibStub) et réglages dans FlareUI_DB ; ses cadres (FlareUI_UF_Player, FlareUI_XPBar, FlareUI_Buffs…) remplacent ceux de Blizzard, qui sont masqués. Les barres d'action, le menu et les sacs restent ceux de Blizzard (dans la disposition du mode Édition). Ce que permet FlareEditMode : relevé v3 à faire.
 
 ## Étapes prévues

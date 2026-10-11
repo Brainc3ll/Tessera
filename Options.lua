@@ -1490,7 +1490,7 @@ StaticPopupDialogs["TESSERA_APPLY_PRESET"] = {
     OnAccept = function(_, preset) ns:ResetProfile(preset) end,
 }
 
--- Confirmation popup before resetting the current profile
+-- Confirmation popup before resetting everything (all saved data, then reload)
 StaticPopupDialogs["TESSERA_RESET_PROFILE"] = {
     text = L.RESET_PROFILE_CONFIRM,
     button1 = YES,
@@ -1498,7 +1498,7 @@ StaticPopupDialogs["TESSERA_RESET_PROFILE"] = {
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
-    OnAccept = function() ns:ResetProfile() end,
+    OnAccept = function() ns:ResetEverything() end,
 }
 
 -- Builds the "Profiles" tab

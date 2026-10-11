@@ -90,13 +90,28 @@ C_AddOns = { GetAddOnMetadata = function() return "test" end, GetNumAddOns = fun
 
 -- WoW Forever APIs: skill list, Legacy renown track
 C_SkillInfo = {
-    GetNumSkillLines = function() return 3 end,
+    GetNumSkillLines = function() return 4 end,
     GetSkillLineInfo = function(i)
         return ({ { name = "Weapon skills", isHeader = true },
                   { name = "Staves", rank = 50, maxRank = 65, skillLineCategoryID = 6, skillID = 136 },
-                  { name = "Herbalism", rank = 21, maxRank = 75, isAbandonable = true, skillLineCategoryID = 11 } })[i]
+                  { name = "Herbalism", rank = 21, maxRank = 75, isAbandonable = true, skillLineCategoryID = 11 },
+                  { name = "Comprehension", rank = 12, maxRank = 65, skillLineCategoryID = 9, skillID = 3012 } })[i]
     end,
 }
+-- Legacy challenges (achievement categories), camp auras, honor currency
+GetCategoryList = function() return { 15568, 15577, 15593, 15425 } end
+GetCategoryInfo = function(id)
+    return ({ [15568] = "Classes", [15577] = "Druid", [15593] = "Dungeons", [15425] = "Do Not Display" })[id],
+        ({ [15577] = 15568 })[id] or -1
+end
+GetCategoryNumAchievements = function(id) return ({ [15577] = 3, [15593] = 3 })[id] or 0, id == 15577 and 1 or 0 end
+C_UnitAuras = { GetPlayerAuraBySpellID = function(id)
+    if id == 1229741 then return { name = "Camp Perks", spellId = id, expirationTime = 3000 } end
+end }
+C_CurrencyInfo = C_CurrencyInfo or {}
+C_CurrencyInfo.GetCurrencyInfo = function(id)
+    if id == 1792 then return { name = "Honor", quantity = 1250, maxQuantity = 25000 } end
+end
 C_MajorFactions = {
     GetMajorFactionData = function() return { renownLevel = 16, maxLevel = 90, name = "Legacy" } end,
     GetRenownLevels = function() return { { level = 15 }, { level = 25 }, { level = 40 } } end,
@@ -381,6 +396,16 @@ for _, step in ipairs({
         local after = ns.db.blocks.gold.dock
         assert((before == nil) == (after == nil), "layout not restored after the shape test")
     end,
+    -- WoW Forever screenshot preview: every arrangement, then back to normal
+    function()
+        local goldEnabled = ns.db.blocks.gold.enabled
+        for _ = 1, 4 do ns:PreviewForever("") end
+        assert(not ns.sv.foreverPreviewBackup, "forever preview not finished after the last arrangement")
+        ns:PreviewForever("")
+        ns:PreviewForever("fin")
+        assert(ns.db.blocks.gold.enabled == goldEnabled, "blocks not restored after the forever preview")
+        assert(not ns.previewMode, "preview mode left on")
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()
@@ -391,5 +416,13 @@ for _, step in ipairs({
     end,
 }) do
     local ok5, err5 = pcall(step) if not ok5 then print("STEP ERROR: " .. tostring(err5)) end
+end
+-- last: reset everything empties the saved variables and asks for a reload
+do
+    local reloaded = false
+    ReloadUI = function() reloaded = true end
+    local ok, err = pcall(function() ns:ResetEverything() end)
+    if not ok then print("STEP ERROR: " .. tostring(err)) end
+    if TesseraDB ~= nil or not reloaded then print("STEP ERROR: reset everything did not empty TesseraDB / reload") end
 end
 print("mock run finished")

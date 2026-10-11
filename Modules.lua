@@ -1658,6 +1658,34 @@ local function LegacyRewards(points)
     return list
 end
 
+-- Legacy challenges by main category: { { name, done, total } }. On WoW Forever the
+-- achievement categories are the Legacy challenge categories (Classes, Crafting, PvP,
+-- Dungeons, Raids, Adventure); a main category also counts its sub-categories.
+local function LegacyChallenges()
+    local list = {}
+    local cats = type(GetCategoryList) == "function" and Try(GetCategoryList)
+    if type(cats) ~= "table" then return list end
+    local byId, mains = {}, {}
+    for _, id in ipairs(cats) do
+        local name, parent = Try(GetCategoryInfo, id)
+        local total, done = Try(GetCategoryNumAchievements, id, true)
+        byId[id] = { name = name, parent = parent, total = total or 0, done = done or 0 }
+        if parent == -1 then table.insert(mains, id) end
+    end
+    for _, id in ipairs(mains) do
+        local c = byId[id]
+        local entry = { name = c.name or "?", total = c.total, done = c.done }
+        for _, sub in pairs(byId) do
+            if sub.parent == id then
+                entry.total, entry.done = entry.total + sub.total, entry.done + sub.done
+            end
+        end
+        if entry.total > 0 then table.insert(list, entry) end
+    end
+    table.sort(list, function(a, b) return a.name < b.name end)
+    return list
+end
+
 local function NextLegacyReward(points)
     for _, r in ipairs(LegacyRewards(points)) do
         if not r.reached then return r end
@@ -1705,6 +1733,16 @@ ns:RegisterModule("legacy", {
         for _, r in ipairs(LegacyRewards(data.renownLevel)) do
             local color = r.reached and "|cff4dff4d" or "|cff999999"
             tt:AddDoubleLine(color .. r.name .. "|r", color .. r.level .. "|r")
+        end
+        -- Legacy challenges are achievements: completed / total per main category
+        local categories = LegacyChallenges()
+        if #categories > 0 then
+            tt:AddLine(" ")
+            tt:AddLine(L.TT_LEGACY_CHALLENGES, 1, 0.82, 0)
+            for _, c in ipairs(categories) do
+                local color = c.done >= c.total and "|cff4dff4d" or "|cffffffff"
+                tt:AddDoubleLine(c.name, color .. c.done .. " / " .. c.total .. "|r", 1, 1, 1)
+            end
         end
     end,
     chatText = function()
@@ -2073,6 +2111,246 @@ ns:RegisterModule("whispers", {
 })
 
 ---------------------------------------------------------------------------
+-- WoW Forever: Comprehension, Camping and Honor blocks
+---------------------------------------------------------------------------
+-- These systems have no documented API yet: the IDs below were found in game
+-- with a debug probe on the WoW Forever beta (October 2026) and may change.
+-- The blocks are offered only on WoW Forever (where the Legacy system exists).
+local IS_FOREVER = C_MajorFactions and (ToggleLegacySystemUI or LegacySystemFrame_LoadUI) and true or false
+
+local COMPREHENSION_SKILL = 3012    -- secondary skill: reading magical scrolls
+local COMPREHENSION_SPELL = 1296017 -- "Scroll Comprehension"
+local CAMP_KIT = 279981             -- Basic Campfire Kit
+local CAMP_PERKS = 1229741          -- "Camp Perks": buffs of the camp objects (1 hour)
+local CAMP_WELCOMING = 1229739      -- "Welcoming Campfire": sit 1 minute to get the buffs
+local CAMP_NEAR = 1283391           -- "Nearby Campfire"
+local HONOR_CURRENCY = 1792         -- Honor points
+local SCROLL_SUBCLASS = 4           -- consumable subclass "Scroll"
+
+local function SpellName(id)
+    if C_Spell and C_Spell.GetSpellName then return Try(C_Spell.GetSpellName, id) end
+    return (Try(GetSpellInfo, id))
+end
+
+-- Comprehension skill: { rank, max } or nil (learned from level 6)
+local function ComprehensionSkill()
+    local S = C_SkillInfo
+    if not (S and S.GetNumSkillLines and S.GetSkillLineInfo) then return nil end
+    for i = 1, Try(S.GetNumSkillLines) or 0 do
+        local info = Try(S.GetSkillLineInfo, i)
+        if type(info) == "table" and info.skillID == COMPREHENSION_SKILL then
+            return { name = info.name, rank = info.rank or 0, max = info.maxRank or 0 }
+        end
+    end
+end
+
+-- Scrolls in the bags: { { name, count } }, by item class (Scroll), or by the
+-- localized word "scroll" in the name (weapon imbue scrolls are item enhancements)
+local function ScrollsInBags()
+    local C = C_Container
+    local found, list = {}, {}
+    local word = (L.SCROLL_WORD or "scroll"):lower()
+    for bag = 0, 4 do
+        local slots = C and C.GetContainerNumSlots and Try(C.GetContainerNumSlots, bag) or 0
+        for slot = 1, slots do
+            local info = Try(C.GetContainerItemInfo, bag, slot)
+            if type(info) == "table" and info.itemID and info.hyperlink then
+                local name = info.hyperlink:match("%[(.-)%]") or "?"
+                local _, _, _, _, _, classID, subClassID = Try(C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant,
+                    info.itemID)
+                if (classID == 0 and subClassID == SCROLL_SUBCLASS) or name:lower():find(word, 1, true) then
+                    if not found[name] then
+                        found[name] = { name = name, count = 0 }
+                        table.insert(list, found[name])
+                    end
+                    found[name].count = found[name].count + (info.stackCount or 1)
+                end
+            end
+        end
+    end
+    table.sort(list, function(a, b) return a.name < b.name end)
+    return list
+end
+
+-- Aura on the player by spell ID: { name, left (seconds, nil = no duration) } or nil
+local function PlayerAura(spellID)
+    local UA = C_UnitAuras
+    local aura
+    if UA and UA.GetPlayerAuraBySpellID then
+        aura = Try(UA.GetPlayerAuraBySpellID, spellID)
+    elseif UA and UA.GetAuraDataByIndex then
+        for i = 1, 40 do
+            local a = Try(UA.GetAuraDataByIndex, "player", i, "HELPFUL")
+            if not a then break end
+            if a.spellId == spellID then aura = a break end
+        end
+    end
+    if type(aura) ~= "table" then return nil end
+    local ok, left = pcall(function()
+        if aura.expirationTime and aura.expirationTime > 0 then return math.max(0, aura.expirationTime - GetTime()) end
+    end)
+    return { name = aura.name, left = ok and left or nil }
+end
+
+-- Seconds left on the campfire kit cooldown (0 = ready); same safety as the Hearthstone
+local function KitCooldown()
+    local start, duration
+    if C_Container and C_Container.GetItemCooldown then start, duration = Try(C_Container.GetItemCooldown, CAMP_KIT) end
+    local ok, remaining = pcall(function()
+        if start and duration and start > 0 and duration > 1.5 then return math.max(0, start + duration - GetTime()) end
+        return 0
+    end)
+    return ok and remaining or 0
+end
+
+local function KitCount()
+    return GetItemCountFn and Try(GetItemCountFn, CAMP_KIT) or 0
+end
+
+local function HonorInfo()
+    if not (C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo) then return nil end
+    local info = Try(C_CurrencyInfo.GetCurrencyInfo, HONOR_CURRENCY)
+    if type(info) ~= "table" or not info.name or info.name == "" then return nil end
+    return info
+end
+
+if IS_FOREVER then
+ns:RegisterModule("comprehension", {
+    label = "COMPREHENSION",
+    icon = "Interface\\Icons\\INV_Scroll_03",
+    events = { "SKILL_LINES_CHANGED", "CHAT_MSG_SKILL", "BAG_UPDATE_DELAYED" },
+    defaultEnabled = false,
+    isEmpty = function() return ComprehensionSkill() == nil end,
+    update = function()
+        local s = ComprehensionSkill()
+        if not s then return L.NONE end
+        return ("%d/%d"):format(s.rank, s.max), s.rank >= s.max and GOOD or WARN
+    end,
+    progress = function()
+        local s = ComprehensionSkill()
+        return s and s.max > 0 and s.rank / s.max or nil
+    end,
+    tooltip = function(tt)
+        local s = ComprehensionSkill()
+        if not s then
+            tt:AddLine(L.TT_COMPREHENSION_NONE, 0.8, 0.8, 0.8, true)
+            return
+        end
+        WHITE(tt, s.name, ("%d / %d"):format(s.rank, s.max))
+        tt:AddLine(" ")
+        local scrolls = ScrollsInBags()
+        if #scrolls == 0 then
+            tt:AddLine(L.TT_NO_SCROLLS, 0.6, 0.6, 0.6)
+        else
+            tt:AddLine(L.TT_SCROLLS, 1, 0.82, 0)
+            for _, sc in ipairs(scrolls) do WHITE(tt, sc.name, "x" .. sc.count) end
+        end
+    end,
+    chatText = function()
+        local s = ComprehensionSkill()
+        return s and ("%s : %d/%d"):format(s.name, s.rank, s.max) or nil
+    end,
+    -- click: the Comprehension spell, or the skills window if it is not known yet
+    secureMacro = function()
+        local name = SpellName(COMPREHENSION_SPELL)
+        if name and ComprehensionSkill() then return "/cast " .. name end
+        return SKILLS_MACRO
+    end,
+    clickHint = L.HINT_COMPREHENSION,
+})
+
+ns:RegisterModule("camping", {
+    label = "CAMPING",
+    icon = "Interface\\Icons\\Spell_Fire_Fire",
+    events = { "UNIT_AURA", "BAG_UPDATE_DELAYED", "BAG_UPDATE_COOLDOWN" },
+    interval = 1,
+    defaultEnabled = false,
+    -- hidden when there is no camp buff and no campfire kit
+    isEmpty = function()
+        return not PlayerAura(CAMP_PERKS) and not PlayerAura(CAMP_WELCOMING) and not PlayerAura(CAMP_NEAR)
+            and KitCount() == 0
+    end,
+    update = function()
+        local perks = PlayerAura(CAMP_PERKS)
+        if perks and perks.left then return ShortDuration(perks.left), GOOD end
+        local welcoming = PlayerAura(CAMP_WELCOMING)
+        if welcoming and welcoming.left then return L.CAMP_RESTING:format(ShortTime(welcoming.left)), WARN end
+        if KitCount() > 0 then
+            local cd = KitCooldown()
+            if cd > 0 then return ShortTime(cd), WARN end
+            return L.TT_READY, GOOD
+        end
+        return L.NONE
+    end,
+    tooltip = function(tt)
+        local any = false
+        for _, id in ipairs({ CAMP_PERKS, CAMP_WELCOMING, CAMP_NEAR }) do
+            local aura = PlayerAura(id)
+            if aura then
+                if not any then tt:AddLine(L.TT_CAMP_BUFFS, 1, 0.82, 0) end
+                any = true
+                WHITE(tt, aura.name or "?", aura.left and ShortTime(aura.left) or "")
+            end
+        end
+        if not any then tt:AddLine(L.TT_CAMP_NONE, 0.8, 0.8, 0.8, true) end
+        tt:AddLine(" ")
+        local count = KitCount()
+        WHITE(tt, L.TT_CAMP_KITS, tostring(count))
+        if count > 0 then
+            local cd = KitCooldown()
+            if cd > 0 then
+                tt:AddDoubleLine(L.TT_COOLDOWN, ShortTime(cd), 1, 1, 1, 1, 0.6, 0.2)
+            else
+                tt:AddDoubleLine(L.TT_COOLDOWN, L.TT_READY, 1, 1, 1, 0.3, 1, 0.3)
+            end
+        end
+    end,
+    -- click: light a campfire with the kit
+    secureMacro = "/use item:" .. CAMP_KIT,
+    clickHint = L.HINT_CAMPING,
+})
+
+ns:RegisterModule("honor", {
+    label = "HONOR",
+    icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
+    events = { "CURRENCY_DISPLAY_UPDATE", "PLAYER_PVP_KILLS_CHANGED" },
+    interval = 60,
+    defaultEnabled = false,
+    update = function()
+        local info = HonorInfo()
+        if not info then return L.NA end
+        local fmt = BreakUpLargeNumbers or tostring
+        local capped = info.maxQuantity and info.maxQuantity > 0 and info.quantity >= info.maxQuantity
+        return fmt(info.quantity or 0), capped and WARN or nil
+    end,
+    progress = function()
+        local info = HonorInfo()
+        if not (info and info.maxQuantity and info.maxQuantity > 0) then return nil end
+        return (info.quantity or 0) / info.maxQuantity
+    end,
+    tooltip = function(tt)
+        local info = HonorInfo()
+        if not info then
+            tt:AddLine(L.NA, 0.8, 0.8, 0.8)
+            return
+        end
+        local fmt = BreakUpLargeNumbers or tostring
+        WHITE(tt, info.name, fmt(info.quantity or 0))
+        if info.maxQuantity and info.maxQuantity > 0 then WHITE(tt, L.TT_HONOR_MAX, fmt(info.maxQuantity)) end
+        if info.canEarnPerWeek then WHITE(tt, L.TT_HONOR_WEEK, fmt(info.quantityEarnedThisWeek or 0)) end
+        local hk = Try(GetPVPLifetimeStats)
+        if hk then WHITE(tt, L.TT_HONOR_KILLS, fmt(hk)) end
+        tt:AddLine(" ")
+        tt:AddLine(L.TT_HONOR_RANKS_LATER, 0.6, 0.6, 0.6, true)
+    end,
+    chatText = function()
+        local info = HonorInfo()
+        return info and ("%s : %s"):format(info.name, info.quantity or 0) or nil
+    end,
+})
+end
+
+---------------------------------------------------------------------------
 -- Sample values for the preview mode (/tessera preview): used for screenshots,
 -- they show what each block looks like with typical values. Blocks without a
 -- sample keep showing their real value.
@@ -2125,6 +2403,9 @@ local MORE_SAMPLES = {
     cooking      = function() return "150 / 150", GOOD end,
     weaponSkills = function() return "115/120", WARN end,
     legacy       = function() return "16" end,
+    comprehension = function() return "42/65", WARN end,
+    camping      = function() return "52m", GOOD end,
+    honor        = function() return "3 250" end,
 }
 for key, sample in pairs(MORE_SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

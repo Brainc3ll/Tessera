@@ -30,6 +30,12 @@ ns.CHANGELOG = {
             "The Version tab becomes About, laid out like the Help tab: an About topic (version, author, "
                 .. "translators, license, source code) and a Changelog topic.",
             "Key bindings now have their own Tessera category in the game's key bindings, like other addons.",
+            "New WoW Forever blocks: Comprehension (scroll-reading skill and the scrolls in your bags), "
+                .. "Camping (camp buffs and campfire kit cooldown, a click lights a campfire) and Honor. The "
+                .. "Legacy points tooltip now shows your challenges completed per category. Like every block, "
+                .. "they can be shared with DataBroker display addons. WoW Forever is in beta: these systems may change.",
+            "Reset everything (Profiles tab, Blizzard's AddOns settings or /tessera reset) now really erases all "
+                .. "of Tessera's saved data and reloads the interface, as on a first install.",
             "Ready for community translations with CurseForge's localization tool.",
             "Blocks shown from the options are now placed evenly on both sides of the window, and never "
                 .. "over Blizzard's action bars, minimap or chat.",
@@ -62,6 +68,13 @@ ns.CHANGELOG = {
             "L'onglet Version devient À propos, présenté comme l'aide : un sujet À propos (version, auteur, "
                 .. "traducteurs, licence, code source) et un sujet Changelog.",
             "Les raccourcis clavier ont maintenant leur propre catégorie Tessera dans les raccourcis du jeu, comme les autres addons.",
+            "Nouveaux blocs WoW Forever : Compréhension (compétence de lecture des parchemins et parchemins "
+                .. "dans tes sacs), Camping (buffs de camp et recharge du kit de feu de camp, un clic allume un feu) "
+                .. "et Honneur. L'infobulle des points d'héritage montre maintenant tes défis accomplis par catégorie. "
+                .. "Comme tous les blocs, ils se partagent avec les addons d'affichage DataBroker. WoW Forever est en "
+                .. "bêta : ces systèmes peuvent changer.",
+            "Tout réinitialiser (onglet Profils, réglages AddOns de Blizzard ou /tessera reset) efface maintenant "
+                .. "vraiment toutes les données de Tessera et recharge l'interface, comme à la première installation.",
             "Prêt pour les traductions de la communauté avec l'outil de traduction de CurseForge.",
             "Les blocs affichés depuis les options se placent maintenant des deux côtés de la fenêtre, à parts "
                 .. "égales, et plus jamais sur les barres d'action, la minicarte ou la discussion de Blizzard.",

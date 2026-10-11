@@ -1859,6 +1859,22 @@ end
 
 -- Resets the active profile to the default layout (launchers included)
 -- (preset: one of ns.PRESETS, "top" by default)
+-- Resets EVERYTHING: the saved variables are emptied (every profile, block, launcher,
+-- setting, gold history, offers already shown...) and the interface reloads, so
+-- Tessera starts again exactly as on a first install. Used by every "reset" button
+-- and by /tessera reset (the ready-made layouts use ResetProfile instead).
+function ns:ResetEverything()
+    if InCombatLockdown() then
+        Print(L.RESET_IN_COMBAT)
+        return
+    end
+    -- nothing may write into the old table on the way out: the global is cleared, and
+    -- the game saves "no data" for Tessera
+    TesseraDB = nil
+    Print(L.CMD_RESET)
+    ReloadUI()
+end
+
 function ns:ResetProfile(preset)
     self.sv.profiles[self.profileName] = { pendingPreset = preset }
     self:LoadProfile()
@@ -2064,7 +2080,7 @@ RunCommand = function(msg)
     elseif msg == "unlock" then
         ns:SetLocked(false)
     elseif msg == "reset" then
-        ns:ResetProfile()
+        ns:ResetEverything()
     elseif msg == "minimap" or msg == "minicarte" then
         ns:SetMinimapButtonShown(ns.sv.hideMinimapButton and true or false)
         if ns.RefreshOptions then ns:RefreshOptions() end
@@ -2073,6 +2089,9 @@ RunCommand = function(msg)
     elseif msg == "bug" then
         -- the same report, to paste in a bug report (see README / GitHub)
         if ns.BugReport then ns:BugReport() end
+    elseif msg:match("^preview forever") or msg:match("^apercu forever") or msg:match("^aperçu forever") then
+        -- screenshots: only the WoW Forever blocks (Placement.lua)
+        ns:PreviewForever(strtrim(msg:match("forever(.*)") or ""))
     elseif msg == "preview" or msg == "apercu" or msg == "aperçu" then
         ns:SetPreview(not ns.previewMode)
     elseif msg == "debug skills" then

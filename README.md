@@ -9,6 +9,10 @@ It only uses data provided by the game itself, and embeds no library. LibSharedM
 when another addon provides it, to offer that addon's fonts, backgrounds and borders, and
 LibDataBroker to exchange data with DataBroker addons.
 
+> **WoW Forever is in beta.** Tessera is developed and tested on the WoW Forever beta. Its own
+> systems (Legacy, camping, Comprehension, PvP) have no official addon documentation yet and may
+> change before or after release; a block may then need an update.
+
 ## About this project
 
 Tessera was designed by Braincell1980, who came up with the ideas, the features and the look,
@@ -31,14 +35,21 @@ Help tab inside the game explains everything.
 
 **Highlights**
 
-- More than 35 blocks: gold (with history), bags (with junk value), durability, FPS and latency
-  (with graphs), time, XP, rested XP, coordinates, zone, friends, guild, group, quests,
-  reputation, currencies, professions (one block each), weapon skills, talents, Legacy points, hearthstone, mail, whispers,
+- **Blocks made for WoW Forever's own systems**, which can also be shared with DataBroker
+  display addons (Titan Panel, ChocolateBar, Bazooka...):
+  - Legacy points: your points, the next reward, every reward of the track and your Legacy
+    challenges completed per category; a click opens the Legacy panel;
+  - Comprehension: your scroll-reading skill and the scrolls in your bags; a click casts Scroll
+    Comprehension;
+  - Camping: time left on your camp buffs, or your campfire kit's cooldown; a click lights a
+    campfire with the kit;
+  - Honor: your honor points (PvP ranks once WoW Forever is released);
+  - weapon skills read from Forever's skill list; profession, talent and Legacy blocks that open
+    Forever's own windows.
+- More than 40 blocks in all: gold (with history), bags (with junk value), durability, FPS and
+  latency (with graphs), time, XP, rested XP, coordinates, zone, friends, guild, group, quests,
+  reputation, currencies, professions (one block each), talents, hearthstone, mail, whispers,
   reagents, ammo, item level, speed, volume, instances, played time, goal...
-- **Made for WoW Forever's own systems**: a Legacy points block (your points on the Legacy
-  track, the next reward and every reward in the tooltip, a click opens the Legacy panel),
-  weapon skills read from Forever's skill list, and profession, talent and Legacy blocks that
-  open Forever's own windows.
 - Blocks that have nothing to show hide themselves (in a second row under the main bar).
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks.
 - Per-block style, icons (same size, square or round frame, black and white), opacity, scale,
@@ -53,7 +64,7 @@ Help tab inside the game explains everything.
 |---|---|
 | `/tessera` | Open or close the options |
 | `/tessera lock` / `unlock` | Lock the blocks, or unlock them to move them |
-| `/tessera reset` | Back to the default layout |
+| `/tessera reset` | Reset everything: empties the saved variables, then reloads the interface |
 | `/tessera minimap` | Show or hide the minimap button |
 | `/tessera preview` | Sample values in every block (for screenshots) |
 | `/tessera bug` | Report to copy into a bug report |
@@ -163,8 +174,23 @@ public documentation yet. What Tessera found, with the development probes below:
   `C_MajorFactions.GetRenownRewardsForLevel(2802, level)` (its `name`, else its
   `toastDescription`, else the item's name). Updated on `MAJOR_FACTION_RENOWN_LEVEL_CHANGED`
   and every minute. The block is registered only when `ToggleLegacySystemUI` (or
-  `LegacySystemFrame_LoadUI`) exists. Not found yet: the unspent points of the Legacy tree and
-  the challenge points total shown in the panel.
+  `LegacySystemFrame_LoadUI`) exists. **Legacy challenges are achievements**: the achievement
+  categories are the challenge categories (Classes, Crafting, PvP, Dungeons, Raids, Adventure,
+  with sub-categories); the tooltip adds up `GetCategoryNumAchievements` per main category
+  (parent `-1`). Not found yet as an API: the unspent points of the Legacy tree and the
+  "Legacy points: 16/81" total, which only exist as texts of the Legacy panel
+  (`ChallengesPage.LegacyChallengePointSummary.PointsBar`, `TreePage.LegacyTreePointSummary`).
+- **Comprehension** (`comprehension` block): a secondary skill, `skillID` `3012` in
+  `C_SkillInfo` (category `9`, learned from level 6); its spell is `1296017`. Scrolls in the
+  bags are consumables of subclass `4`, or items whose name holds the localized word "scroll"
+  (weapon imbue scrolls are item enhancements).
+- **Camping** (`camping` block): camp buffs are player auras: `1229741` (camp perks, 1 hour),
+  `1229739` (welcoming campfire: sit 1 minute to get the buffs) and `1283391` (nearby
+  campfire). The basic campfire kit is item `279981`; its cooldown comes from
+  `C_Container.GetItemCooldown`, and the block's click is `/use item:279981`.
+- **Honor** (`honor` block): currency `1792` in `C_CurrencyInfo.GetCurrencyInfo` (25,000 max).
+  The classic rank functions (`UnitPVPRank`, `GetPVPRankInfo`) do not exist; the new rank system
+  still has to be found once characters can earn ranks.
 - **Weapon skills** (`weaponSkills` block): the classic globals `GetNumSkillLines` /
   `GetSkillLineInfo` do not exist; `C_SkillInfo.GetNumSkillLines()` and
   `C_SkillInfo.GetSkillLineInfo(i)` do, and return one table per line (`name`, `rank`,
@@ -176,6 +202,7 @@ public documentation yet. What Tessera found, with the development probes below:
   crafting window), `TalentMicroButton`, `LegacyMicroButton`, `SpellbookMicroButton`. Blocks
   click them with a `/click` macro on their secure overlay (`MicroButtonMacro` in
   `Modules.lua`), so the panels open from Blizzard's own code, without taint.
+- All IDs above were found on the beta (October 2026) and may change.
 - **Development probes** (not listed in the help): `/tessera debug legacy` and
   `/tessera debug skills` open a window listing what the client offers (API namespaces and
   functions, the Legacy panel's fields and texts, the raw skill list), which can be copied.

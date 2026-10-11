@@ -54,11 +54,11 @@ Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains e
 
 ## Bugs and ideas
 
-Type **/tessera bug**, copy the report and post it on the GitHub issue tracker (or in the comments here). Ideas are welcome too, especially about WoW Forever systems Tessera could show.
+Type **/tessera bug**, copy the report and post it on the [GitHub issue tracker](https://github.com/Brainc3ll/Tessera/issues) (or in the comments here). Ideas are welcome too, especially about WoW Forever systems Tessera could show.
 
 ## About this project
 
-Tessera was designed by Braincell1980, who came up with the ideas, the features and the look, and tested every version in game. The code was written with the help of an AI (Claude, by Anthropic). It has been reviewed and tested, but it may still contain bugs: please report them. The source code is on GitHub under the MIT license; contributions and code reviews are welcome.
+Tessera was designed by Braincell1980, who came up with the ideas, the features and the look, and tested every version in game. The code was written with the help of an AI (Claude, by Anthropic). It has been reviewed and tested, but it may still contain bugs: please report them. The source code is on [GitHub](https://github.com/Brainc3ll/Tessera) under the MIT license; contributions and code reviews are welcome.
 
 **Translations**: English and French are included. Other languages can be added by the community through the CurseForge localization tool.
 
@@ -120,10 +120,10 @@ Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** expli
 
 ## Bugs et idées
 
-Tape **/tessera bug**, copie le rapport et poste-le sur GitHub (ou dans les commentaires ici). Les idées sont les bienvenues aussi, surtout sur les systèmes de WoW Forever que Tessera pourrait afficher.
+Tape **/tessera bug**, copie le rapport et poste-le sur [GitHub](https://github.com/Brainc3ll/Tessera/issues) (ou dans les commentaires ici). Les idées sont les bienvenues aussi, surtout sur les systèmes de WoW Forever que Tessera pourrait afficher.
 
 ## À propos du projet
 
-Tessera a été conçu par Braincell1980, qui a apporté les idées, les fonctions et le style, et a testé chaque version en jeu. Le code a été écrit avec l'aide d'une IA (Claude, d'Anthropic). Il a été relu et testé, mais peut encore contenir des bugs : merci de les signaler. Le code source est sur GitHub sous licence MIT ; les contributions et relectures sont les bienvenues.
+Tessera a été conçu par Braincell1980, qui a apporté les idées, les fonctions et le style, et a testé chaque version en jeu. Le code a été écrit avec l'aide d'une IA (Claude, d'Anthropic). Il a été relu et testé, mais peut encore contenir des bugs : merci de les signaler. Le code source est sur [GitHub](https://github.com/Brainc3ll/Tessera) sous licence MIT ; les contributions et relectures sont les bienvenues.
 
 **Traductions** : l'anglais et le français sont inclus. D'autres langues peuvent être ajoutées par la communauté avec l'outil de traduction de CurseForge.

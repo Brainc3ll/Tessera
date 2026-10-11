@@ -1,5 +1,7 @@
 # Tessera
 
+**Download:** [CurseForge](https://www.curseforge.com/wow/addons/tessera) · [GitHub releases](https://github.com/Brainc3ll/Tessera/releases)
+
 Tessera is a World of Warcraft addon for **WoW Forever** that shows small information blocks
 (gold, bags, durability, FPS, latency, time, XP, quests...) and launcher blocks (minimap and
 addon compartment buttons). Each block can be styled and placed on its own, and blocks placed
@@ -81,7 +83,8 @@ the related game window, **Shift + click** to copy the value to the chat, right-
 block's settings.
 
 **Reporting a bug:** type `/tessera bug`, copy the report from the window that opens and paste it
-into a new issue (a template is provided).
+into a new issue (a template is provided), or in the comments of the
+[CurseForge page](https://www.curseforge.com/wow/addons/tessera).
 
 ## For developers
 

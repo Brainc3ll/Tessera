@@ -1635,11 +1635,6 @@ function ns:AnchorToFrame(f, cfg)
     local anchor = cfg.anchor
     if not anchor then return false end
     local offset = f.centerOffset or 0
-    -- next to the main action bar ("around the gryphons" layout)
-    if anchor.beside then
-        self:AnchorBesideActionBar(f, anchor)
-        return true
-    end
     -- second row: below another group's head block (centering offset from Merge.lua)
     -- bottom bar: centered at the bottom of the screen
     if anchor.bottom then
@@ -1650,7 +1645,13 @@ function ns:AnchorToFrame(f, cfg)
     if hang then
         local base = self.frames[hang]
         if base and hang ~= f.key then
-            if anchor.above then
+            -- row aligned on one edge of the block below instead of centered
+            -- (above a group in a screen corner: starts at the screen's edge)
+            if anchor.align == "LEFT" then
+                f:SetPoint("BOTTOMLEFT", base, "TOPLEFT", 0, anchor.gap or 0)
+            elseif anchor.align == "RIGHT" then
+                f:SetPoint("BOTTOMRIGHT", base, "TOPRIGHT", 0, anchor.gap or 0)
+            elseif anchor.above then
                 f:SetPoint("BOTTOMLEFT", base, "TOPLEFT", offset, anchor.gap or 0)
             else
                 f:SetPoint("TOPLEFT", base, "BOTTOMLEFT", offset, -(anchor.gap or 0))
@@ -1685,73 +1686,6 @@ function ns:AnchorToFrame(f, cfg)
         f:SetPoint("TOPLEFT", target, "TOPLEFT", offset, 0)
     end
     return true
-end
-
--- Edge of the main action bar on one side ("LEFT" or "RIGHT"): its gryphon when
--- there is one, else the bar itself. Several names are tried because they differ
--- between game versions; a frame that is hidden (another interface replaced the
--- bars) or not placed yet does not count. Returns nil when none is usable.
-local ACTION_BAR_EDGES = {
-    LEFT = { "MainActionBar.EndCaps.LeftEndCap", "MainMenuBar.EndCaps.LeftEndCap",
-        "MainMenuBarArtFrame.LeftEndCap", "MainMenuBarLeftEndCap", "MainActionBar", "MainMenuBar" },
-    RIGHT = { "MainActionBar.EndCaps.RightEndCap", "MainMenuBar.EndCaps.RightEndCap",
-        "MainMenuBarArtFrame.RightEndCap", "MainMenuBarRightEndCap", "MainActionBar", "MainMenuBar" },
-}
-local function FramePath(path)
-    local t = _G
-    for part in path:gmatch("[^%.]+") do
-        t = type(t) == "table" and t[part] or nil
-    end
-    return t
-end
-function ns:GetActionBarEdge(side)
-    for _, path in ipairs(ACTION_BAR_EDGES[side] or {}) do
-        local frame = FramePath(path)
-        if type(frame) == "table" and frame.IsVisible and frame.GetLeft then
-            local ok, usable = pcall(function()
-                return frame:IsVisible() and frame:GetLeft() ~= nil and (frame:GetWidth() or 0) > 1
-            end)
-            if ok and usable then return frame, path end
-        end
-    end
-end
-
--- Without a usable action bar: the two groups sit at the bottom of the screen,
--- this far from its center
-local BESIDE_FALLBACK_X, BESIDE_FALLBACK_Y = 280, 4
-
--- Anchors a group head next to the action bar: bottom-right corner against the
--- bar's left edge (side "LEFT"), or bottom-left corner against its right edge.
--- The bar may not be placed yet at login: then a fallback position is used and
--- the anchor is tried again a little later.
-function ns:AnchorBesideActionBar(f, anchor)
-    local left = anchor.beside == "LEFT"
-    local edge = self:GetActionBarEdge(anchor.beside)
-    local gap = anchor.gap or 0
-    if edge then
-        if left then
-            f:SetPoint("BOTTOMRIGHT", edge, "BOTTOMLEFT", -gap, 0)
-        else
-            f:SetPoint("BOTTOMLEFT", edge, "BOTTOMRIGHT", gap, 0)
-        end
-        return
-    end
-    if left then
-        f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOM", -BESIDE_FALLBACK_X, BESIDE_FALLBACK_Y)
-    else
-        f:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", BESIDE_FALLBACK_X, BESIDE_FALLBACK_Y)
-    end
-    if not f.besideRetry then
-        f.besideRetry = true
-        C_Timer.After(3, function()
-            f.besideRetry = nil
-            local cfg = ns.db and ns.db.blocks[f.key]
-            if cfg and cfg.anchor and cfg.anchor.beside and not cfg.dock and ns:GetActionBarEdge(cfg.anchor.beside) then
-                f:ClearAllPoints()
-                ns:AnchorBesideActionBar(f, cfg.anchor)
-            end
-        end)
-    end
 end
 
 -- Horizontal offset that centers the group (width groupWidth, head at headX
@@ -1789,25 +1723,26 @@ local function FinishBaseLayout(self, p)
     p.initialized = true
 end
 
--- "Around the gryphons": one group on each side of the main action bar.
--- Each group has two rows; "bottom" and "top" list blocks from the bar outward.
--- The block nearest the bar at the bottom is the group's head, anchored to the
--- bar's edge (cfg.anchor.beside, see AnchorToFrame); the others are docked so that
--- a block hiding itself (Comprehension, Camping...) never leaves a gap. Blocks that
--- hide when empty ("hide") form a small row centered above the group. Blocks that
--- do not exist on this client (WoW Forever ones elsewhere) are simply skipped.
+-- "Around the gryphons": one group in each bottom corner of the screen, on both
+-- sides of the action bars. Anchored to the screen's corners (a plain cfg.point),
+-- so it fits every resolution and interface, whatever the action bars look like.
+-- Each group is 2 blocks wide and 3 rows high (about the height of two action
+-- bars). "rows" go from the bottom up, each row from the corner toward the center.
+-- The first block of each row never hides itself: the bottom one is the group's
+-- head, in the corner, the others are docked above it; the second block of a row
+-- may hide (Comprehension, Camping...) without leaving a gap. Blocks that hide when
+-- empty ("hide") form a small row above the group, starting at the screen's edge.
+-- Blocks that do not exist on this client (WoW Forever ones elsewhere) are skipped.
 local GRYPHON_GROUPS = {
-    { side = "LEFT",
-      bottom = { "legacy", "comprehension", "camping" },
-      top = { "durability", "bags", "gold" },
+    { corner = "BOTTOMLEFT", x = 4, inward = "RIGHT", align = "LEFT",
+      rows = { { "legacy", "comprehension" }, { "durability", "camping" }, { "gold", "bags" } },
       hide = { "mail", "whispers", "reputation" } },
-    { side = "RIGHT",
-      bottom = { "honor", "weaponSkills", "xp" },
-      top = { "time", "fps", "latency" },
+    { corner = "BOTTOMRIGHT", x = -4, inward = "LEFT", align = "RIGHT",
+      rows = { { "honor", "weaponSkills" }, { "latency", "fps" }, { "time", "xp" } },
       hide = { "friends", "guild", "group", "talents" } },
 }
 local GRYPHON_HIDE_EMPTY = { comprehension = true, camping = true }
-local GRYPHON_WIDTH = 64
+local GRYPHON_WIDTH, GRYPHON_Y = 56, 4
 
 function ns:ApplyGryphonsLayout(p)
     local used = {}
@@ -1828,36 +1763,32 @@ function ns:ApplyGryphonsLayout(p)
         return cfg
     end
     for _, g in ipairs(GRYPHON_GROUPS) do
-        local outward = g.side
-        local bottom, top, hide = Present(g.bottom), Present(g.top), Present(g.hide)
-        local head = bottom[1] or top[1]
-        if head then
-            Prepare(head).anchor = { beside = g.side, gap = 0 }
-            -- bottom row, from the bar outward
-            for i = 2, #bottom do
-                Prepare(bottom[i]).dock = { to = bottom[i - 1], side = outward }
-            end
-            -- top row: its first block above the head, then outward
-            local first = bottom[1] and 1 or 2
-            for i = first, #top do
-                local cfg = Prepare(top[i])
-                if i == first and bottom[1] then
-                    cfg.dock = { to = head, side = "TOP" }
-                elseif i > first then
-                    cfg.dock = { to = top[i - 1], side = outward }
-                elseif i == 2 then
-                    cfg.dock = { to = head, side = outward }
+        local head, below -- group head, first block of the row below
+        for _, row in ipairs(g.rows) do
+            local keys = Present(row)
+            for i, key in ipairs(keys) do
+                local cfg = Prepare(key)
+                if i > 1 then
+                    cfg.dock = { to = keys[i - 1], side = g.inward }
+                elseif below then
+                    cfg.dock = { to = below, side = "TOP" }
+                else
+                    cfg.point = { g.corner, g.corner, g.x, GRYPHON_Y }
+                    head = key
                 end
             end
-            -- blocks that hide when empty: a row centered above the group
-            local hangOn = top[1] or head
+            if keys[1] then below = keys[1] end
+        end
+        -- blocks that hide when empty: above the top row, from the screen's edge inward
+        if head then
+            local hide = Present(g.hide)
             for i, key in ipairs(hide) do
                 local cfg = Prepare(key)
                 cfg.hideEmpty = true
                 if i == 1 then
-                    cfg.anchor = { above = hangOn, gap = 0 }
+                    cfg.anchor = { above = below, gap = 0, align = g.align }
                 else
-                    cfg.dock = { to = hide[i - 1], side = "RIGHT" }
+                    cfg.dock = { to = hide[i - 1], side = g.inward }
                 end
             end
         end

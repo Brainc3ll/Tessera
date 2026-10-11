@@ -546,6 +546,15 @@ for _, step in ipairs({
         assert(ns:InsertSpacer("time", "LEFT"), "left is fine in a stretched bar")
         ns:ResetProfile("top")
     end,
+    -- a new spacer takes the layer chosen for all blocks
+    function()
+        ns.db.groupDefaults = ns.db.groupDefaults or {}
+        ns.db.groupDefaults.strata = "HIGH"
+        local k = ns:AddSpacer()
+        assert(ns.db.blocks[k].strata == "HIGH", "new spacer on the blocks' layer")
+        ns:RemoveSpacer(k)
+        ns.db.groupDefaults.strata = nil
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

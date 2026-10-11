@@ -70,6 +70,7 @@ local function IsGroup() return selected == ALL or selected == LAUNCHERS end
 local function Targets()
     if selected == ALL then
         -- spacers keep their own look: "All blocks" does not change them
+        -- (except their layer and visibility, see SPACER_SHARED_FIELDS)
         local keys = {}
         for _, key in ipairs(ns:GetBlockKeys()) do
             if not ns.IsSpacerKey(key) then table.insert(keys, key) end
@@ -232,6 +233,14 @@ local PER_BLOCK_FIELDS = { enabled = true, width = true, height = true }
 
 -- Writes a setting to every selected block. Newly shown blocks get a style and a
 -- free position; group changes are also saved as defaults for future blocks.
+-- Settings that "All blocks" also gives to spacers: a spacer keeps its own look
+-- (colors, frame), but it must stay on the same layer as the blocks around it, and
+-- show, hide and fade with them
+local SPACER_SHARED_FIELDS = {
+    strata = true, alpha = true, fadeOut = true, fadeAlpha = true, fadeShowCombat = true,
+    hideInCombat = true, hideInInstance = true, hideInVehicle = true, hideWhenResting = true,
+}
+
 local function SetField(name, value)
     -- style template picked before the change: a block that is already visible
     local refKey = name == "enabled" and value and ns:GetReferenceBlock()
@@ -247,6 +256,14 @@ local function SetField(name, value)
             ns:PlaceNearOptions(key) -- its old spot is taken: find a free one
         end
         ns:ApplyStyle(key)
+    end
+    if selected == ALL and SPACER_SHARED_FIELDS[name] then
+        for _, key in ipairs(ns:GetBlockKeys()) do
+            if ns.IsSpacerKey(key) then
+                ns.db.blocks[key][name] = ns.DeepCopy(value)
+                ns:ApplyStyle(key)
+            end
+        end
     end
     -- showing a single block: unlock so the user can place it
     if name == "enabled" and value and not IsGroup() and ns.db.locked then ns:SetLocked(false) end

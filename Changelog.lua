@@ -19,6 +19,8 @@ ns.CHANGELOG = {
                 .. "dependent on it\") when two blocks swapped places.",
             "Fix: a column stuck to the bottom of the screen piled up its blocks; the whole column now stays "
                 .. "visible above the edge.",
+            "Fix: spacers did not follow the layer (strata), opacity or hide options chosen for all blocks, and could "
+                .. "stay hidden behind the action bars.",
             "Releases: the English and French strings are sent to CurseForge's localization tool automatically, "
                 .. "and community translations are added to the addon.",
             "New ready-made layout \"Around the gryphons\": two groups in the bottom corners of the screen, on both "
@@ -43,6 +45,8 @@ ns.CHANGELOG = {
                 .. "a region dependent on it ») quand deux blocs échangeaient leur place.",
             "Correction : une colonne collée en bas de l'écran empilait ses blocs ; toute la colonne reste maintenant "
                 .. "visible au-dessus du bord.",
+            "Correction : les espaces ne suivaient pas le plan d'affichage (strata), l'opacité ni les options de "
+                .. "masquage choisis pour tous les blocs, et pouvaient rester cachés derrière les barres d'action.",
             "Publications : l'anglais et le français sont envoyés automatiquement à l'outil de traduction de "
                 .. "CurseForge, et les traductions de la communauté sont ajoutées à l'addon.",
             "Nouvelle disposition toute prête « Autour des gryphons » : deux groupes dans les coins bas de l'écran, "

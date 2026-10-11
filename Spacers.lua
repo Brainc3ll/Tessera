@@ -49,6 +49,12 @@ function ns:AddSpacer()
     while self.db.blocks[self.SPACER_PREFIX .. n] do n = n + 1 end
     local key = self.SPACER_PREFIX .. n
     self.db.blocks[key] = self:GetBlockDefaults(key)
+    -- same layer and visibility as the other blocks ("All blocks" settings)
+    local defaults = self.db.groupDefaults or {}
+    for _, field in ipairs({ "strata", "alpha", "fadeOut", "fadeAlpha", "fadeShowCombat",
+        "hideInCombat", "hideInInstance", "hideInVehicle", "hideWhenResting" }) do
+        if defaults[field] ~= nil then self.db.blocks[key][field] = self.DeepCopy(defaults[field]) end
+    end
     self:RefreshAllBlocks()
     return key
 end

@@ -28,7 +28,8 @@ ns.CHANGELOG = {
                 .. "side, stays put on any screen). Along the top or bottom, a bar can be stretched over the whole "
                 .. "width: spacer blocks fill the room (blocks on the left, center, right or spread) and the blocks "
                 .. "keep their size. Setting in the General tab (ask, always, never).",
-            "New ready-made layouts inspired by operating systems: Windows, Windows 11, macOS and GNOME, with the "
+            "New ready-made layouts in the spirit of desktop taskbars and menu bars: Stormwind Stained Glass, Cathedral "
+                .. "Rose Window, Tirisfal Orchard and Gnomeregan, with the "
                 .. "clock, FPS, latency and volume where you expect them.",
         },
         fr = {
@@ -48,7 +49,8 @@ ns.CHANGELOG = {
                 .. "ce côté, il reste en place sur tous les écrans). En haut ou en bas, une barre peut être étirée sur "
                 .. "toute la largeur : des blocs espace comblent la place (blocs à gauche, au centre, à droite ou "
                 .. "répartis) et les blocs gardent leur taille. Réglage dans l'onglet Général (demander, toujours, jamais).",
-            "Nouvelles dispositions toutes prêtes inspirées des systèmes : Windows, Windows 11, macOS et GNOME, avec "
+            "Nouvelles dispositions toutes prêtes façon barres des tâches et barres de menus : Vitraux de Hurlevent, "
+                .. "Rosace de la cathédrale, Vergers de Tirisfal et Gnomeregan, avec "
                 .. "l'horloge, les FPS, la latence et le volume là où on les attend.",
         },
     },

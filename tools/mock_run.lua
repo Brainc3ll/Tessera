@@ -494,7 +494,7 @@ for _, step in ipairs({
         assert(b[root].edges.LEFT and not b[root].stretch, "left edge: stuck, not stretched")
         local exported = ns:SanitizeProfile(ns:DecodeProfile(ns:ExportProfile()))
         assert(exported.blocks[root].edges and exported.blocks[root].edges.LEFT, "edges lost by export")
-        for _, preset in ipairs({ "windows", "windows11", "macos", "gnome" }) do
+        for _, preset in ipairs({ "stormwind", "cathedral", "tirisfal", "gnomeregan" }) do
             ns:ResetProfile(preset)
             ns:UpdateLayout()
             b = ns.db.blocks

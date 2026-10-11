@@ -1778,9 +1778,9 @@ end
 --   left     column on the left of the screen, every block stacked
 --   compact  top bar with small blocks, sized to their content
 --   gryphons two groups in the bottom corners of the screen, WoW Forever blocks included
---   windows, windows11, macos, gnome   bars stuck to a screen edge, inspired by
---            those systems (see OS_LAYOUTS)
-ns.PRESETS = { "top", "bottom", "left", "compact", "gryphons", "windows", "windows11", "macos", "gnome" }
+--   stormwind, cathedral, tirisfal, gnomeregan   bars stuck to a screen edge, like
+--            the taskbars and menu bars of desktop systems (see OS_LAYOUTS)
+ns.PRESETS = { "top", "bottom", "left", "compact", "gryphons", "stormwind", "cathedral", "tirisfal", "gnomeregan" }
 
 -- Last step of every ready-made layout: icon without label on all data blocks
 -- (even hidden ones), the theme's look, remembered for future blocks
@@ -1870,31 +1870,32 @@ function ns:ApplyGryphonsLayout(p)
     end
 end
 
--- Layouts inspired by operating systems. Each bar is a list of blocks from left
+-- Layouts in the spirit of desktop systems (Warcraft-flavored names). Each bar is a list of blocks from left
 -- to right (or top to bottom for a column); SPACER marks an empty spacer block,
 -- several in a row rather than one huge one, so each can later be replaced by a
 -- block ("Replace with..."). A bar along the top or bottom edge is stuck to it and
 -- stretched over the whole width: only its spacers stretch (see Merge.lua), the
 -- blocks keep their size. Placed like the real ones: clock at the right end of the
--- taskbar / menu bar (center for GNOME), network (latency), volume and FPS next to it.
+-- taskbar / menu bar (in the center of the top bar for Gnomeregan), network (latency),
+-- volume and FPS next to it.
 local SPACER = "|spacer"
 local OS_LAYOUTS = {
-    windows = {
+    stormwind = { -- a taskbar along the bottom, pinned blocks on the left
         { edge = "BOTTOM", items = { "bags", "legacy", "comprehension", "camping", "honor",
             SPACER, SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "mail", "whispers" } },
     },
-    windows11 = {
+    cathedral = { -- the same taskbar with its blocks in the center
         { edge = "BOTTOM", items = { "zone", SPACER, SPACER, SPACER, "gold", "bags", "legacy", "comprehension",
             "camping", SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "mail", "whispers" } },
     },
-    macos = {
+    tirisfal = { -- a menu bar along the top and a dock
         { edge = "TOP", items = { "zone", "subzone", "coords", SPACER, SPACER, SPACER, SPACER,
             "bags", "durability", "fps", "latency", "volume", "time" } },
         -- the Dock, on the left edge (an option of the real one): the bottom of the
         -- screen belongs to the action bars
         { edge = "LEFT", items = { "legacy", "comprehension", "camping", "honor", "weaponSkills", "gold" } },
     },
-    gnome = {
+    gnomeregan = { -- a top bar with the clock in the center
         { edge = "TOP", items = { "zone", SPACER, SPACER, SPACER, "time", SPACER, SPACER, SPACER,
             "gold", "bags", "fps", "latency", "volume" } },
     },

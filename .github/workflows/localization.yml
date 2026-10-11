@@ -28,7 +28,7 @@ jobs:
             echo "Sending ${lang}..."
             code=$(curl -sS -o response.txt -w '%{http_code}' -X POST \
               -H "X-Api-Token: ${CF_API_KEY}" \
-              -F "metadata={ \"language\": \"${lang}\", \"formatType\": \"TableAdditions\", \"missing-phrase-handling\": \"DoNothing\" }" \
+              -F "metadata={ \"language\": \"${lang}\", \"missing-phrase-handling\": \"DoNothing\" }" \
               -F "localizations=<docs/localization/${lang}.lua" \
               "${url}")
             echo "HTTP ${code}: $(head -c 300 response.txt)"

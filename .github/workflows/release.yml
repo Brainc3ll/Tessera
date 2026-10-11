@@ -5,7 +5,8 @@
 #      strings and our French stays the reference;
 #   2. builds the zip, with the community translations for the other languages;
 #   3. creates the GitHub release with the zip, and uploads the zip to CurseForge (project
-#      ID in Tessera.toc, ## X-Curse-Project-ID), with CHANGELOG.md as release notes.
+#      ID in Tessera.toc, ## X-Curse-Project-ID), with the version's section of CHANGELOG.md
+#      as release notes; the GitHub release is titled "Tessera <version>".
 #
 # Two ways to start it:
 #   - "Run workflow" in the Actions tab (or `gh workflow run release.yml`): the version is
@@ -57,6 +58,23 @@ jobs:
           git push origin "${tag}"
           echo "Created ${tag}"
 
+      # Version being released, and the notes of that version only (its section of
+      # CHANGELOG.md), used as release notes on GitHub and CurseForge (.pkgmeta)
+      - name: Release notes of this version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            version=$(grep -m1 '^## Version:' Tessera.toc | sed 's/^## Version:[[:space:]]*//' | tr -d '\r')
+          else
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${version}" >> "$GITHUB_OUTPUT"
+          awk -v v="## ${version} " 'index($0, v) == 1 { on = 1; print; next } on && /^## / { exit } on { print }' \
+            CHANGELOG.md > RELEASE_NOTES.md
+          if [ ! -s RELEASE_NOTES.md ]; then cp CHANGELOG.md RELEASE_NOTES.md; fi
+          echo "Notes of ${version}:"; head -5 RELEASE_NOTES.md
+
       # English (base language) and French (our own translation) sent to CurseForge.
       # Phrases that no longer exist in the addon are kept there ("DoNothing"), so no
       # translator's work is ever deleted by mistake. If CurseForge refuses, the release
@@ -94,3 +112,11 @@ jobs:
         uses: BigWigsMods/packager@v2
         with:
           args: -l
+
+      # The packager names the GitHub release after the tag (v1.0.1): give it a readable title
+      - name: Title of the GitHub release
+        if: always() && steps.version.outputs.tag != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "${{ steps.version.outputs.tag }}" --title "Tessera ${{ steps.version.outputs.version }}"

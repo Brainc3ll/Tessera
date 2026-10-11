@@ -7,8 +7,10 @@ ignore:
     - .github
     - .luacheckrc
     - .pkgmeta
+    - RELEASE_NOTES.md
 
-# CurseForge and GitHub release notes: our own changelog rather than the commit list
+# CurseForge and GitHub release notes: the section of CHANGELOG.md for the version being
+# released, written to RELEASE_NOTES.md by the release workflow
 manual-changelog:
-    filename: CHANGELOG.md
+    filename: RELEASE_NOTES.md
     markup-type: markdown

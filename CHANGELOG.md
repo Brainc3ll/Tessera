@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.0.0-rc2 — 2026-10-10
+## 1.0.0-rc2 — 2026-10-11
 
 - When an interface with a matching style is installed (FlareUI 1.x or 2.x, ElvUI, EllesmereUI), a window shows that style on sample blocks and offers it. Tessera no longer changes the style of your blocks on its own.
 - DataBroker mode: turning it off now only applies to the display addon detected at that moment (another one installed later offers the mode again, with its explanation window). The Broker tab shows the current state and can go back to the automatic choice.

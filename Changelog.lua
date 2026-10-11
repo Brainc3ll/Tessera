@@ -11,7 +11,7 @@ local _, ns = ...
 ns.CHANGELOG = {
     {
         version = "1.0.0-rc2",
-        date = "2026-10-10",
+        date = "2026-10-11",
         en = {
             "When an interface with a matching style is installed (FlareUI 1.x or 2.x, ElvUI, EllesmereUI), a "
                 .. "window shows that style on sample blocks and offers it. Tessera no longer changes the style "

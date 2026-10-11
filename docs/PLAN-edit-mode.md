@@ -76,6 +76,15 @@ La fonction doit marcher à toutes les résolutions et à toutes les échelles d
   - dans la description CurseForge / le README, au moment de la sortie de la fonction.
 - Plus tard : Braincell1980 testera les interfaces populaires ; la liste des interfaces testées sera alors complétée.
 
+## Relevé du 11 octobre 2026 (interface de Blizzard, disposition perso « Modern++ », 1920 × 1080)
+
+- **`C_EditMode` est complet sur Forever** : GetLayouts, SaveLayouts, SetActiveLayout, IsValidLayoutName, GetEditModeDefaultLayout, ConvertLayoutInfoToString / ConvertStringToLayoutInfo (le texte d'import / export du jeu). La copie de disposition est donc faisable avec les fonctions du jeu.
+- **Limite** : 5 dispositions par type (compte, personnage) (`EditModeMaxLayoutsPerType = 5`).
+- `activeLayout` compte d'abord les dispositions de base : « Modern++ » était l'index 4 alors que la liste n'en contenait qu'une. Le relevé ne savait pas en tenir compte (corrigé dans la version debug suivante, qui teste aussi la longueur maximale des noms).
+- **Bas de l'écran** : barre d'action principale de y = 2 à 47, barre d'XP de 51 à 68, barres en bas à gauche et à droite de 72 à 117, menu et sacs de 2 à 47, gryphons (« MainActionBarEndCap ») de 0 à 95. Une barre Tessera de 24 px collée en bas recouvre donc la barre principale, le menu, les sacs et les gryphons ; il faudrait remonter tout ce bloc d'environ 26 px. Barre de cast (158), discussion (153) et barre de droite (182) ne gênent pas.
+- **Haut de l'écran** : minimap (x 1647 à 1920, jusqu'en haut), buffs (x 1265 à 1665, haut à 1070), compteur de dégâts (x 0 à 400, jusqu'en haut). Une barre pleine largeur en haut les recouvre.
+- FlareUI n'était pas chargé pendant ce relevé : à refaire avec FlareUI.
+
 ## Étapes prévues
 
 1. **Relevé en jeu** (commande de debug, comme pour l'héritage) : fonctions `C_EditMode` présentes sur Forever, structure d'une disposition (systèmes, ancrages, décalages), noms et limites, présence de LibEditMode ou d'un équivalent chez FlareUI.

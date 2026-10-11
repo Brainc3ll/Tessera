@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.0.0-rc3 — 
+## 1.0.0-rc3 — 2026-10-11
 
 - New ready-made layout "Around the gryphons": two groups in the bottom corners of the screen, on both sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list (Look tab), with a description of each one.
 - New "Replace with..." (quick menu, or next to the block list in the Blocks tab): puts another block exactly in a block's place, with its look, without moving the others; or swaps two shown blocks.

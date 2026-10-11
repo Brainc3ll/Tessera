@@ -11,7 +11,7 @@ local _, ns = ...
 ns.CHANGELOG = {
     {
         version = "1.0.0-rc3",
-        date = "", -- set when the version is published
+        date = "2026-10-11",
         en = {
             "New ready-made layout \"Around the gryphons\": two groups in the bottom corners of the screen, on both "
                 .. "sides of the action bars, WoW Forever blocks included. Ready-made layouts are now picked in a list "

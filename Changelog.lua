@@ -31,6 +31,8 @@ ns.CHANGELOG = {
             "New ready-made layouts in the spirit of desktop taskbars and menu bars: Stormwind Stained Glass, Cathedral "
                 .. "Rose Window, Tirisfal Orchard and Gnomeregan, with the "
                 .. "clock, FPS, latency and volume where you expect them.",
+            "New \"Add a spacer\" (quick menu): an empty block on the left, right, above or below a block, slipped in "
+                .. "between if another block is already there; in a stretched bar it takes room from the other spacers.",
         },
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
@@ -52,6 +54,9 @@ ns.CHANGELOG = {
             "Nouvelles dispositions toutes prêtes façon barres des tâches et barres de menus : Vitraux de Hurlevent, "
                 .. "Rosace de la cathédrale, Vergers de Tirisfal et Gnomeregan, avec "
                 .. "l'horloge, les FPS, la latence et le volume là où on les attend.",
+            "Nouveau « Ajouter un espace » (menu rapide) : un bloc vide à gauche, à droite, au-dessus ou en dessous "
+                .. "d'un bloc, glissé entre les deux si un autre bloc est déjà là ; dans une barre étirée, il prend la "
+                .. "place sur les autres espaces.",
         },
     },
     {

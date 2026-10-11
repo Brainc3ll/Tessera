@@ -475,6 +475,15 @@ function ns:OpenQuickMenu(key)
                 end)
             end
         end
+        -- an empty spacer on one side of this block (in between if a block is there)
+        if not self:IsFrozen(key) then
+            local sub = root:CreateButton(L.MENU_ADD_SPACER)
+            for _, side in ipairs({ "LEFT", "RIGHT", "TOP", "BOTTOM" }) do
+                if self:CanInsertSpacer(key, side) then
+                    sub:CreateButton(L["SPACER_SIDE_" .. side], function() self:InsertSpacer(key, side) end)
+                end
+            end
+        end
         -- put another block in this one's place (or swap with it if it is shown)
         if not self:IsFrozen(key) and not ns.IsSpacerKey(key) then
             local sub = root:CreateButton(L.MENU_REPLACE)
@@ -1299,4 +1308,76 @@ function ns:CheckScreenEdges(rootKey)
         end
         menu:CreateButton(L.EDGE_LEAVE, function() end)
     end)
+end
+
+---------------------------------------------------------------------------
+-- Inserting an empty spacer next to a block
+---------------------------------------------------------------------------
+-- Adds an empty spacer on one side of a block, even inside a merged group:
+--   * side free: the spacer is simply docked there;
+--   * a block already docked on that side (or the block this one is docked to):
+--     the spacer goes in between, and that block and everything after it move
+--     one step further, nothing is detached.
+-- In a bar stretched over the screen width, only left / right are allowed (a
+-- second row would break the stretch), and the bar keeps its width: the new
+-- spacer takes room from the other spacers. When there is no room left (the bar
+-- would get wider than the screen), the insertion is undone with a message.
+local OPPOSITE_SIDE = { LEFT = "RIGHT", RIGHT = "LEFT", TOP = "BOTTOM", BOTTOM = "TOP" }
+
+function ns:CanInsertSpacer(key, side)
+    local rootCfg = self.db.blocks[self:GetRoot(key)]
+    if rootCfg and rootCfg.stretch and (side == "TOP" or side == "BOTTOM") then return false end
+    return true
+end
+
+function ns:InsertSpacer(key, side)
+    local blocks = self.db.blocks
+    local cfg = blocks[key]
+    if not cfg or InCombatLockdown() or not OPPOSITE_SIDE[side] then return false end
+    local root = self:GetRoot(key)
+    local stretched = blocks[root] and blocks[root].stretch
+    if not self:CanInsertSpacer(key, side) then
+        self.Print(L.SPACER_NO_ROW)
+        return false
+    end
+    self:PushUndo()
+    -- the new spacer, with the look of the block it sits next to
+    local n = 1
+    while blocks[self.SPACER_PREFIX .. n] do n = n + 1 end
+    local spacer = self.SPACER_PREFIX .. n
+    blocks[spacer] = self:GetBlockDefaults(spacer)
+    self:CopyBlockStyle(key, spacer)
+    local s = blocks[spacer]
+    if side == "LEFT" or side == "RIGHT" then
+        s.width = stretched and 8 or 16
+    else
+        s.height = 8
+    end
+    -- in between, or simply on that side
+    local neighbour
+    for k, c in pairs(blocks) do
+        if c.dock and c.dock.to == key and c.dock.side == side then neighbour = k end
+    end
+    if neighbour then
+        s.dock = { to = key, side = side }
+        blocks[neighbour].dock.to = spacer
+    elseif cfg.dock and OPPOSITE_SIDE[cfg.dock.side] == side then
+        s.dock = { to = cfg.dock.to, side = cfg.dock.side }
+        cfg.dock.to = spacer
+    else
+        s.dock = { to = key, side = side }
+    end
+    self:RefreshAllBlocks()
+    self:UpdateLayout()
+    -- a stretched bar must still fit on the screen
+    if stretched then
+        local l, _, r = self:GroupRectUI(root)
+        if l and (r - l) > UIParent:GetWidth() + 1 then
+            self:Undo()
+            self:RefreshAllBlocks()
+            self.Print(L.SPACER_NO_ROOM)
+            return false
+        end
+    end
+    return true
 end

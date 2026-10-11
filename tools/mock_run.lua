@@ -508,6 +508,34 @@ for _, step in ipairs({
         assert(b.time.enabled and b.time.dock, "clock in the bar")
         ns:ResetProfile("top")
     end,
+    -- insert an empty spacer next to a block, in between if needed
+    function()
+        ns:ResetProfile("top")
+        local b = ns.db.blocks
+        -- find a block docked RIGHT of another one
+        local left, right
+        for k, c in pairs(b) do
+            if c.dock and c.dock.side == "RIGHT" and c.enabled then left, right = c.dock.to, k break end
+        end
+        assert(left, "a merged pair in the top bar")
+        assert(ns:InsertSpacer(left, "RIGHT"), "insert refused")
+        local sp = b[right].dock.to
+        assert(ns.IsSpacerKey(sp) and b[sp].dock.to == left and b[sp].dock.side == "RIGHT", "spacer slipped in between")
+        -- on the side the block is docked from: between it and its target
+        assert(ns:InsertSpacer(right, "LEFT"))
+        local sp2 = b[right].dock.to
+        assert(ns.IsSpacerKey(sp2) and sp2 ~= sp and b[sp2].dock.to == sp, "second spacer in between")
+        assert(ns:InsertSpacer(left, "TOP") and true, "free side")
+        for k, c in pairs(b) do
+            assert(not (c.dock and c.dock.to == k), k .. " docked to itself")
+        end
+        -- stretched bar: no second row
+        ns:ResetProfile("gnomeregan")
+        b = ns.db.blocks
+        assert(not ns:CanInsertSpacer("time", "TOP"), "no row above in a stretched bar")
+        assert(ns:InsertSpacer("time", "LEFT"), "left is fine in a stretched bar")
+        ns:ResetProfile("top")
+    end,
     -- recover off-screen blocks, Edit Mode hook, what's new, combat toggle
     function()
         ns:RecoverBlocksCommand()

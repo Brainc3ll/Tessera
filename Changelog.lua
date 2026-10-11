@@ -15,6 +15,8 @@ ns.CHANGELOG = {
         en = {
             "Fix: choosing a ready-made layout showed the \"reset everything\" message in the chat; it now says "
                 .. "which layout was applied.",
+            "Fix: switching to another layout or profile could raise a Lua error (\"Cannot anchor to a region "
+                .. "dependent on it\") when two blocks swapped places.",
             "Releases: the English and French strings are sent to CurseForge's localization tool automatically, "
                 .. "and community translations are added to the addon.",
             "New ready-made layout \"Around the gryphons\": two groups at the bottom of the screen, on both sides "
@@ -24,6 +26,8 @@ ns.CHANGELOG = {
         fr = {
             "Correction : choisir une disposition toute prête affichait dans la discussion le message de « tout "
                 .. "réinitialiser » ; il indique maintenant la disposition appliquée.",
+            "Correction : changer de disposition ou de profil pouvait provoquer une erreur Lua (« Cannot anchor to "
+                .. "a region dependent on it ») quand deux blocs échangeaient leur place.",
             "Publications : l'anglais et le français sont envoyés automatiquement à l'outil de traduction de "
                 .. "CurseForge, et les traductions de la communauté sont ajoutées à l'addon.",
             "Nouvelle disposition toute prête « Autour des gryphons » : deux groupes en bas de l'écran, de part et "

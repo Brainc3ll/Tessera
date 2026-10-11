@@ -49,6 +49,24 @@ local methods = {
     GetFrameStrata = function() return "MEDIUM" end, GetFrameLevel = function() return 1 end,
     IsMenuOpen = function() return false end,
     GetObjectType = function(self) return self.__kind end,
+    -- anchors are tracked so a loop raises the same error as the game
+    -- ("Cannot anchor to a region dependent on it")
+    ClearAllPoints = function(self) self.__anchors = nil end,
+    SetPoint = function(self, _, rel)
+        if type(rel) == "table" and rel ~= self and getmetatable(rel) == FrameMT then
+            local seen, queue = {}, { rel }
+            while #queue > 0 do
+                local cur = table.remove(queue)
+                if cur == self then error("Action[SetPoint] failed because[Cannot anchor to a region dependent on it]", 2) end
+                if not seen[cur] then
+                    seen[cur] = true
+                    for other in pairs(cur.__anchors or {}) do table.insert(queue, other) end
+                end
+            end
+            self.__anchors = self.__anchors or {}
+            self.__anchors[rel] = true
+        end
+    end,
 }
 local PIECES = { TopLeftCorner = 1, TopRightCorner = 1, BottomLeftCorner = 1, BottomRightCorner = 1,
     TopEdge = 1, BottomEdge = 1, LeftEdge = 1, RightEdge = 1, Center = 1, Text = 1, NineSlice = 1, Slider = 1, Back = 1, Forward = 1, ScrollBar = 1 }

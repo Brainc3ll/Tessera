@@ -1525,6 +1525,10 @@ function ns:RefreshAllBlocks()
         active[key] = true
         self:EnsureFrame(key)
     end
+    -- forget every old anchor first: after a profile or layout change, a block may
+    -- now be docked to a block that was docked to it before, and anchoring it while
+    -- the old anchor still exists would make a loop (the game refuses it)
+    for _, f in pairs(self.frames) do f:ClearAllPoints() end
     for _, key in ipairs(keys) do self:ApplyStyle(key) end
     for key, f in pairs(self.frames) do
         if not active[key] then f:Hide() end

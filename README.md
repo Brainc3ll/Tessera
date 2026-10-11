@@ -236,8 +236,10 @@ back to English for anything missing.
   Its file (e.g. `Locales/deDE.lua`) only holds a `--@localization(...)@` line that the
   BigWigs packager replaces with the translated strings when it builds the release zip, so
   a copy installed straight from GitHub simply shows those languages in English.
-- `docs/localization/` holds the English and French strings in the format CurseForge imports;
-  new English strings must be imported there before they can be translated.
+- `docs/localization/` holds the English and French strings in the format CurseForge imports
+  (regenerate with `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua`, same
+  for `frFR`). The release workflow sends both to CurseForge before packaging, so translators
+  always see the current strings; nothing has to be imported by hand.
 
 ### Checking your changes
 

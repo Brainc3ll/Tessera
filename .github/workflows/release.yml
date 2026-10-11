@@ -1,9 +1,19 @@
-# Builds the addon zip and publishes it when a tag is pushed (e.g. v1.0.1), with the
-# BigWigs packager (https://github.com/BigWigsMods/packager):
-#   - creates the GitHub release with the zip attached;
-#   - uploads the zip to CurseForge (project ID in Tessera.toc, ## X-Curse-Project-ID).
-# The file type comes from the tag name: "alpha" -> Alpha, "beta" -> Beta, anything else
-# (v1.0.1, v1.1.0-rc1...) -> Release. Files left out of the zip are listed in .pkgmeta.
+# Publishes a new version of Tessera, with the BigWigs packager
+# (https://github.com/BigWigsMods/packager):
+#   1. sends the English and French strings to CurseForge's localization tool
+#      (docs/localization/enUS.lua and frFR.lua), so translators always see the current
+#      strings and our French stays the reference;
+#   2. builds the zip, with the community translations for the other languages;
+#   3. creates the GitHub release with the zip, and uploads the zip to CurseForge (project
+#      ID in Tessera.toc, ## X-Curse-Project-ID), with CHANGELOG.md as release notes.
+#
+# Two ways to start it:
+#   - "Run workflow" in the Actions tab (or `gh workflow run release.yml`): the version is
+#     read from Tessera.toc (## Version), the tag v<version> is created, then everything
+#     above runs. Nothing else to do.
+#   - pushing a tag yourself (e.g. v1.0.1).
+# The CurseForge file type comes from the tag: "alpha" -> Alpha, "beta" -> Beta, anything
+# else (v1.0.1, v1.1.0-rc3...) -> Release. Files left out of the zip are listed in .pkgmeta.
 # Needs one repository secret: CF_API_KEY (a CurseForge API token).
 name: Package and release
 
@@ -11,9 +21,13 @@ on:
   push:
     tags:
       - "**"
+  workflow_dispatch:
 
 permissions:
-  contents: write # lets the packager create the GitHub release
+  contents: write # lets the job create the tag and the GitHub release
+
+env:
+  CF_PROJECT: "1736530"
 
 jobs:
   release:
@@ -27,11 +41,56 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Package and upload
+      # "Run workflow": create the tag of the version written in Tessera.toc
+      - name: Create the version tag
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          version=$(grep -m1 '^## Version:' Tessera.toc | sed 's/^## Version:[[:space:]]*//' | tr -d '\r')
+          tag="v${version}"
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            echo "::error::The tag ${tag} already exists: change ## Version in Tessera.toc first."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${tag}" -m "Tessera ${version}"
+          git push origin "${tag}"
+          echo "Created ${tag}"
+
+      # English (base language) and French (our own translation) sent to CurseForge.
+      # Phrases that no longer exist in the addon are kept there ("DoNothing"), so no
+      # translator's work is ever deleted by mistake. If CurseForge refuses, the release
+      # still goes on, without fetching the translations (step below).
+      - name: Send the English and French strings to CurseForge
+        id: localization
+        continue-on-error: true
+        run: |
+          set -e
+          url="https://wow.curseforge.com/api/projects/${CF_PROJECT}/localization/import"
+          for lang in enUS frFR; do
+            echo "Sending ${lang}..."
+            code=$(curl -sS -o response.txt -w '%{http_code}' -X POST \
+              -H "X-Api-Token: ${CF_API_KEY}" \
+              -F "metadata={ \"language\": \"${lang}\", \"namespace\": \"\", \"formatType\": \"TableAdditive\", \"missing-phrase-handling\": \"DoNothing\" }" \
+              -F "localizations=<docs/localization/${lang}.lua" \
+              "${url}")
+            echo "HTTP ${code}: $(head -c 300 response.txt)"
+            if [ "${code}" -lt 200 ] || [ "${code}" -ge 300 ]; then exit 1; fi
+          done
+
+      # Strings sent: the community translations are packaged into the Locales stub files.
+      # Fetching them happens while the files are copied, before anything is uploaded, so
+      # if it fails the step below can safely package again without them.
+      - name: Package and upload (with community translations)
+        id: package
+        if: steps.localization.outcome == 'success'
+        continue-on-error: true
+        uses: BigWigsMods/packager@v2
+
+      # Strings not sent, or translations not fetched: package without them (-l). English
+      # and French are in the addon anyway.
+      - name: Package and upload (without community translations)
+        if: steps.localization.outcome != 'success' || steps.package.outcome == 'failure'
         uses: BigWigsMods/packager@v2
         with:
-          # -l: no @localization@ replacement for now. The CurseForge localization tool has
-          # no strings yet, and fetching them stops the packager. Remove "-l" once the
-          # English strings are imported on CurseForge (docs/localization/enUS.lua), so the
-          # community translations get packaged into the Locales stub files.
           args: -l

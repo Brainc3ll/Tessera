@@ -66,17 +66,24 @@ Avec `/tessera preview` (valeurs d'exemple), quelques idées :
 - un bloc en style Transparent.
 La règle IA de CurseForge ne vise que les images générées par IA : de vraies captures n'ont besoin d'aucune mention. Le disclaimer IA est déjà dans la description.
 
-## 3. Traductions avec l'outil de CurseForge
+## 3. Traductions avec l'outil de CurseForge (automatique)
 
-1. Dans le projet CurseForge, onglet de localisation : importe les textes anglais comme langue de base, depuis `docs/localization/enUS.lua` (format table Lua, lignes `L["CLÉ"] = "texte"`).
-2. Importe ensuite `docs/localization/frFR.lua` comme traduction française, pour que la communauté ne la refasse pas.
-3. Les traducteurs travaillent ensuite sur le site.
-4. Pour mettre leurs traductions dans l'addon, dis-le-moi : je les intègre à la main dans une prochaine version, ou on met en place l'envoi automatique (GitHub Actions + packager BigWigs, qui récupère les traductions de CurseForge).
+À chaque publication, le workflow envoie lui-même l'anglais (langue de base) et le français à l'outil de traduction de CurseForge, depuis `docs/localization/enUS.lua` et `frFR.lua`. Rien à importer à la main.
 
-## 4. Publication automatique (en place)
+- Les traducteurs de la communauté travaillent sur le site CurseForge ; leurs traductions (allemand, espagnol, russe...) sont ajoutées au zip à chaque publication.
+- L'anglais et le français de l'addon viennent toujours du dépôt (`Locales/enUS.lua`, `Locales/frFR.lua`) : une modification faite sur CurseForge dans ces deux langues n'arrive jamais dans l'addon.
+- Les textes qui n'existent plus dans l'addon restent sur CurseForge (aucun travail de traducteur n'est supprimé).
+- Si CurseForge refuse l'envoi, la publication continue quand même, sans les traductions de la communauté.
+- Avant chaque publication, `docs/localization` est régénéré : `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua` (et pareil pour `frFR`).
 
-Le fichier `.github/workflows/release.yml` utilise le packager BigWigs. Quand un tag est créé sur GitHub (par exemple `v1.0.1`), GitHub fabrique le zip, crée la release GitHub et l'envoie sur CurseForge (projet 1736530, voir `Tessera.toc`), avec `CHANGELOG.md` comme notes de version. Le type est déduit du tag : « alpha » donne une Alpha, « beta » une Beta, tout le reste une Release.
+## 4. Publication automatique
 
-Pour une nouvelle version : mettre à jour la version dans `Tessera.toc`, `Changelog.lua` et `CHANGELOG.md`, puis créer le tag. Le secret `CF_API_KEY` (clé d'API CurseForge) doit exister dans Settings > Secrets and variables > Actions. Le résultat se suit dans l'onglet Actions du dépôt.
+Le fichier `.github/workflows/release.yml` utilise le packager BigWigs.
 
-Traductions : pour l'instant le packager tourne avec l'option `-l` (dans `release.yml`), qui saute la récupération des traductions sur CurseForge. Tant que les textes anglais ne sont pas importés dans l'outil de traduction de CurseForge, cette récupération échoue et bloque toute la publication. Une fois l'import fait (section 3), retirer `-l` pour que les traductions de la communauté soient ajoutées automatiquement.
+**Méthode simple** : mettre à jour la version dans `Tessera.toc`, `Changelog.lua` et `CHANGELOG.md`, pousser sur `main`, puis lancer le workflow « Package and release » (onglet Actions > Run workflow, ou `gh workflow run release.yml`). Il lit la version dans `Tessera.toc`, crée le tag `v<version>`, envoie les textes à CurseForge, fabrique le zip, crée la release GitHub et envoie le zip sur CurseForge avec `CHANGELOG.md` comme notes de version.
+
+Pousser soi-même un tag (par exemple `v1.0.1`) lance aussi la publication.
+
+Le type est déduit du tag : « alpha » donne une Alpha, « beta » une Beta, tout le reste une Release. Le secret `CF_API_KEY` (clé d'API CurseForge) doit exister dans Settings > Secrets and variables > Actions. Le résultat se suit dans l'onglet Actions du dépôt.
+
+La description de la page CurseForge (`docs/curseforge-description.md`) et le résumé (`docs/summary.md`) ne sont pas envoyés par le workflow : ils se collent à la main sur CurseForge quand ils changent.

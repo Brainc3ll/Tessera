@@ -7,7 +7,8 @@
 #   3. creates the GitHub release with the zip, and uploads the zip to CurseForge (project
 #      ID in Tessera.toc, ## X-Curse-Project-ID), with the version's section of CHANGELOG.md
 #      as release notes. The packager's own naming is kept: release titled after the tag
-#      (v1.0.1) and zip named Tessera-v1.0.1-forever.zip.
+#      (v1.0.1) and zip named Tessera-v1.0.1-forever.zip. The "-forever" suffix is for the
+#      Forever-only addon: drop it when the multi-versions branch is merged.
 #
 # Two ways to start it:
 #   - "Run workflow" in the Actions tab (or `gh workflow run release.yml`): the version is

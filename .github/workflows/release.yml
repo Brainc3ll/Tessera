@@ -6,7 +6,8 @@
 #   2. builds the zip, with the community translations for the other languages;
 #   3. creates the GitHub release with the zip, and uploads the zip to CurseForge (project
 #      ID in Tessera.toc, ## X-Curse-Project-ID), with the version's section of CHANGELOG.md
-#      as release notes; the GitHub release is titled "Tessera <version>".
+#      as release notes. The packager's own naming is kept: release titled after the tag
+#      (v1.0.1) and zip named Tessera-v1.0.1-forever.zip.
 #
 # Two ways to start it:
 #   - "Run workflow" in the Actions tab (or `gh workflow run release.yml`): the version is
@@ -113,10 +114,3 @@ jobs:
         with:
           args: -l
 
-      # The packager names the GitHub release after the tag (v1.0.1): give it a readable title
-      - name: Title of the GitHub release
-        if: always() && steps.version.outputs.tag != ''
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release edit "${{ steps.version.outputs.tag }}" --title "Tessera ${{ steps.version.outputs.version }}"

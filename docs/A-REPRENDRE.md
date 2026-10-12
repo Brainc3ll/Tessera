@@ -12,6 +12,15 @@ Reprise prévue le mardi 13 octobre 2026 (voir avec Braincell1980).
 2. Nettoyage / allègement du code, seul, sans changement de comportement, compatibilité des profils intacte (outils de dev vers la version debug, regroupements, mesure mémoire avant/après).
 3. Styles pour tout le monde (vraies images si l'interface est installée, version approchante sinon) + nouveaux styles d'interface (TukUI, GW2 UI, NDui, KkthnxUI, SpartanUI…).
 
+## Bug à corriger (rc4)
+- Disposition « Compacte », mode placement : les étiquettes sous les blocs se chevauchent (blocs compacts plus étroits que leur étiquette, ex. « Monnaies » / « Composants de classe » / « Munitions », « Instances » sur « 2 verrouillée(s) »).
+
+## Visibilité (échanges du 12/10 dans une autre conversation)
+- Tessera est sur Wago (projet ANz7wj64, description = docs/wago-description.md). Fin de liste normale pour un addon récent.
+- Pistes : Reddit (r/WoWUI, subreddit Forever), Discords Forever (MP à Malkkav envoyé pour demander s'il accepte un message sur son Discord), WoWInterface (pas de section Forever : catégorie la plus proche en précisant « WoW Forever »), pic de promotion vers le 4 novembre (sortie de Forever).
+- Images faites dans l'autre conversation à partir de ~26 captures FR : barre du haut zoomée, collage et GIF des 4 styles, GIF des dispositions (chat flouté), groupe libre + infobulle Honneur. Pas présentes ici : les redemander si besoin.
+- À faire : GIF de 5-10 s du mode placement (glisser/fusionner), 2-3 captures en client anglais, masquer « Issue Reporter » et la notification GNOME, description de page et post Reddit en anglais.
+
 ## En attente de Braincell1980
 - Captures d'écran en jeu → GIF de défilement pour la description CurseForge.
 - Tests de l'alpha multi-versions ; tests en instance (profil donjon, masquer en instance, clics en combat).

@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.0.0-rc4 — 
+## 1.0.0-rc4 — 2026-10-13
 
 - Three new blocks (hidden by default, add them from the Blocks tab): Mana regeneration (per 5 seconds, the value while casting in combat), Character stats (the stat of your choice on the block, all of them in the tooltip) and Group loot (loot method, threshold, master looter; click: /roll).
 - Durability tooltip: the repair cost of your equipment.

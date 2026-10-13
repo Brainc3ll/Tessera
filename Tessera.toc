@@ -8,6 +8,7 @@
 ## OptionalDeps: FlareUI, EllesmereUI, ElvUI, LibStub, LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1
 ## X-License: MIT
 ## X-Curse-Project-ID: 1736530
+## X-Wago-ID: ANz7wj64
 ## IconTexture: Interface\AddOns\Tessera\Media\Icon.png
 
 Locales\enUS.lua

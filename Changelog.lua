@@ -11,7 +11,7 @@ local _, ns = ...
 ns.CHANGELOG = {
     {
         version = "1.0.0-rc4",
-        date = "", -- set when the version is published
+        date = "2026-10-13",
         en = {
             "Three new blocks (hidden by default, add them from the Blocks tab): Mana regeneration (per 5 seconds, "
                 .. "the value while casting in combat), Character stats (the stat of your choice on the block, all of them "

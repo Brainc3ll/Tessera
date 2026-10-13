@@ -4,7 +4,7 @@
 #      (docs/localization/enUS.lua and frFR.lua), so translators always see the current
 #      strings and our French stays the reference;
 #   2. builds the zip, with the community translations for the other languages;
-#   3. creates the GitHub release with the zip, and uploads the zip to CurseForge (project
+#   3. creates the GitHub release with the zip, and uploads the zip to CurseForge and Wago (project
 #      ID in Tessera.toc, ## X-Curse-Project-ID), with the version's section of CHANGELOG.md
 #      as release notes. The packager's own naming is kept: release titled after the tag
 #      (v1.0.1) and zip named Tessera-v1.0.1-forever.zip. The "-forever" suffix is for the
@@ -17,7 +17,8 @@
 #   - pushing a tag yourself (e.g. v1.0.1).
 # The CurseForge file type comes from the tag: "alpha" -> Alpha, "beta" -> Beta, anything
 # else (v1.0.1, v1.1.0-rc3...) -> Release. Files left out of the zip are listed in .pkgmeta.
-# Needs one repository secret: CF_API_KEY (a CurseForge API token).
+# Needs two repository secrets: CF_API_KEY (a CurseForge API token) and WAGO_API_TOKEN
+# (a Wago Addons API key; project ID in Tessera.toc, ## X-Wago-ID).
 name: Package and release
 
 on:
@@ -37,6 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
       GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Get the code (with history, for the changelog)

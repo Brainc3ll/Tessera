@@ -23,7 +23,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 
 ## Features
 
-- **More than 40 information blocks**: gold (with a 7-day history and your characters' gold), bags (with junk value), durability, FPS and latency (with graphs), local and server time, XP and rested XP, coordinates, zone, friends, guild, group, quests, reputation, currencies, one block per profession, hearthstone, mail, whispers, reagents, ammo, item level, speed, volume, instances, played time, a personal goal... plus the WoW Forever blocks above.
+- **More than 40 information blocks**: gold (with a 7-day history and your characters' gold), bags (with junk value), durability, FPS and latency (with graphs), local and server time, XP and rested XP, coordinates, zone, friends, guild, group, quests, reputation, currencies, one block per profession, hearthstone, mail, whispers, reagents, ammo, item level, speed, volume, instances, played time, a personal goal, mana regeneration, character stats, group loot... plus the WoW Forever blocks above.
 - **Blocks that hide themselves** when they have nothing to show (mail, whispers, reputation, camping...), in a second row under the main bar.
 - **Launcher blocks** made from minimap buttons and addon compartment entries.
 - **DataBroker support**:
@@ -36,6 +36,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 - **Profiles**: per account or per character, export / import as text, ready-made layouts (top bar, bottom bar, left column, compact, around the gryphons with the WoW Forever blocks, and taskbar or menu bar layouts: Stormwind Stained Glass, Cathedral Rose Window, Tirisfal Orchard, Gnomeregan), automatic dungeon / raid profile. "Reset everything" really starts again from scratch.
 - **Share a style or a layout**: export only the look or only the placement as text. On import, Tessera first lists what is missing on your computer (another addon's blocks, LibSharedMedia fonts or frames, WoW Forever blocks) and asks before applying.
 - **Blizzard's Edit Mode**: when a Tessera bar stuck to the top or bottom covers the action bars or the minimap, Tessera offers a copy of your Edit Mode layout with room for it; your own layout is never changed. Tested on Blizzard's interface (Modern, Classic) and on FlareUI unchanged; with another interface, unexpected results may occur.
+- **Tooltips your way**: bigger or smaller, or only while holding Alt.
 - **Help built in**: a quick tour on first launch, a Help tab split into short topics, and a tooltip on every option.
 - **Accessibility**: colorblind-friendly colors, high contrast, minimum text size.
 
@@ -108,7 +109,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 
 ## Fonctions
 
-- **Plus de 40 blocs d'informations** : or (avec l'historique sur 7 jours et l'or de tes personnages), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale et du serveur, XP et XP de repos, coordonnées, zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier, pierre de foyer, courrier, chuchotements, composants, munitions, niveau d'objet, vitesse, volume, instances, temps de jeu, objectif personnel... en plus des blocs WoW Forever ci-dessus.
+- **Plus de 40 blocs d'informations** : or (avec l'historique sur 7 jours et l'or de tes personnages), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale et du serveur, XP et XP de repos, coordonnées, zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier, pierre de foyer, courrier, chuchotements, composants, munitions, niveau d'objet, vitesse, volume, instances, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe... en plus des blocs WoW Forever ci-dessus.
 - **Des blocs qui se masquent** quand ils n'ont rien à montrer (courrier, chuchotements, réputation, camping...), dans une deuxième rangée sous la barre principale.
 - **Des blocs lanceurs** créés à partir des boutons de la minicarte et du compartiment d'addons.
 - **Support DataBroker** :
@@ -121,6 +122,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 - **Profils** : par compte ou par personnage, export / import en texte, dispositions toutes prêtes (barre en haut, barre en bas, colonne à gauche, compacte, autour des gryphons avec les blocs WoW Forever, et des dispositions façon barre des tâches ou barre de menus : Vitraux de Hurlevent, Rosace de la cathédrale, Vergers de Tirisfal, Gnomeregan), profil automatique en donjon / raid. « Tout réinitialiser » repart vraiment de zéro.
 - **Partager un style ou une disposition** : exporte seulement l'allure ou seulement le placement en texte. À l'import, Tessera liste d'abord ce qui manque sur ton ordinateur (blocs d'un autre addon, polices ou cadres LibSharedMedia, blocs WoW Forever) et demande avant d'appliquer.
 - **Mode Édition de Blizzard** : quand une barre de Tessera collée en haut ou en bas recouvre les barres d'action ou la minicarte, Tessera propose une copie de ta disposition du mode Édition avec la place qu'il faut ; ta disposition n'est jamais modifiée. Testé sur l'interface de Blizzard (Moderne, Classique) et sur FlareUI non modifié ; avec une autre interface, des résultats inattendus peuvent survenir.
+- **Infobulles à ta façon** : plus grandes ou plus petites, ou seulement en tenant Alt.
 - **Aide intégrée** : une visite rapide au premier lancement, un onglet Aide découpé en sujets courts, et une infobulle sur chaque option.
 - **Accessibilité** : couleurs pour daltoniens, contraste renforcé, taille de texte minimale.
 

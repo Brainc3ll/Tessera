@@ -14,6 +14,8 @@ Reprise prévue le mardi 13 octobre 2026 (voir avec Braincell1980).
 
 ## Bug à corriger (rc4)
 - Disposition « Compacte », mode placement : les étiquettes sous les blocs se chevauchent (blocs compacts plus étroits que leur étiquette, ex. « Monnaies » / « Composants de classe » / « Munitions », « Instances » sur « 2 verrouillée(s) »).
+- Disposition « Colonne à gauche », mode placement : les étiquettes sortent de l'écran à gauche (on ne voit que leur fin).
+- Les 26 captures FR sont dans cette session (uploads du 13/10) : refaire ici les visuels si besoin.
 
 ## Visibilité (échanges du 12/10 dans une autre conversation)
 - Tessera est sur Wago (projet ANz7wj64, description = docs/wago-description.md). Fin de liste normale pour un addon récent.

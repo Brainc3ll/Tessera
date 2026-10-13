@@ -43,7 +43,7 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 
 1. Taille des infobulles réglable (option globale).
 2. Infobulle seulement en tenant Alt (option globale).
-3. Masquer pendant les combats de mascottes (si Forever les a, à vérifier).
+3. (Pas de combats de mascottes sur Forever pour le moment : mis de côté, voir plus bas.)
 4. Coût de réparation et état de chaque pièce dans l'infobulle de durabilité.
 5. Fondu des barres en entrant ou en sortant de combat (au lieu de les masquer d'un coup).
 6. Or filtré : tous les personnages / ce jeu de règles / ce jeu de règles et cette faction / ce personnage.
@@ -60,4 +60,5 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 ### À garder pour plus tard (pas sur Forever, pour une version multi-versions)
 - Grande Chambre forte, clés mythiques +, téléportations mythiques +.
 - Changement de spécialisation de butin.
+- Masquer les barres pendant les combats de mascottes (pas sur Forever pour le moment).
 - Outils de raid (appel, compte à rebours, marqueurs) : à revoir selon la demande.

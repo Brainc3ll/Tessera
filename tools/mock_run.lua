@@ -442,7 +442,16 @@ for _, step in ipairs({
     end,
     -- help topics: every help text splits into titled sections, nothing lost
     function()
-        for _, t in ipairs({ ns.L.HELP_TEXT, ns.L.HELP_TEXT_BROKER }) do
+        -- every key of the help layouts exists (one key per line, see Locales/enUS.lua)
+        for _, layout in ipairs({ ns.HELP_LAYOUT, ns.HELP_LAYOUT_BROKER }) do
+            for _, topic in ipairs(layout) do
+                assert(ns.L[topic.title], "missing help title " .. topic.title)
+                for _, key in ipairs(topic.lines) do
+                    assert(key == "" or ns.L[key], "missing help line " .. key)
+                end
+            end
+        end
+        for _, t in ipairs({ ns.HelpText(ns.HELP_LAYOUT), ns.HelpText(ns.HELP_LAYOUT_BROKER) }) do
             local sections = ns.SplitHelp(t)
             assert(#sections >= 4, "help has too few topics")
             local total = 0

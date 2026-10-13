@@ -15,6 +15,9 @@
 --      CurseForge / Wago descriptions (its name as shown in the game, or an alias below).
 --   6. Every Lua file of Tessera.toc has a line in the README's file table.
 --   7. Every option tab is described in the in-game help (English and French).
+--   8. No text is too long to translate comfortably (MAX_LENGTH characters): long texts are
+--      split into one key per line or paragraph (the help: Locales/enUS.lua, HELP_LAYOUT), so a
+--      change to one line never asks translators to redo a whole page.
 local dir, mode = arg[1] or ".", arg[2]
 local errors = {}
 local function fail(msg) errors[#errors + 1] = msg end
@@ -40,14 +43,26 @@ local function has(text, word)
 end
 
 -- Locale tables, English and French (French overrides English)
+-- The help as one text, joined from its keys like Options.lua does (ns.HelpText)
+local function helpText(L, layout)
+    local parts = {}
+    for _, topic in ipairs(layout or {}) do
+        parts[#parts + 1] = L[topic.title] or ""
+        for _, key in ipairs(topic.lines) do parts[#parts + 1] = key == "" and "" or (L[key] or "") end
+    end
+    return table.concat(parts, "\n")
+end
+
 local function loadLocale(code)
     local ns = {}
     _G.GetLocale = function() return code end
     assert(loadfile(dir .. "/Locales/enUS.lua"))("Tessera", ns)
     if code ~= "enUS" then assert(loadfile(dir .. "/Locales/" .. code .. ".lua"))("Tessera", ns) end
-    return ns.L
+    ns.L.HELP_TEXT = helpText(ns.L, ns.HELP_LAYOUT) -- for the checks below only
+    return ns.L, ns
 end
-local EN, FR = loadLocale("enUS"), loadLocale("frFR")
+local EN, enNS = loadLocale("enUS")
+local FR = loadLocale("frFR")
 
 local readme = read("README.md")
 -- descriptions: English part, then French part after the "---" line
@@ -167,6 +182,26 @@ for _, tab in ipairs(TABS) do
         local name = loc[2][tab]
         if name and not has(loc[2].HELP_TEXT or "", name) then
             fail(("the %s tab (%s) is not described in the help (%s)"):format(tab, name, loc[1]))
+        end
+    end
+end
+
+---------------------------------------------------------------------------
+-- 8. Texts short enough to translate
+---------------------------------------------------------------------------
+local MAX_LENGTH = 600
+for key, text in pairs(EN) do
+    if key ~= "HELP_TEXT" and type(text) == "string" and #text > MAX_LENGTH then
+        fail(("text %s is %d characters long (max %d): split it into several keys"):format(key, #text, MAX_LENGTH))
+    end
+end
+-- every help line exists in French too (a missing one would show in English)
+for _, layout in ipairs({ enNS.HELP_LAYOUT or {}, enNS.HELP_LAYOUT_BROKER or {} }) do
+    for _, topic in ipairs(layout) do
+        for _, key in ipairs({ topic.title, unpack(topic.lines) }) do
+            if key ~= "" and (FR[key] == nil or FR[key] == EN[key] and #EN[key] > 20) then
+                fail(("help line %s has no French translation"):format(key))
+            end
         end
     end
 end

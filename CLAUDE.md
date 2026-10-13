@@ -24,6 +24,12 @@ lua5.1 tools/check_docs.lua .         # add "release" before publishing
 release (`.github/workflows/release.yml`) when the documentation is behind. The release guide
 is `docs/RELEASE.md`.
 
+## Texts that are easy to translate
+Changing a text on CurseForge makes translators redo all of it. Keep every text short: one key
+per line or paragraph (the help: `HELP_<TOPIC>_<n>` keys ordered by `ns.HELP_LAYOUT` at the end
+of `Locales/enUS.lua`). Add a line = a NEW key; change a line = keep its key; never renumber,
+rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
+
 ## Rules set by Braincell1980
 - Never tag, release or publish without his explicit go ("on publie"); push only when he agrees.
 - Debug builds are never pushed to git.

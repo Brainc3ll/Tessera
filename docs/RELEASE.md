@@ -49,7 +49,12 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 - chaque commande publique est dans le README, l'aide (anglais et français), la liste des commandes de la discussion et les deux descriptions ; une nouvelle commande doit y être ajoutée (ou déclarée cachée) ;
 - chaque bloc est nommé dans le README et dans les parties anglaise et française des deux descriptions ;
 - chaque fichier Lua de l'addon a sa ligne dans le tableau des fichiers du README ;
-- chaque onglet des options est décrit dans l'aide.
+- chaque onglet des options est décrit dans l'aide ;
+- aucun texte ne dépasse 600 caractères, et chaque ligne de l'aide a sa traduction française.
+
+### Des textes faciles à traduire
+
+Sur CurseForge, changer un texte oblige les traducteurs à refaire tout ce texte. Les longs textes sont donc découpés : l'aide a une clé par ligne ou par paragraphe. Ajouter une ligne = une **nouvelle** clé ; corriger une ligne = la même clé ; on ne renumérote jamais. Ainsi, un mot changé ou une ligne ajoutée ne demande de retraduire que cette ligne.
 
 Ce qu'elle ne peut pas vérifier (la clarté des textes, le détail de l'aide) reste à relire : par Claude à chaque changement, par Braincell1980 avant la publication.
 

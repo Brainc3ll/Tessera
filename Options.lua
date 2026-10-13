@@ -1864,6 +1864,21 @@ local function SplitHelp(fullText)
 end
 ns.SplitHelp = SplitHelp -- used by tools/mock_run.lua
 
+-- Joins the help from its translation keys: each topic of the layout (ns.HELP_LAYOUT,
+-- written at the end of Locales/enUS.lua) is a title key and a list of line keys, "" being
+-- an empty line. One key per line, so changing a line only asks translators to redo that line.
+function ns.HelpText(layout)
+    local parts = {}
+    for _, topic in ipairs(layout or {}) do
+        parts[#parts + 1] = "|cffffd100" .. (L[topic.title] or "") .. "|r"
+        for _, key in ipairs(topic.lines) do
+            parts[#parts + 1] = key == "" and "" or (L[key] or "")
+        end
+        parts[#parts + 1] = ""
+    end
+    return table.concat(parts, "\n")
+end
+
 -- Topic page (Help and About tabs): a list of topics on the left, the selected
 -- topic on the right. This keeps each screen short instead of one long wall of text.
 -- getSections() returns a key and the list of { title, body, raw } sections; the
@@ -1977,8 +1992,9 @@ end
 local function BuildHelpPage(page)
     local cache = {}
     BuildTopicPage(page, function()
-        local wanted = ns.brokerModeActive and L.HELP_TEXT_BROKER or L.HELP_TEXT
-        cache[wanted] = cache[wanted] or SplitHelp(wanted)
+        local wanted = ns.brokerModeActive and "broker" or "normal"
+        cache[wanted] = cache[wanted]
+            or SplitHelp(ns.HelpText(ns.brokerModeActive and ns.HELP_LAYOUT_BROKER or ns.HELP_LAYOUT))
         return wanted, cache[wanted]
     end)
     -- the quick tour can be started again from here (not in DataBroker mode: no blocks)

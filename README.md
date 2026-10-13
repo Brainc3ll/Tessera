@@ -284,6 +284,14 @@ back to English for anything missing.
   Its file (e.g. `Locales/deDE.lua`) only holds a `--@localization(...)@` line that the
   BigWigs packager replaces with the translated strings when it builds the release zip, so
   a copy installed straight from GitHub simply shows those languages in English.
+- **Small keys, easy to translate.** On CurseForge, changing a text asks every translator to
+  redo that whole text. So long texts are split: the in-game help has one key per line or
+  paragraph (`HELP_<TOPIC>_<n>`, topic titles `HELP_T_<TOPIC>`), and their order is given by
+  `ns.HELP_LAYOUT` / `ns.HELP_LAYOUT_BROKER` at the end of `Locales/enUS.lua`. To add a line,
+  create a **new** key (next free number of its topic) and put it where it belongs in the layout;
+  to change a line, keep its key. Never renumber, rename or reuse a key (this also goes for the
+  numbered quick tour steps, `TUTORIAL_<n>`). `tools/check_docs.lua` refuses any text longer
+  than 600 characters.
 - `docs/localization/` holds the English and French strings in the format CurseForge imports
   (regenerate with `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua`, same
   for `frFR`). The release workflow sends both to CurseForge before packaging, so translators

@@ -50,7 +50,7 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 7. Régénération de vie et de mana (nouveau bloc).
 8. Statistiques du personnage (critique, hâte, toucher, puissance d'attaque et des sorts, armure, esquive) (nouveau bloc).
 9. Méthode de butin du groupe (maître du butin, seuil, /roll) (nouveau bloc).
-10. Zones dans un groupe : gauche / centre / droite, le centre restant centré quand les largeurs changent ; réglage par groupe et option globale. (L'alignement du texte dans chaque bloc existe déjà, onglet Blocs > Texte.)
+10. Zones dans un groupe : gauche / centre / droite, le centre restant centré quand les largeurs changent ; réglage par groupe et option globale. (L'alignement du texte dans chaque bloc existe déjà, onglet Blocs > Texte.) Validé, plutôt pour la v1.1. Intérêt surtout pour les barres pleine largeur (dispositions barre des tâches). Exigence de Braincell1980 : à expliquer très très clairement (infobulles, aide, visite rapide, exemple visuel gauche / centre / droite, changelog).
 11. Mélangeur de volume : une glissière par canal dans l'infobulle du bloc volume.
 12. Micro-menu : un bloc qui ouvre tous les panneaux du jeu.
 13. Bloc de voyage : pierre de foyer + téléportations de classe, clic droit pour choisir.

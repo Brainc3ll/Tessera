@@ -284,6 +284,52 @@ for key, f in pairs(ns.frames) do
     local fn = f.__scripts.OnEnter
     if fn then local ok4, err4 = pcall(fn, f) if not ok4 then print("TOOLTIP ERROR " .. key .. ": " .. tostring(err4)) end end
 end
+-- In a dungeon, then in combat there (WoW Forever's beta closes before every case can be
+-- tested in game): automatic dungeon profile, "hide in instances", frozen blocks, tooltips
+-- and clicks in combat, then leaving combat and the dungeon.
+do
+    local function Step(label, fn)
+        local ok, err = xpcall(fn, debug.traceback)
+        if not ok then print("STEP ERROR (" .. label .. "): " .. tostring(err)) end
+    end
+    local usual = ns:GetActiveProfileName()
+    Step("dungeon profile", function()
+        ns:CreateProfile("Mock dungeon")
+        if usual then ns:SetProfile(usual) end
+        ns.sv.instanceProfile = "Mock dungeon"
+        ns.db.blocks.gold.hideInInstance = true
+    end)
+    IsInInstance = function() return true, "party" end
+    Step("enter dungeon", function()
+        Fire("ZONE_CHANGED_NEW_AREA")
+        assert(ns.profileOverride == "Mock dungeon", "dungeon profile not used")
+    end)
+    InCombatLockdown = function() return true end
+    Step("combat in dungeon", function()
+        Fire("PLAYER_REGEN_DISABLED")
+        assert(ns:IsLocked(), "blocks not frozen in combat")
+        ns:SetLocked(false) -- asking to unlock in combat must not break anything
+        ns:UpdateLayout()
+        for key, f in pairs(ns.frames) do
+            if f:IsShown() then
+                if f.__scripts.OnEnter then f.__scripts.OnEnter(f) end
+                if f.__scripts.OnMouseUp then f.__scripts.OnMouseUp(f, "LeftButton") end
+                if f.__scripts.OnLeave then f.__scripts.OnLeave(f) end
+            end
+        end
+        ns:ToggleOptions(); ns:ToggleOptions()
+        Fire("GROUP_ROSTER_UPDATE"); Fire("PARTY_LOOT_METHOD_CHANGED")
+    end)
+    InCombatLockdown = function() return false end
+    Step("end of combat", function() Fire("PLAYER_REGEN_ENABLED"); ns:SetLocked(true) end)
+    IsInInstance = function() return false end
+    Step("leave dungeon", function()
+        Fire("ZONE_CHANGED_NEW_AREA")
+        assert(ns.profileOverride == nil, "dungeon profile still used outside")
+        ns.sv.instanceProfile = nil
+    end)
+end
+
 -- placement mode, undo, spacer, scale, lock
 for _, step in ipairs({
     function() ns:SetLocked(false) end,
@@ -787,6 +833,8 @@ do
     if not ok then print("STEP ERROR: " .. tostring(err)) end
     if TesseraDB ~= nil or not reloaded then print("STEP ERROR: reset everything did not empty TesseraDB / reload") end
 end
+-- tools/fuzz_blocks.lua reuses the loaded addon
+if os.getenv("TESSERA_EXPORT_NS") then TESSERA_NS = ns end
 -- tools/check_docs.lua asks for the list of blocks (key and locale key of the name)
 if os.getenv("TESSERA_LIST_MODULES") then
     for _, key in ipairs(ns.order) do

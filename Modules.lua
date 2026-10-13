@@ -503,7 +503,8 @@ ns:RegisterModule("durability", {
             local cur, max = GetInventoryItemDurability(slot)
             if cur and max and max > 0 then
                 local pct = Percent(cur, max)
-                local link = GetInventoryItemLink("player", slot) or "?"
+                local ok, link = pcall(GetInventoryItemLink, "player", slot)
+                link = ok and link or "?"
                 tt:AddDoubleLine(link, LevelColor(DurabilityLevel(pct, cfg)) .. ("%d%%"):format(math.floor(pct + 0.5)) .. "|r")
             end
         end
@@ -1479,7 +1480,7 @@ local AUTO_STAT = { MAGE = "sp", PRIEST = "sp", WARLOCK = "sp", HUNTER = "rap" }
 local function ChosenStat(cfg)
     local key = cfg and cfg.stat or "auto"
     if key == "auto" then
-        local _, class = UnitClass("player")
+        local _, class = Try(UnitClass, "player")
         key = AUTO_STAT[class or ""] or "ap"
     end
     return STAT_BY_KEY[key] or STAT_BY_KEY.ap
@@ -1666,7 +1667,7 @@ local function SkillLines()
     -- isAbandonable, skillLineCategoryID, skillID...)
     local S = C_SkillInfo
     if S and S.GetNumSkillLines and S.GetSkillLineInfo then
-        for i = 1, Try(S.GetNumSkillLines) or 0 do
+        for i = 1, tonumber((Try(S.GetNumSkillLines))) or 0 do
             local info = Try(S.GetSkillLineInfo, i)
             if type(info) == "table" and info.name and not info.isHeader then
                 local entry = { name = info.name, rank = info.rank or 0, max = info.maxRank or 0, id = info.skillID }
@@ -2389,7 +2390,7 @@ end
 local function ComprehensionSkill()
     local S = C_SkillInfo
     if not (S and S.GetNumSkillLines and S.GetSkillLineInfo) then return nil end
-    for i = 1, Try(S.GetNumSkillLines) or 0 do
+    for i = 1, tonumber((Try(S.GetNumSkillLines))) or 0 do
         local info = Try(S.GetSkillLineInfo, i)
         if type(info) == "table" and info.skillID == COMPREHENSION_SKILL then
             return { name = info.name, rank = info.rank or 0, max = info.maxRank or 0 }

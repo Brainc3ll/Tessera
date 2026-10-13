@@ -776,6 +776,8 @@ function ns:UpdateSeams(active)
             self:DrawSeparators(f, cov)
         end
     end
+    -- name tags of the unlock mode: no overlap between them, none off screen
+    self:PlaceAllTags()
 end
 
 -- Block name tag (unlock mode): placed on a free side so it does not cover
@@ -789,7 +791,8 @@ local TAG_POINTS = {
     { "RIGHT",  "LEFT",   "RIGHT",  4, 0 },
 }
 
--- rectangle (left, bottom, right, top) the tag would occupy at this position
+-- rectangle (left, bottom, right, top) the tag would occupy at this position;
+-- w, h: size of the tag in the block's own units
 local function TagRect(f, p, w, h)
     local l, b, r, t = ns:GetRectUI(f) -- UIParent units: blocks may have different scales
     if not l then return end
@@ -802,35 +805,93 @@ local function TagRect(f, p, w, h)
     return r + 4, cy - h / 2, r + 4 + w, cy + h / 2
 end
 
--- would the tag cover another displayed block? (1 px tolerance)
-function ns:TagCovers(f, p)
-    local w, h = f.tag:GetStringWidth() or 0, f.tag:GetStringHeight() or 0
+local function Overlap(l, b, r, t, ol, ob, orr, ot)
+    return l < orr - 1 and r > ol + 1 and b < ot - 1 and t > ob + 1
+end
+
+-- Rectangle of the tag at position p, or nil if it cannot go there: it would leave the
+-- screen, cover another displayed block, or cover a tag already placed (taken).
+-- width: forced tag width (a shortened tag), else the full text width.
+function ns:TagFits(f, p, width, taken)
+    local w = width or f.tag:GetStringWidth() or 0
+    local h = f.tag:GetStringHeight() or 0
     local l, b, r, t = TagRect(f, p, w, h)
-    if not l then return false end
+    if not l then return nil end
+    if l < 0 or b < 0 or r > UIParent:GetWidth() or t > UIParent:GetHeight() then return nil end
     for _, other in pairs(self.frames) do
         if other ~= f and other:IsShown() then
             local ol, ob, orr, ot = self:GetRectUI(other)
-            if ol and l < orr - 1 and r > ol + 1 and b < ot - 1 and t > ob + 1 then return true end
+            if ol and Overlap(l, b, r, t, ol, ob, orr, ot) then return nil end
         end
     end
-    return false
+    for _, rect in ipairs(taken or {}) do
+        if Overlap(l, b, r, t, rect[1], rect[2], rect[3], rect[4]) then return nil end
+    end
+    return { l, b, r, t }
 end
 
--- Places the name tag on the first side that is neither shared (s[side])
--- nor would cover another block; otherwise parks it on top and flags it hidden.
-function ns:PlaceTag(f, s)
+-- older name, kept for callers outside this file
+function ns:TagCovers(f, p) return self:TagFits(f, p) == nil end
+
+-- Places the name tag on the first side that is not shared with a merged block (s[side])
+-- and where it fits (see TagFits). If no side has room for the whole name, the name is
+-- shortened to the block's width ("Composants de...") above or below it. Otherwise it is
+-- hidden (hovering the block shows the name). taken: tags already placed in this pass.
+function ns:PlaceTag(f, s, taken)
     if not f.tag then return end
     f.tag:ClearAllPoints()
+    f.tag:SetWordWrap(false)
+    f.tag:SetWidth(0) -- whole name
     f.tagHidden = true
+    local rect
     for _, p in ipairs(TAG_POINTS) do
-        if not s[p[1]] and not self:TagCovers(f, p) then
-            f.tag:SetPoint(p[2], f, p[3], p[4], p[5])
-            f.tagHidden = nil
-            break
+        if not s[p[1]] then
+            rect = self:TagFits(f, p, nil, taken)
+            if rect then
+                f.tag:SetPoint(p[2], f, p[3], p[4], p[5])
+                break
+            end
         end
     end
-    if f.tagHidden then f.tag:SetPoint("BOTTOM", f, "TOP", 0, 2) end
+    -- no room for the whole name: shortened to the block's width, above or below
+    local short = math.floor((f:GetWidth() or 0) - 4)
+    if not rect and short >= 24 and (f.tag:GetStringWidth() or 0) > short then
+        for i = 1, 2 do
+            local p = TAG_POINTS[i]
+            if not s[p[1]] then
+                rect = self:TagFits(f, p, short, taken)
+                if rect then
+                    f.tag:SetWidth(short)
+                    f.tag:SetPoint(p[2], f, p[3], p[4], p[5])
+                    break
+                end
+            end
+        end
+    end
+    if rect then
+        f.tagHidden = nil
+        if taken then table.insert(taken, rect) end
+    else
+        f.tag:SetPoint("BOTTOM", f, "TOP", 0, 2)
+    end
     self:ApplyLock(f)
+end
+
+-- Places every name tag again, top to bottom and left to right, so that no two tags
+-- overlap and none leaves the screen (unlock mode). Called after each layout pass.
+function ns:PlaceAllTags()
+    local list = {}
+    for _, f in pairs(self.frames) do
+        if f.tag and f:IsShown() and self:GetRectUI(f) then table.insert(list, f) end
+    end
+    table.sort(list, function(a, b)
+        local al, _, _, at = self:GetRectUI(a)
+        local bl, _, _, bt = self:GetRectUI(b)
+        if math.abs(at - bt) > 1 then return at > bt end
+        return al < bl
+    end)
+    local taken = {}
+    for _, f in ipairs(list) do self:PlaceTag(f, f.sharedSet or {}, taken) end
 end
 
 local SIDES = { "TOP", "BOTTOM", "LEFT", "RIGHT" }

@@ -157,8 +157,9 @@ the working rules of the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
 with a small imitation of the game API and runs every page and feature; lint with `luacheck .`;
-`lua5.1 tools/check_docs.lua .` checks that the documentation follows the code. All three run on
-every push (`.github/workflows/checks.yml`).
+`lua5.1 tools/fuzz_blocks.lua .` checks that the blocks built on WoW Forever's own systems survive
+missing or changed game functions; `lua5.1 tools/check_docs.lua .` checks that the documentation
+follows the code. All of them run on every push (`.github/workflows/checks.yml`).
 
 ### How a value gets on screen
 
@@ -309,6 +310,7 @@ uploads it to GitHub, CurseForge and Wago. Details (in French) in `docs/RELEASE.
 ```sh
 luacheck .                       # static checks (uses the provided .luacheckrc)
 lua5.1 tools/mock_run.lua .      # loads the addon in a rough WoW API mock, prints Lua errors
+lua5.1 tools/fuzz_blocks.lua .   # WoW Forever's blocks survive missing or changed game functions
 lua5.1 tools/check_docs.lua .    # README, help, descriptions, changelog, strings: up to date?
 ```
 

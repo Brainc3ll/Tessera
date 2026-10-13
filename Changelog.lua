@@ -10,6 +10,31 @@ local _, ns = ...
 
 ns.CHANGELOG = {
     {
+        version = "1.0.0-rc5",
+        date = "", -- set when the version is published
+        en = {
+            "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
+                .. "(Compact and Left column layouts); when room is short, a name is shortened to its block's width.",
+            "Blocks made for WoW Forever's own systems are more robust: if the game changes at release, they "
+                .. "show nothing rather than an error.",
+            "Help: where to find the blocks hidden at first, tooltips while holding Alt, /roll on the group loot "
+                .. "block, the stat shown on the stats block; /tessera help is in the chat command list.",
+            "Help split into small texts: easier to translate with CurseForge's tool, and a change to one line "
+                .. "no longer asks translators to redo the whole help.",
+        },
+        fr = {
+            "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "
+                .. "(dispositions Compacte et Colonne à gauche) ; quand la place manque, un nom est raccourci à la "
+                .. "largeur de son bloc.",
+            "Les blocs des systèmes propres à WoW Forever sont plus solides : si le jeu change à sa sortie, ils "
+                .. "n'affichent rien plutôt qu'une erreur.",
+            "Aide : où trouver les blocs masqués au départ, infobulles en tenant Alt, /roll sur le bloc butin du "
+                .. "groupe, statistique affichée du bloc statistiques ; /tessera help dans la liste des commandes.",
+            "Aide découpée en petits textes : plus facile à traduire avec l'outil de CurseForge, et changer une ligne "
+                .. "ne demande plus aux traducteurs de refaire toute l'aide.",
+        },
+    },
+    {
         version = "1.0.0-rc4",
         date = "2026-10-13",
         en = {

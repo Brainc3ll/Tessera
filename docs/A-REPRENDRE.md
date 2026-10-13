@@ -1,6 +1,15 @@
 # À reprendre (état au 13 octobre 2026, soir)
 
-Reprise prévue le mardi 13 octobre 2026 (voir avec Braincell1980).
+## Calendrier jusqu'à la 1.0.0 (validé le 13/10)
+La bêta de WoW Forever ferme le **22 octobre** : après, plus aucun test en jeu avant la sortie.
+Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
+- **15-16/10 : rc5** (bugs d'étiquettes, retours de la rc4, blocs Forever sans erreur si une info disparaît). Tests de Braincell1980 à partir du jeudi 15.
+- **16-19/10 :** tests larges (instance, raid, combat, groupe ; Blizzard seul, FlareUI, Bazooka).
+- **19-20/10 : version candidate 1.0.0** ; **20-21/10 :** dernier test de cette version exacte (c'est elle qui part le 4/11, sans retouche).
+- **Avant le 22, en jeu :** captures en client anglais, vidéo du mode placement (GIF), relevés debug utiles plus tard (ex. jeu de règles pour l'or filtré).
+- **22/10 - 3/11 : hors jeu seulement** : pages CurseForge / Wago (texte « sortie », sans « bêta »), résumé 1.0.0 du changelog, post Reddit, messages Discord.
+- **4/11 :** publication de la 1.0.0 et promotion ; garder de la marge pour une 1.0.1 rapide si la sortie change des identifiants.
+- Pas avant la 1.0.0 (en 1.1) : nettoyage du code, styles pour tous, zones, bloc voyage, recharges de métiers, or filtré, fondu des barres.
 
 ## Versions
 - **1.0.0-rc3** : publiée (GitHub + CurseForge), traductions envoyées.
@@ -11,6 +20,11 @@ Reprise prévue le mardi 13 octobre 2026 (voir avec Braincell1980).
 1. Corriger les deux bugs d'étiquettes ci-dessous (version suivante). Wago est branché (X-Wago-ID dans le .toc, WAGO_API_TOKEN dans release.yml).
 2. Nettoyage / allègement du code, seul, sans changement de comportement, compatibilité des profils intacte (outils de dev vers la version debug, regroupements, mesure mémoire avant/après).
 3. Styles pour tout le monde (vraies images si l'interface est installée, version approchante sinon) + nouveaux styles d'interface (TukUI, GW2 UI, NDui, KkthnxUI, SpartanUI…).
+
+## rc5 (en préparation, zip de test donné le 13/10, tests de Braincell1980 à partir du jeudi 15)
+- Corrigé : étiquettes du mode placement (Compacte, Colonne à gauche) : plus de chevauchement ni de sortie d'écran, nom raccourci si la place manque.
+- Blocs Forever et nouveaux blocs : testés contre un jeu qui change (`tools/fuzz_blocks.lua`), corrigés.
+- Scénario donjon + combat ajouté au test automatique (le donjon ne pourra peut-être pas être testé en jeu).
 
 ## Déjà sur main pour la version suivante
 - Aide : blocs masqués au départ, infobulle avec Alt, clic /roll du butin, « statistique affichée » ; liste des commandes avec /tessera help (à mettre dans le changelog de la prochaine version).
@@ -29,7 +43,7 @@ supprime jamais rien) alors que l'addon ne les lit plus.
 4. Ensuite seulement : Braincell1980 supprime `HELP_TEXT` et `HELP_TEXT_BROKER` à la main sur la
    page Localization de CurseForge.
 
-## Bugs à corriger (version suivante, pas dans la rc4)
+## Bugs corrigés dans la rc5 (à vérifier en jeu)
 - Disposition « Compacte », mode placement : les étiquettes sous les blocs se chevauchent (blocs compacts plus étroits que leur étiquette, ex. « Monnaies » / « Composants de classe » / « Munitions », « Instances » sur « 2 verrouillée(s) »).
 - Disposition « Colonne à gauche », mode placement : les étiquettes sortent de l'écran à gauche (on ne voit que leur fin).
 - Les 26 captures FR sont dans cette session (uploads du 13/10) : refaire ici les visuels si besoin.

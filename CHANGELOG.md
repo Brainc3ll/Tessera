@@ -3,6 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0-rc5 — 
+
+- Placement mode: the names under the blocks no longer overlap each other nor go off screen (Compact and Left column layouts); when room is short, a name is shortened to its block's width.
+- Blocks made for WoW Forever's own systems are more robust: if the game changes at release, they show nothing rather than an error.
+- Help: where to find the blocks hidden at first, tooltips while holding Alt, /roll on the group loot block, the stat shown on the stats block; /tessera help is in the chat command list.
+- Help split into small texts: easier to translate with CurseForge's tool, and a change to one line no longer asks translators to redo the whole help.
+
 ## 1.0.0-rc4 — 2026-10-13
 
 - Three new blocks (hidden by default, add them from the Blocks tab): Mana regeneration (per 5 seconds, the value while casting in combat), Character stats (the stat of your choice on the block, all of them in the tooltip) and Group loot (loot method, threshold, master looter; click: /roll).

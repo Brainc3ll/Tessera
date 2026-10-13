@@ -17,7 +17,8 @@ or visible fix, update:
 Then run, and fix everything they report:
 ```sh
 luacheck .
-lua5.1 tools/mock_run.lua . enUS      # also: frFR, "frFR broker"
+lua5.1 tools/mock_run.lua . enUS      # also: frFR, "frFR broker" (includes a dungeon + combat scenario)
+lua5.1 tools/fuzz_blocks.lua .        # WoW Forever's blocks survive a changing game
 lua5.1 tools/check_docs.lua .         # add "release" before publishing
 ```
 `tools/check_docs.lua` also runs on every push (`.github/workflows/checks.yml`) and stops a
@@ -31,7 +32,7 @@ of `Locales/enUS.lua`). Add a line = a NEW key; change a line = keep its key; ne
 rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
 
 ## Rules set by Braincell1980
-- Never tag, release or publish without his explicit go ("on publie"); push only when he agrees.
+- Never tag, release or publish without his explicit go ("on publie"); hold pushes when he asks to.
 - Debug builds are never pushed to git.
 - Players' layouts, styles and profiles must keep working after every update; if a big change
   ever has to break them, show a message and convert them.

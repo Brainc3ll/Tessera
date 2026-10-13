@@ -1,5 +1,6 @@
 # Runs on every push and pull request: static checks (luacheck), the mock run of the addon
-# in English, French and DataBroker mode (tools/mock_run.lua), and the documentation check
+# in English, French and DataBroker mode (tools/mock_run.lua, with a dungeon + combat
+# scenario), the robustness test of the blocks (tools/fuzz_blocks.lua), and the documentation check
 # (tools/check_docs.lua: README, in-game help, descriptions, changelog and CurseForge strings
 # must follow the code). A red cross on a commit means one of them found a problem.
 name: Checks
@@ -26,8 +27,11 @@ jobs:
           for args in "enUS" "frFR" "frFR broker"; do
             out=$(lua5.1 tools/mock_run.lua . $args 2>&1)
             echo "$out" | tail -3
-            if echo "$out" | grep -q "STEP ERROR\|lua5.1:"; then echo "$out" | grep "STEP ERROR\|lua5.1:"; exit 1; fi
+            if echo "$out" | grep -q "ERROR\|lua5.1:"; then echo "$out" | grep "ERROR\|lua5.1:"; exit 1; fi
           done
+
+      - name: Blocks survive a changing game (WoW Forever's own blocks and the newest ones)
+        run: lua5.1 tools/fuzz_blocks.lua .
 
       - name: Documentation check
         run: lua5.1 tools/check_docs.lua .

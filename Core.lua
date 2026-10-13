@@ -407,9 +407,30 @@ function ns:StyleIcon(f, cfg)
 end
 
 -- Places the tooltip below or above the block, toward the screen center
+-- Tooltip size chosen in the General tab ("Tooltip size"), for block tooltips only.
+-- GameTooltip is shared with the whole game: its own scale is remembered and given
+-- back as soon as it hides, so other tooltips are never affected.
+local tooltipBaseScale, tooltipHooked = {}, {}
+local function ScaleTooltip(owner, tooltip)
+    local scale = (owner and owner.key and ns.db and ns.db.tooltipScale) or 1
+    if scale == 1 and not tooltipBaseScale[tooltip] then return end
+    if not tooltipHooked[tooltip] then
+        tooltipHooked[tooltip] = true
+        tooltip:HookScript("OnHide", function(self)
+            if tooltipBaseScale[self] then
+                self:SetScale(tooltipBaseScale[self])
+                tooltipBaseScale[self] = nil
+            end
+        end)
+    end
+    tooltipBaseScale[tooltip] = tooltipBaseScale[tooltip] or tooltip:GetScale()
+    tooltip:SetScale(tooltipBaseScale[tooltip] * scale)
+end
+
 function ns.AnchorTooltip(owner, tooltip)
     tooltip = tooltip or GameTooltip
     tooltip:SetOwner(owner, "ANCHOR_NONE")
+    ScaleTooltip(owner, tooltip)
     ns.MoveTooltip(owner, tooltip)
 end
 
@@ -511,6 +532,8 @@ local PROFILE_DEFAULTS = {
     lockInCombat = true,     -- blocks frozen in combat
     tooltipInCombat = true,  -- tooltips shown in combat
     tooltipHints = true,     -- blue help lines about clicks at the bottom of tooltips
+    tooltipAltOnly = false,  -- tooltips only while Alt is held
+    tooltipScale = 1,        -- size of block tooltips (1 = the game's size)
     snap = true,
     snapBlizzard = true,     -- also snap to some Blizzard frames (minimap, chat, bars...)
     editModeSync = true,     -- Blizzard's Edit Mode also unlocks the blocks
@@ -995,11 +1018,13 @@ local function OnEnter(self)
     local key = self.key
     local cfg, mod = ns.db.blocks[key], ns:GetModule(key)
     if not cfg or not mod then return end
+    ns.hoveredBlock = self -- for "tooltips only while Alt is held" (watcher below)
     if not ns:IsLocked() then
         ShowPlacementHelp(self)
         return
     end
     if not cfg.tooltip then return end
+    if ns.db.tooltipAltOnly and not IsAltKeyDown() then return end
     if ns.state.inCombat and not ns.db.tooltipInCombat then return end
     if mod.customTooltip then
         pcall(mod.customTooltip, self, cfg)
@@ -1026,10 +1051,30 @@ local function OnEnter(self)
 end
 
 local function OnLeave(self)
+    if ns.hoveredBlock == self then ns.hoveredBlock = nil end
     local cfg, mod = ns.db.blocks[self.key], ns:GetModule(self.key)
     if mod and mod.onLeave then pcall(mod.onLeave, self, cfg) end
     GameTooltip:Hide()
 end
+
+-- "Tooltips only while Alt is held": pressing or releasing Alt over a block shows or
+-- hides its tooltip without having to move the mouse again
+local altWatcher = CreateFrame("Frame")
+altWatcher:RegisterEvent("MODIFIER_STATE_CHANGED")
+altWatcher:SetScript("OnEvent", function(_, _, key, down)
+    local f = ns.hoveredBlock
+    if not (f and ns.db and ns.db.tooltipAltOnly) or (key ~= "LALT" and key ~= "RALT") then return end
+    if not (f:IsShown() and f:IsMouseOver()) then
+        ns.hoveredBlock = nil
+        return
+    end
+    if down == 1 then
+        OnEnter(f)
+    else
+        OnLeave(f)
+        ns.hoveredBlock = f -- still under the mouse: Alt can show it again
+    end
+end)
 
 -- dragMoved is set by the drag code (Merge.lua) so a drag is not taken for a click
 local function OnMouseDown(self)

@@ -5,6 +5,9 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.0-rc4 — 
 
+- Three new blocks (hidden by default, add them from the Blocks tab): Mana regeneration (per 5 seconds, the value while casting in combat), Character stats (the stat of your choice on the block, all of them in the tooltip) and Group loot (loot method, threshold, master looter; click: /roll).
+- Durability tooltip: the repair cost of your equipment.
+- General tab, new Tooltips section: tooltip size, and tooltips only while holding Alt.
 - New logo, drawn in high definition: sharp in the addon list, on the minimap button and on large screens.
 - About tab: a fuller account of how Tessera is made, what the author does and what the AI does.
 

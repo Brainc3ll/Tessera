@@ -13,10 +13,21 @@ ns.CHANGELOG = {
         version = "1.0.0-rc4",
         date = "", -- set when the version is published
         en = {
+            "Three new blocks (hidden by default, add them from the Blocks tab): Mana regeneration (per 5 seconds, "
+                .. "the value while casting in combat), Character stats (the stat of your choice on the block, all of them "
+                .. "in the tooltip) and Group loot (loot method, threshold, master looter; click: /roll).",
+            "Durability tooltip: the repair cost of your equipment.",
+            "General tab, new Tooltips section: tooltip size, and tooltips only while holding Alt.",
             "New logo, drawn in high definition: sharp in the addon list, on the minimap button and on large screens.",
             "About tab: a fuller account of how Tessera is made, what the author does and what the AI does.",
         },
         fr = {
+            "Trois nouveaux blocs (masqués par défaut, à ajouter depuis l'onglet Blocs) : Régénération de mana (toutes "
+                .. "les 5 secondes, la valeur en incantation pendant un combat), Statistiques (la statistique de ton choix "
+                .. "sur le bloc, toutes dans l'infobulle) et Butin du groupe (mode de butin, seuil, responsable du butin ; "
+                .. "clic : /roll).",
+            "Infobulle de durabilité : le coût de réparation de ton équipement.",
+            "Onglet Général, nouvelle section Infobulles : taille des infobulles, et infobulles seulement en tenant Alt.",
             "Nouveau logo, dessiné en haute définition : net dans la liste des addons, sur le bouton de la minicarte "
                 .. "et sur les grands écrans.",
             "Onglet À propos : un récit plus complet de la façon dont Tessera est fait, ce que fait l'auteur et ce que "

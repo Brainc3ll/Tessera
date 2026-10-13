@@ -41,15 +41,15 @@ Comparaison avec Titan Panel, Arcana (ex-ChocolateBar), Bazooka, XIV_Databar Con
 TitanData Texts, ForeverPlus et les textes de données d'ElvUI. Liste du plus simple au plus
 compliqué ; Braincell1980 choisit la version de chaque idée.
 
-1. Taille des infobulles réglable (option globale).
-2. Infobulle seulement en tenant Alt (option globale).
+1. [Fait, rc4] Taille des infobulles réglable (option globale).
+2. [Fait, rc4] Infobulle seulement en tenant Alt (option globale).
 3. (Pas de combats de mascottes sur Forever pour le moment : mis de côté, voir plus bas.)
-4. Coût de réparation et état de chaque pièce dans l'infobulle de durabilité.
+4. [Fait, rc4] Coût de réparation et état de chaque pièce dans l'infobulle de durabilité.
 5. Fondu des barres en entrant ou en sortant de combat (au lieu de les masquer d'un coup).
 6. Or filtré : tous les personnages / ce jeu de règles / ce jeu de règles et cette faction / ce personnage.
-7. Régénération de vie et de mana (nouveau bloc).
-8. Statistiques du personnage (critique, hâte, toucher, puissance d'attaque et des sorts, armure, esquive) (nouveau bloc).
-9. Méthode de butin du groupe (maître du butin, seuil, /roll) (nouveau bloc).
+7. [Fait, rc4 : mana seulement, le jeu ne donne pas la régénération de vie] Régénération de vie et de mana (nouveau bloc).
+8. [Fait, rc4] Statistiques du personnage (critique, hâte, toucher, puissance d'attaque et des sorts, armure, esquive) (nouveau bloc).
+9. [Fait, rc4] Méthode de butin du groupe (maître du butin, seuil, /roll) (nouveau bloc).
 10. Zones dans un groupe : gauche / centre / droite, le centre restant centré quand les largeurs changent ; réglage par groupe et option globale. (L'alignement du texte dans chaque bloc existe déjà, onglet Blocs > Texte.) Validé, plutôt pour la v1.1. Intérêt surtout pour les barres pleine largeur (dispositions barre des tâches). Exigence de Braincell1980 : à expliquer très très clairement (infobulles, aide, visite rapide, exemple visuel gauche / centre / droite, changelog).
 11. Mélangeur de volume : une glissière par canal dans l'infobulle du bloc volume.
 12. Micro-menu : un bloc qui ouvre tous les panneaux du jeu.

@@ -1183,17 +1183,27 @@ local function BuildGeneralPage(page)
     Place(CreateButton(page, L.RECOVER_BUTTON, function() ns:RecoverBlocksCommand() end,
         nil, nil, L.TIP_RECOVER), 1)
 
+    -- Left column: tooltips of the blocks
+    P.Gap(1, 8)
+    Place(CreateHeader(page, L.SECTION_TOOLTIPS), 1)
+    Place(CreateCheck(page, L.TOOLTIP_HINTS,
+        function() return ns.db.tooltipHints ~= false end,
+        function(v) ns.db.tooltipHints = v end, nil, L.TIP_TOOLTIP_HINTS), 1)
+    Place(CreateCheck(page, L.TOOLTIP_IN_COMBAT,
+        function() return ns.db.tooltipInCombat end,
+        function(v) ns.db.tooltipInCombat = v end, nil, L.TOOLTIP_IN_COMBAT_TIP), 1)
+    Place(CreateCheck(page, L.TOOLTIP_ALT_ONLY,
+        function() return ns.db.tooltipAltOnly end,
+        function(v) ns.db.tooltipAltOnly = v or false end, nil, L.TIP_TOOLTIP_ALT_ONLY), 1)
+    Place(CreateSlider(page, L.TOOLTIP_SCALE, 50, 150, 5,
+        function() return math.floor((ns.db.tooltipScale or 1) * 100 + 0.5) end,
+        function(v) ns.db.tooltipScale = v / 100 end, nil, L.TIP_TOOLTIP_SCALE), 1)
+
     -- Right column: combat
     Place(CreateHeader(page, L.SECTION_COMBAT), 2)
     Place(CreateCheck(page, L.LOCK_IN_COMBAT,
         function() return ns.db.lockInCombat end,
         function(v) ns.db.lockInCombat = v; ns:RefreshLockState() end, nil, L.LOCK_IN_COMBAT_TIP), 2)
-    Place(CreateCheck(page, L.TOOLTIP_HINTS,
-        function() return ns.db.tooltipHints ~= false end,
-        function(v) ns.db.tooltipHints = v end, nil, L.TIP_TOOLTIP_HINTS), 2)
-    Place(CreateCheck(page, L.TOOLTIP_IN_COMBAT,
-        function() return ns.db.tooltipInCombat end,
-        function(v) ns.db.tooltipInCombat = v end, nil, L.TOOLTIP_IN_COMBAT_TIP), 2)
     Place(CreateNote(page, L.COMBAT_HINT), 2)
 
     P.Gap(2, 8)

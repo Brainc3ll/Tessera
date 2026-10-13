@@ -455,6 +455,35 @@ local function LowestDurability()
     return lowest
 end
 
+-- Repair cost of the equipped items, in copper, or nil when this client gives no way to
+-- read it. The game gives the cost with each item's tooltip: modern tooltip data first,
+-- then a hidden tooltip (older API, 3rd return value of SetInventoryItem).
+local repairScanner
+local function RepairCost()
+    local total, known = 0, false
+    for slot = 1, 19 do
+        local cost
+        if C_TooltipInfo and C_TooltipInfo.GetInventoryItem then
+            local ok, data = pcall(C_TooltipInfo.GetInventoryItem, "player", slot)
+            if ok and type(data) == "table" and type(data.repairCost) == "number" then cost = data.repairCost end
+        end
+        if cost == nil then
+            if not repairScanner then
+                repairScanner = CreateFrame("GameTooltip", "TesseraRepairScanner", nil, "GameTooltipTemplate")
+            end
+            repairScanner:SetOwner(WorldFrame, "ANCHOR_NONE")
+            local ok, hasItem, _, c = pcall(repairScanner.SetInventoryItem, repairScanner, "player", slot)
+            if ok and hasItem and type(c) == "number" then cost = c end
+            repairScanner:Hide()
+        end
+        if cost then
+            known = true
+            total = total + cost
+        end
+    end
+    return known and total or nil
+end
+
 ns:RegisterModule("durability", {
     label = "DURABILITY",
     icon = "Interface\\Icons\\Trade_BlackSmithing",
@@ -477,6 +506,11 @@ ns:RegisterModule("durability", {
                 local link = GetInventoryItemLink("player", slot) or "?"
                 tt:AddDoubleLine(link, LevelColor(DurabilityLevel(pct, cfg)) .. ("%d%%"):format(math.floor(pct + 0.5)) .. "|r")
             end
+        end
+        local cost = RepairCost()
+        if cost and cost > 0 then
+            tt:AddLine(" ")
+            tt:AddDoubleLine(L.TT_REPAIR_COST, ns.FormatMoney(cost), 1, 1, 1, 1, 1, 1)
         end
     end,
     secureMacro = "/click CharacterMicroButton",
@@ -1336,6 +1370,225 @@ ns:RegisterModule("volume", {
         local v = CVarNumber("Sound_MasterVolume") + (delta > 0 and 0.05 or -0.05)
         v = math.max(0, math.min(1, math.floor(v * 20 + 0.5) / 20))
         SetCVar("Sound_MasterVolume", tostring(v))
+    end,
+})
+
+---------------------------------------------------------------------------
+-- Mana regeneration, per 5 seconds (as classic players count it)
+---------------------------------------------------------------------------
+-- Mana regained per second out of combat and while casting, or nil for a character
+-- without mana (warrior, rogue...). GetManaRegen first; GetPowerRegen as fallback only
+-- when the current power is mana (it reads the current power type).
+local function ManaRegen()
+    local maxMana = Try(UnitPowerMax, "player", 0) or 0
+    if maxMana <= 0 then return nil end
+    local base, casting = Try(GetManaRegen)
+    if not base and Try(UnitPowerType, "player") == 0 then base, casting = Try(GetPowerRegen) end
+    if not base then return nil end
+    return base, casting or base
+end
+
+ns:RegisterModule("regen", {
+    label = "REGEN",
+    icon = "Interface\\Icons\\Spell_Nature_ManaRegenTotem",
+    interval = 2,
+    defaultEnabled = false,
+    isEmpty = function() return ManaRegen() == nil end,
+    update = function()
+        local base, casting = ManaRegen()
+        if not base then return nil end
+        -- in combat, the regeneration that applies while casting
+        local value = (ns.state.inCombat and casting or base) * 5
+        return L.REGEN_FORMAT:format(math.floor(value + 0.5))
+    end,
+    tooltip = function(tt)
+        local base, casting = ManaRegen()
+        if not base then
+            tt:AddLine(L.TT_REGEN_NO_MANA, 1, 1, 1, true)
+            return
+        end
+        WHITE(tt, L.TT_REGEN_OUT, L.REGEN_FORMAT:format(math.floor(base * 5 + 0.5)))
+        WHITE(tt, L.TT_REGEN_CASTING, L.REGEN_FORMAT:format(math.floor(casting * 5 + 0.5)))
+        local mana, maxMana = Try(UnitPower, "player", 0), Try(UnitPowerMax, "player", 0)
+        if mana and maxMana then WHITE(tt, L.TT_MANA, ("%d / %d"):format(mana, maxMana)) end
+        tt:AddLine(" ")
+        tt:AddLine(L.TT_REGEN_NOTE, 0.8, 0.8, 0.8, true)
+    end,
+    secureMacro = "/click CharacterMicroButton",
+    clickHint = L.HINT_CHARACTER,
+})
+
+---------------------------------------------------------------------------
+-- Character stats: one stat on the block, all of them in the tooltip
+---------------------------------------------------------------------------
+-- Total attack power (melee or ranged), or nil
+local function AttackPower(ranged)
+    local base, pos, neg = Try(ranged and UnitRangedAttackPower or UnitAttackPower, "player")
+    if not base then return nil end
+    return base + (pos or 0) + (neg or 0)
+end
+
+-- Best value over the magic schools (2 holy ... 7 arcane), or nil
+local function BestSchool(fn)
+    local best
+    for school = 2, 7 do
+        local v = Try(fn, school)
+        if type(v) == "number" and (not best or v > best) then best = v end
+    end
+    return best
+end
+
+-- Hit chance bonus: classic API first, then the combat rating API
+local function HitBonus()
+    local v = Try(GetHitModifier)
+    if type(v) == "number" then return v end
+    if CR_HIT_MELEE then return Try(GetCombatRatingBonus, CR_HIT_MELEE) end
+end
+
+-- Every stat: locale keys of its full and short names, how to read it, how to show it.
+-- A stat this client cannot read (nil) is simply left out.
+local STATS = {
+    { key = "ap",        name = "STAT_AP",         short = "STAT_SHORT_AP",         fmt = "%d",
+      get = function() return AttackPower(false) end },
+    { key = "rap",       name = "STAT_RAP",        short = "STAT_SHORT_RAP",        fmt = "%d",
+      get = function() return AttackPower(true) end },
+    { key = "sp",        name = "STAT_SP",         short = "STAT_SHORT_SP",         fmt = "%d",
+      get = function() return BestSchool(GetSpellBonusDamage) end },
+    { key = "crit",      name = "STAT_CRIT",       short = "STAT_SHORT_CRIT",       fmt = "%.2f%%",
+      get = function() return Try(GetCritChance) end },
+    { key = "spellCrit", name = "STAT_SPELL_CRIT", short = "STAT_SHORT_SPELL_CRIT", fmt = "%.2f%%",
+      get = function() return BestSchool(GetSpellCritChance) end },
+    { key = "haste",     name = "STAT_HASTE",      short = "STAT_SHORT_HASTE",      fmt = "%.2f%%",
+      get = function() return Try(GetHaste) end },
+    { key = "hit",       name = "STAT_HIT",        short = "STAT_SHORT_HIT",        fmt = "%.2f%%",
+      get = HitBonus },
+    { key = "armor",     name = "STAT_ARMOR",      short = "STAT_SHORT_ARMOR",      fmt = "%d",
+      get = function() local _, effective = Try(UnitArmor, "player") return effective end },
+    { key = "dodge",     name = "STAT_DODGE",      short = "STAT_SHORT_DODGE",      fmt = "%.2f%%",
+      get = function() return Try(GetDodgeChance) end },
+    { key = "parry",     name = "STAT_PARRY",      short = "STAT_SHORT_PARRY",      fmt = "%.2f%%",
+      get = function() return Try(GetParryChance) end },
+    { key = "block",     name = "STAT_BLOCK",      short = "STAT_SHORT_BLOCK",      fmt = "%.2f%%",
+      get = function() return Try(GetBlockChance) end },
+}
+local STAT_BY_KEY = {}
+for _, stat in ipairs(STATS) do STAT_BY_KEY[stat.key] = stat end
+
+-- "Automatic": spell power for casters, ranged attack power for hunters, attack power otherwise
+local AUTO_STAT = { MAGE = "sp", PRIEST = "sp", WARLOCK = "sp", HUNTER = "rap" }
+local function ChosenStat(cfg)
+    local key = cfg and cfg.stat or "auto"
+    if key == "auto" then
+        local _, class = UnitClass("player")
+        key = AUTO_STAT[class or ""] or "ap"
+    end
+    return STAT_BY_KEY[key] or STAT_BY_KEY.ap
+end
+
+local function FormatStat(stat, value)
+    if stat.fmt == "%d" then return BreakUpLargeNumbers and BreakUpLargeNumbers(math.floor(value + 0.5)) or ("%d"):format(value) end
+    return stat.fmt:format(value)
+end
+
+local STAT_VALUES = { { key = "auto", label = "STAT_AUTO" } }
+for _, stat in ipairs(STATS) do table.insert(STAT_VALUES, { key = stat.key, label = stat.name }) end
+
+ns:RegisterModule("stats", {
+    label = "STATS",
+    icon = "Interface\\Icons\\Spell_Holy_GreaterBlessingofKings",
+    interval = 2,
+    defaultEnabled = false,
+    options = {
+        { kind = "dropdown", field = "stat", label = "STAT_SHOWN", tip = "TIP_STAT_SHOWN", values = STAT_VALUES },
+    },
+    update = function(cfg)
+        local stat = ChosenStat(cfg)
+        local value = stat.get()
+        if type(value) ~= "number" then return nil end
+        return ("%s %s"):format(L[stat.short], FormatStat(stat, value))
+    end,
+    tooltip = function(tt)
+        for _, stat in ipairs(STATS) do
+            local value = stat.get()
+            -- ranged attack power only matters when there is some
+            if type(value) == "number" and not (stat.key == "rap" and value <= 0) then
+                WHITE(tt, L[stat.name], FormatStat(stat, value))
+            end
+        end
+    end,
+    secureMacro = "/click CharacterMicroButton",
+    clickHint = L.HINT_CHARACTER,
+})
+
+---------------------------------------------------------------------------
+-- Group loot: loot method and quality threshold; click = /roll
+---------------------------------------------------------------------------
+-- Modern clients give a number (Enum.LootMethod), older ones a string
+local LOOT_METHODS = {
+    [0] = "LOOT_FFA", [1] = "LOOT_RR", [2] = "LOOT_MASTER", [3] = "LOOT_GROUP",
+    [4] = "LOOT_NBG", [5] = "LOOT_PERSONAL",
+    freeforall = "LOOT_FFA", roundrobin = "LOOT_RR", master = "LOOT_MASTER",
+    group = "LOOT_GROUP", needbeforegreed = "LOOT_NBG", personal = "LOOT_PERSONAL",
+}
+
+-- method, threshold (item quality), master looter's name; nil when not in a group
+local function LootInfo()
+    if not Try(IsInGroup) then return nil end
+    local method, partyID, raidID
+    if C_PartyInfo and C_PartyInfo.GetLootMethod then method, partyID, raidID = Try(C_PartyInfo.GetLootMethod) end
+    if method == nil then method, partyID, raidID = Try(GetLootMethod) end
+    local master
+    if raidID then
+        master = Try(GetRaidRosterInfo, raidID)
+    elseif partyID == 0 then
+        master = UnitName("player")
+    elseif partyID then
+        master = UnitName("party" .. partyID)
+    end
+    return method, Try(GetLootThreshold), master
+end
+
+local function LootMethodName(method)
+    local key = method ~= nil and LOOT_METHODS[method]
+    return key and L[key] or L.NA
+end
+
+-- Name of an item quality in its own color ("Uncommon" in green)
+local function QualityText(quality)
+    local name = quality and _G["ITEM_QUALITY" .. quality .. "_DESC"]
+    if not name then return nil end
+    local r, g, b = Try((C_Item and C_Item.GetItemQualityColor) or GetItemQualityColor, quality)
+    if type(r) == "number" then
+        return ("|cff%02x%02x%02x%s|r"):format(r * 255, g * 255, b * 255, name)
+    end
+    return name
+end
+
+ns:RegisterModule("loot", {
+    label = "LOOT",
+    icon = "Interface\\Icons\\INV_Misc_Bag_10",
+    events = { "PARTY_LOOT_METHOD_CHANGED", "GROUP_ROSTER_UPDATE" },
+    defaultEnabled = false,
+    isEmpty = function() return not Try(IsInGroup) end,
+    update = function()
+        if not Try(IsInGroup) then return L.LOOT_SOLO end
+        return LootMethodName((LootInfo()))
+    end,
+    tooltip = function(tt)
+        if not Try(IsInGroup) then
+            tt:AddLine(L.TT_LOOT_SOLO, 1, 1, 1, true)
+            return
+        end
+        local method, threshold, master = LootInfo()
+        WHITE(tt, L.TT_LOOT_METHOD, LootMethodName(method))
+        local quality = QualityText(threshold)
+        if quality then WHITE(tt, L.TT_LOOT_THRESHOLD, quality) end
+        if master then WHITE(tt, L.TT_LOOT_MASTER, master) end
+    end,
+    clickHint = L.HINT_ROLL,
+    onClick = function(_, button)
+        if button ~= "LeftButton" then return end
+        if RandomRoll then RandomRoll(1, 100) end
     end,
 })
 
@@ -2384,6 +2637,9 @@ local SAMPLES = {
     reset       = function() return ShortDuration(5 * 3600 + 12 * 60) end,
     goal        = function() return "65%" end,
     whispers    = function() return "2", WARN end,
+    regen       = function() return L.REGEN_FORMAT:format(48) end,
+    stats       = function() return L.STAT_SHORT_AP .. " 1 250" end,
+    loot        = function() return L.LOOT_GROUP end,
 }
 for key, sample in pairs(SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

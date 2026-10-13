@@ -264,6 +264,7 @@ function ns:SanitizeProfile(profile)
         end
     end
     if clean.scale and (clean.scale < 0.5 or clean.scale > 3) then clean.scale = nil end
+    if clean.tooltipScale and (clean.tooltipScale < 0.5 or clean.tooltipScale > 2) then clean.tooltipScale = nil end
     if type(profile.theme) == "string" then clean.theme = profile.theme end
     -- group look (Look tab), absent from profiles made before it
     local look = profile.groupLook

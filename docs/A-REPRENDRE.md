@@ -12,6 +12,10 @@ Reprise prévue le mardi 13 octobre 2026 (voir avec Braincell1980).
 2. Nettoyage / allègement du code, seul, sans changement de comportement, compatibilité des profils intacte (outils de dev vers la version debug, regroupements, mesure mémoire avant/après).
 3. Styles pour tout le monde (vraies images si l'interface est installée, version approchante sinon) + nouveaux styles d'interface (TukUI, GW2 UI, NDui, KkthnxUI, SpartanUI…).
 
+## Déjà sur main pour la version suivante
+- Aide : blocs masqués au départ, infobulle avec Alt, clic /roll du butin, « statistique affichée » ; liste des commandes avec /tessera help (à mettre dans le changelog de la prochaine version).
+- Vérification automatique de la doc (`tools/check_docs.lua`) à chaque push et avant chaque publication ; guide `docs/RELEASE.md` réécrit ; règles du projet dans `CLAUDE.md`.
+
 ## Bugs à corriger (version suivante, pas dans la rc4)
 - Disposition « Compacte », mode placement : les étiquettes sous les blocs se chevauchent (blocs compacts plus étroits que leur étiquette, ex. « Monnaies » / « Composants de classe » / « Munitions », « Instances » sur « 2 verrouillée(s) »).
 - Disposition « Colonne à gauche », mode placement : les étiquettes sortent de l'écran à gauche (on ne voit que leur fin).

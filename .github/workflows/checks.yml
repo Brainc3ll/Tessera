@@ -1,0 +1,33 @@
+# Runs on every push and pull request: static checks (luacheck), the mock run of the addon
+# in English, French and DataBroker mode (tools/mock_run.lua), and the documentation check
+# (tools/check_docs.lua: README, in-game help, descriptions, changelog and CurseForge strings
+# must follow the code). A red cross on a commit means one of them found a problem.
+name: Checks
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.1 and luacheck
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 lua-check >/dev/null
+
+      - name: Static checks
+        run: luacheck .
+
+      - name: Mock run (English, French, DataBroker mode)
+        run: |
+          for args in "enUS" "frFR" "frFR broker"; do
+            out=$(lua5.1 tools/mock_run.lua . $args 2>&1)
+            echo "$out" | tail -3
+            if echo "$out" | grep -q "STEP ERROR\|lua5.1:"; then echo "$out" | grep "STEP ERROR\|lua5.1:"; exit 1; fi
+          done
+
+      - name: Documentation check
+        run: lua5.1 tools/check_docs.lua .

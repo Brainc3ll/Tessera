@@ -1,5 +1,6 @@
 # Publishes a new version of Tessera, with the BigWigs packager
 # (https://github.com/BigWigsMods/packager):
+#   0. checks that the documentation is up to date (tools/check_docs.lua);
 #   1. sends the English and French strings to CurseForge's localization tool
 #      (docs/localization/enUS.lua and frFR.lua), so translators always see the current
 #      strings and our French stays the reference;
@@ -45,6 +46,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      # The documentation must follow the code (README, help, descriptions, changelog,
+      # strings for CurseForge): tools/check_docs.lua lists what is out of date, and a
+      # failure stops the release here, before any tag or upload
+      - name: Check the documentation
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 >/dev/null
+          lua5.1 tools/check_docs.lua . release
 
       # "Run workflow": create the tag of the version written in Tessera.toc
       - name: Create the version tag

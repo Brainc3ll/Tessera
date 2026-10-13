@@ -778,4 +778,10 @@ do
     if not ok then print("STEP ERROR: " .. tostring(err)) end
     if TesseraDB ~= nil or not reloaded then print("STEP ERROR: reset everything did not empty TesseraDB / reload") end
 end
+-- tools/check_docs.lua asks for the list of blocks (key and locale key of the name)
+if os.getenv("TESSERA_LIST_MODULES") then
+    for _, key in ipairs(ns.order) do
+        print("MODULE " .. key .. " " .. tostring(ns.modules[key].label))
+    end
+end
 print("mock run finished")

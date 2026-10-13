@@ -1,6 +1,6 @@
 # Tessera – Mosaic Info Bars & Data Blocks
 
-**Download:** [CurseForge](https://www.curseforge.com/wow/addons/tessera) · [GitHub releases](https://github.com/Brainc3ll/Tessera/releases)
+**Download:** [CurseForge](https://www.curseforge.com/wow/addons/tessera) · [Wago](https://addons.wago.io/addons/tessera) · [GitHub releases](https://github.com/Brainc3ll/Tessera/releases)
 
 Tessera is a World of Warcraft addon for **WoW Forever** that shows small information blocks
 (gold, bags, durability, FPS, latency, time, XP, quests...) and launcher blocks (minimap and
@@ -67,10 +67,12 @@ Help tab inside the game explains everything.
   - Honor: your honor points (PvP ranks once WoW Forever is released);
   - weapon skills read from Forever's skill list; profession, talent and Legacy blocks that open
     Forever's own windows.
-- More than 40 blocks in all: gold (with history), bags (with junk value), durability, FPS and
-  latency (with graphs), time, XP, rested XP, coordinates, zone, friends, guild, group, quests,
-  reputation, currencies, professions (one block each), talents, hearthstone, mail, whispers,
-  reagents, ammo, item level, speed, volume, instances, played time, goal...
+- More than 40 blocks in all: gold (with history), bags (with junk value), durability (with the
+  repair cost), FPS and latency (with graphs), local and server time, XP, rested XP, coordinates,
+  zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
+  each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
+  reagents, ammo, item level, speed, volume, addon memory, instances, played time, goal, mana
+  regeneration, character stats (the stat of your choice), group loot (click: /roll)...
 - Blocks that have nothing to show hide themselves (in a second row under the main bar).
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks; groups
   fused, as tiles with joints, or separate; replace a block in place from the quick menu.
@@ -89,6 +91,7 @@ Help tab inside the game explains everything.
   accessibility options.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
+- Tooltips your way: bigger or smaller, or only while holding Alt (General tab).
 - A quick tour on first launch (again from the Help tab).
 - Blizzard's Edit Mode: a copy of your layout with room for Tessera's bars stuck to the top or
   bottom edge (your layout is never changed). Tested on Blizzard's interface (Modern, Classic)
@@ -97,7 +100,7 @@ Help tab inside the game explains everything.
 | Command | Effect |
 |---|---|
 | `/tessera` | Open or close the options |
-| `/tessera lock` / `unlock` | Lock the blocks, or unlock them to move them |
+| `/tessera lock`, `/tessera unlock` | Lock the blocks, or unlock them to move them |
 | `/tessera reset` | Reset everything: empties the saved variables, then reloads the interface |
 | `/tessera minimap` | Show or hide the minimap button |
 | `/tessera preview` | Sample values in every block (for screenshots) |
@@ -147,12 +150,15 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
 | `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / debug), welcome popup and quick tour, debug report, Blizzard Settings page. |
 
-The `docs/` folder (not shipped in the addon) holds the release guide, the CurseForge
-description, the strings sent to CurseForge's localization tool, the project plans and ideas
-(in French), and the logo in large sizes (`docs/art`).
+The `docs/` folder (not shipped in the addon) holds the release guide (`docs/RELEASE.md`), the
+CurseForge and Wago descriptions, the strings sent to CurseForge's localization tool, the project
+status, plans and ideas (in French), and the logo in large sizes (`docs/art`). `CLAUDE.md` holds
+the working rules of the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
-with a small imitation of the game API and runs every page and feature; lint with `luacheck .`.
+with a small imitation of the game API and runs every page and feature; lint with `luacheck .`;
+`lua5.1 tools/check_docs.lua .` checks that the documentation follows the code. All three run on
+every push (`.github/workflows/checks.yml`).
 
 ### How a value gets on screen
 
@@ -283,12 +289,25 @@ back to English for anything missing.
   for `frFR`). The release workflow sends both to CurseForge before packaging, so translators
   always see the current strings; nothing has to be imported by hand.
 
+### Releasing
+
+One workflow publishes everywhere: **Package and release** (`.github/workflows/release.yml`,
+"Run workflow" in the Actions tab). It checks the documentation, tags the version written in
+`Tessera.toc`, sends the strings to CurseForge, builds the zip with the BigWigs packager and
+uploads it to GitHub, CurseForge and Wago. Details (in French) in `docs/RELEASE.md`.
+
 ### Checking your changes
 
 ```sh
 luacheck .                       # static checks (uses the provided .luacheckrc)
 lua5.1 tools/mock_run.lua .      # loads the addon in a rough WoW API mock, prints Lua errors
+lua5.1 tools/check_docs.lua .    # README, help, descriptions, changelog, strings: up to date?
 ```
+
+`tools/check_docs.lua` checks that the version is the same everywhere, that `CHANGELOG.md` and
+`docs/localization/` match the code, and that every public command, block, Lua file and option
+tab appears in the README, the in-game help and the CurseForge / Wago descriptions. A release
+stops if it fails.
 
 The mock only catches Lua errors (nil calls, typos, load order); it does not replace testing
 in game.

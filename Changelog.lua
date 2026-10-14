@@ -24,6 +24,7 @@ ns.CHANGELOG = {
             "FlareUI styles (2.x, 1.x and Square): the font of FlareUI's XP bar, Arial Narrow by default, or the "
                 .. "one picked in FlareUI's settings. Blocks already in a FlareUI style keep their font: pick the style "
                 .. "again in the Look tab to get it.",
+            "Development commands removed from released versions: only the commands useful to players remain.",
             "Code checked with Ketho's WoW API annotations (the tool addon reviewers use): no deprecated function, "
                 .. "no unknown global; old fallbacks for other game versions removed.",
         },
@@ -40,6 +41,7 @@ ns.CHANGELOG = {
             "Styles FlareUI (2.x, 1.x et Carré) : la police de la barre d'XP de FlareUI, Arial Narrow par défaut, ou "
                 .. "celle choisie dans les réglages de FlareUI. Les blocs déjà en style FlareUI gardent leur police : "
                 .. "choisis à nouveau le style dans l'onglet Apparence pour l'avoir.",
+            "Commandes de développement retirées des versions publiées : il ne reste que les commandes utiles aux joueurs.",
             "Code vérifié avec les annotations de l'API WoW de Ketho (l'outil des relecteurs d'addons) : aucune "
                 .. "fonction obsolète, aucune variable globale inconnue ; anciens secours pour d'autres versions du jeu retirés.",
         },

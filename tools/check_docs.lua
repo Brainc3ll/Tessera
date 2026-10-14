@@ -113,15 +113,15 @@ end
 ---------------------------------------------------------------------------
 -- documented commands (what follows "/tessera ")
 local PUBLIC = { "lock", "unlock", "reset", "minimap", "preview", "preview forever", "recover", "broker", "bug", "help" }
--- never documented: French aliases and development commands
-local HIDDEN = { minicarte = true, apercu = true, ["aperçu"] = true, recuperer = true, ["récupérer"] = true,
-    debug = true, ["debug skills"] = true, ["debug legacy"] = true, atelier = true }
+-- never documented: French aliases of public commands. Development and test commands are not
+-- allowed in the addon at all: they live in the test builds' extra file (TesseraDev.lua).
+local HIDDEN = { minicarte = true, apercu = true, ["aperçu"] = true, recuperer = true, ["récupérer"] = true }
 local isPublic = {}
 for _, c in ipairs(PUBLIC) do isPublic[c] = true end
 local core = read("Core.lua")
 for c in core:gmatch('msg == "([^"]+)"') do
     if not isPublic[c] and not HIDDEN[c] then
-        fail(("command /tessera %s (Core.lua) is neither documented nor listed as hidden in tools/check_docs.lua"):format(c))
+        fail(("command /tessera %s (Core.lua) is not a documented command: document it, or move it to the test builds' extra file"):format(c))
     end
 end
 local places = {

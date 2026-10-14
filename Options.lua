@@ -49,7 +49,6 @@ local COL_W = 300
 local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
 local SPACING = 9 -- vertical space between two settings
-local dropdowns = {} -- { label, dd } entries, for the debug report
 
 local ALL = "*all"            -- selection value "All blocks"
 local LAUNCHERS = "*launchers" -- selection value "All launchers"
@@ -419,15 +418,6 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
             end
         end)
         if not ok then ns.Print("|cffff5555[debug]|r menu « " .. label .. " » : " .. tostring(err)) end
-    end)
-    table.insert(dropdowns, { label = label, dd = dd })
-    dd:HookScript("OnMouseDown", function(self, button)
-        if not ns.debug then return end
-        ns.Print(("[debug] clic sur le menu « %s » (%s)"):format(label, tostring(button)))
-        C_Timer.After(0.2, function()
-            local open = self.IsMenuOpen and self:IsMenuOpen()
-            ns.Print(("[debug] menu « %s » ouvert : %s"):format(label, tostring(open)))
-        end)
     end)
 
     if tip then
@@ -2707,16 +2697,8 @@ function ns:OfferStylesIfNeeded()
 end
 
 ---------------------------------------------------------------------------
--- Diagnostics: /tessera debug (state useful for development, and dropdown tracing)
+-- Bug report (/tessera bug) and text window
 ---------------------------------------------------------------------------
--- Short description of a frame for debug output: name [strata level]
-local function Describe(frame)
-    if not frame then return "aucun" end
-    local name = frame.GetDebugName and frame:GetDebugName() or frame:GetName() or tostring(frame)
-    local strata = frame.GetFrameStrata and frame:GetFrameStrata() or "?"
-    local level = frame.GetFrameLevel and frame:GetFrameLevel() or "?"
-    return ("%s [%s %s]"):format(name, strata, tostring(level))
-end
 
 -- Text window, used to copy (debug report, profile export: the text is already
 -- selected, Ctrl + C is enough) or to paste (profile import: onAccept receives
@@ -2771,10 +2753,6 @@ end
 
 function ns:HideTextWindow()
     if copyFrame then copyFrame:Hide() end
-end
-
-local function ShowCopyWindow(text)
-    ns:ShowTextWindow("Tessera debug : Ctrl+C pour copier", text)
 end
 
 -- Report for a bug report (/tessera bug): short, in English (for GitHub), shown
@@ -2834,65 +2812,4 @@ function ns:BugReport()
     Add("Other addons: %s", #addons > 0 and table.concat(addons, ", ") or "none")
 
     ns:ShowTextWindow(L.BUG_TITLE, table.concat(lines, "\n"))
-end
-
--- Toggles debug mode; when turning it on, prints a report and opens it in the copy window
-function ns:DebugReport()
-    ns.debug = not ns.debug
-    local lines = {}
-    local P = function(msg)
-        ns.Print(msg)
-        table.insert(lines, (tostring(msg):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")))
-    end
-    P("|cffffd100[debug] mode " .. (ns.debug and "activé" or "désactivé") .. "|r")
-    if not ns.debug then return end
-
-    local version = C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(ADDON, "Version")
-    local _, build, _, interface = GetBuildInfo()
-    P(("[debug] Tessera %s, client %s (%s), langue %s"):format(tostring(version), tostring(interface), tostring(build), GetLocale()))
-    P(("[debug] style %s, profil %s, verrouillé %s, figé %s, combat %s"):format(
-        tostring(ns:GetTheme()), tostring(ns.profileName), tostring(ns.db.locked), tostring(ns:IsLocked()), tostring(ns.state.inCombat)))
-
-    if panel then
-        P(("[debug] fenêtre : affichée %s, %s, échelle %.2f, habillage %s"):format(
-            tostring(panel:IsShown()), Describe(panel), panel:GetEffectiveScale(), tostring(panel.skinKind)))
-    else
-        P("[debug] fenêtre : pas encore créée")
-    end
-    for i, d in ipairs(dropdowns) do
-        if i > 3 then break end
-        local dd = d.dd
-        P(("[debug] menu « %s » : visible %s, souris %s, %s"):format(
-            d.label, tostring(dd:IsVisible()), tostring(dd:IsMouseEnabled()), Describe(dd)))
-    end
-
-    -- what is under the mouse (hover a menu, then type the command)
-    local foci = GetMouseFoci and GetMouseFoci() or {}
-    for i, f in ipairs(foci) do
-        if i > 4 then break end
-        P("[debug] sous la souris : " .. Describe(f))
-    end
-
-    -- merged blocks: border, thickness, corner join and inner corners
-    for _, key in ipairs(ns:GetBlockKeys()) do
-        local f = ns.frames[key]
-        if f and f:IsShown() and f.sharedSides and f.sharedSides ~= "" then
-            local info = f.backdropInfo
-            local edge = f.nineSliceInfo and f.nineSliceInfo.edge or (info and info.edgeSize) or 0
-            P(("[debug] %s : bordure %s, épaisseur %s, raccord %.2f, côtés fusionnés %s, angles rentrants %s"):format(
-                ns:GetBlockName(key), tostring(f.borderKey), tostring(edge), f.lineReach or 0,
-                f.sharedSides, (f.notchList and f.notchList ~= "") and f.notchList or "aucun"))
-        end
-    end
-
-    if Menu and Menu.GetManager then
-        local ok, manager = pcall(Menu.GetManager)
-        local open = ok and manager and manager.GetOpenMenu and manager:GetOpenMenu()
-        P("[debug] menu ouvert : " .. (open and Describe(open) or "aucun"))
-    else
-        P("[debug] système de menus de Blizzard introuvable")
-    end
-    P("[debug] clique maintenant sur un menu de Tessera : chaque clic sera détaillé ici.")
-    P("[debug] raccords d'angle : /tessera debug raccord 0.4 (essaie entre 0 et 1)")
-    ShowCopyWindow(table.concat(lines, "\n"))
 end

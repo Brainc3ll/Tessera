@@ -40,6 +40,8 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
 - Players' layouts, styles and profiles must keep working after every update; if a big change
   ever has to break them, show a message and convert them.
 - English and French only in the repository; other languages come from CurseForge's tool.
-- Development commands are never mentioned in the interface or the help.
+- Released versions have no command a player does not need. Test and development commands
+  (`/tessera test`, debug report, probes) live only in `TesseraDev.lua`, outside this
+  repository, added to the test zips given to Braincell1980 (never pushed, never released).
 - No trademarked operating system names in layouts.
 - Commit messages end with: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`

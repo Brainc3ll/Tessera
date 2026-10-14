@@ -148,7 +148,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Spacers.lua` | Spacer blocks (empty, separator line or text). |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
-| `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / debug), welcome popup and quick tour, debug report, Blizzard Settings page. |
+| `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, debug report, Blizzard Settings page. |
 
 The `docs/` folder (not shipped in the addon) holds the release guide (`docs/RELEASE.md`), the
 CurseForge and Wago descriptions, the strings sent to CurseForge's localization tool, the project
@@ -253,10 +253,9 @@ public documentation yet. What Tessera found, with the development probes below:
   click them with a `/click` macro on their secure overlay (`MicroButtonMacro` in
   `Modules.lua`), so the panels open from Blizzard's own code, without taint.
 - All IDs above were found on the beta (October 2026) and may change.
-- **Development probes** (not listed in the help): `/tessera debug legacy` and
-  `/tessera debug skills` open a window listing what the client offers (API namespaces and
-  functions, the Legacy panel's fields and texts, the raw skill list), which can be copied.
-  Use them to adapt a block when Forever changes, or to find new ones.
+- **Development probes** live in the test builds only (see "Test builds" below): they list
+  what the client offers (API namespaces and functions, the Legacy panel's fields and texts,
+  the raw skill list) in a window that can be copied, to adapt a block when Forever changes.
 
 ### WoW-specific constraints to keep in mind
 
@@ -330,8 +329,16 @@ stops if it fails.
 The mock only catches Lua errors (nil calls, typos, load order); it does not replace testing
 in game.
 
-Then test in game. `/tessera debug` toggles debug mode and prints a report of the blocks and
-their merges, which can be copied from a window.
+Then test in game.
+
+### Test builds
+
+Released versions have no command a player does not need. The test builds given to the
+author for his test sessions add one extra file (`TesseraDev.lua`, kept out of this repository
+and never packaged) at the end of `Tessera.toc`: `/tessera test` (blocks to check, layouts for
+the name tags, tooltip settings, back to the player's profile) and the development commands
+(debug report, WoW Forever probes, shape test, theme previews). `Core.lua` only calls
+`ns.DevCommand` when that file is there; the mock loads it with `TESSERA_DEV=<path>`.
 
 ## License
 

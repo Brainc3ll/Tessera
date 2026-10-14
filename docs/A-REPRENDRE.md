@@ -25,6 +25,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - Corrigé : étiquettes du mode placement (Compacte, Colonne à gauche) : plus de chevauchement ni de sortie d'écran, nom raccourci si la place manque.
 - Blocs Forever et nouveaux blocs : testés contre un jeu qui change (`tools/fuzz_blocks.lua`), corrigés.
 - Audit de l'API WoW (Ketho, comme les modérateurs de r/WoWUI) : 0 fonction obsolète, 0 globale inconnue ; anciens secours classiques retirés (la branche multi-versions les garde : conflits à prévoir si fusion). Tourne à chaque push (`tools/api_audit.py`).
+- Commandes de développement retirées de l'addon (debug, sondes, test de formes, atelier) : elles sont dans `TesseraDev.lua`, hors dépôt (`/home/claude/tessera-dev/` dans la session), ajouté seulement aux zips de test avec `/tessera test` (blocs à vérifier, Compacte, Colonne, infobulles, flare, fin).
 - Scénario donjon + combat ajouté au test automatique (le donjon ne pourra peut-être pas être testé en jeu).
 
 ## Déjà sur main pour la version suivante

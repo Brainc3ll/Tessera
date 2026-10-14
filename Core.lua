@@ -2397,6 +2397,8 @@ end
 RunCommand = function(msg)
     if not ns.built then return end
     msg = strtrim(msg or ""):lower()
+    -- test builds only: their extra file (not in released versions) handles its own commands
+    if ns.DevCommand and ns.DevCommand(msg) then return end
     if msg == "lock" then
         ns:SetLocked(true)
     elseif msg == "unlock" then
@@ -2406,8 +2408,6 @@ RunCommand = function(msg)
     elseif msg == "minimap" or msg == "minicarte" then
         ns:SetMinimapButtonShown(ns.sv.hideMinimapButton and true or false)
         if ns.RefreshOptions then ns:RefreshOptions() end
-    elseif msg == "debug" then
-        if ns.DebugReport then ns:DebugReport() end
     elseif msg == "bug" then
         -- the same report, to paste in a bug report (see README / GitHub)
         if ns.BugReport then ns:BugReport() end
@@ -2416,30 +2416,6 @@ RunCommand = function(msg)
         ns:PreviewForever(strtrim(msg:match("forever(.*)") or ""))
     elseif msg == "preview" or msg == "apercu" or msg == "aperçu" then
         ns:SetPreview(not ns.previewMode)
-    elseif msg == "debug skills" then
-        -- Development: what WoW Forever offers for weapon skills
-        if ns.SkillsProbe then ns:SkillsProbe() end
-    elseif msg == "debug legacy" then
-        -- Development: looks for where WoW Forever keeps the Legacy points (no API doc yet)
-        if ns.LegacyProbe then ns:LegacyProbe() end
-    elseif msg:match("^debug raccord") then
-        -- Live tuning of the corner seam length for the current border
-        local value = tonumber(msg:match("^debug raccord%s+([%d%.]+)"))
-        local key = ns.db.blocks.gold and ns.db.blocks.gold.border
-        if value and key then
-            ns:SetBorderReach(key, value)
-            Print(("[debug] raccord de la bordure « %s » : %.2f"):format(tostring(key), value))
-        else
-            Print("[debug] exemple : /tessera debug raccord 0.4")
-        end
-    elseif msg:match("^debug formes") then
-        -- Development: blocks arranged into exotic shapes to check merging (Placement.lua)
-        ns:ShapeTest(strtrim(msg:match("^debug formes(.*)") or ""))
-    elseif msg == "atelier" then
-        -- Hidden developer toggle: theme previews in the options (see Themes.lua)
-        ns.sv.previewThemes = not ns.sv.previewThemes or nil
-        Print(ns.sv.previewThemes and "aperçus des styles activés." or "aperçus des styles désactivés.")
-        if ns.RefreshOptions then ns:RefreshOptions() end
     elseif msg == "recover" or msg == "recuperer" or msg == "récupérer" then
         -- groups that stick out of the screen come back inside
         ns:RecoverBlocksCommand()

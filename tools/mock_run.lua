@@ -251,6 +251,13 @@ for line in toc:gmatch("[^\r\n]+") do
         if not ok then print("LOAD ERROR " .. line .. ": " .. tostring(err)) os.exit(1) end
     end
 end
+-- a test build's extra file (test and development commands, never released), if given:
+-- TESSERA_DEV=/path/to/TesseraDev.lua lua5.1 tools/mock_run.lua . enUS
+local devFile = os.getenv("TESSERA_DEV")
+if devFile and devFile ~= "" then
+    local ok, err = pcall(assert(loadfile(devFile)), "Tessera", ns)
+    if not ok then print("LOAD ERROR " .. devFile .. ": " .. tostring(err)) os.exit(1) end
+end
 print("loaded files OK")
 local function Fire(event, ...)
     for f in pairs(frames) do
@@ -371,11 +378,20 @@ for _, step in ipairs({
     function() ns:SetPreview(true); ns:UpdateAll(); ns:SetPreview(false) end,
     function() ns.sv.instanceProfile = "Copy"; ns:CheckSituationProfile() end,
     function() for _, key in ipairs(ns:GetBlockKeys()) do ns:RunClickAction(key, "chat") end end,
-    function() SlashCmdList.TESSERA("debug") end,
     function() SlashCmdList.TESSERA("help") end,
     function() SlashCmdList.TESSERA("bug") end,
-    function() SlashCmdList.TESSERA("debug legacy") end,
-    function() SlashCmdList.TESSERA("debug skills") end,
+    -- development and test commands: only with a test build's extra file (TESSERA_DEV)
+    function()
+        if not ns.DevCommand then return end
+        for _, cmd in ipairs({ "debug", "debug", "debug legacy", "debug skills", "atelier", "atelier",
+            "test", "test blocs", "test compacte", "test colonne", "test infobulles", "test infobulles",
+            "test flare", "test fin" }) do
+            SlashCmdList.TESSERA(cmd)
+            local queued = __timers; __timers = {}
+            for _, fn in ipairs(queued) do pcall(fn) end
+        end
+        assert(not ns.sv.profiles.Test, "test profile not deleted")
+    end,
     -- icon frames: round, square, black and white, fixed size, then back to normal
     function()
         local cfg = ns.db.blocks.gold
@@ -515,6 +531,7 @@ for _, step in ipairs({
     end,
     -- shape test: every shape, then back to the original layout
     function()
+        if not ns.ShapeTest then return end -- test builds only
         local before = ns.DeepCopy(ns.db.blocks.gold.dock)
         for _ = 1, #ns.SHAPES do ns:ShapeTest("") end
         ns:ShapeTest("croix")

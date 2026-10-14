@@ -31,6 +31,14 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - Commandes de développement retirées de l'addon (debug, sondes, test de formes, atelier) : elles sont dans `TesseraDev.lua`, hors dépôt (`/home/claude/tessera-dev/` dans la session), ajouté seulement aux zips de test avec `/tessera test` (blocs à vérifier, Compacte, Colonne, infobulles, flare, fin).
 - Scénario donjon + combat ajouté au test automatique (le donjon ne pourra peut-être pas être testé en jeu).
 
+## test18 (demande du 14/10, après les tests du 15/10)
+
+- Révision complète de tous les textes de l'addon (options, infobulles, aide, messages) : ajuster, clarifier, raccourcir.
+- Changelog de la rc5 : ne garder que ce qui compte pour les joueurs (les détails internes vont dans les messages de commit).
+- Textes GitHub (README, descriptions CurseForge et Wago, résumé) : les mettre à jour et les clarifier.
+- Traductions : vérifier que chaque texte long est découpé en petites clés (aide aux traducteurs CurseForge), rappeler les étapes du nettoyage de l'ancien HELP_TEXT.
+- Images : un GIF des styles du mode démo et des images de présentation à partir des captures fournies par Braincell1980, en anglais (jeu en anglais), sauf une capture qui montre que l'addon est en anglais et en français.
+
 ## Déjà sur main pour la version suivante
 - Aide : blocs masqués au départ, infobulle avec Alt, clic /roll du butin, « statistique affichée » ; liste des commandes avec /tessera help (à mettre dans le changelog de la prochaine version).
 - Vérification automatique de la doc (`tools/check_docs.lua`) à chaque push et avant chaque publication ; guide `docs/RELEASE.md` réécrit ; règles du projet dans `CLAUDE.md`.

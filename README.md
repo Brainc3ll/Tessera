@@ -90,8 +90,9 @@ Help tab inside the game explains everything.
   sharing, in one place.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- Themes matching FlareUI (2.x or 1.x), ElvUI, EllesmereUI or Blizzard's look, Square styles, plus Clean and
-  Transparent; profiles with export/import, ready-made layouts and an automatic dungeon/raid profile;
+- Themes matching FlareUI (2.x or 1.x), ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
+  imitation), Square styles, Clean, Transparent, and fantasy styles: Runestone (text only, black and white),
+  Grimoire, Parchment, Arcane; profiles with export/import, ready-made layouts and an automatic dungeon/raid profile;
   accessibility options.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.

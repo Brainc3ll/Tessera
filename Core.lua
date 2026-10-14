@@ -359,7 +359,7 @@ end
 local CIRCLE_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 function ns:StyleIcon(f, cfg)
     local tex, shape = f.icon, cfg.iconShape or "none"
-    if tex.SetDesaturated then tex:SetDesaturated(cfg.iconDesaturate and true or false) end
+    if tex.SetDesaturated then tex:SetDesaturated((cfg.iconDesaturate or cfg.monochrome) and true or false) end
     -- crop the icon's own edge when it gets a frame (only if it is not cropped already)
     if shape ~= "none" and tex.GetTexCoord then
         local l, t, _, _, _, _, r, b = tex:GetTexCoord()
@@ -490,6 +490,11 @@ local BLOCK_DEFAULTS = {
     iconDesaturate = false,   -- black and white icon
     separators = false,       -- thin line between merged blocks (see Merge.lua, DrawSeparators)
     separatorColor = { r = 0.8, g = 0.6, b = 0.34, a = 0.5 },
+    -- set by some styles (Themes.lua), cleared by the others:
+    hideIcons = false,        -- text only (launchers keep their icon)
+    monochrome = false,       -- black and white: grey text, no colors in the values, grey icons
+    textTint = { r = 1, g = 1, b = 1, a = 0 }, -- text color of the style (a = 0: none), used
+                                               -- while the block's own text color is white
     width = 60,   -- minimum width: the block grows if its text is longer
     autoWidth = true, -- false: fixed width, overly long text is cut off
     height = 24,
@@ -515,6 +520,7 @@ local STYLE_KEYS = {
     "height", "justify", "strata", "font", "fontSize", "outline", "textColor",
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
+    "hideIcons", "monochrome", "textTint",
 }
 ns.STYLE_KEYS = STYLE_KEYS -- also what a style export carries (Profiles.lua)
 
@@ -1332,7 +1338,16 @@ function ns:SkinBlockFrame(f, cfg)
         f.text:SetFont(STANDARD_TEXT_FONT, size, flags)
     end
     local tc = (cfg.classColorText and self:GetClassColor()) or cfg.textColor
-    f.text:SetTextColor(tc.r, tc.g, tc.b, tc.a)
+    -- the style's text color, unless the block has a text color of its own
+    local tint = cfg.textTint
+    if tint and (tint.a or 0) > 0 and tc == cfg.textColor and tc.r == 1 and tc.g == 1 and tc.b == 1 then
+        tc = tint
+    end
+    if cfg.monochrome then
+        local v = 0.3 * tc.r + 0.59 * tc.g + 0.11 * tc.b
+        tc = { r = v, g = v, b = v, a = tc.a }
+    end
+    f.text:SetTextColor(tc.r, tc.g, tc.b, tc.a or 1)
     f.text:SetJustifyH(cfg.justify)
     return inset
 end
@@ -1362,7 +1377,9 @@ function ns:ApplyStyle(key)
 
     -- Icon to the left of the text, or alone in the center (launcher without label)
     local launcherLike = ns.IsLauncherKey(key) or (cfg.broker and cfg.broker.kind == "launcher")
-    local iconOnly = cfg.showIcon and launcherLike and not cfg.showLabel
+    -- a "text only" style hides the icons, except the launchers' (they are the point)
+    local showIcon = cfg.showIcon and not (cfg.hideIcons and not launcherLike)
+    local iconOnly = showIcon and launcherLike and not cfg.showLabel
     -- icon size: chosen in pixels (to make every icon the same), or following the height
     local iconSize = (cfg.iconSize or 0) > 0 and math.min(cfg.iconSize, cfg.height * 2)
         or math.max(8, cfg.height - 2 * inset - 4)
@@ -1374,7 +1391,7 @@ function ns:ApplyStyle(key)
     f.text:ClearAllPoints()
     if iconOnly then
         f.icon:SetPoint("CENTER")
-    elseif cfg.showIcon then
+    elseif showIcon then
         f.icon:SetPoint("LEFT", f, "LEFT", 4 + inset, 0)
         f.text:SetPoint("LEFT", f.icon, "RIGHT", 4, 0)
         f.text:SetPoint("RIGHT", f, "RIGHT", -4 - inset, 0)
@@ -1382,7 +1399,7 @@ function ns:ApplyStyle(key)
         f.text:SetPoint("LEFT", f, "LEFT", 4 + inset, 0)
         f.text:SetPoint("RIGHT", f, "RIGHT", -4 - inset, 0)
     end
-    f.icon:SetShown(cfg.showIcon)
+    f.icon:SetShown(showIcon and true or false)
     self:StyleIcon(f, cfg)
     f.text:SetShown(not iconOnly)
 
@@ -1561,7 +1578,10 @@ function ns:UpdateBlock(key)
     self:UpdateBar(f, cfg, mod, level)
     if value == nil then value = L.NA end
     value = tostring(value)
-    if cfg.colorize and level and self.LEVEL_COLORS[level] and value ~= "" then
+    if cfg.monochrome then
+        -- black and white style: the colors written into the value go away
+        value = value:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+    elseif cfg.colorize and level and self.LEVEL_COLORS[level] and value ~= "" then
         value = "|cff" .. self.LEVEL_COLORS[level] .. value .. "|r"
     end
 
@@ -1605,8 +1625,10 @@ function ns:UpdateBar(f, cfg, mod, level)
         return
     end
     f.barFraction = fraction
-    local hex = level and self.LEVEL_COLORS[level]
-    if hex then
+    local hex = level and not cfg.monochrome and self.LEVEL_COLORS[level]
+    if cfg.monochrome then
+        f.bar:SetColorTexture(0.7, 0.7, 0.7, 0.3)
+    elseif hex then
         f.bar:SetColorTexture(tonumber(hex:sub(1, 2), 16) / 255, tonumber(hex:sub(3, 4), 16) / 255,
             tonumber(hex:sub(5, 6), 16) / 255, 0.35)
     else

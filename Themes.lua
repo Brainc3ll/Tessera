@@ -17,6 +17,14 @@ local L = ns.L
 --   Blizzard classic : the game's original tooltip background and border
 --   Flat        : dark flat background and thin black border, no dependencies
 --   Transparent : no background, no border, only outlined text and icons
+--   Fantasy styles, with the game's fonts: Runestone (black and white, text only, silver
+--   edge), Grimoire (dark leather, gold), Parchment (light parchment, brown ink),
+--   Arcane (deep violet, pale blue letters)
+--
+-- Every style can be picked, also when its UI is not installed: it is then an imitation
+-- (FlareUI's thin border replaced by a plain one, the default fonts and colors of ElvUI
+-- and EllesmereUI), labeled in the menu and explained in the chat (missingNote).
+-- Tessera only offers a style by itself (popup) when its UI is installed.
 --
 -- The imitated UIs are optional addons: Tessera never requires them. Each theme checks
 -- at runtime whether its UI is loaded (installed/available) and falls back to safe
@@ -105,12 +113,16 @@ ns.themes = {
     {
         key = "flareui2",
         name = "FlareUI",
-        available = function() return ns:HasFlareUIMedia() end,
+        installed = function() return ns:HasFlareUIMedia() end,
+        available = function() return true end,
+        missingNote = "THEME_NOTE_FLAREUI",
         block = function(cfg)
             cfg.bg = "solid"
             cfg.bgColor = { r = 0, g = 0, b = 0, a = 0.8 }
-            cfg.border = "lsm:FlareUI Thin"
-            cfg.borderSize = 8
+            -- without FlareUI, its thin border is imitated by a plain one
+            local thin = ns:HasFlareUIMedia()
+            cfg.border = thin and "lsm:FlareUI Thin" or "solid"
+            cfg.borderSize = thin and 8 or 1
             cfg.borderColor = { r = 0.80, g = 0.60, b = 0.34, a = 1 }
             cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
         end,
@@ -128,12 +140,15 @@ ns.themes = {
     {
         key = "flareui", -- key kept from earlier versions: saved profiles refer to it
         name = "FlareUI 1.x",
-        available = function() return ns:HasFlareUIMedia() end,
+        installed = function() return ns:HasFlareUIMedia() end,
+        available = function() return true end,
+        missingNote = "THEME_NOTE_FLAREUI",
         block = function(cfg)
             cfg.bg = "dialogDark"
             cfg.bgColor = { r = 1, g = 1, b = 1, a = 0.85 }
-            cfg.border = "lsm:FlareUI Thin"
-            cfg.borderSize = 8
+            local thin = ns:HasFlareUIMedia()
+            cfg.border = thin and "lsm:FlareUI Thin" or "solid"
+            cfg.borderSize = thin and 8 or 1
             cfg.borderColor = { r = 0.65, g = 0.49, b = 0.27, a = 1 }
             cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
         end,
@@ -142,7 +157,8 @@ ns.themes = {
             return {
                 bgFile = (LSM and LSM:Fetch("background", "Blizzard Dialog Background Dark", true))
                     or "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
-                edgeFile = LSM and LSM:Fetch("border", "FlareUI Frames", true),
+                edgeFile = (LSM and LSM:Fetch("border", "FlareUI Frames", true))
+                    or "Interface\\Tooltips\\UI-Tooltip-Border",
                 edgeSize = 16, inset = 3,
                 bg = { 1, 1, 1, 0.92 }, border = { 0.65, 0.49, 0.27, 1 },
                 title = { 0.8, 0.6, 0.34 },
@@ -153,7 +169,8 @@ ns.themes = {
         key = "ellesmere",
         name = "EllesmereUI",
         installed = function() return type(_G["EllesmereUI"]) == "table" end,
-        available = function() return type(_G["EllesmereUI"]) == "table" or ns.PreviewThemesEnabled() end,
+        available = function() return true end,
+        missingNote = "THEME_NOTE_ELLESMERE",
         block = function(cfg)
             cfg.bg = "solid"
             cfg.bgColor = { r = 0.067, g = 0.067, b = 0.067, a = 0.95 }
@@ -175,7 +192,8 @@ ns.themes = {
             local E = ElvEngine()
             return E ~= nil and type(E.media) == "table"
         end,
-        available = function() return ns.PreviewThemesEnabled() or (ElvEngine() ~= nil and type(ElvEngine().media) == "table") end,
+        available = function() return true end,
+        missingNote = "THEME_NOTE_ELVUI",
         block = function(cfg)
             local E = ElvEngine()
             local m = E and E.media or {}
@@ -333,6 +351,91 @@ ns.themes = {
             return FlatWindow({ 0.05, 0.05, 0.05, 0.95 }, { 0, 0, 0, 1 })
         end,
     },
+    -- Fantasy styles, with the game's own fonts (Morpheus: the quest titles' font)
+    {
+        -- Runestone: black and white, text only: white letters on deep black, a thin
+        -- silver line around the blocks and between them; launchers keep a grey icon
+        key = "runestone",
+        name = L.THEME_RUNESTONE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.025, g = 0.025, b = 0.03, a = 0.93 }
+            cfg.border = "solid"
+            cfg.borderSize = 1
+            cfg.borderColor = { r = 0.72, g = 0.72, b = 0.75, a = 1 } -- silver
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.72, g = 0.72, b = 0.75, a = 0.45 }
+            cfg.font, cfg.outline = "morpheus", "NONE"
+            cfg.hideIcons, cfg.monochrome = true, true
+        end,
+        window = function()
+            return FlatWindow({ 0.025, 0.025, 0.03, 0.97 }, { 0.72, 0.72, 0.75, 1 }, { 0.92, 0.92, 0.94 })
+        end,
+    },
+    {
+        -- Grimoire: an old spell book: dark leather, gold edges and golden letters
+        key = "grimoire",
+        name = L.THEME_GRIMOIRE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.12, g = 0.07, b = 0.035, a = 0.94 } -- dark leather
+            cfg.border = "solid"
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 0.78, g = 0.6, b = 0.22, a = 1 } -- gold
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.78, g = 0.6, b = 0.22, a = 0.45 }
+            cfg.font, cfg.outline = "morpheus", "OUTLINE"
+            cfg.textTint = { r = 1, g = 0.86, b = 0.5, a = 1 }
+            cfg.iconShape, cfg.iconBorderColor = "square", { r = 0.78, g = 0.6, b = 0.22, a = 1 }
+        end,
+        window = function()
+            return FlatWindow({ 0.11, 0.065, 0.035, 0.97 }, { 0.78, 0.6, 0.22, 1 }, { 1, 0.86, 0.5 })
+        end,
+    },
+    {
+        -- Parchment: light parchment, dark brown ink, a copper edge. The options window
+        -- stays dark (its texts are light)
+        key = "parchment",
+        name = L.THEME_PARCHMENT,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.84, g = 0.75, b = 0.56, a = 0.95 }
+            cfg.border = "solid"
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 0.45, g = 0.29, b = 0.13, a = 1 } -- copper brown
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.45, g = 0.29, b = 0.13, a = 0.5 }
+            cfg.font, cfg.outline = "morpheus", "NONE" -- ink: no outline
+            cfg.textTint = { r = 0.22, g = 0.13, b = 0.05, a = 1 }
+        end,
+        window = function()
+            return FlatWindow({ 0.16, 0.11, 0.06, 0.97 }, { 0.62, 0.42, 0.2, 1 }, { 0.93, 0.83, 0.62 })
+        end,
+    },
+    {
+        -- Arcane: the mages of Dalaran: deep violet, a violet edge, pale glowing blue letters
+        key = "arcane",
+        name = L.THEME_ARCANE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.07, g = 0.03, b = 0.13, a = 0.92 }
+            cfg.border = "solid"
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 0.56, g = 0.32, b = 0.88, a = 1 }
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.56, g = 0.32, b = 0.88, a = 0.5 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+            cfg.textTint = { r = 0.72, g = 0.86, b = 1, a = 1 }
+            cfg.iconShape, cfg.iconBorderColor = "round", { r = 0.56, g = 0.32, b = 0.88, a = 1 }
+        end,
+        window = function()
+            return FlatWindow({ 0.07, 0.035, 0.13, 0.97 }, { 0.56, 0.32, 0.88, 1 }, { 0.72, 0.86, 1 })
+        end,
+    },
 }
 
 -- The center of modern tooltips is a white texture that the game tints with
@@ -362,19 +465,25 @@ local function IsInstalled(t)
     return t.available()
 end
 
+-- The style of a UI that is not installed: what differs from the real one (or nil)
+function ns:GetThemeNote(key)
+    local t = byKey[key or self:GetTheme()]
+    if t and t.missingNote and not IsInstalled(t) then return L[t.missingNote] end
+end
+
 -- Is the UI this theme matches loaded? (checked on import)
 function ns:IsThemeInstalled(key)
     local t = byKey[key]
     return t ~= nil and IsInstalled(t)
 end
 
--- Themes offered in the menu: those whose UI is installed, plus Blizzard and Flat
--- (previewed themes are labeled as such)
+-- Themes offered in the menu: every style; those of a UI that is not installed are
+-- labeled (an imitation, see GetThemeNote)
 function ns:GetAvailableThemes()
     local list = {}
     for _, t in ipairs(self.themes) do
         if t.available() then
-            local name = IsInstalled(t) and t.name or (t.name .. " " .. L.THEME_PREVIEW)
+            local name = IsInstalled(t) and t.name or (t.name .. " " .. L.THEME_NOT_INSTALLED)
             table.insert(list, { key = t.key, name = name })
         end
     end
@@ -400,7 +509,10 @@ function ns:ApplyThemeToCfg(cfg, key)
     local theme = byKey[key or self:GetTheme()] or byKey.blizzard
     cfg.iconShape, cfg.iconSize = "none", 0
     cfg.iconBorderColor = { r = 0, g = 0, b = 0, a = 1 }
-    cfg.separators = false -- only the "Square" styles draw lines between merged blocks
+    cfg.separators = false -- only some styles draw lines between merged blocks
+    -- text only, black and white, the style's text color: only some styles
+    cfg.hideIcons, cfg.monochrome = false, false
+    cfg.textTint = { r = 1, g = 1, b = 1, a = 0 }
     theme.block(cfg)
 end
 
@@ -408,7 +520,8 @@ end
 -- group and launcher defaults (restyle = also apply it to the frames now)
 local function RestyleProfile(self, key, restyle)
     for _, field in ipairs({ "bg", "bgColor", "border", "borderSize", "borderColor", "font", "outline",
-                             "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor" }) do
+                             "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor",
+                             "hideIcons", "monochrome", "textTint" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end
@@ -464,7 +577,7 @@ function ns:SyncAutoTheme()
     end
     db.autoTheme = key
     if applied == key then return end
-    if byKey[applied] and byKey[applied].available() then
+    if byKey[applied] and IsInstalled(byKey[applied]) then
         db.theme = applied -- keep the current look; the new style is offered instead
     else
         -- the old style is unavailable (its interface is missing): replaced for now, and

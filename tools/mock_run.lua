@@ -450,6 +450,22 @@ for _, step in ipairs({
         assert(not ns.brokerModeActive, "broker mode not off")
     end,
     function() for _, t in ipairs(ns:GetAvailableThemes()) do ns:ApplyTheme(t.key); ns:UpdateLayout() end end,
+    -- Runestone: text only, black and white; another style gives icons and colors back;
+    -- the styles of interfaces that are not installed can be picked, with a note
+    function()
+        assert(ns:ApplyTheme("runestone"), "runestone refused")
+        local cfg, f = ns.db.blocks.durability, ns.frames.durability
+        assert(cfg.hideIcons and cfg.monochrome, "runestone flags")
+        ns:ApplyStyle("durability")
+        ns:UpdateBlock("durability")
+        assert(not f.icon:IsShown(), "runestone hides the icon")
+        assert(not (f.lastText or ""):find("|c", 1, true), "runestone: no color in the text")
+        assert(ns:ApplyTheme("grimoire") and not cfg.hideIcons and cfg.textTint.a == 1, "grimoire clears runestone")
+        assert(ns:ApplyTheme("flat") and (cfg.textTint.a or 0) == 0, "flat clears the tint")
+        assert(ns:ApplyTheme("elvui") and ns:GetThemeNote("elvui"), "elvui without ElvUI, with a note")
+        assert(ns:GetTheme() == "elvui", "a style picked without its UI stays")
+        ns:ApplyTheme("flat")
+    end,
     function() for _, t in ipairs(ns.themes) do t.block({}); assert(t.window().title, t.key) end end,
     -- a profile styled with FlareUI 1.x keeps its look, and FlareUI 2.x is offered in a window
     function()

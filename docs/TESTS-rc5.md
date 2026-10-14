@@ -1,6 +1,6 @@
 # Tests de la rc5 (jeudi 15 octobre)
 
-Version à tester : **Tessera-1.0.0-rc5-test9.zip** (version de test : elle a les commandes `/tes test`).
+Version à tester : **Tessera-1.0.0-rc5-test10.zip** (version de test : elle a les commandes `/tes test`).
 Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur Lua.
 
 ## 0. Préparation (5 min)
@@ -79,6 +79,14 @@ Contre un ou plusieurs mobs, avec la barre de test (`/tes test blocs`) :
 - [ ] Installer FlareUI, `/reload` : la fenêtre qui propose le style FlareUI apparaît (une seule fois).
 - [ ] Style FlareUI : `/tes test flare`, puis comparer la police des blocs avec la **barre d'XP de FlareUI** (Arial Narrow).
 - [ ] Avec FlareUI : pas de bouton rond, Tessera est dans le sac d'addons de FlareUI.
+
+## 6 bis. Nouveaux styles (5 min)
+
+- [ ] Onglet Apparence : Pierre runique : seulement le texte, blanc et gris, aucune couleur (or, durabilité...), bords argentés ; les lanceurs gardent une icône grise.
+- [ ] Grimoire, Parchemin, Arcanes : lisibles ? (Parchemin : les valeurs en couleur restent-elles lisibles sur le fond clair ?)
+- [ ] Revenir à un autre style : les icônes et les couleurs reviennent.
+- [ ] Sans FlareUI / ElvUI / EllesmereUI : leurs styles sont dans la liste, marqués « (sans l'addon) » ; en choisir un écrit dans la discussion ce qui change.
+- [ ] Avec FlareUI installé : la fenêtre qui propose son style apparaît toujours (une seule fois).
 
 ## 7. DataBroker (5 min, si le temps)
 

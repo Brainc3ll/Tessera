@@ -21,6 +21,11 @@ ns.CHANGELOG = {
                 .. "swap places). A spacer can now be replaced by a block, to fill the room the ready-made layouts "
                 .. "leave in their bars (Ctrl + Z brings it back). A bar's first block can be replaced without the bar "
                 .. "losing its screen edge or its width. New help topic \"Replacing blocks\".",
+            "Four new fantasy styles (Look tab), with the game's fonts: Runestone (text only, black and white, "
+                .. "silver edges), Grimoire (dark leather and gold), Parchment (parchment and brown ink), Arcane (deep "
+                .. "violet, pale blue letters).",
+            "The styles of FlareUI, ElvUI and EllesmereUI can be picked without that addon: they are then an "
+                .. "imitation, marked in the list, and the chat says what differs.",
             "Quick tour: a new step to try the ready-made layouts one after the other with arrows, right on the "
                 .. "screen; keep one, or yours comes back.",
             "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
@@ -54,6 +59,11 @@ ns.CHANGELOG = {
                 .. "les dispositions toutes prêtes laissent dans leurs barres (Ctrl + Z le fait revenir). Le premier bloc "
                 .. "d'une barre se remplace sans que la barre perde son bord de l'écran ni sa largeur. Nouveau sujet "
                 .. "d'aide « Remplacer des blocs ».",
+            "Quatre nouveaux styles fantasy (onglet Apparence), avec les polices du jeu : Pierre runique (seulement "
+                .. "le texte, en noir et blanc, bords argentés), Grimoire (cuir sombre et or), Parchemin (parchemin et "
+                .. "encre brune), Arcanes (violet profond, lettres bleu pâle).",
+            "Les styles de FlareUI, ElvUI et EllesmereUI se choisissent aussi sans l'addon : c'est alors une "
+                .. "imitation, marquée dans la liste, et la discussion dit ce qui change.",
             "Visite rapide : une nouvelle étape pour essayer les dispositions toutes prêtes l'une après l'autre avec "
                 .. "des flèches, directement à l'écran ; garde-en une, ou la tienne revient.",
             "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "

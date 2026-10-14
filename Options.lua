@@ -1642,7 +1642,13 @@ local function BuildLookPage(page)
         end
         return list
     end, function() return ns:GetTheme() end,
-       function(v) ns:ApplyTheme(v); ns:RefreshOptions() end, nil, nil, L.TIP_THEME), 1)
+       function(v)
+           ns:ApplyTheme(v)
+           -- the style of a UI that is not installed: say what differs from the real one
+           local note = ns:GetThemeNote(v)
+           if note then ns.Print(note) end
+           ns:RefreshOptions()
+       end, nil, nil, L.TIP_THEME), 1)
     Place(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
         function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
         function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), 1)

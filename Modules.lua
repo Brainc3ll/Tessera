@@ -1666,9 +1666,18 @@ local function LootInfo()
     return method, Try(GetLootThreshold), master
 end
 
+-- The game's own names first (official in every language), Tessera's as a fallback
+local GAME_LOOT_NAMES = {
+    LOOT_FFA = "LOOT_FREE_FOR_ALL", LOOT_RR = "LOOT_ROUND_ROBIN", LOOT_MASTER = "LOOT_MASTER_LOOTER",
+    LOOT_GROUP = "LOOT_GROUP_LOOT", LOOT_NBG = "LOOT_NEED_BEFORE_GREED", LOOT_PERSONAL = "LOOT_PERSONAL_LOOT",
+}
+local function GameText(name, fallback)
+    local text = _G[name]
+    return (type(text) == "string" and text ~= "") and text or fallback
+end
 local function LootMethodName(method)
     local key = method ~= nil and LOOT_METHODS[method]
-    return key and L[key] or L.NA
+    return key and GameText(GAME_LOOT_NAMES[key], L[key]) or L.NA
 end
 
 -- Name of an item quality in its own color ("Uncommon" in green)
@@ -1698,9 +1707,9 @@ ns:RegisterModule("loot", {
             return
         end
         local method, threshold, master = LootInfo()
-        WHITE(tt, L.TT_LOOT_METHOD, LootMethodName(method))
+        WHITE(tt, GameText("LOOT_METHOD", L.TT_LOOT_METHOD), LootMethodName(method))
         local quality = QualityText(threshold)
-        if quality then WHITE(tt, L.TT_LOOT_THRESHOLD, quality) end
+        if quality then WHITE(tt, GameText("LOOT_THRESHOLD", L.TT_LOOT_THRESHOLD), quality) end
         if master then WHITE(tt, L.TT_LOOT_MASTER, master) end
     end,
     clickHint = L.HINT_ROLL,
@@ -2744,7 +2753,7 @@ local SAMPLES = {
     whispers    = function() return "2", WARN end,
     regen       = function() return L.REGEN_FORMAT:format(48) end,
     stats       = function() return L.STAT_SHORT_AP .. " 1 250" end,
-    loot        = function() return L.LOOT_GROUP end,
+    loot        = function() return GameText("LOOT_GROUP_LOOT", L.LOOT_GROUP) end,
 }
 for key, sample in pairs(SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

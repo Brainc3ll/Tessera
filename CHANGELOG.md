@@ -13,6 +13,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Blocks tab: how a block shows its value (gold format, clock, decimals, stat shown...) is now in the Text sub-tab, under "Value shown"; Behaviour keeps the rest (goal, thresholds, hiding, clicks).
 - Styles: Parchment is easier to read (darker ink, colors in the values darkened); ElvUI shows the values in its value color (blue by default) and EllesmereUI has its green accent between merged blocks, so they no longer look alike. FlareUI 1.x is only listed with FlareUI 1.x installed (profiles using it keep it).
 - Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category under titles, with sample values; a banner switches the styles and can hide the game's interface. Your layout comes back when you leave (also after a /reload); a fight ends the demo.
+- Group loot block: loot methods, "Loot Method" and "Loot Threshold" use the game's own names (official in every language).
 - Quick tour: a new step to try the ready-made layouts one after the other with arrows, right on the screen; keep one, or yours comes back.
 - Placement mode: the names under the blocks no longer overlap each other nor go off screen (Compact and Left column layouts); when room is short, a name is shortened to its block's width.
 - New ready-made layout "Double bar" (Look tab): the top bar with the basics, and a second bar always shown with WoW Forever's blocks (Legacy, Comprehension, Camping, Honor, weapon skills).

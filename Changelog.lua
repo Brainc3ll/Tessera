@@ -41,6 +41,8 @@ ns.CHANGELOG = {
             "Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category under "
                 .. "titles, with sample values; a banner switches the styles and can hide the game's interface. Your "
                 .. "layout comes back when you leave (also after a /reload); a fight ends the demo.",
+            "Group loot block: loot methods, \"Loot Method\" and \"Loot Threshold\" use the game's own names "
+                .. "(official in every language).",
             "Quick tour: a new step to try the ready-made layouts one after the other with arrows, right on the "
                 .. "screen; keep one, or yours comes back.",
             "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
@@ -96,6 +98,8 @@ ns.CHANGELOG = {
                 .. "catégorie sous des titres, avec des valeurs d'exemple ; un bandeau change de style et peut masquer "
                 .. "l'interface du jeu. Ta disposition revient en quittant (aussi après un /reload) ; un combat termine "
                 .. "la démo.",
+            "Bloc butin du groupe : les modes de butin, le mode et le seuil de butin prennent les noms du jeu "
+                .. "lui-même (les noms officiels, dans toutes les langues).",
             "Visite rapide : une nouvelle étape pour essayer les dispositions toutes prêtes l'une après l'autre avec "
                 .. "des flèches, directement à l'écran ; garde-en une, ou la tienne revient.",
             "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "

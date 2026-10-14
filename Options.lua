@@ -1892,7 +1892,7 @@ local TOPIC_W, TOPIC_H = 165, 22
 local function BuildTopicPage(page, getSections)
     local topicList = CreateFrame("Frame", nil, page)
     topicList:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1] - 12, -6)
-    topicList:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 44)
+    topicList:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 70)
     topicList:SetWidth(TOPIC_W)
 
     -- thin vertical line between the topics and the text
@@ -2009,6 +2009,18 @@ local function BuildHelpPage(page)
     AttachTip(tour, L.TUTORIAL_START, L.TIP_TUTORIAL_START)
     tour.Refresh = function() end
     Register(tour, function() return not ns.brokerModeActive end)
+    -- demo mode: every block, by category, with sample values (Demo.lua)
+    local demo = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
+    demo:SetSize(TOPIC_W, 22)
+    demo:SetPoint("BOTTOMLEFT", tour, "TOPLEFT", 0, 4)
+    demo:SetText(L.DEMO_BUTTON)
+    demo:SetScript("OnClick", function()
+        if panel and panel:IsShown() then ns:ToggleOptions() end -- the blocks must be visible
+        ns:StartDemo()
+    end)
+    AttachTip(demo, L.DEMO_BUTTON, L.TIP_DEMO_BUTTON)
+    demo.Refresh = function() end
+    Register(demo, function() return not ns.brokerModeActive end)
 end
 
 ---------------------------------------------------------------------------
@@ -2485,12 +2497,12 @@ StaticPopupDialogs["TESSERA_WELCOME"] = {
     text = L.WELCOME_TEXT,
     button1 = L.TUTORIAL_START,
     button2 = L.WELCOME_LATER,
-    button3 = L.WELCOME_HELP,
+    button3 = L.DEMO_BUTTON,
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
     OnAccept = function() ns:StartTutorial() end,
-    OnAlt = function() ns:OpenOptions(PAGE_HELP) end,
+    OnAlt = function() ns:StartDemo() end,
 }
 
 ---------------------------------------------------------------------------

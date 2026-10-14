@@ -38,6 +38,9 @@ ns.CHANGELOG = {
                 .. "in its value color (blue by default) and EllesmereUI has its green accent between merged blocks, "
                 .. "so they no longer look alike. FlareUI 1.x is only listed with FlareUI 1.x installed (profiles "
                 .. "using it keep it).",
+            "Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category under "
+                .. "titles, with sample values; a banner switches the styles and can hide the game's interface. Your "
+                .. "layout comes back when you leave (also after a /reload); a fight ends the demo.",
             "Quick tour: a new step to try the ready-made layouts one after the other with arrows, right on the "
                 .. "screen; keep one, or yours comes back.",
             "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
@@ -89,6 +92,10 @@ ns.CHANGELOG = {
                 .. "valeurs dans sa couleur de valeur (bleu par défaut) et EllesmereUI a son accent vert entre les blocs "
                 .. "fusionnés : ils ne se ressemblent plus. FlareUI 1.x n'est plus dans la liste qu'avec FlareUI 1.x "
                 .. "installé (les profils qui l'utilisent le gardent).",
+            "Mode démo (onglet Aide, fenêtre de bienvenue, /tessera demo) : tous les blocs d'un coup, rangés par "
+                .. "catégorie sous des titres, avec des valeurs d'exemple ; un bandeau change de style et peut masquer "
+                .. "l'interface du jeu. Ta disposition revient en quittant (aussi après un /reload) ; un combat termine "
+                .. "la démo.",
             "Visite rapide : une nouvelle étape pour essayer les dispositions toutes prêtes l'une après l'autre avec "
                 .. "des flèches, directement à l'écran ; garde-en une, ou la tienne revient.",
             "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "

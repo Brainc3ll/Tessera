@@ -680,6 +680,8 @@ local function InitDB()
     ns:ApplyLevelPalette()
     -- already in a dungeon at login / reload: start directly with its profile
     if ns.GetSituationProfile then ns.profileOverride = ns:GetSituationProfile() end
+    -- a demo left open (reload, logout): the player's profile comes back (Demo.lua)
+    if ns.RestoreDemoBackup then ns:RestoreDemoBackup() end
     ns:LoadProfile()
 end
 
@@ -1520,6 +1522,7 @@ end
 
 -- (silent: no chat message, e.g. when Blizzard's Edit Mode opens or closes)
 function ns:SetLocked(locked, silent)
+    if not locked and self.DemoBlocksUnlock and self:DemoBlocksUnlock() then return end
     self.db.locked = locked
     self:RefreshLockState()
     if self.RefreshOptions then self:RefreshOptions() end
@@ -2598,6 +2601,9 @@ RunCommand = function(msg)
     elseif msg:match("^preview forever") or msg:match("^apercu forever") or msg:match("^aperçu forever") then
         -- screenshots: only the WoW Forever blocks (Placement.lua)
         ns:PreviewForever(strtrim(msg:match("forever(.*)") or ""))
+    elseif msg == "demo" or msg == "démo" then
+        -- every block by category, with sample values and a style switcher (Demo.lua)
+        if ns:IsDemoActive() then ns:StopDemo() else ns:StartDemo() end
     elseif msg == "preview" or msg == "apercu" or msg == "aperçu" then
         ns:SetPreview(not ns.previewMode)
     elseif msg == "recover" or msg == "recuperer" or msg == "récupérer" then

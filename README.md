@@ -99,7 +99,8 @@ Help tab inside the game explains everything.
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
 - Tooltips your way: bigger or smaller, or only while holding Alt (General tab).
 - A quick tour on first launch (again from the Help tab), where the ready-made layouts can be
-  tried one after the other right on the screen.
+  tried one after the other right on the screen, and a demo mode showing every block by category
+  with sample values and a style switcher.
 - Blizzard's Edit Mode: a copy of your layout with room for Tessera's bars stuck to the top or
   bottom edge (your layout is never changed). Tested on Blizzard's interface (Modern, Classic)
   and FlareUI unchanged; with other interfaces, results may be unexpected.
@@ -112,6 +113,7 @@ Help tab inside the game explains everything.
 | `/tessera minimap` | Show or hide the minimap button |
 | `/tessera preview` | Sample values in every block (for screenshots) |
 | `/tessera preview forever` | The WoW Forever blocks alone, with sample values |
+| `/tessera demo` | Demo mode: every block by category, sample values, style switcher (again to leave) |
 | `/tessera bug` | Report to copy into a bug report |
 | `/tessera broker` | DataBroker mode on or off |
 | `/tessera recover` | Bring back blocks that stick out of the screen |
@@ -155,6 +157,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
 | `Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
 | `Spacers.lua` | Spacer blocks (empty, separator line or text). |
+| `Demo.lua` | Demo mode: every block by category with sample values, style switcher, the player's profile put aside and given back. |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
 | `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, Blizzard Settings page. |

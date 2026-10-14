@@ -450,6 +450,33 @@ for _, step in ipairs({
         assert(not ns.brokerModeActive, "broker mode not off")
     end,
     function() for _, t in ipairs(ns:GetAvailableThemes()) do ns:ApplyTheme(t.key); ns:UpdateLayout() end end,
+    -- demo mode: every block with sample values, styles switched from the banner;
+    -- the player's profile comes back, also after a /reload during the demo
+    function()
+        ns:ResetProfile("left")
+        ns.db.blocks.time.width = 123
+        ns:StartDemo()
+        assert(ns:IsDemoActive() and ns.previewMode, "demo started")
+        assert(ns.db.blocks.legacy.enabled and ns.db.blocks.gold.showLabel, "demo shows the blocks with labels")
+        ns:SetLocked(false)
+        assert(ns:IsLocked(), "no unlocking during the demo")
+        local b = TesseraDemoBanner
+        b.nextStyle:GetScript("OnClick")(b.nextStyle)
+        b.prev:GetScript("OnClick")(b.prev)
+        b.hideUI:SetChecked(true)
+        b.hideUI:GetScript("OnClick")(b.hideUI)
+        ns:UpdateLayout()
+        b.quit:GetScript("OnClick")(b.quit)
+        assert(not ns:IsDemoActive() and not ns.previewMode, "demo ended")
+        assert(ns.db.blocks.time.width == 123, "the player's layout is back")
+        -- a demo left open at logout
+        ns:StartDemo()
+        ns:RestoreDemoBackup()
+        ns:LoadProfile()
+        assert(ns.db.blocks.time.width == 123, "the player's layout is back after a reload")
+        ns.previewMode = nil
+        ns:ResetProfile("top")
+    end,
     -- display options of the blocks (gold, bags, XP, durability, FPS, latency, time,
     -- coordinates, friends, guild, reputation): every value gives a text
     function()

@@ -38,7 +38,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 - **Share a style or a layout**: export only the look or only the placement as text. On import, Tessera first lists what is missing on your computer (another addon's blocks, LibSharedMedia fonts or frames, WoW Forever blocks) and asks before applying.
 - **Blizzard's Edit Mode**: when a Tessera bar stuck to the top or bottom covers the action bars or the minimap, Tessera offers a copy of your Edit Mode layout with room for it; your own layout is never changed. Tested on Blizzard's interface (Modern, Classic) and on FlareUI unchanged; with another interface, unexpected results may occur.
 - **Tooltips your way**: bigger or smaller, or only while holding Alt.
-- **Help built in**: a quick tour on first launch (try the ready-made layouts right on your screen), a Help tab split into short topics, and a tooltip on every option.
+- **Help built in**: a quick tour on first launch (try the ready-made layouts right on your screen), a demo mode with every block and a style switcher, a Help tab split into short topics, and a tooltip on every option.
 - **Accessibility**: colorblind-friendly colors, high contrast, minimum text size.
 
 ## Getting started
@@ -53,6 +53,7 @@ Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains e
 | /tessera minimap | Show or hide the minimap button |
 | /tessera preview | Sample values in every block (for screenshots) |
 | /tessera preview forever | The WoW Forever blocks alone, with sample values |
+| /tessera demo | Demo mode: every block by category, sample values, style switcher (again to leave) |
 | /tessera broker | DataBroker mode on or off |
 | /tessera recover | Bring back blocks that stick out of the screen |
 | /tessera bug | Report to copy into a bug report |
@@ -127,7 +128,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 - **Partager un style ou une disposition** : exporte seulement l'allure ou seulement le placement en texte. À l'import, Tessera liste d'abord ce qui manque sur ton ordinateur (blocs d'un autre addon, polices ou cadres LibSharedMedia, blocs WoW Forever) et demande avant d'appliquer.
 - **Mode Édition de Blizzard** : quand une barre de Tessera collée en haut ou en bas recouvre les barres d'action ou la minicarte, Tessera propose une copie de ta disposition du mode Édition avec la place qu'il faut ; ta disposition n'est jamais modifiée. Testé sur l'interface de Blizzard (Moderne, Classique) et sur FlareUI non modifié ; avec une autre interface, des résultats inattendus peuvent survenir.
 - **Infobulles à ta façon** : plus grandes ou plus petites, ou seulement en tenant Alt.
-- **Aide intégrée** : une visite rapide au premier lancement (essaie les dispositions toutes prêtes directement sur ton écran), un onglet Aide découpé en sujets courts, et une infobulle sur chaque option.
+- **Aide intégrée** : une visite rapide au premier lancement (essaie les dispositions toutes prêtes directement sur ton écran), un mode démo avec tous les blocs et un sélecteur de styles, un onglet Aide découpé en sujets courts, et une infobulle sur chaque option.
 - **Accessibilité** : couleurs pour daltoniens, contraste renforcé, taille de texte minimale.
 
 ## Pour commencer
@@ -142,6 +143,7 @@ Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** expli
 | /tessera minimap | Afficher ou masquer le bouton de la minicarte |
 | /tessera preview | Valeurs d'exemple dans tous les blocs (pour les captures) |
 | /tessera preview forever | Les blocs WoW Forever seuls, avec des valeurs d'exemple |
+| /tessera demo | Mode démo : tous les blocs par catégorie, valeurs d'exemple, sélecteur de styles (à nouveau pour quitter) |
 | /tessera broker | Activer ou désactiver le mode DataBroker |
 | /tessera recover | Ramener les blocs qui dépassent de l'écran |
 | /tessera bug | Rapport à copier dans un signalement de bug |

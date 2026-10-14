@@ -25,7 +25,7 @@ local CATEGORIES = {
     { title = "DEMO_CAT_SYSTEM", keys = { "fps", "latency", "memory", "volume", "played" } },
     { title = "DEMO_CAT_FOREVER", keys = { "legacy", "comprehension", "camping", "honor", "weaponSkills" } },
 }
-local COLUMN_W, COLUMN_GAP, TOP = 240, 22, -130
+local COLUMN_W, COLUMN_GAP, TOP = 256, 20, -130
 
 
 function ns:IsDemoActive()
@@ -140,7 +140,7 @@ end
 
 local function CreateBanner(self)
     local b = CreateFrame("Frame", "TesseraDemoBanner", UIParent, "BackdropTemplate")
-    b:SetSize(660, 92)
+    b:SetSize(760, 92)
     b:SetPoint("TOP", UIParent, "TOP", 0, -18)
     b:SetFrameStrata("DIALOG")
     b:SetClampedToScreen(true)
@@ -155,7 +155,7 @@ local function CreateBanner(self)
     b.title:SetText(L.DEMO_TITLE)
     b.sub = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     b.sub:SetPoint("TOPLEFT", b.title, "BOTTOMLEFT", 0, -4)
-    b.sub:SetWidth(628)
+    b.sub:SetWidth(728)
     b.sub:SetJustifyH("LEFT")
     b.sub:SetText(L.DEMO_SUBTITLE)
 
@@ -180,7 +180,7 @@ local function CreateBanner(self)
     prev:SetPoint("BOTTOMLEFT", 14, 12)
     b.style = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     b.style:SetPoint("LEFT", prev, "RIGHT", 8, 0)
-    b.style:SetWidth(220)
+    b.style:SetWidth(320)
     b.style:SetWordWrap(false)
     local nextStyle = Button(">", 28, function() Switch(1) end)
     nextStyle:SetPoint("LEFT", b.style, "RIGHT", 8, 0)

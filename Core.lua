@@ -86,7 +86,8 @@ ns.borders = {
 ns.fonts = {
     { key = "friz",     name = "Friz Quadrata", file = "Fonts\\FRIZQT__.TTF" },
     { key = "arial",    name = "Arial Narrow",  file = "Fonts\\ARIALN.TTF" },
-    { key = "morpheus", name = "Morpheus",      file = "Fonts\\MORPHEUS.TTF" },
+    -- Morpheus draws small letters: shown 2 points larger to read like the others
+    { key = "morpheus", name = "Morpheus",      file = "Fonts\\MORPHEUS.TTF", sizeBoost = 2 },
     { key = "skurri",   name = "Skurri",        file = "Fonts\\SKURRI.TTF" },
 }
 
@@ -1336,7 +1337,7 @@ function ns:SkinBlockFrame(f, cfg)
     local font = self:FindMedia("font", cfg.font)
     local flags = cfg.outline ~= "NONE" and cfg.outline or ""
     if sv.highContrast then flags = "THICKOUTLINE" end
-    local size = math.max(cfg.fontSize, sv.minFontSize or 0)
+    local size = math.max(cfg.fontSize + (font.sizeBoost or 0), sv.minFontSize or 0)
     if not f.text:SetFont(font.file, size, flags) then
         f.text:SetFont(STANDARD_TEXT_FONT, size, flags)
     end
@@ -1583,15 +1584,16 @@ function ns:UpdateBlock(key)
     if value == nil then value = L.NA end
     value = tostring(value)
     if cfg.monochrome then
-        -- black and white style: the colors written into the value go away
-        value = value:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+        -- black and white style: the colors and the small pictures (coins, currencies)
+        -- written into the value go away
+        value = value:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|T.-|t", "")
     elseif cfg.colorize and level and self.LEVEL_COLORS[level] and value ~= "" then
         value = "|cff" .. self.LEVEL_COLORS[level] .. value .. "|r"
     end
     if cfg.inkColors then
         -- light background (Parchment): bright colors would not read, they get darker
         value = value:gsub("|c(%x%x)(%x%x)(%x%x)(%x%x)", function(a, r, g, b)
-            local function ink(h) return math.floor(tonumber(h, 16) * 0.5) end
+            local function ink(h) return math.floor(tonumber(h, 16) * 0.38) end
             return ("|c%s%02x%02x%02x"):format(a, ink(r), ink(g), ink(b))
         end)
     end

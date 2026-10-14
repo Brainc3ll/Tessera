@@ -23,7 +23,9 @@ ns.CHANGELOG = {
                 .. "losing its screen edge or its width. New help topic \"Replacing blocks\".",
             "Four new fantasy styles (Look tab), with the game's fonts: Runestone (text only, black and white, "
                 .. "silver edges), Grimoire (dark leather and gold), Parchment (light parchment, almost black ink), Arcane (deep "
-                .. "violet, pale blue letters).",
+                .. "violet, pale blue letters). The Morpheus font (Runestone, Grimoire, Parchment) is shown 2 points "
+                .. "larger, its letters being small; "
+                .. "Runestone writes the coins as letters and shows no pictures in the values.",
             "The styles of FlareUI, ElvUI and EllesmereUI can be picked without that addon: they are then an "
                 .. "imitation, marked in the list, and the chat says what differs. FlareUI 1.x is only listed with "
                 .. "FlareUI 1.x installed (profiles using it keep it).",
@@ -76,7 +78,10 @@ ns.CHANGELOG = {
                 .. "d'aide « Remplacer des blocs ».",
             "Quatre nouveaux styles fantasy (onglet Apparence), avec les polices du jeu : Pierre runique (seulement "
                 .. "le texte, en noir et blanc, bords argentés), Grimoire (cuir sombre et or), Parchemin (parchemin clair, "
-                .. "encre presque noire), Arcanes (violet profond, lettres bleu pâle).",
+                .. "encre presque noire), Arcanes (violet profond, lettres bleu pâle). La police Morpheus (Pierre runique, Grimoire, "
+                .. "Parchemin) est affichée 2 points plus grand "
+                .. "(ses lettres sont petites) ; Pierre runique écrit les pièces en lettres et n'affiche aucune image dans "
+                .. "les valeurs.",
             "Les styles de FlareUI, ElvUI et EllesmereUI se choisissent aussi sans l'addon : c'est alors une "
                 .. "imitation, marquée dans la liste, et la discussion dit ce qui change. FlareUI 1.x n'est dans la "
                 .. "liste qu'avec FlareUI 1.x installé (les profils qui l'utilisent le gardent).",

@@ -477,6 +477,7 @@ local L = {
     SPACER_THICKNESS = "Line thickness (pixels)",
     TIP_SPACER_THICKNESS = "Thickness of the separator line, in screen pixels.",
     THEME_TRANSPARENT = "Transparent",
+    SAMPLE_PROFESSION = "Blacksmithing",
     DEMO_BUTTON = "Demo mode",
     TIP_DEMO_BUTTON = "Shows every block at once, sorted by category, with sample values, and lets you try the styles. Your own layout comes back when you leave it.",
     DEMO_TITLE = "DEMO MODE",

@@ -296,7 +296,8 @@ local function FormatGold(money, cfg)
     local format = cfg.goldFormat or "full"
     local size = cfg.fontSize or 12
     local function Unit(kind)
-        if cfg.goldIcons ~= false then return ("|T%s:%d:%d:2:0|t"):format(COIN_ICONS[kind], size, size) end
+        -- coin icons, or letters (black and white styles: the icons cannot turn grey)
+        if cfg.goldIcons ~= false and not cfg.monochrome then return ("|T%s:%d:%d:2:0|t"):format(COIN_ICONS[kind], size, size) end
         return "|cff" .. COIN_COLORS[kind] .. L["COIN_" .. kind:upper()] .. "|r"
     end
     local function Number(n)
@@ -2774,7 +2775,7 @@ local MORE_SAMPLES = {
         return ("18|T%s:%d:%d:0:0:64:64:5:59:5:59|t"):format("Interface\\Icons\\INV_Misc_Gem_Amethyst_02", size, size)
     end,
     hearthstone  = function() return (Try(GetBindLocation) or "Goldshire"), GOOD end,
-    profession1  = function() return (L.PROFESSION_1 or "") .. " 215 / 225" end,
+    profession1  = function() return L.SAMPLE_PROFESSION .. " 215 / 225" end,
     cooking      = function() return "150 / 150", GOOD end,
     weaponSkills = function() return "115/120", WARN end,
     legacy       = function() return "16" end,

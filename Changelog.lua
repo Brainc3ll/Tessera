@@ -21,6 +21,9 @@ ns.CHANGELOG = {
                 .. "block, the stat shown on the stats block; /tessera help is in the chat command list.",
             "Help split into small texts: easier to translate with CurseForge's tool, and a change to one line "
                 .. "no longer asks translators to redo the whole help.",
+            "FlareUI styles (2.x, 1.x and Square): the font of FlareUI's XP bar, Arial Narrow by default, or the "
+                .. "one picked in FlareUI's settings. Blocks already in a FlareUI style keep their font: pick the style "
+                .. "again in the Look tab to get it.",
             "Code checked with Ketho's WoW API annotations (the tool addon reviewers use): no deprecated function, "
                 .. "no unknown global; old fallbacks for other game versions removed.",
         },
@@ -34,6 +37,9 @@ ns.CHANGELOG = {
                 .. "groupe, statistique affichée du bloc statistiques ; /tessera help dans la liste des commandes.",
             "Aide découpée en petits textes : plus facile à traduire avec l'outil de CurseForge, et changer une ligne "
                 .. "ne demande plus aux traducteurs de refaire toute l'aide.",
+            "Styles FlareUI (2.x, 1.x et Carré) : la police de la barre d'XP de FlareUI, Arial Narrow par défaut, ou "
+                .. "celle choisie dans les réglages de FlareUI. Les blocs déjà en style FlareUI gardent leur police : "
+                .. "choisis à nouveau le style dans l'onglet Apparence pour l'avoir.",
             "Code vérifié avec les annotations de l'API WoW de Ketho (l'outil des relecteurs d'addons) : aucune "
                 .. "fonction obsolète, aucune variable globale inconnue ; anciens secours pour d'autres versions du jeu retirés.",
         },

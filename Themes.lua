@@ -4,10 +4,10 @@ local L = ns.L
 -- Themes: the look of the blocks and of the options window.
 -- Each theme copies the values found in the code of the UI it imitates:
 --   FlareUI     : FlareUI 2.x, like its XP bar: black background at 80%, light bronze
---                 "FlareUI Thin" border (#CC9957), outlined Friz Quadrata; window like its
+--                 "FlareUI Thin" border (#CC9957), the XP bar's font (Arial Narrow, outlined); window like its
 --                 settings panel (tooltip border in that bronze over Blizzard's Collections tile)
 --   FlareUI 1.x : dark dialog background, bronze "FlareUI Thin" border (#A67D45),
---                 outlined Friz Quadrata (FlareUI 1.x frames)
+--                 the XP bar's font (Arial Narrow, outlined, unless changed in FlareUI)
 --   The FlareUI style matching the installed version is the default; both can be picked.
 --   EllesmereUI : very dark flat grey background (0.067, 0.95 opacity), 1 px black border
 --                 at 80%, EllesmereUI's global font (Expressway by default), as on its data bars
@@ -34,6 +34,31 @@ end
 local function LSMFont(name)
     local LSM = ns:GetLSM()
     if name and LSM and LSM:Fetch("font", name, true) then return "lsm:" .. name end
+end
+
+-- Font of FlareUI's XP bar: FlareUI writes it with its action bar key bind font (Arial Narrow
+-- with an outline by default, in 1.x and 2.x). Read from FlareUI's saved settings (AceDB:
+-- only the values the player changed are saved), so a font picked in FlareUI is followed.
+-- Returns a Tessera font key and an outline.
+local OUTLINES = { OUTLINE = true, THICKOUTLINE = true, NONE = true }
+local function FlareFont()
+    local face, flags = "Arial Narrow", "OUTLINE"
+    for _, name in ipairs({ "FlareUI2_DB", "FlareUI_DB" }) do
+        local db = _G[name]
+        if type(db) == "table" and type(db.profiles) == "table" then
+            local charKey = (UnitName("player") or "") .. " - " .. (GetRealmName() or "")
+            local profileName = type(db.profileKeys) == "table" and db.profileKeys[charKey] or "Default"
+            local profile = db.profiles[profileName]
+            local font = type(profile) == "table" and type(profile.actionbars) == "table"
+                and profile.actionbars.hotkeyFont
+            if type(font) == "table" then
+                if type(font.face) == "string" then face = font.face end
+                if OUTLINES[font.flags] then flags = font.flags end
+            end
+            break
+        end
+    end
+    return LSMFont(face) or "arial", flags
 end
 
 -- ElvUI's main engine object (ElvUI[1]), or nil if ElvUI is not loaded
@@ -87,7 +112,7 @@ ns.themes = {
             cfg.border = "lsm:FlareUI Thin"
             cfg.borderSize = 8
             cfg.borderColor = { r = 0.80, g = 0.60, b = 0.34, a = 1 }
-            cfg.font, cfg.outline = "friz", "OUTLINE"
+            cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
         end,
         window = function()
             -- the Collections tile under a 50% black wash = the tile tinted at half brightness
@@ -110,7 +135,7 @@ ns.themes = {
             cfg.border = "lsm:FlareUI Thin"
             cfg.borderSize = 8
             cfg.borderColor = { r = 0.65, g = 0.49, b = 0.27, a = 1 }
-            cfg.font, cfg.outline = "friz", "OUTLINE"
+            cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
         end,
         window = function()
             local LSM = ns:GetLSM()
@@ -229,7 +254,7 @@ ns.themes = {
             cfg.borderColor = { r = 0.48, g = 0.35, b = 0.19, a = 1 } -- dark bronze
             cfg.separators = true
             cfg.separatorColor = { r = 0.62, g = 0.46, b = 0.25, a = 0.5 }
-            cfg.font, cfg.outline = "friz", "OUTLINE"
+            cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
         end,
         window = function()
             return FlatWindow({ 0.055, 0.047, 0.04, 0.96 }, { 0.80, 0.60, 0.34, 1 }, { 0.80, 0.60, 0.34 })

@@ -698,7 +698,10 @@ end
 -- selected block's are visible. Used by the Behaviour sub-tab and the DataBroker
 -- tab. condition (optional) must also be true for them to show. Returns the set of
 -- module keys that have options.
-local function BuildModuleOptions(sub, P, col, keys, condition)
+-- filter(opt) picks the options of this page: by default those of the Behaviour tab
+-- (options marked tab = "text", how the value is shown, are in the Text tab)
+local function BuildModuleOptions(sub, P, col, keys, condition, filter)
+    filter = filter or function(opt) return opt.tab ~= "text" end
     local function ModuleOf(key)
         return key == "spacer" and ns.spacerModule or ns.modules[key]
     end
@@ -708,12 +711,14 @@ local function BuildModuleOptions(sub, P, col, keys, condition)
     for _, key in ipairs(keys) do
         local mod = ModuleOf(key)
         local list = {}
-        for _, opt in ipairs(mod.options or {}) do table.insert(list, opt) end
-        if mod.isEmpty then
+        for _, opt in ipairs(mod.options or {}) do
+            if filter(opt) then table.insert(list, opt) end
+        end
+        if mod.isEmpty and filter({}) then
             table.insert(list, { kind = "check", field = "hideEmpty", label = "HIDE_EMPTY", tip = "TIP_HIDE_EMPTY",
                 after = function() ns:UpdateAllVisibility() end })
         end
-        if mod.thresholds then
+        if mod.thresholds and filter({}) then
             local t = mod.thresholds
             local tip = t.low and "TIP_THRESHOLD_LOW" or "TIP_THRESHOLD_HIGH"
             table.insert(list, { kind = "slider", field = "warnAt", label = "THRESHOLD_WARN", tip = tip,
@@ -935,6 +940,15 @@ local function BuildBlockPage(page)
         }, "justify", L.TIP_JUSTIFY), 2)
         P.Place(Color(sub, L.TEXT_COLOR, false, "textColor", L.TIP_TEXT_COLOR), 2)
         P.Place(Check(sub, L.CLASS_COLOR_TEXT, "classColorText", L.TIP_CLASS_COLOR_TEXT), 2)
+
+        -- how the selected block shows its value (gold format, clock, decimals...)
+        P.Gap(1, 6)
+        local header = P.Place(CreateHeader(sub, L.SECTION_VALUE), 1)
+        local textOptions = BuildModuleOptions(sub, P, 1, ns.order, nil, function(opt) return opt.tab == "text" end)
+        header.isShown = function()
+            local key = SelectedModuleKey()
+            return key ~= nil and textOptions[key] == true
+        end
     end
 
     -- 3. Frame: background on the left, border on the right
@@ -1482,7 +1496,7 @@ local function BuildBrokerPage(tabPage, showBlockPage)
     header.isShown = sharing
     local none = Place(CreateNote(page, L.NO_BLOCK_OPTIONS), 2)
     P.Gap(2, -(none.layoutHeight + SPACING))
-    local hasOptions = BuildModuleOptions(page, P, 2, ns.order, sharing)
+    local hasOptions = BuildModuleOptions(page, P, 2, ns.order, sharing, function() return true end)
     none.isShown = function()
         local key = SelectedModuleKey()
         return sharing() and not (key and hasOptions[key])

@@ -1,6 +1,6 @@
 # Tests de la rc5 (jeudi 15 octobre)
 
-Version à tester : **Tessera-1.0.0-rc5-test11.zip** (version de test : elle a les commandes `/tes test`).
+Version à tester : **Tessera-1.0.0-rc5-test12.zip** (version de test : elle a les commandes `/tes test`).
 Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur Lua.
 
 ## 0. Préparation (5 min)
@@ -38,7 +38,7 @@ Profil « Test » avec tous les blocs à vérifier (même vides). Pour chacun : 
 
 ## 2 bis. Affichage des valeurs (5 min)
 
-Onglet Blocs, choisir le bloc, sous-onglet Comportement :
+Onglet Blocs, choisir le bloc, sous-onglet Texte, « Valeur affichée » (le sous-onglet Comportement ne les a plus) :
 - [ ] Or : format (complet, or et argent, pièces d'or, abrégé), icônes des pièces décochées (po pa pc en couleur), arrondir, séparateur des milliers.
 - [ ] Sacs (libres, utilisées), XP (pourcentage, valeurs, restante, XP de repos), Durabilité (moyenne), FPS et Latence (sans unité, locale / monde / les deux), Heure (secondes), Coordonnées (décimales), Amis et Guilde (en ligne / total), Réputation (rang, faction, %).
 - [ ] Styles : Parchemin lisible ? ElvUI (valeurs en bleu) et EllesmereUI (lignes vertes entre les blocs) différents ? FlareUI 1.x absent de la liste.

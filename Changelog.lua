@@ -26,12 +26,14 @@ ns.CHANGELOG = {
                 .. "violet, pale blue letters).",
             "The styles of FlareUI, ElvUI and EllesmereUI can be picked without that addon: they are then an "
                 .. "imitation, marked in the list, and the chat says what differs.",
-            "More choices for how blocks show their value (Behaviour tab): gold (coin icons or colored letters, "
+            "More choices for how blocks show their value (Text tab, \"Value shown\"): gold (coin icons or colored letters, "
                 .. "gold and silver format, rounding, thousands separator), bags (free, used or free / total), XP "
                 .. "(percent, values or XP to go, rested XP or not), durability (most worn item or average), FPS and "
                 .. "latency (with or without the unit, home, world or both latencies), clocks (seconds), coordinates "
                 .. "(0 to 2 decimals), friends and guild (online or online / total), reputation (standing, faction "
                 .. "name, percent).",
+            "Blocks tab: how a block shows its value (gold format, clock, decimals, stat shown...) is now in the "
+                .. "Text sub-tab, under \"Value shown\"; Behaviour keeps the rest (goal, thresholds, hiding, clicks).",
             "Styles: Parchment is easier to read (darker ink, colors in the values darkened); ElvUI shows the values "
                 .. "in its value color (blue by default) and EllesmereUI has its green accent between merged blocks, "
                 .. "so they no longer look alike. FlareUI 1.x is only listed with FlareUI 1.x installed (profiles "
@@ -74,12 +76,15 @@ ns.CHANGELOG = {
                 .. "encre brune), Arcanes (violet profond, lettres bleu pâle).",
             "Les styles de FlareUI, ElvUI et EllesmereUI se choisissent aussi sans l'addon : c'est alors une "
                 .. "imitation, marquée dans la liste, et la discussion dit ce qui change.",
-            "Plus de choix pour l'affichage des valeurs (onglet Comportement) : or (icônes des pièces ou lettres en "
+            "Plus de choix pour l'affichage des valeurs (onglet Texte, « Valeur affichée ») : or (icônes des pièces ou lettres en "
                 .. "couleur, format or et argent, arrondi, séparateur des milliers), sacs (libres, utilisées ou libres / "
                 .. "total), XP (pourcentage, valeurs ou XP restante, XP de repos ou non), durabilité (pièce la plus "
                 .. "abîmée ou moyenne), FPS et latence (avec ou sans l'unité, latence locale, monde ou les deux), "
                 .. "horloges (secondes), coordonnées (0 à 2 décimales), amis et guilde (en ligne ou en ligne / total), "
                 .. "réputation (rang, nom de la faction, pourcentage).",
+            "Onglet Blocs : la façon dont un bloc affiche sa valeur (format de l'or, horloge, décimales, statistique "
+                .. "affichée...) est maintenant dans le sous-onglet Texte, sous « Valeur affichée » ; Comportement garde "
+                .. "le reste (objectif, seuils, masquage, clics).",
             "Styles : Parchemin plus lisible (encre plus foncée, couleurs des valeurs assombries) ; ElvUI affiche les "
                 .. "valeurs dans sa couleur de valeur (bleu par défaut) et EllesmereUI a son accent vert entre les blocs "
                 .. "fusionnés : ils ne se ressemblent plus. FlareUI 1.x n'est plus dans la liste qu'avec FlareUI 1.x "

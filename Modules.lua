@@ -346,13 +346,13 @@ ns:RegisterModule("gold", {
     end,
     defaults = { goldIcons = true, goldRound = false, goldSeparator = true },
     options = {
-        { kind = "dropdown", field = "goldFormat", label = "GOLD_FORMAT", tip = "TIP_GOLD_FORMAT",
+        { kind = "dropdown", field = "goldFormat", tab = "text", label = "GOLD_FORMAT", tip = "TIP_GOLD_FORMAT",
           values = { { key = "full", label = "GOLD_FULL" }, { key = "goldSilver", label = "GOLD_SILVER" },
                      { key = "gold", label = "GOLD_ONLY" }, { key = "short", label = "GOLD_SHORT" } } },
-        { kind = "check", field = "goldIcons", label = "GOLD_ICONS", tip = "TIP_GOLD_ICONS" },
-        { kind = "check", field = "goldRound", label = "GOLD_ROUND", tip = "TIP_GOLD_ROUND",
+        { kind = "check", field = "goldIcons", tab = "text", label = "GOLD_ICONS", tip = "TIP_GOLD_ICONS" },
+        { kind = "check", field = "goldRound", tab = "text", label = "GOLD_ROUND", tip = "TIP_GOLD_ROUND",
           shown = function(cfg) return cfg.goldFormat == "gold" or cfg.goldFormat == "goldSilver" end },
-        { kind = "check", field = "goldSeparator", label = "GOLD_SEPARATOR", tip = "TIP_GOLD_SEPARATOR" },
+        { kind = "check", field = "goldSeparator", tab = "text", label = "GOLD_SEPARATOR", tip = "TIP_GOLD_SEPARATOR" },
     },
     tooltip = function(tt)
         local money = GetMoney() or 0
@@ -430,7 +430,7 @@ ns:RegisterModule("bags", {
     end,
     defaults = { bagsFormat = "freeTotal" },
     options = {
-        { kind = "dropdown", field = "bagsFormat", label = "BAGS_SHOWN", tip = "TIP_BAGS_SHOWN",
+        { kind = "dropdown", field = "bagsFormat", tab = "text", label = "BAGS_SHOWN", tip = "TIP_BAGS_SHOWN",
           values = { { key = "freeTotal", label = "BAGS_FREE_TOTAL" }, { key = "free", label = "BAGS_FREE" },
                      { key = "usedTotal", label = "BAGS_USED_TOTAL" } } },
     },
@@ -551,7 +551,7 @@ ns:RegisterModule("durability", {
     end,
     defaults = { durabilityMode = "lowest" },
     options = {
-        { kind = "dropdown", field = "durabilityMode", label = "DURABILITY_SHOWN", tip = "TIP_DURABILITY_SHOWN",
+        { kind = "dropdown", field = "durabilityMode", tab = "text", label = "DURABILITY_SHOWN", tip = "TIP_DURABILITY_SHOWN",
           values = { { key = "lowest", label = "DURABILITY_LOWEST" }, { key = "average", label = "DURABILITY_AVERAGE" } } },
     },
     thresholds = THRESHOLDS.durability,
@@ -592,7 +592,7 @@ ns:RegisterModule("fps", {
         return text, Threshold(cfg, fps, THRESHOLDS.fps)
     end,
     defaults = { showUnit = true },
-    options = { { kind = "check", field = "showUnit", label = "SHOW_UNIT", tip = "TIP_SHOW_UNIT" } },
+    options = { { kind = "check", field = "showUnit", tab = "text", label = "SHOW_UNIT", tip = "TIP_SHOW_UNIT" } },
     thresholds = THRESHOLDS.fps,
     tooltip = function(tt, cfg)
         local f = session.fps
@@ -638,10 +638,10 @@ ns:RegisterModule("latency", {
     end,
     defaults = { showUnit = true, latencySource = "world" },
     options = {
-        { kind = "dropdown", field = "latencySource", label = "LATENCY_SHOWN", tip = "TIP_LATENCY_SHOWN",
+        { kind = "dropdown", field = "latencySource", tab = "text", label = "LATENCY_SHOWN", tip = "TIP_LATENCY_SHOWN",
           values = { { key = "world", label = "TT_WORLD" }, { key = "home", label = "TT_HOME" },
                      { key = "both", label = "LATENCY_BOTH" } } },
-        { kind = "check", field = "showUnit", label = "SHOW_UNIT", tip = "TIP_SHOW_UNIT" },
+        { kind = "check", field = "showUnit", tab = "text", label = "SHOW_UNIT", tip = "TIP_SHOW_UNIT" },
     },
     thresholds = THRESHOLDS.latency,
     tooltip = function(tt, cfg)
@@ -687,8 +687,8 @@ local function ServerTime(cfg)
     return FormatClock(h, m, cfg, now % 60)
 end
 
-local CLOCK_OPTION = { kind = "check", field = "clock24", label = "CLOCK_24", tip = "TIP_CLOCK_24" }
-local SECONDS_OPTION = { kind = "check", field = "showSeconds", label = "SHOW_SECONDS", tip = "TIP_SHOW_SECONDS" }
+local CLOCK_OPTION = { kind = "check", field = "clock24", tab = "text", label = "CLOCK_24", tip = "TIP_CLOCK_24" }
+local SECONDS_OPTION = { kind = "check", field = "showSeconds", tab = "text", label = "SHOW_SECONDS", tip = "TIP_SHOW_SECONDS" }
 
 -- Tooltip shared by both time blocks
 local function TimeTooltip(tt, cfg)
@@ -725,7 +725,7 @@ ns:RegisterModule("time", {
         return LocalTime(cfg)
     end,
     options = {
-        { kind = "dropdown", field = "timeSource", label = "TIME_SOURCE", tip = "TIP_TIME_SOURCE",
+        { kind = "dropdown", field = "timeSource", tab = "text", label = "TIME_SOURCE", tip = "TIP_TIME_SOURCE",
           values = { { key = "auto", label = "TIME_AUTO" }, { key = "local", label = "TT_LOCAL_TIME" },
                      { key = "server", label = "TT_SERVER_TIME" } } },
         CLOCK_OPTION,
@@ -792,10 +792,10 @@ ns:RegisterModule("xp", {
         return text
     end,
     options = {
-        { kind = "dropdown", field = "xpFormat", label = "XP_SHOWN", tip = "TIP_XP_SHOWN",
+        { kind = "dropdown", field = "xpFormat", tab = "text", label = "XP_SHOWN", tip = "TIP_XP_SHOWN",
           values = { { key = "percent", label = "XP_PERCENT" }, { key = "values", label = "XP_VALUES" },
                      { key = "remaining", label = "XP_REMAINING" } } },
-        { kind = "check", field = "xpRested", label = "XP_RESTED", tip = "TIP_XP_RESTED" },
+        { kind = "check", field = "xpRested", tab = "text", label = "XP_RESTED", tip = "TIP_XP_RESTED" },
     },
     tooltip = function(tt)
         tt:AddLine(L.TT_LEVEL:format(UnitLevel("player")), 1, 1, 1)
@@ -842,7 +842,7 @@ ns:RegisterModule("coords", {
         return (f .. ", " .. f):format(x * 100, y * 100)
     end,
     options = {
-        { kind = "slider", field = "coordDecimals", label = "COORD_DECIMALS", tip = "TIP_COORD_DECIMALS",
+        { kind = "slider", field = "coordDecimals", tab = "text", label = "COORD_DECIMALS", tip = "TIP_COORD_DECIMALS",
           min = 0, max = 2, step = 1, default = 1 },
     },
     tooltip = function(tt)
@@ -926,7 +926,7 @@ ns:RegisterModule("subzone", {
 local MAX_LINES = 20
 
 -- Friends and guild: members online only, or online / total
-local COUNT_OPTION = { kind = "dropdown", field = "countFormat", label = "COUNT_SHOWN", tip = "TIP_COUNT_SHOWN",
+local COUNT_OPTION = { kind = "dropdown", field = "countFormat", tab = "text", label = "COUNT_SHOWN", tip = "TIP_COUNT_SHOWN",
     values = { { key = "online", label = "COUNT_ONLINE" }, { key = "onlineTotal", label = "COUNT_ONLINE_TOTAL" } } }
 
 ns:RegisterModule("friends", {
@@ -1282,7 +1282,7 @@ ns:RegisterModule("reputation", {
         return ("%s %d%%"):format(StandingLabel(reaction), pct)
     end,
     options = {
-        { kind = "dropdown", field = "repFormat", label = "REP_SHOWN", tip = "TIP_REP_SHOWN",
+        { kind = "dropdown", field = "repFormat", tab = "text", label = "REP_SHOWN", tip = "TIP_REP_SHOWN",
           values = { { key = "standingPercent", label = "REP_STANDING_PERCENT" },
                      { key = "namePercent", label = "REP_NAME_PERCENT" },
                      { key = "percent", label = "REP_PERCENT" }, { key = "standing", label = "REP_STANDING" } } },
@@ -1618,7 +1618,7 @@ ns:RegisterModule("stats", {
     interval = 2,
     defaultEnabled = false,
     options = {
-        { kind = "dropdown", field = "stat", label = "STAT_SHOWN", tip = "TIP_STAT_SHOWN", values = STAT_VALUES },
+        { kind = "dropdown", field = "stat", tab = "text", label = "STAT_SHOWN", tip = "TIP_STAT_SHOWN", values = STAT_VALUES },
     },
     update = function(cfg)
         local stat = ChosenStat(cfg)

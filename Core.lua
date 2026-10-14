@@ -903,6 +903,42 @@ function ns:SnapAndSave(f)
         end
     end
 
+    -- A second row (hanging below or above another group) dropped back against that
+    -- group, roughly where it hangs: it keeps hanging there (centered, full width), as if
+    -- it had not moved. Otherwise it would become an ordinary group and lose its place.
+    if not dock then
+        local rowRoot = self:GetRoot(f.key)
+        local rowCfg = self.db.blocks[rowRoot]
+        local base = rowCfg and rowCfg.anchor and ns.HangTarget(rowCfg.anchor)
+        if base and self.db.blocks[base] and not group[base] then
+            local gl, gb, gr, gt
+            for _, m in pairs(members) do
+                local l, t = m.left + dx, m.top + dy
+                gl, gr = math.min(gl or l, l), math.max(gr or l + m.w, l + m.w)
+                gt, gb = math.max(gt or t, t), math.min(gb or t - m.h, t - m.h)
+            end
+            local bl, bb, br, bt
+            for k in pairs(self:GetSubtree(self:GetRoot(base))) do
+                local o = self.frames[k]
+                local l, b, r, t
+                if o and o:IsShown() then l, b, r, t = self:GetRectUI(o) end
+                if l and b and r and t then
+                    bl, bb = math.min(bl or l, l), math.min(bb or b, b)
+                    br, bt = math.max(br or r, r), math.max(bt or t, t)
+                end
+            end
+            if gl and bl then
+                local gap = rowCfg.anchor.below and math.abs(gt - bb) or math.abs(gb - bt)
+                local overlap = math.min(gr, br) - math.max(gl, bl)
+                if gap <= 2 * SNAP_DISTANCE and overlap > (gr - gl) / 2 then
+                    self:ReanchorAll()
+                    self:RequestLayout()
+                    return
+                end
+            end
+        end
+    end
+
     -- A moved group is no longer tied to the automatic default-layout anchor, nor
     -- stuck to a screen edge (it may be stuck again below, once dropped)
     for key in pairs(group) do

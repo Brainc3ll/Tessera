@@ -17,7 +17,8 @@ ns.CHANGELOG = {
                 .. "(Compact and Left column layouts); when room is short, a name is shortened to its block's width.",
             "Placement: a single block dropped against a side already taken slips in between (the block that was "
                 .. "there moves along), so a block taken out of a bar can be put back in its place. Nothing docks any "
-                .. "more on the side of a bar where its second row hangs (that mixed both groups).",
+                .. "more on the side of a bar where its second row hangs (that mixed both groups). A second row "
+                .. "dragged and dropped back against its bar keeps hanging there, centered and full width.",
             "Blocks made for WoW Forever's own systems are more robust: if the game changes at release, they "
                 .. "show nothing rather than an error.",
             "Help: where to find the blocks hidden at first, tooltips while holding Alt, /roll on the group loot "
@@ -37,7 +38,8 @@ ns.CHANGELOG = {
                 .. "largeur de son bloc.",
             "Placement : un bloc seul posé contre un côté déjà pris se glisse entre les deux (le bloc qui était là se "
                 .. "décale) : un bloc sorti d'une barre peut être remis à sa place. Plus rien ne s'accroche sur le côté "
-                .. "d'une barre où pend sa deuxième rangée (les deux groupes se mélangeaient).",
+                .. "d'une barre où pend sa deuxième rangée (les deux groupes se mélangeaient). Une deuxième rangée "
+                .. "déplacée puis reposée contre sa barre y reste accrochée, centrée et sur toute la largeur.",
             "Les blocs des systèmes propres à WoW Forever sont plus solides : si le jeu change à sa sortie, ils "
                 .. "n'affichent rien plutôt qu'une erreur.",
             "Aide : où trouver les blocs masqués au départ, infobulles en tenant Alt, /roll sur le bloc butin du "

@@ -55,7 +55,8 @@ Help tab inside the game explains everything.
 
 - **Mosaic placement:** blocks are placed anywhere and merge in every direction when dropped
   against each other: a bar, a column, a corner, an L shape... Bars can be stuck to a screen edge
-  and stretched like a taskbar, and ready-made layouts give a starting point.
+  and stretched like a taskbar, and ready-made layouts give a starting point (among them "Modern
+  Forever": the top bar and a second bar always shown with the WoW Forever blocks).
 - **Blocks made for WoW Forever's own systems**, which can also be shared with DataBroker
   display addons (Titan Panel, ChocolateBar, Bazooka...):
   - Legacy points: your points, the next reward, every reward of the track and your Legacy

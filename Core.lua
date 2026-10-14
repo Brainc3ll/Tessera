@@ -1784,6 +1784,13 @@ local BASE_ROW = {
 -- and its visible blocks share the base bar's width.
 local SECOND_ROW = { "mail", "whispers", "reputation", "currency", "reagents", "ammo", "instances" }
 local SECOND_ROW_WIDTH = 60
+-- "Modern Forever" layout: the same top bar, and a second bar always shown with WoW
+-- Forever's own blocks (the blocks of the usual second row join it when they have
+-- something to show)
+local FOREVER_ROW = { "legacy", "comprehension", "camping", "honor", "weaponSkills",
+    "mail", "whispers", "reputation", "currency", "reagents", "ammo", "instances" }
+local FOREVER_ROW_HIDE_EMPTY = { mail = true, whispers = true, reputation = true, currency = true,
+    reagents = true, ammo = true, instances = true }
 local IN_SECOND_ROW = {}
 for _, key in ipairs(SECOND_ROW) do IN_SECOND_ROW[key] = true end
 local BASE_TOP, BASE_HEIGHT = -6, 24
@@ -1870,13 +1877,15 @@ end
 -- Builds the default layout (BASE_ROW) into profile p: one row of merged blocks
 -- Ready-made layouts (Profiles tab). "top" is the default one.
 --   top      bar at the top of the screen (under FlareUI's XP bar if present)
+--   forever  the same bar, and a second bar always shown with WoW Forever's own blocks
 --   bottom   bar at the bottom of the screen, its second row above it
 --   left     column on the left of the screen, every block stacked
 --   compact  top bar with small blocks, sized to their content
 --   gryphons two groups in the bottom corners of the screen, WoW Forever blocks included
 --   stormwind, cathedral, tirisfal, gnomeregan   bars stuck to a screen edge, like
 --            the taskbars and menu bars of desktop systems (see OS_LAYOUTS)
-ns.PRESETS = { "top", "bottom", "left", "compact", "gryphons", "stormwind", "cathedral", "tirisfal", "gnomeregan" }
+ns.PRESETS = { "top", "forever", "bottom", "left", "compact", "gryphons", "stormwind", "cathedral", "tirisfal",
+    "gnomeregan" }
 
 -- Last step of every ready-made layout: icon without label on all data blocks
 -- (even hidden ones), the theme's look, remembered for future blocks
@@ -2112,10 +2121,12 @@ function ns:ApplyBaseLayout(p, preset)
     -- bottom bar, or simply further down the column
     local last = previous
     previous = nil
-    for _, key in ipairs(SECOND_ROW) do
+    local forever = preset == "forever"
+    for _, key in ipairs(forever and FOREVER_ROW or SECOND_ROW) do
         local cfg = p.blocks[key]
         if cfg then
             cfg.enabled = true
+            if forever then cfg.hideEmpty = FOREVER_ROW_HIDE_EMPTY[key] or false end
             cfg.width = compact and 16 or SECOND_ROW_WIDTH
             cfg.height = height
             if compact then cfg.fontSize = 11 end

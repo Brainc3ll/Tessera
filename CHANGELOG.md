@@ -6,6 +6,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ## 1.0.0-rc5 — 
 
 - Placement mode: the names under the blocks no longer overlap each other nor go off screen (Compact and Left column layouts); when room is short, a name is shortened to its block's width.
+- New ready-made layout "Modern Forever" (Look tab): the top bar with the basics, and a second bar always shown with WoW Forever's blocks (Legacy, Comprehension, Camping, Honor, weapon skills).
 - Placement: a single block dropped against a side already taken slips in between (the block that was there moves along), so a block taken out of a bar can be put back in its place. Nothing docks any more on the side of a bar where its second row hangs (that mixed both groups). A second row dragged and dropped back against its bar keeps hanging there, centered and full width.
 - Blocks made for WoW Forever's own systems are more robust: if the game changes at release, they show nothing rather than an error.
 - Help: where to find the blocks hidden at first, tooltips while holding Alt, /roll on the group loot block, the stat shown on the stats block; /tessera help is in the chat command list.

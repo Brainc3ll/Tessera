@@ -26,6 +26,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - Blocs Forever et nouveaux blocs : testés contre un jeu qui change (`tools/fuzz_blocks.lua`), corrigés.
 - Audit de l'API WoW (Ketho, comme les modérateurs de r/WoWUI) : 0 fonction obsolète, 0 globale inconnue ; anciens secours classiques retirés (la branche multi-versions les garde : conflits à prévoir si fusion). Tourne à chaque push (`tools/api_audit.py`).
 - Placement : insertion d'un bloc seul entre deux blocs fusionnés ; plus d'accroche sur le côté d'une barre où pend sa deuxième rangée (bug signalé le 14/10 : bloc de la 2e rangée impossible à remettre). À vérifier en jeu (test5) ; vidéo du 14/10 analysée : la 2e rangée déplacée en entier perdait son accroche (devenait un groupe ordinaire, plus centré ni pleine largeur) : reposée contre sa barre, elle reste maintenant accrochée (test6).
+- Nouvelle disposition « Moderne Forever » (demande du 14/10) : barre du haut de base + deuxième barre toujours affichée avec les blocs Forever (les blocs de la 2e rangée habituelle s'y ajoutent quand ils ont quelque chose à montrer). À tester (test6).
 - Commandes de développement retirées de l'addon (debug, sondes, test de formes, atelier) : elles sont dans `TesseraDev.lua`, hors dépôt (`/home/claude/tessera-dev/` dans la session), ajouté seulement aux zips de test avec `/tessera test` (blocs à vérifier, Compacte, Colonne, infobulles, flare, fin).
 - Scénario donjon + combat ajouté au test automatique (le donjon ne pourra peut-être pas être testé en jeu).
 

@@ -15,6 +15,8 @@ ns.CHANGELOG = {
         en = {
             "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
                 .. "(Compact and Left column layouts); when room is short, a name is shortened to its block's width.",
+            "New ready-made layout \"Modern Forever\" (Look tab): the top bar with the basics, and a second bar "
+                .. "always shown with WoW Forever's blocks (Legacy, Comprehension, Camping, Honor, weapon skills).",
             "Placement: a single block dropped against a side already taken slips in between (the block that was "
                 .. "there moves along), so a block taken out of a bar can be put back in its place. Nothing docks any "
                 .. "more on the side of a bar where its second row hangs (that mixed both groups). A second row "
@@ -36,6 +38,9 @@ ns.CHANGELOG = {
             "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "
                 .. "(dispositions Compacte et Colonne à gauche) ; quand la place manque, un nom est raccourci à la "
                 .. "largeur de son bloc.",
+            "Nouvelle disposition toute prête « Moderne Forever » (onglet Apparence) : la barre du haut avec "
+                .. "l'essentiel, et une deuxième barre toujours affichée avec les blocs WoW Forever (héritage, "
+                .. "Compréhension, Camping, Honneur, compétences d'armes).",
             "Placement : un bloc seul posé contre un côté déjà pris se glisse entre les deux (le bloc qui était là se "
                 .. "décale) : un bloc sorti d'une barre peut être remis à sa place. Plus rien ne s'accroche sur le côté "
                 .. "d'une barre où pend sa deuxième rangée (les deux groupes se mélangeaient). Une deuxième rangée "

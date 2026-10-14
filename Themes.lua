@@ -38,14 +38,14 @@ end
 
 -- ElvUI's main engine object (ElvUI[1]), or nil if ElvUI is not loaded
 local function ElvEngine()
-    return type(ElvUI) == "table" and type(ElvUI[1]) == "table" and ElvUI[1] or nil
+    return type(_G["ElvUI"]) == "table" and type(_G["ElvUI"][1]) == "table" and _G["ElvUI"][1] or nil
 end
 
 -- EllesmereUI's global font as an LSM reference (Expressway if it cannot be read)
 local function EllesmereFont()
     local name = "Expressway"
-    if EllesmereUI and EllesmereUI.GetFontsDB then
-        local ok, db = pcall(EllesmereUI.GetFontsDB)
+    if _G["EllesmereUI"] and _G["EllesmereUI"].GetFontsDB then
+        local ok, db = pcall(_G["EllesmereUI"].GetFontsDB)
         if ok and type(db) == "table" and type(db.global) == "string" then name = db.global end
     end
     return LSMFont(name)
@@ -63,12 +63,12 @@ end
 
 -- Major version of the installed FlareUI (from its TOC), or nil
 local function FlareUIMajor()
-    local get = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+    local get = (C_AddOns and C_AddOns.GetAddOnMetadata) or function() end
     local ok, version = false, nil
     if get then ok, version = pcall(get, "FlareUI", "Version") end
     local major = ok and type(version) == "string" and tonumber(version:match("^%D*(%d+)"))
     if major then return major end
-    if FlareUI2_DB ~= nil then return 2 end -- saved variables only FlareUI 2 has
+    if _G["FlareUI2_DB"] ~= nil then return 2 end -- saved variables only FlareUI 2 has
     return nil
 end
 ns.FlareUIMajor = FlareUIMajor
@@ -127,8 +127,8 @@ ns.themes = {
     {
         key = "ellesmere",
         name = "EllesmereUI",
-        installed = function() return type(EllesmereUI) == "table" end,
-        available = function() return type(EllesmereUI) == "table" or ns.PreviewThemesEnabled() end,
+        installed = function() return type(_G["EllesmereUI"]) == "table" end,
+        available = function() return type(_G["EllesmereUI"]) == "table" or ns.PreviewThemesEnabled() end,
         block = function(cfg)
             cfg.bg = "solid"
             cfg.bgColor = { r = 0.067, g = 0.067, b = 0.067, a = 0.95 }
@@ -462,7 +462,7 @@ end
 -- Name of the UI behind a style, with FlareUI's version (e.g. "FlareUI 2.0")
 function ns:GetUIName(key)
     if key == "flareui" or key == "flareui2" then
-        local get = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+        local get = (C_AddOns and C_AddOns.GetAddOnMetadata) or function() end
         local ok, version = false, nil
         if get then ok, version = pcall(get, "FlareUI", "Version") end
         if ok and type(version) == "string" and version ~= "" then return "FlareUI " .. version end

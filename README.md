@@ -159,7 +159,8 @@ Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) l
 with a small imitation of the game API and runs every page and feature; lint with `luacheck .`;
 `lua5.1 tools/fuzz_blocks.lua .` checks that the blocks built on WoW Forever's own systems survive
 missing or changed game functions; `lua5.1 tools/check_docs.lua .` checks that the documentation
-follows the code. All of them run on every push (`.github/workflows/checks.yml`).
+follows the code; `tools/api_audit.py` audits the code against the WoW API like addon reviewers
+do. All of them run on every push (`.github/workflows/checks.yml`).
 
 ### How a value gets on screen
 
@@ -312,7 +313,14 @@ luacheck .                       # static checks (uses the provided .luacheckrc)
 lua5.1 tools/mock_run.lua .      # loads the addon in a rough WoW API mock, prints Lua errors
 lua5.1 tools/fuzz_blocks.lua .   # WoW Forever's blocks survive missing or changed game functions
 lua5.1 tools/check_docs.lua .    # README, help, descriptions, changelog, strings: up to date?
+python3 tools/api_audit.py <lua-language-server> <vscode-wow-api folder>
 ```
+
+`tools/api_audit.py` runs the audit addon reviewers use: the Lua Language Server with Ketho's
+WoW API annotations ([vscode-wow-api](https://github.com/Ketho/vscode-wow-api)). It fails on
+unknown globals and deprecated functions. Functions that only exist on WoW Forever (not in
+Blizzard's documentation of the modern API) and other addons' globals are read through
+`_G["Name"]`, which tells readers they may be missing.
 
 `tools/check_docs.lua` checks that the version is the same everywhere, that `CHANGELOG.md` and
 `docs/localization/` match the code, and that every public command, block, Lua file and option

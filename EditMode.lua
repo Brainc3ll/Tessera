@@ -27,7 +27,7 @@ local MAX_NAME = 30 -- longest layout name the game accepts (characters)
 local GAP = 2       -- free space kept between Tessera's bar and the moved frames
 local OTHER_UIS = { "ElvUI", "EllesmereUI", "Bartender4", "Dominos", "MoveAny", "EditModeExpanded" }
 
-local IsLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+local IsLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or function() end
 
 local function Available()
     return C_EditMode and C_EditMode.GetLayouts and C_EditMode.SaveLayouts and C_EditMode.SetActiveLayout
@@ -495,7 +495,7 @@ end
 function ns:DeleteEditModeCopies()
     if InCombatLockdown() then return Refuse(L.EDITMODE_COMBAT) end
     local list, state = self:GetEditModeCopies()
-    if #list == 0 then return false end
+    if #list == 0 or not state then return false end
     local remove = {}
     for _, name in ipairs(list) do remove[name] = true end
     local activeLayout = state.activeIndex > #state.presets and state.info.layouts[state.activeIndex - #state.presets]

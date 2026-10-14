@@ -96,7 +96,7 @@ function ns:GetLauncherSources()
     end
 
     -- Buttons placed on the minimap (or stored in FlareUI's minimap button bag)
-    for _, parent in ipairs({ Minimap, MinimapCluster, _G.FlareUI_MinimapBag }) do
+    for _, parent in ipairs({ Minimap, MinimapCluster, _G["FlareUI_MinimapBag"] }) do
         if parent and parent.GetChildren then
             for _, child in ipairs({ parent:GetChildren() }) do
                 if IsForeignButton(child) then

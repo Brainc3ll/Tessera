@@ -68,7 +68,7 @@ local L = ns.L
 local GOOD, WARN, BAD = 1, 2, 3
 
 -- Item info: modern C_Item API, classic global as fallback
-local GetItemInfoFn = (C_Item and C_Item.GetItemInfo) or GetItemInfo
+local GetItemInfoFn = (C_Item and C_Item.GetItemInfo) or function() end
 
 ---------------------------------------------------------------------------
 -- Session tracking: FPS and experience, recorded even while the blocks are hidden
@@ -259,16 +259,12 @@ local COIN_ICONS = {
     copper = "Interface\\MoneyFrame\\UI-CopperIcon",
 }
 
--- Money as text with coin icons. Tries the modern C_CurrencyInfo API, then the classic
--- global, then falls back to our own formatting. Also used by other files (ns.FormatMoney)
+-- Money as text with coin icons. Uses the game's C_CurrencyInfo API, else our own
+-- formatting. Also used by other files (ns.FormatMoney)
 function ns.FormatMoney(money, size)
     size = size or 12
     if C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString then
         local ok, text = pcall(C_CurrencyInfo.GetCoinTextureString, money, size)
-        if ok and text then return text end
-    end
-    if GetCoinTextureString then
-        local ok, text = pcall(GetCoinTextureString, money, size)
         if ok and text then return text end
     end
 
@@ -906,8 +902,8 @@ ns:RegisterModule("guild", {
 -- Addon memory
 ---------------------------------------------------------------------------
 -- Modern clients moved these functions into C_AddOns; classic clients keep the globals
-local GetNumAddOnsFn = (C_AddOns and C_AddOns.GetNumAddOns) or GetNumAddOns
-local GetAddOnInfoFn = (C_AddOns and C_AddOns.GetAddOnInfo) or GetAddOnInfo
+local GetNumAddOnsFn = (C_AddOns and C_AddOns.GetNumAddOns) or function() return 0 end
+local GetAddOnInfoFn = (C_AddOns and C_AddOns.GetAddOnInfo) or function() end
 local GetMemoryFn = (C_AddOns and C_AddOns.GetAddOnMemoryUsage) or GetAddOnMemoryUsage
 
 -- Last measurement, reused by the tooltip (measuring is expensive)
@@ -1007,7 +1003,6 @@ local function HearthCooldown()
     if C_Container and C_Container.GetItemCooldown then
         start, duration = Try(C_Container.GetItemCooldown, HEARTHSTONE)
     end
-    if not start and GetItemCooldown then start, duration = Try(GetItemCooldown, HEARTHSTONE) end
     local ok, remaining = pcall(function()
         if start and duration and start > 0 and duration > 1.5 then
             return math.max(0, start + duration - GetTime())
@@ -1068,7 +1063,7 @@ ns:RegisterModule("mail", {
 -- Quests: count in the quest log, list in the tooltip
 ---------------------------------------------------------------------------
 -- Quests in the log (headers excluded) as { title, level, complete }.
--- Modern C_QuestLog API first, classic globals as fallback
+-- (C_QuestLog API)
 local function QuestList()
     local list = {}
     if C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetInfo then
@@ -1078,14 +1073,6 @@ local function QuestList()
             if info and not info.isHeader and not info.isHidden and not info.isTask then
                 local complete = info.questID and C_QuestLog.IsComplete and Try(C_QuestLog.IsComplete, info.questID)
                 table.insert(list, { title = info.title, level = info.level, complete = complete })
-            end
-        end
-    elseif GetNumQuestLogEntries and GetQuestLogTitle then
-        local n = Try(GetNumQuestLogEntries) or 0
-        for i = 1, n do
-            local title, level, _, isHeader, _, isComplete = Try(GetQuestLogTitle, i)
-            if title and not isHeader then
-                table.insert(list, { title = title, level = level, complete = isComplete == 1 or isComplete == true })
             end
         end
     end
@@ -1132,17 +1119,15 @@ ns:RegisterModule("quests", {
 -- Watched reputation (the one shown on the experience bar)
 ---------------------------------------------------------------------------
 -- name, reaction (standing id), min, max, value of the watched faction, or nil.
--- Modern C_Reputation API first, classic GetWatchedFactionInfo as fallback
+-- (C_Reputation API)
 local function WatchedFaction()
     if C_Reputation and C_Reputation.GetWatchedFactionData then
         local d = Try(C_Reputation.GetWatchedFactionData)
         if d and d.name then
             return d.name, d.reaction, d.currentReactionThreshold, d.nextReactionThreshold, d.currentStanding
         end
-        return nil
     end
-    local name, standing, min, max, value = Try(GetWatchedFactionInfo)
-    if name then return name, standing, min, max, value end
+    return nil
 end
 
 -- Localized standing name ("Friendly", "Honored"...) from the game's globals
@@ -1185,7 +1170,7 @@ ns:RegisterModule("reputation", {
 -- Tracked currencies (the ones shown on the backpack)
 ---------------------------------------------------------------------------
 -- Up to 3 backpack currencies as { name, count, icon }.
--- Modern C_CurrencyInfo API first, classic global as fallback
+-- (C_CurrencyInfo API)
 local function TrackedCurrencies()
     local list = {}
     for i = 1, 3 do
@@ -1193,8 +1178,6 @@ local function TrackedCurrencies()
         if C_CurrencyInfo and C_CurrencyInfo.GetBackpackCurrencyInfo then
             local info = Try(C_CurrencyInfo.GetBackpackCurrencyInfo, i)
             if info then name, count, icon = info.name, info.quantity, info.iconFileID end
-        elseif GetBackpackCurrencyInfo then
-            name, count, icon = Try(GetBackpackCurrencyInfo, i)
         end
         if name then table.insert(list, { name = name, count = count or 0, icon = icon }) end
     end
@@ -1281,7 +1264,7 @@ if GetAverageItemLevel then
             for slot = 1, 19 do
                 local link = Try(GetInventoryItemLink, "player", slot)
                 if link and slot ~= 4 and slot ~= 19 then
-                    local getLevel = (C_Item and C_Item.GetDetailedItemLevelInfo) or GetDetailedItemLevelInfo
+                    local getLevel = C_Item and C_Item.GetDetailedItemLevelInfo
                     local ilvl = getLevel and Try(getLevel, link)
                     tt:AddDoubleLine(link, ilvl and tostring(ilvl) or "", 1, 1, 1, 1, 1, 1)
                 end
@@ -1537,7 +1520,6 @@ local function LootInfo()
     if not Try(IsInGroup) then return nil end
     local method, partyID, raidID
     if C_PartyInfo and C_PartyInfo.GetLootMethod then method, partyID, raidID = Try(C_PartyInfo.GetLootMethod) end
-    if method == nil then method, partyID, raidID = Try(GetLootMethod) end
     local master
     if raidID then
         master = Try(GetRaidRosterInfo, raidID)
@@ -1558,7 +1540,7 @@ end
 local function QualityText(quality)
     local name = quality and _G["ITEM_QUALITY" .. quality .. "_DESC"]
     if not name then return nil end
-    local r, g, b = Try((C_Item and C_Item.GetItemQualityColor) or GetItemQualityColor, quality)
+    local r, g, b = Try(C_Item and C_Item.GetItemQualityColor, quality)
     if type(r) == "number" then
         return ("|cff%02x%02x%02x%s|r"):format(r * 255, g * 255, b * 255, name)
     end
@@ -1665,7 +1647,7 @@ local function SkillLines()
     local result = { professions = {}, weapons = {} }
     -- WoW Forever: C_SkillInfo returns one table per line (name, rank, maxRank, isHeader,
     -- isAbandonable, skillLineCategoryID, skillID...)
-    local S = C_SkillInfo
+    local S = _G["C_SkillInfo"] -- WoW Forever only (not in the modern API docs)
     if S and S.GetNumSkillLines and S.GetSkillLineInfo then
         for i = 1, tonumber((Try(S.GetNumSkillLines))) or 0 do
             local info = Try(S.GetSkillLineInfo, i)
@@ -1679,19 +1661,6 @@ local function SkillLines()
             end
         end
         return result
-    end
-    if not (GetNumSkillLines and GetSkillLineInfo) then return result end
-    local weaponCap = (UnitLevel("player") or 1) * 5
-    for i = 1, Try(GetNumSkillLines) or 0 do
-        local name, isHeader, _, rank, _, _, max, abandonable = Try(GetSkillLineInfo, i)
-        if name and not isHeader then
-            local entry = { name = name, rank = rank or 0, max = max or 0 }
-            if abandonable then
-                table.insert(result.professions, entry)
-            elseif max == weaponCap then
-                table.insert(result.weapons, entry)
-            end
-        end
     end
     return result
 end
@@ -1717,8 +1686,8 @@ local PROFESSION_SPELLS = {
     { id = 7620, secondary = "fishing", gathering = true },
 }
 
-local GetSpellNameFn = (C_Spell and C_Spell.GetSpellName) or function(id) return (GetSpellInfo(id)) end
-local GetSpellIconFn = (C_Spell and C_Spell.GetSpellTexture) or GetSpellTexture
+local GetSpellNameFn = (C_Spell and C_Spell.GetSpellName) or function() end
+local GetSpellIconFn = (C_Spell and C_Spell.GetSpellTexture) or function() end
 
 -- Localized profession name -> { icon, secondary, gathering } (built once, on first use)
 local professionInfo
@@ -1844,10 +1813,9 @@ local function CurrentWeaponSkill(weapons)
     return best
 end
 
--- Weapon skills only exist on clients with a skill list (classic globals, or C_SkillInfo
--- on WoW Forever): the block is offered only there
-local HAS_SKILL_LIST = (GetNumSkillLines and GetSkillLineInfo)
-    or (C_SkillInfo and C_SkillInfo.GetNumSkillLines and C_SkillInfo.GetSkillLineInfo)
+-- Weapon skills only exist on clients with a skill list (C_SkillInfo on WoW Forever):
+-- the block is offered only there
+local HAS_SKILL_LIST = _G["C_SkillInfo"] and _G["C_SkillInfo"].GetNumSkillLines and _G["C_SkillInfo"].GetSkillLineInfo
 -- WoW Forever's skills window is SkillsFrame, a tab of the character window
 local SKILLS_MACRO = "/run if ToggleCharacter then ToggleCharacter(SkillsFrame and 'SkillsFrame' or 'SkillFrame') end"
 if HAS_SKILL_LIST then
@@ -1947,7 +1915,7 @@ local function NextLegacyReward(points)
 end
 
 -- Offered on clients with the Legacy system only (WoW Forever)
-if C_MajorFactions and (ToggleLegacySystemUI or LegacySystemFrame_LoadUI) then
+if C_MajorFactions and (_G["ToggleLegacySystemUI"] or _G["LegacySystemFrame_LoadUI"]) then
 ns:RegisterModule("legacy", {
     label = "LEGACY",
     icon = LEGACY_ICON,
@@ -2013,8 +1981,10 @@ end
 ---------------------------------------------------------------------------
 -- Unspent talent points (shows only when some are left)
 ---------------------------------------------------------------------------
+-- UnitCharacterPoints is the classic talent function (WoW Forever's talents are classic
+-- style); it is not in Blizzard's documentation of the modern API, hence _G
 local function FreeTalentPoints()
-    return (UnitCharacterPoints and Try(UnitCharacterPoints, "player")) or 0
+    return Try(_G["UnitCharacterPoints"], "player") or 0
 end
 
 ns:RegisterModule("talents", {
@@ -2239,8 +2209,8 @@ local REAGENTS = {
 }
 local REAGENT_LOW = 5
 
-local GetItemCountFn = (C_Item and C_Item.GetItemCount) or GetItemCount
-local GetItemIconFn = (C_Item and C_Item.GetItemIconByID) or GetItemIcon
+local GetItemCountFn = (C_Item and C_Item.GetItemCount) or function() return 0 end
+local GetItemIconFn = (C_Item and C_Item.GetItemIconByID) or function() end
 
 -- Reagents of the player's class that are in the bags: { id, count, icon }
 local function CarriedReagents()
@@ -2370,7 +2340,7 @@ ns:RegisterModule("whispers", {
 -- These systems have no documented API yet: the IDs below were found in game
 -- with a debug probe on the WoW Forever beta (October 2026) and may change.
 -- The blocks are offered only on WoW Forever (where the Legacy system exists).
-local IS_FOREVER = C_MajorFactions and (ToggleLegacySystemUI or LegacySystemFrame_LoadUI) and true or false
+local IS_FOREVER = C_MajorFactions and (_G["ToggleLegacySystemUI"] or _G["LegacySystemFrame_LoadUI"]) and true or false
 
 local COMPREHENSION_SKILL = 3012    -- secondary skill: reading magical scrolls
 local COMPREHENSION_SPELL = 1296017 -- "Scroll Comprehension"
@@ -2382,13 +2352,12 @@ local HONOR_CURRENCY = 1792         -- Honor points
 local SCROLL_SUBCLASS = 4           -- consumable subclass "Scroll"
 
 local function SpellName(id)
-    if C_Spell and C_Spell.GetSpellName then return Try(C_Spell.GetSpellName, id) end
-    return (Try(GetSpellInfo, id))
+    return Try(C_Spell and C_Spell.GetSpellName, id)
 end
 
 -- Comprehension skill: { rank, max } or nil (learned from level 6)
 local function ComprehensionSkill()
-    local S = C_SkillInfo
+    local S = _G["C_SkillInfo"] -- WoW Forever only (not in the modern API docs)
     if not (S and S.GetNumSkillLines and S.GetSkillLineInfo) then return nil end
     for i = 1, tonumber((Try(S.GetNumSkillLines))) or 0 do
         local info = Try(S.GetSkillLineInfo, i)
@@ -2410,7 +2379,7 @@ local function ScrollsInBags()
             local info = Try(C.GetContainerItemInfo, bag, slot)
             if type(info) == "table" and info.itemID and info.hyperlink then
                 local name = info.hyperlink:match("%[(.-)%]") or "?"
-                local _, _, _, _, _, classID, subClassID = Try(C_Item and C_Item.GetItemInfoInstant or GetItemInfoInstant,
+                local _, _, _, _, _, classID, subClassID = Try(C_Item and C_Item.GetItemInfoInstant,
                     info.itemID)
                 if (classID == 0 and subClassID == SCROLL_SUBCLASS) or name:lower():find(word, 1, true) then
                     if not found[name] then

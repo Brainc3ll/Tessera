@@ -24,6 +24,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 ## rc5 (en préparation, zip de test donné le 13/10, tests de Braincell1980 à partir du jeudi 15)
 - Corrigé : étiquettes du mode placement (Compacte, Colonne à gauche) : plus de chevauchement ni de sortie d'écran, nom raccourci si la place manque.
 - Blocs Forever et nouveaux blocs : testés contre un jeu qui change (`tools/fuzz_blocks.lua`), corrigés.
+- Audit de l'API WoW (Ketho, comme les modérateurs de r/WoWUI) : 0 fonction obsolète, 0 globale inconnue ; anciens secours classiques retirés (la branche multi-versions les garde : conflits à prévoir si fusion). Tourne à chaque push (`tools/api_audit.py`).
 - Scénario donjon + combat ajouté au test automatique (le donjon ne pourra peut-être pas être testé en jeu).
 
 ## Déjà sur main pour la version suivante

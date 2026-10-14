@@ -21,6 +21,8 @@ ns.CHANGELOG = {
                 .. "block, the stat shown on the stats block; /tessera help is in the chat command list.",
             "Help split into small texts: easier to translate with CurseForge's tool, and a change to one line "
                 .. "no longer asks translators to redo the whole help.",
+            "Code checked with Ketho's WoW API annotations (the tool addon reviewers use): no deprecated function, "
+                .. "no unknown global; old fallbacks for other game versions removed.",
         },
         fr = {
             "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "
@@ -32,6 +34,8 @@ ns.CHANGELOG = {
                 .. "groupe, statistique affichée du bloc statistiques ; /tessera help dans la liste des commandes.",
             "Aide découpée en petits textes : plus facile à traduire avec l'outil de CurseForge, et changer une ligne "
                 .. "ne demande plus aux traducteurs de refaire toute l'aide.",
+            "Code vérifié avec les annotations de l'API WoW de Ketho (l'outil des relecteurs d'addons) : aucune "
+                .. "fonction obsolète, aucune variable globale inconnue ; anciens secours pour d'autres versions du jeu retirés.",
         },
     },
     {

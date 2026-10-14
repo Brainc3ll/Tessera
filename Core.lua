@@ -2468,7 +2468,7 @@ end
 local compartmentInfo
 local minimapButton
 
-local IsAddOnLoadedFn = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+local IsAddOnLoadedFn = C_AddOns and C_AddOns.IsAddOnLoaded
 local function FlareUIBag()
     return IsAddOnLoadedFn and IsAddOnLoadedFn("FlareUI") and true or false
 end

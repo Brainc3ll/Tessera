@@ -9,6 +9,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Blocks made for WoW Forever's own systems are more robust: if the game changes at release, they show nothing rather than an error.
 - Help: where to find the blocks hidden at first, tooltips while holding Alt, /roll on the group loot block, the stat shown on the stats block; /tessera help is in the chat command list.
 - Help split into small texts: easier to translate with CurseForge's tool, and a change to one line no longer asks translators to redo the whole help.
+- Code checked with Ketho's WoW API annotations (the tool addon reviewers use): no deprecated function, no unknown global; old fallbacks for other game versions removed.
 
 ## 1.0.0-rc4 — 2026-10-13
 

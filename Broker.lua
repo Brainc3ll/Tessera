@@ -48,8 +48,8 @@ local function LDB()
 end
 ns.GetLDB = LDB
 
-local GetMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
-local IsLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+local GetMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or function() end
+local IsLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or function() end
 
 -- Values given by other addons may be anything, even secret values: read safely
 local function SafeString(v)

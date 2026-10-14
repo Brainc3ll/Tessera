@@ -22,7 +22,7 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 2. La même version dans `Tessera.toc` (`## Version:`).
 3. Textes : `python3 build.py` dans les outils de traduction, puis `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua` (et pareil pour `frFR`).
 4. Documentation à jour (voir la liste ci-dessous).
-5. Tests : `luacheck .`, `lua5.1 tools/mock_run.lua . enUS` (et `frFR`, `frFR broker` ; avec un passage en donjon et en combat), `lua5.1 tools/fuzz_blocks.lua .` (les blocs WoW Forever résistent à un jeu qui change), puis `lua5.1 tools/check_docs.lua . release`.
+5. Tests : `luacheck .`, `lua5.1 tools/mock_run.lua . enUS` (et `frFR`, `frFR broker` ; avec un passage en donjon et en combat), `lua5.1 tools/fuzz_blocks.lua .` (les blocs WoW Forever résistent à un jeu qui change), puis `lua5.1 tools/check_docs.lua . release`. L'audit de l'API WoW (`tools/api_audit.py`, l'outil de Ketho utilisé par les modérateurs de Reddit) tourne à chaque push.
 6. Pousser sur `main`, lancer le workflow.
 
 ## La documentation à tenir à jour à chaque changement

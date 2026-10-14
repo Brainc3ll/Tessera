@@ -2012,7 +2012,7 @@ end
 -- "About" tab: author, translators, license, links (topic "About") and the
 -- changelog from Changelog.lua (topic "Changelog")
 ---------------------------------------------------------------------------
-local GetMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
+local GetMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or function() end
 local SOURCE_URL = "https://github.com/Brainc3ll/Tessera"
 local CHANGELOG_TOPIC = 2 -- second topic of the About tab
 local aboutContent -- content frame of the About tab, to open the changelog topic
@@ -2825,7 +2825,7 @@ function ns:BugReport()
 
     -- other loaded addons (interface addons often explain display problems)
     local addons = {}
-    local count = (C_AddOns and C_AddOns.GetNumAddOns and C_AddOns.GetNumAddOns()) or (GetNumAddOns and GetNumAddOns()) or 0
+    local count = (C_AddOns and C_AddOns.GetNumAddOns and C_AddOns.GetNumAddOns()) or 0
     for i = 1, count do
         local name = C_AddOns and C_AddOns.GetAddOnInfo and C_AddOns.GetAddOnInfo(i)
         local loaded = C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded(i)
@@ -2867,7 +2867,7 @@ function ns:DebugReport()
     end
 
     -- what is under the mouse (hover a menu, then type the command)
-    local foci = GetMouseFoci and GetMouseFoci() or { GetMouseFocus and GetMouseFocus() }
+    local foci = GetMouseFoci and GetMouseFoci() or {}
     for i, f in ipairs(foci) do
         if i > 4 then break end
         P("[debug] sous la souris : " .. Describe(f))

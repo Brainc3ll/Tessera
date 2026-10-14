@@ -645,7 +645,7 @@ function ns:LegacyProbe()
             Add(name .. (loaded and " (loaded)" or " (not loaded)"))
         end
     end
-    local frame = _G.LegacySystemFrame
+    local frame = _G["LegacySystemFrame"]
     Add("")
     Add("== LegacySystemFrame functions ==")
     if not frame then
@@ -751,7 +751,7 @@ function ns:SkillsProbe()
         Add(name .. ": " .. (type(_G[name]) == "function" and "yes" or "no"))
     end
     -- WoW Forever: the skill list is in C_SkillInfo
-    local S = C_SkillInfo
+    local S = _G["C_SkillInfo"]
     if S and S.GetNumSkillLines and S.GetSkillLineInfo then
         local ok, count = pcall(S.GetNumSkillLines)
         Add("")
@@ -765,12 +765,13 @@ function ns:SkillsProbe()
             end
         end
     end
-    if type(GetNumSkillLines) == "function" and type(GetSkillLineInfo) == "function" then
-        local ok, count = pcall(GetNumSkillLines)
+    local classicCount, classicLine = _G["GetNumSkillLines"], _G["GetSkillLineInfo"] -- classic skill list, if any
+    if type(classicCount) == "function" and type(classicLine) == "function" then
+        local ok, count = pcall(classicCount)
         Add("")
         Add("== Skill list (" .. tostring(ok and count) .. " lines) ==")
         for i = 1, (ok and tonumber(count) or 0) do
-            local okLine, name, header, _, rank, _, _, max, abandonable = pcall(GetSkillLineInfo, i)
+            local okLine, name, header, _, rank, _, _, max, abandonable = pcall(classicLine, i)
             if okLine then
                 Add(("%d. %s%s %s/%s%s"):format(i, tostring(name), header and " [header]" or "",
                     tostring(rank), tostring(max), abandonable and " (can be unlearned)" or ""))
@@ -829,7 +830,7 @@ function ns:RecoverOffscreenBlocks()
                 local o = self.frames[k]
                 local l, b, r, t
                 if o and o:IsShown() then l, b, r, t = self:GetRectUI(o) end
-                if l then
+                if l and b and r and t then
                     gl, gb = math.min(gl or l, l), math.min(gb or b, b)
                     gr, gt = math.max(gr or r, r), math.max(gt or t, t)
                 end

@@ -1,6 +1,6 @@
 # Tests de la rc5 (jeudi 15 octobre)
 
-Version à tester : **Tessera-1.0.0-rc5-test4.zip** (version de test : elle a les commandes `/tes test`).
+Version à tester : **Tessera-1.0.0-rc5-test7.zip** (version de test : elle a les commandes `/tes test`).
 Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur Lua.
 
 ## 0. Préparation (5 min)
@@ -34,6 +34,17 @@ Profil « Test » avec tous les blocs à vérifier (même vides). Pour chacun : 
 - [ ] `/tes test compacte` : les noms sous les blocs ne se chevauchent plus et ne sortent pas de l'écran ; un nom trop long est raccourci (« Composants de… ») ou masqué (le survol le montre).
 - [ ] `/tes test colonne` : les noms sont à droite des blocs, dans l'écran.
 - [ ] Verrouiller : les noms disparaissent.
+
+## 3 bis. Croix, flèches et remplacement (5 min)
+
+- [ ] Déverrouiller, survoler un bloc : une croix en haut à droite, des flèches en haut à gauche ; elles disparaissent quand la souris s'en va, pendant un glisser et en verrouillant.
+- [ ] La croix masque le bloc ; Ctrl + Z le remet.
+- [ ] Les flèches : la liste montre d'abord les blocs masqués, puis les blocs affichés. Un bloc masqué prend la place exacte (même apparence, rien ne bouge) ; un bloc affiché échange sa place.
+- [ ] Un espace (disposition « Vitraux de Hurlevent » par exemple) : flèches, choisir un bloc : l'espace disparaît, le bloc prend sa place ; Ctrl + Z ramène l'espace.
+- [ ] Remplacer le premier bloc (le plus à gauche) d'une barre collée en haut et étirée : la barre reste collée et sur toute la largeur.
+- [ ] Simple clic droit sur un bloc en mode placement : le menu rapide ; Alt + clic droit aussi.
+- [ ] Bloc d'un groupe figé : ni croix ni flèches.
+- [ ] Onglet Aide : le sujet « Remplacer des blocs ».
 
 ## 4. Infobulles (3 min)
 

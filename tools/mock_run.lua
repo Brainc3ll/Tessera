@@ -594,6 +594,39 @@ for _, step in ipairs({
         end
         ns:GetReplacementChoices("time")
         ns:AskReplaceBlock("time", "fps")
+        ns:OpenReplaceMenu("time")
+        -- a spacer replaced by a hidden block is deleted; Ctrl + Z brings it back
+        ns:ResetProfile("top")
+        b = ns.db.blocks
+        local had = {}
+        for k in pairs(b) do had[k] = true end
+        assert(ns:InsertSpacer("bags", "RIGHT") ~= false, "spacer refused")
+        local spacer
+        for k in pairs(b) do
+            if not had[k] and ns.IsSpacerKey(k) then spacer = k end
+        end
+        assert(spacer and b[spacer].dock, "no new docked spacer")
+        local spacerDock = ns.DeepCopy(b[spacer].dock)
+        local hidden
+        for _, other in ipairs(ns:GetReplacementChoices(spacer)) do
+            if not other.shown then hidden = other.key break end
+        end
+        assert(hidden, "no hidden block to put in the spacer's place")
+        assert(ns:ReplaceBlock(spacer, hidden), "spacer replacement refused")
+        assert(b[spacer] == nil, "the replaced spacer is deleted")
+        assert(b[hidden].enabled and b[hidden].dock and b[hidden].dock.to == spacerDock.to, "the block took the spacer's place")
+        ns:Undo()
+        assert(b[spacer] and b[spacer].dock and b[spacer].dock.to == spacerDock.to, "undo brings the spacer back")
+        assert(not b[hidden].enabled, "undo hides the block again")
+        -- placement mode: the cross and the arrow on a block
+        ns:SetLocked(false)
+        local f = ns.frames.fps
+        assert(f.closeBtn and f.replaceBtn, "no buttons on the block")
+        ns:ShowBlockControls(f)
+        f.closeBtn:GetScript("OnClick")(f.closeBtn)
+        f.replaceBtn:GetScript("OnClick")(f.replaceBtn)
+        f:GetScript("OnMouseUp")(f, "RightButton")
+        ns:SetLocked(true)
         ns:ResetProfile("top")
     end,
     -- screen edges: stick and stretch a bar, undo it; OS-like layouts

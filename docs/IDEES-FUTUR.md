@@ -62,3 +62,12 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 - Changement de spécialisation de butin.
 - Masquer les barres pendant les combats de mascottes (pas sur Forever pour le moment).
 - Outils de raid (appel, compte à rebours, marqueurs) : à revoir selon la demande.
+
+## Remplacement de blocs (14 octobre 2026)
+
+Fait pour la rc5 : croix et flèches sur le bloc survolé en mode placement, liste en deux parties (masqués / affichés), remplacer un espace par un bloc, sujet d'aide dédié.
+
+Pistes pour après la 1.0.0 :
+- remplacer en glissant : poser un bloc sur un autre en tenant Alt prend sa place (sans passer par la liste) ;
+- dans la liste, l'aperçu de la valeur de chaque bloc (comme sur les blocs d'exemple), pour choisir sans essayer ;
+- « blocs suggérés » en haut de la liste selon la classe et le niveau (munitions pour un chasseur, composants pour un mage...).

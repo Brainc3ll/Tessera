@@ -1050,6 +1050,7 @@ local function ShowPlacementHelp(self)
     GameTooltip:AddLine(L.HINT_DRAG, 1, 1, 1)
     GameTooltip:AddLine(L.HINT_SHIFT_DRAG, 1, 1, 1)
     GameTooltip:AddLine(L.HINT_CTRL_CLICK, 1, 1, 1)
+    GameTooltip:AddLine(L.HINT_REPLACE_BUTTON, 1, 1, 1, true)
     GameTooltip:AddLine(L.HINT_QUICK_MENU_PLACEMENT, 1, 1, 1, true)
     GameTooltip:AddLine(L.HINT_UNDO, 1, 1, 1)
     if ns:IsFrozen(self.key) then GameTooltip:AddLine(L.HINT_FROZEN, 0.7, 0.7, 0.7) end
@@ -1065,6 +1066,7 @@ local function OnEnter(self)
     ns.hoveredBlock = self -- for "tooltips only while Alt is held" (watcher below)
     if not ns:IsLocked() then
         ShowPlacementHelp(self)
+        ns:ShowBlockControls(self)
         return
     end
     if not cfg.tooltip then return end
@@ -1125,15 +1127,16 @@ local function OnMouseDown(self)
     self.dragMoved = false
 end
 
--- Click: Ctrl+left click hides the block when unlocked; when locked, right
--- click opens its options and other clicks go to the module's onClick
+-- Click: when unlocked, Ctrl + left click hides the block and right click (with or
+-- without Alt) opens the quick menu; when locked, right click opens its options and
+-- other clicks go to the module's onClick
 local function OnMouseUp(self, button)
     if not ns:IsLocked() then
         if button == "LeftButton" and IsControlKeyDown() and not self.dragMoved
             and not ns:IsFrozen(self.key) then
             ns:PushUndo()
             ns:HideBlock(self.key)
-        elseif button == "RightButton" and IsAltKeyDown() then
+        elseif button == "RightButton" then
             ns:OpenQuickMenu(self.key)
         end
         return
@@ -1159,6 +1162,72 @@ local function OnMouseWheel(self, delta)
     if not ok then Print(tostring(err)) end
     ns:UpdateBlock(self.key)
     if GameTooltip:IsOwned(self) then OnEnter(self) end
+end
+
+-- Placement mode: two small buttons on the hovered block, so nobody has to know the
+-- shortcuts: a cross (top-right corner) hides the block, an arrow (top-left corner)
+-- puts another block in its place. They show while the mouse is over the block or
+-- over them, and go away on their own (OnUpdate) when it leaves, when the blocks
+-- are locked, during a drag or a fight.
+local function ControlsWanted(f)
+    if ns:IsLocked() or ns:IsFrozen(f.key) or InCombatLockdown() or ns.dragging
+        or not f:IsShown() then
+        return false
+    end
+    return f:IsMouseOver() or f.closeBtn:IsMouseOver() or f.replaceBtn:IsMouseOver()
+end
+
+function ns:ShowBlockControls(f)
+    if not f.closeBtn then return end
+    local show = ControlsWanted(f)
+    f.closeBtn:SetShown(show)
+    f.replaceBtn:SetShown(show)
+end
+
+local function ControlTooltip(btn, text)
+    GameTooltip:SetOwner(btn, "ANCHOR_TOP")
+    GameTooltip:AddLine(text, 1, 1, 1, true)
+    GameTooltip:Show()
+end
+
+local function CreateControl(f, path, corner, x, tip, onClick)
+    local b = CreateFrame("Button", nil, f)
+    b:SetSize(20, 20)
+    b:SetPoint("CENTER", f, corner, x, -2)
+    b:SetFrameStrata("FULLSCREEN_DIALOG")
+    b:SetNormalTexture(path .. "-Up")
+    b:SetPushedTexture(path .. "-Down")
+    b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Round", "ADD")
+    b:RegisterForClicks("LeftButtonUp")
+    b:SetScript("OnEnter", function(self) ControlTooltip(self, L[tip]) end)
+    b:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+        if f:IsMouseOver() then OnEnter(f) end
+    end)
+    b:SetScript("OnClick", function(self)
+        if ns:IsLocked() or ns:IsFrozen(f.key) or InCombatLockdown() then return end
+        GameTooltip:Hide()
+        onClick(self)
+    end)
+    b:Hide()
+    return b
+end
+
+local function CreateControls(f)
+    f.closeBtn = CreateControl(f, "Interface\\Buttons\\UI-Panel-MinimizeButton", "TOPRIGHT", -2,
+        "CLOSE_BUTTON_TIP", function()
+            ns:PushUndo()
+            ns:HideBlock(f.key)
+        end)
+    f.replaceBtn = CreateControl(f, "Interface\\Buttons\\UI-RotationRight-Button", "TOPLEFT", 2,
+        "REPLACE_BUTTON_TIP", function(self) ns:OpenReplaceMenu(f.key, self) end)
+    -- the cross watches the mouse while shown and hides both buttons when it leaves
+    f.closeBtn:SetScript("OnUpdate", function()
+        if not ControlsWanted(f) then
+            f.closeBtn:Hide()
+            f.replaceBtn:Hide()
+        end
+    end)
 end
 
 -- Creates the frame of a block (icon, text, unlock highlight and name tag).
@@ -1194,6 +1263,8 @@ local function CreateBlock(key)
     f.tag = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     f.tag:SetPoint("BOTTOM", f, "TOP", 0, 2)
     f.tag:Hide()
+
+    CreateControls(f)
 
     ns.frames[key] = f
     return f
@@ -1360,6 +1431,10 @@ function ns:ApplyLock(f)
     end
     f.highlight:SetShown(unlocked)
     f.tag:SetShown(unlocked and not f.tagHidden)
+    if not unlocked and f.closeBtn then
+        f.closeBtn:Hide()
+        f.replaceBtn:Hide()
+    end
 end
 
 -- Should this block be visible right now (enabled, combat/instance/empty rules)?
@@ -1690,8 +1765,12 @@ local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen",
 --   * newKey takes oldKey's look (size, font, frame...) so it fits in the group;
 --   * oldKey is hidden. If newKey was shown somewhere else, the two blocks swap
 --     places instead (each keeps its own look).
+--   * a spacer replaced by a block is deleted (the ready-made layouts leave spacers
+--     in their bars for this); the block takes its font and frame, not its size.
 -- Undoable with Ctrl + Z in placement mode. Returns true when done.
-local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen" }
+-- The group's own settings (screen edges, stretch, group look) are carried by its
+-- first block, so they move with the place too.
+local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen", "edges", "stretch", "look" }
 function ns:ReplaceBlock(oldKey, newKey)
     local blocks = self.db.blocks
     local old, new = blocks[oldKey], blocks[newKey]
@@ -1722,11 +1801,19 @@ function ns:ReplaceBlock(oldKey, newKey)
         old[field] = swap and newPlace[field] or nil
     end
     new.enabled = true
+    local spacer = not swap and ns.IsSpacerKey(oldKey)
     if not swap then
         old.enabled = false
         -- the new block blends in: same size and look as the one it replaces
-        for _, k in ipairs(STYLE_KEYS) do new[k] = DeepCopy(old[k]) end
-        new.width = old.width
+        -- (a spacer only gives its look: its size is just some room)
+        for _, k in ipairs(STYLE_KEYS) do
+            if not (spacer and k == "height") then new[k] = DeepCopy(old[k]) end
+        end
+        if not spacer then new.width = old.width end
+    end
+    if spacer then
+        blocks[oldKey] = nil
+        if self.frames[oldKey] then self.frames[oldKey]:Hide() end
     end
     self:RefreshAllBlocks()
     self:RequestLayout()

@@ -13,6 +13,13 @@ ns.CHANGELOG = {
         version = "1.0.0-rc5",
         date = "", -- set when the version is published
         en = {
+            "Placement mode, easier without knowing the shortcuts: a cross on the hovered block hides it, and arrows "
+                .. "replace it with another block in the exact same place. A plain right-click opens the quick menu "
+                .. "(Alt + right-click still works).",
+            "Replacing blocks: the list shows the hidden blocks (they take the place) apart from the shown ones (they "
+                .. "swap places). A spacer can now be replaced by a block, to fill the room the ready-made layouts "
+                .. "leave in their bars (Ctrl + Z brings it back). A bar's first block can be replaced without the bar "
+                .. "losing its screen edge or its width. New help topic \"Replacing blocks\".",
             "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
                 .. "(Compact and Left column layouts); when room is short, a name is shortened to its block's width.",
             "New ready-made layout \"Modern Forever\" (Look tab): the top bar with the basics, and a second bar "
@@ -35,6 +42,14 @@ ns.CHANGELOG = {
                 .. "no unknown global; old fallbacks for other game versions removed.",
         },
         fr = {
+            "Mode placement, plus simple sans connaître les raccourcis : une croix sur le bloc survolé le masque, et "
+                .. "des flèches le remplacent par un autre bloc exactement à la même place. Un simple clic droit ouvre le "
+                .. "menu rapide (Alt + clic droit marche toujours).",
+            "Remplacer des blocs : la liste sépare les blocs masqués (ils prennent la place) des blocs affichés (ils "
+                .. "échangent leur place). Un espace peut maintenant être remplacé par un bloc, pour occuper la place que "
+                .. "les dispositions toutes prêtes laissent dans leurs barres (Ctrl + Z le fait revenir). Le premier bloc "
+                .. "d'une barre se remplace sans que la barre perde son bord de l'écran ni sa largeur. Nouveau sujet "
+                .. "d'aide « Remplacer des blocs ».",
             "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "
                 .. "(dispositions Compacte et Colonne à gauche) ; quand la place manque, un nom est raccourci à la "
                 .. "largeur de son bloc.",

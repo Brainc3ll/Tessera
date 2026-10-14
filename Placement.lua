@@ -168,6 +168,8 @@ function ns:PushUndo()
     for key, cfg in pairs(self.db.blocks) do
         local s = {}
         for _, field in ipairs(POSITION_FIELDS) do s[field] = self.DeepCopy(cfg[field]) end
+        -- a spacer may be deleted (replaced by a block): keep all of it
+        if ns.IsSpacerKey(key) then s.spacer = self.DeepCopy(cfg) end
         snap[key] = s
     end
     table.insert(self.undoStack, snap)
@@ -183,9 +185,13 @@ end
 function ns:Undo()
     if not self:CanUndo() then return end
     local snap = table.remove(self.undoStack)
+    local revived = false
     for key, s in pairs(snap) do
         local cfg = self.db.blocks[key]
-        if cfg then
+        if not cfg and s.spacer then -- a spacer deleted since comes back
+            self.db.blocks[key] = self.DeepCopy(s.spacer)
+            revived = true
+        elseif cfg then
             for _, field in ipairs(POSITION_FIELDS) do cfg[field] = self.DeepCopy(s[field]) end
         end
     end
@@ -196,6 +202,7 @@ function ns:Undo()
             if self.frames[key] then self.frames[key]:Hide() end
         end
     end
+    if revived then self:RefreshAllBlocks() end
     self:ReanchorAll()
     if self.UpdateUndoButton then self:UpdateUndoButton() end
     if self.RefreshOptions then self:RefreshOptions() end
@@ -452,7 +459,8 @@ function ns:HandleLockedClick(key, button, frame)
     return false
 end
 
--- Alt + right-click: small menu without opening the options window
+-- Right-click in placement mode, Alt + right-click when locked: small menu without
+-- opening the options window
 function ns:OpenQuickMenu(key)
     local frame = self.frames[key]
     if not (MenuUtil and MenuUtil.CreateContextMenu) or not frame then
@@ -485,12 +493,10 @@ function ns:OpenQuickMenu(key)
             end
         end
         -- put another block in this one's place (or swap with it if it is shown)
-        if not self:IsFrozen(key) and not ns.IsSpacerKey(key) then
+        if not self:IsFrozen(key) then
             local sub = root:CreateButton(L.MENU_REPLACE)
             if sub.SetScrollMode then sub:SetScrollMode(400) end
-            for _, other in ipairs(self:GetReplacementChoices(key)) do
-                sub:CreateButton(other.name, function() self:AskReplaceBlock(key, other.key) end)
-            end
+            self:FillReplaceMenu(sub, key)
         end
         -- this group's own look (fused, tiles, separate), or the one of the Look tab
         if self:IsInGroup(key) then
@@ -513,19 +519,48 @@ function ns:OpenQuickMenu(key)
 end
 
 -- Blocks that can take a block's place: every other block except spacers,
--- sorted by name; blocks already shown are marked (choosing one swaps them)
+-- sorted by name; "shown" marks the blocks already shown (choosing one swaps them)
 function ns:GetReplacementChoices(key)
     local list = {}
     for _, other in ipairs(self:GetBlockKeys()) do
         local cfg = self.db.blocks[other]
         if other ~= key and cfg and not ns.IsSpacerKey(other) then
-            local name = self:GetBlockName(other)
-            if cfg.enabled then name = name .. "  |cff999999(" .. L.REPLACE_SWAP_MARK .. ")|r" end
-            table.insert(list, { key = other, name = name, sort = self:GetBlockName(other) })
+            table.insert(list, { key = other, name = self:GetBlockName(other), shown = cfg.enabled and true or false })
         end
     end
-    table.sort(list, function(a, b) return a.sort < b.sort end)
+    table.sort(list, function(a, b) return a.name < b.name end)
     return list
+end
+
+-- The "Replace with..." list, in two parts: the hidden blocks (one takes this
+-- place, this block is hidden), then the shown ones (the two swap places)
+function ns:FillReplaceMenu(root, key)
+    local hidden, shown = {}, {}
+    for _, other in ipairs(self:GetReplacementChoices(key)) do
+        table.insert(other.shown and shown or hidden, other)
+    end
+    for i, part in ipairs({ { L.REPLACE_HIDDEN, hidden }, { L.REPLACE_SHOWN, shown } }) do
+        if #part[2] > 0 then
+            if i == 2 and #hidden > 0 and root.CreateDivider then root:CreateDivider() end
+            root:CreateTitle(part[1])
+            for _, other in ipairs(part[2]) do
+                root:CreateButton(other.name, function() self:AskReplaceBlock(key, other.key) end)
+            end
+        end
+    end
+end
+
+-- The arrow button of a block in placement mode (and the Blocks tab): the list alone
+function ns:OpenReplaceMenu(key, owner)
+    if not (MenuUtil and MenuUtil.CreateContextMenu) then
+        if self.OpenOptionsFor then self:OpenOptionsFor(key) end
+        return
+    end
+    MenuUtil.CreateContextMenu(owner or self.frames[key], function(_, root)
+        if root.SetScrollMode then root:SetScrollMode(400) end
+        root:CreateTitle(L.REPLACE_TITLE:format(self:GetBlockName(key)))
+        self:FillReplaceMenu(root, key)
+    end)
 end
 
 -- Asks before replacing (or swapping) a block
@@ -692,6 +727,8 @@ local function SnapshotPositions(self)
     for key, cfg in pairs(self.db.blocks) do
         local s = {}
         for _, field in ipairs(POSITION_FIELDS) do s[field] = self.DeepCopy(cfg[field]) end
+        -- a spacer may be deleted (replaced by a block): keep all of it
+        if ns.IsSpacerKey(key) then s.spacer = self.DeepCopy(cfg) end
         snap[key] = s
     end
     return snap

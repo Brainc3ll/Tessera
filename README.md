@@ -76,7 +76,10 @@ Help tab inside the game explains everything.
   regeneration, character stats (the stat of your choice), group loot (click: /roll)...
 - Blocks that have nothing to show hide themselves (in a second row under the main bar).
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks; groups
-  fused, as tiles with joints, or separate; replace a block in place from the quick menu.
+  fused, as tiles with joints, or separate.
+- Replace a block in place: the arrows on a hovered block (placement mode) put another block
+  exactly there, with the same look, without moving anything else; a shown block swaps places,
+  and the spacers of the ready-made layouts can be filled this way. A cross hides the block.
 - Per-block style, icons (same size, square or round frame, black and white), opacity, scale,
   progress bar, thresholds, show on hover, alerts, click actions.
 - DataBroker tab: other addons' DataBroker objects as blocks ("Plugins as blocks"); Tessera's
@@ -115,10 +118,11 @@ Key bindings (show / hide all blocks, lock / unlock, options) are in the game's 
 Tessera category.
 
 When unlocked: drag a block to move it (or its whole group), drop it against another block to
-merge them, **Shift + drag** to detach it, **Ctrl + click** to hide it, **Ctrl + Z** to undo,
-**Alt + right-click** for the quick menu. When locked: hover for the tooltip, left-click to open
+merge them, **Shift + drag** to detach it, the **cross** on a hovered block (or **Ctrl + click**)
+to hide it, its **arrows** to replace it with another block, **Ctrl + Z** to undo, **right-click**
+for the quick menu. When locked: hover for the tooltip, left-click to open
 the related game window, **Shift + click** to copy the value to the chat, right-click for the
-block's settings.
+block's settings, **Alt + right-click** for the quick menu.
 
 **Reporting a bug:** type `/tessera bug`, copy the report from the window that opens and paste it
 into a new issue (a template is provided), or in the comments of the

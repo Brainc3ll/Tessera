@@ -829,15 +829,8 @@ local function BuildBlockPage(page)
     -- "Replace with...": another block takes the selected block's place
     local replace = CreateButton(page, L.REPLACE_BLOCK, function(self)
         if not (MenuUtil and MenuUtil.CreateContextMenu) then return end
-        local key = selected
-        MenuUtil.CreateContextMenu(self, function(_, root)
-            if root.SetScrollMode then root:SetScrollMode(400) end
-            root:CreateTitle(L.REPLACE_TITLE:format(ns:GetBlockName(key)))
-            for _, other in ipairs(ns:GetReplacementChoices(key)) do
-                root:CreateButton(other.name, function() ns:AskReplaceBlock(key, other.key) end)
-            end
-        end)
-    end, function() return single() and not ns.IsSpacerKey(selected) end, REPLACE_W - 8, L.TIP_REPLACE_BLOCK)
+        ns:OpenReplaceMenu(selected, self)
+    end, function() return single() and ns.db.blocks[selected] ~= nil end, REPLACE_W - 8, L.TIP_REPLACE_BLOCK)
     replace:SetPoint("BOTTOMLEFT", selection, "BOTTOMRIGHT", 0, 1)
     top.Place(CreateNote(page, L.GROUP_HINT, FULL_W), 1)
 

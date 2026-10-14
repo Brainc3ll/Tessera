@@ -8,10 +8,13 @@ local L = ns.L
 --                 settings panel (tooltip border in that bronze over Blizzard's Collections tile)
 --   FlareUI 1.x : dark dialog background, bronze "FlareUI Thin" border (#A67D45),
 --                 the XP bar's font (Arial Narrow, outlined, unless changed in FlareUI)
---   The FlareUI style matching the installed version is the default; both can be picked.
+--   The FlareUI style matching the installed version is the default. FlareUI 1.x is only
+--   listed with FlareUI 1.x installed, or for a profile that already uses it.
 --   EllesmereUI : very dark flat grey background (0.067, 0.95 opacity), 1 px black border
---                 at 80%, EllesmereUI's global font (Expressway by default), as on its data bars
---   ElvUI       : background color, border color and font read from ElvUI's settings
+--                 at 80%, EllesmereUI's global font (Expressway by default), as on its data bars,
+--                 and its accent color (#0CD29F) on the lines between merged blocks
+--   ElvUI       : background color, border color, font and value color (the text) read from
+--                 ElvUI's settings (defaults from its Defaults/Profile.lua without ElvUI)
 --   Blizzard modern  : the game's current tooltips ("TooltipDefaultLayout" atlas), identical
 --                      on Retail and Forever according to Blizzard's source code
 --   Blizzard classic : the game's original tooltip background and border
@@ -141,6 +144,8 @@ ns.themes = {
         key = "flareui", -- key kept from earlier versions: saved profiles refer to it
         name = "FlareUI 1.x",
         installed = function() return ns:HasFlareUIMedia() end,
+        -- no longer in the list, except for FlareUI 1.x itself or a profile that uses it
+        hidden = function() return FlareUIMajor() ~= 1 end,
         available = function() return true end,
         missingNote = "THEME_NOTE_FLAREUI",
         block = function(cfg)
@@ -177,6 +182,9 @@ ns.themes = {
             cfg.border = "solid"
             cfg.borderSize = 1
             cfg.borderColor = { r = 0, g = 0, b = 0, a = 0.8 }
+            -- EllesmereUI's accent color (#0CD29F) on the lines between merged blocks
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.05, g = 0.82, b = 0.62, a = 0.85 }
             cfg.font = EllesmereFont() or "arial" -- without EllesmereUI: the game's condensed font
             cfg.outline = "NONE"
         end,
@@ -203,6 +211,10 @@ ns.themes = {
             cfg.borderSize = 1
             cfg.borderColor = Color(m.bordercolor, { 0, 0, 0, 1 })
             local general = E and E.db and E.db.general
+            -- like ElvUI's data texts: the values in its "value color" (blue by default,
+            -- or the class color picked in its installer)
+            local value = Color(general and general.valuecolor, { 0.09, 0.52, 0.82, 1 })
+            cfg.textTint = { r = value.r, g = value.g, b = value.b, a = 1 }
             cfg.font = LSMFont(general and general.font) or "arial"
             cfg.outline = (general and general.fontStyle) or "OUTLINE"
             if cfg.outline ~= "NONE" and cfg.outline ~= "OUTLINE" and cfg.outline ~= "THICKOUTLINE" then
@@ -402,14 +414,15 @@ ns.themes = {
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
-            cfg.bgColor = { r = 0.84, g = 0.75, b = 0.56, a = 0.95 }
+            cfg.bgColor = { r = 0.80, g = 0.70, b = 0.50, a = 0.97 }
             cfg.border = "solid"
             cfg.borderSize = 2
             cfg.borderColor = { r = 0.45, g = 0.29, b = 0.13, a = 1 } -- copper brown
             cfg.separators = true
             cfg.separatorColor = { r = 0.45, g = 0.29, b = 0.13, a = 0.5 }
             cfg.font, cfg.outline = "morpheus", "NONE" -- ink: no outline
-            cfg.textTint = { r = 0.22, g = 0.13, b = 0.05, a = 1 }
+            cfg.textTint = { r = 0.1, g = 0.06, b = 0.025, a = 1 } -- almost black ink
+            cfg.inkColors = true -- the colors in the values, darkened like ink
         end,
         window = function()
             return FlatWindow({ 0.16, 0.11, 0.06, 0.97 }, { 0.62, 0.42, 0.2, 1 }, { 0.93, 0.83, 0.62 })
@@ -481,8 +494,9 @@ end
 -- labeled (an imitation, see GetThemeNote)
 function ns:GetAvailableThemes()
     local list = {}
+    local current = self:GetTheme()
     for _, t in ipairs(self.themes) do
-        if t.available() then
+        if t.available() and not (t.hidden and t.hidden() and t.key ~= current) then
             local name = IsInstalled(t) and t.name or (t.name .. " " .. L.THEME_NOT_INSTALLED)
             table.insert(list, { key = t.key, name = name })
         end
@@ -511,7 +525,7 @@ function ns:ApplyThemeToCfg(cfg, key)
     cfg.iconBorderColor = { r = 0, g = 0, b = 0, a = 1 }
     cfg.separators = false -- only some styles draw lines between merged blocks
     -- text only, black and white, the style's text color: only some styles
-    cfg.hideIcons, cfg.monochrome = false, false
+    cfg.hideIcons, cfg.monochrome, cfg.inkColors = false, false, false
     cfg.textTint = { r = 1, g = 1, b = 1, a = 0 }
     theme.block(cfg)
 end
@@ -521,7 +535,7 @@ end
 local function RestyleProfile(self, key, restyle)
     for _, field in ipairs({ "bg", "bgColor", "border", "borderSize", "borderColor", "font", "outline",
                              "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor",
-                             "hideIcons", "monochrome", "textTint" }) do
+                             "hideIcons", "monochrome", "textTint", "inkColors" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end

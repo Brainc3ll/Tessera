@@ -493,6 +493,7 @@ local BLOCK_DEFAULTS = {
     -- set by some styles (Themes.lua), cleared by the others:
     hideIcons = false,        -- text only (launchers keep their icon)
     monochrome = false,       -- black and white: grey text, no colors in the values, grey icons
+    inkColors = false,        -- light background: the colors in the values darkened like ink
     textTint = { r = 1, g = 1, b = 1, a = 0 }, -- text color of the style (a = 0: none), used
                                                -- while the block's own text color is white
     width = 60,   -- minimum width: the block grows if its text is longer
@@ -520,7 +521,7 @@ local STYLE_KEYS = {
     "height", "justify", "strata", "font", "fontSize", "outline", "textColor",
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
-    "hideIcons", "monochrome", "textTint",
+    "hideIcons", "monochrome", "textTint", "inkColors",
 }
 ns.STYLE_KEYS = STYLE_KEYS -- also what a style export carries (Profiles.lua)
 
@@ -1583,6 +1584,13 @@ function ns:UpdateBlock(key)
         value = value:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
     elseif cfg.colorize and level and self.LEVEL_COLORS[level] and value ~= "" then
         value = "|cff" .. self.LEVEL_COLORS[level] .. value .. "|r"
+    end
+    if cfg.inkColors then
+        -- light background (Parchment): bright colors would not read, they get darker
+        value = value:gsub("|c(%x%x)(%x%x)(%x%x)(%x%x)", function(a, r, g, b)
+            local function ink(h) return math.floor(tonumber(h, 16) * 0.5) end
+            return ("|c%s%02x%02x%02x"):format(a, ink(r), ink(g), ink(b))
+        end)
     end
 
     local text = value

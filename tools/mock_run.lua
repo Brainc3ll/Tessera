@@ -450,6 +450,44 @@ for _, step in ipairs({
         assert(not ns.brokerModeActive, "broker mode not off")
     end,
     function() for _, t in ipairs(ns:GetAvailableThemes()) do ns:ApplyTheme(t.key); ns:UpdateLayout() end end,
+    -- display options of the blocks (gold, bags, XP, durability, FPS, latency, time,
+    -- coordinates, friends, guild, reputation): every value gives a text
+    function()
+        local b = ns.db.blocks
+        local function Try(key, field, values)
+            for _, v in ipairs(values) do
+                b[key][field] = v
+                ns:UpdateBlock(key)
+            end
+        end
+        for _, f in ipairs({ "full", "goldSilver", "gold", "short" }) do
+            b.gold.goldFormat = f
+            for _, icons in ipairs({ true, false }) do
+                b.gold.goldIcons = icons
+                Try("gold", "goldRound", { true, false })
+                Try("gold", "goldSeparator", { false, true })
+            end
+        end
+        Try("bags", "bagsFormat", { "free", "usedTotal", "freeTotal" })
+        Try("xp", "xpFormat", { "values", "remaining", "percent" })
+        Try("xp", "xpRested", { false, true })
+        Try("durability", "durabilityMode", { "average", "lowest" })
+        Try("fps", "showUnit", { false, true })
+        Try("latency", "latencySource", { "home", "both", "world" })
+        Try("latency", "showUnit", { false, true })
+        Try("time", "showSeconds", { true, false })
+        Try("serverTime", "showSeconds", { true, false })
+        Try("coords", "coordDecimals", { 0, 2, 1 })
+        Try("friends", "countFormat", { "onlineTotal", "online" })
+        Try("guild", "countFormat", { "online", "onlineTotal" })
+        Try("reputation", "repFormat", { "namePercent", "percent", "standing", "standingPercent" })
+        -- gold: the formats themselves
+        local gold = ns.modules.gold
+        b.gold.goldIcons, b.gold.goldFormat, b.gold.goldRound, b.gold.goldSeparator = false, "gold", true, false
+        local text = gold.update(b.gold)
+        assert(text and text:find("|r", 1, true), "gold letters are colored")
+        b.gold.goldIcons, b.gold.goldFormat, b.gold.goldRound, b.gold.goldSeparator = true, "full", false, true
+    end,
     -- Runestone: text only, black and white; another style gives icons and colors back;
     -- the styles of interfaces that are not installed can be picked, with a note
     function()

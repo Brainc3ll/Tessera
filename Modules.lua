@@ -284,19 +284,46 @@ function ns.FormatMoney(money, size)
     return table.concat(parts, " ")
 end
 
--- Gold amount in the block's chosen format: "full" (gold, silver, copper),
--- "gold" (gold pieces only) or "short" (12.3k gold)
+-- Gold amount as the block's options say:
+--   goldFormat    "full" (gold, silver, copper), "goldSilver", "gold" (gold pieces only)
+--                 or "short" (12.3k gold)
+--   goldIcons     coin icons (default), or colored letters (g s c / po pa pc)
+--   goldRound     rounded to the nearest shown unit instead of cut off
+--   goldSeparator thousands separator (default)
+local COIN_COLORS = { gold = "ffd100", silver = "c7c7cf", copper = "eda55f" }
 local function FormatGold(money, cfg)
-    local format = cfg and cfg.goldFormat or "full"
-    if format == "full" then return ns.FormatMoney(money, cfg and cfg.fontSize) end
-    local size = cfg and cfg.fontSize or 12
-    local icon = ("|T%s:%d:%d:2:0|t"):format(COIN_ICONS.gold, size, size)
-    local gold = math.floor(money / 10000)
-    if format == "short" then
-        if gold >= 1000000 then return ("%.1fM"):format(gold / 1000000) .. icon end
-        if gold >= 1000 then return ("%.1fk"):format(gold / 1000) .. icon end
+    cfg = cfg or {}
+    local format = cfg.goldFormat or "full"
+    local size = cfg.fontSize or 12
+    local function Unit(kind)
+        if cfg.goldIcons ~= false then return ("|T%s:%d:%d:2:0|t"):format(COIN_ICONS[kind], size, size) end
+        return "|cff" .. COIN_COLORS[kind] .. L["COIN_" .. kind:upper()] .. "|r"
     end
-    return (BreakUpLargeNumbers and BreakUpLargeNumbers(gold) or tostring(gold)) .. icon
+    local function Number(n)
+        if cfg.goldSeparator ~= false and BreakUpLargeNumbers then return BreakUpLargeNumbers(n) end
+        return tostring(n)
+    end
+    local round = cfg.goldRound and 0.5 or 0
+    if format == "short" then
+        local gold = money / 10000
+        if gold >= 1000000 then return ("%.1fM"):format(gold / 1000000) .. Unit("gold") end
+        if gold >= 1000 then return ("%.1fk"):format(gold / 1000) .. Unit("gold") end
+        format = "gold"
+    end
+    if format == "gold" then return Number(math.floor(money / 10000 + round)) .. Unit("gold") end
+    if format == "goldSilver" then money = math.floor(money / 100 + round) * 100 end
+    local gold = math.floor(money / 10000)
+    local silver = math.floor((money % 10000) / 100)
+    local copper = money % 100
+    local parts = {}
+    if gold > 0 then table.insert(parts, Number(gold) .. Unit("gold")) end
+    if format == "goldSilver" then
+        if silver > 0 or gold == 0 then table.insert(parts, silver .. Unit("silver")) end
+    else
+        if gold > 0 or silver > 0 then table.insert(parts, silver .. Unit("silver")) end
+        table.insert(parts, copper .. Unit("copper"))
+    end
+    return table.concat(parts, " ")
 end
 
 -- Signed amount with colored + / - (tooltip lines)
@@ -317,10 +344,15 @@ ns:RegisterModule("gold", {
         local money = GetMoney() or 0
         return L.CHAT_MONEY:format(math.floor(money / 10000), math.floor(money % 10000 / 100), money % 100)
     end,
+    defaults = { goldIcons = true, goldRound = false, goldSeparator = true },
     options = {
         { kind = "dropdown", field = "goldFormat", label = "GOLD_FORMAT", tip = "TIP_GOLD_FORMAT",
-          values = { { key = "full", label = "GOLD_FULL" }, { key = "gold", label = "GOLD_ONLY" },
-                     { key = "short", label = "GOLD_SHORT" } } },
+          values = { { key = "full", label = "GOLD_FULL" }, { key = "goldSilver", label = "GOLD_SILVER" },
+                     { key = "gold", label = "GOLD_ONLY" }, { key = "short", label = "GOLD_SHORT" } } },
+        { kind = "check", field = "goldIcons", label = "GOLD_ICONS", tip = "TIP_GOLD_ICONS" },
+        { kind = "check", field = "goldRound", label = "GOLD_ROUND", tip = "TIP_GOLD_ROUND",
+          shown = function(cfg) return cfg.goldFormat == "gold" or cfg.goldFormat == "goldSilver" end },
+        { kind = "check", field = "goldSeparator", label = "GOLD_SEPARATOR", tip = "TIP_GOLD_SEPARATOR" },
     },
     tooltip = function(tt)
         local money = GetMoney() or 0
@@ -390,8 +422,18 @@ ns:RegisterModule("bags", {
                 free = free + (C_Container.GetContainerNumFreeSlots(bag) or 0)
             end
         end
-        return L.BAGS_FORMAT:format(free, total), Threshold(cfg, free, THRESHOLDS.bags)
+        local level = Threshold(cfg, free, THRESHOLDS.bags)
+        local mode = cfg and cfg.bagsFormat or "freeTotal"
+        if mode == "free" then return tostring(free), level end
+        if mode == "usedTotal" then return L.BAGS_FORMAT:format(total - free, total), level end
+        return L.BAGS_FORMAT:format(free, total), level
     end,
+    defaults = { bagsFormat = "freeTotal" },
+    options = {
+        { kind = "dropdown", field = "bagsFormat", label = "BAGS_SHOWN", tip = "TIP_BAGS_SHOWN",
+          values = { { key = "freeTotal", label = "BAGS_FREE_TOTAL" }, { key = "free", label = "BAGS_FREE" },
+                     { key = "usedTotal", label = "BAGS_USED_TOTAL" } } },
+    },
     thresholds = THRESHOLDS.bags,
     -- progress bar: how full the bags are
     progress = function()
@@ -451,6 +493,24 @@ local function LowestDurability()
     return lowest
 end
 
+-- Average durability of the equipped items that have one (percent), or nil
+local function AverageDurability()
+    local sum, count = 0, 0
+    for slot = 1, 19 do
+        local cur, max = GetInventoryItemDurability(slot)
+        if cur and max and max > 0 then
+            sum, count = sum + Percent(cur, max), count + 1
+        end
+    end
+    return count > 0 and sum / count or nil
+end
+
+-- The durability the block shows: the most worn item (default) or the average
+local function ShownDurability(cfg)
+    if cfg and cfg.durabilityMode == "average" then return AverageDurability() end
+    return LowestDurability()
+end
+
 -- Repair cost of the equipped items, in copper, or nil when this client gives no way to
 -- read it. The game gives the cost with each item's tooltip: modern tooltip data first,
 -- then a hidden tooltip (older API, 3rd return value of SetInventoryItem).
@@ -485,13 +545,18 @@ ns:RegisterModule("durability", {
     icon = "Interface\\Icons\\Trade_BlackSmithing",
     events = { "UPDATE_INVENTORY_DURABILITY", "PLAYER_EQUIPMENT_CHANGED" },
     update = function(cfg)
-        local lowest = LowestDurability()
-        if not lowest then return nil end
-        return ("%d%%"):format(math.floor(lowest + 0.5)), DurabilityLevel(lowest, cfg)
+        local pct = ShownDurability(cfg)
+        if not pct then return nil end
+        return ("%d%%"):format(math.floor(pct + 0.5)), DurabilityLevel(pct, cfg)
     end,
+    defaults = { durabilityMode = "lowest" },
+    options = {
+        { kind = "dropdown", field = "durabilityMode", label = "DURABILITY_SHOWN", tip = "TIP_DURABILITY_SHOWN",
+          values = { { key = "lowest", label = "DURABILITY_LOWEST" }, { key = "average", label = "DURABILITY_AVERAGE" } } },
+    },
     thresholds = THRESHOLDS.durability,
-    progress = function()
-        local lowest = LowestDurability()
+    progress = function(cfg)
+        local lowest = ShownDurability(cfg)
         return lowest and lowest / 100 or nil
     end,
     tooltip = function(tt, cfg)
@@ -523,8 +588,11 @@ ns:RegisterModule("fps", {
     interval = 1,
     update = function(cfg)
         local fps = GetFramerate() or 0
-        return L.FPS_FORMAT:format(fps), Threshold(cfg, fps, THRESHOLDS.fps)
+        local text = (cfg and cfg.showUnit == false) and ("%.0f"):format(fps) or L.FPS_FORMAT:format(fps)
+        return text, Threshold(cfg, fps, THRESHOLDS.fps)
     end,
+    defaults = { showUnit = true },
+    options = { { kind = "check", field = "showUnit", label = "SHOW_UNIT", tip = "TIP_SHOW_UNIT" } },
     thresholds = THRESHOLDS.fps,
     tooltip = function(tt, cfg)
         local f = session.fps
@@ -555,10 +623,26 @@ ns:RegisterModule("latency", {
     icon = "Interface\\Icons\\Spell_Nature_Lightning",
     interval = 5,
     update = function(cfg)
-        local _, _, _, world = GetNetStats()
-        world = world or 0
-        return L.LATENCY_FORMAT:format(world), LatencyLevel(world, cfg)
+        local _, _, home, world = GetNetStats()
+        home, world = home or 0, world or 0
+        local function Ms(v)
+            if cfg and cfg.showUnit == false then return tostring(v) end
+            return L.LATENCY_FORMAT:format(v)
+        end
+        local source = cfg and cfg.latencySource or "world"
+        if source == "home" then return Ms(home), LatencyLevel(home, cfg) end
+        if source == "both" then
+            return Ms(home) .. " / " .. Ms(world), LatencyLevel(math.max(home, world), cfg)
+        end
+        return Ms(world), LatencyLevel(world, cfg)
     end,
+    defaults = { showUnit = true, latencySource = "world" },
+    options = {
+        { kind = "dropdown", field = "latencySource", label = "LATENCY_SHOWN", tip = "TIP_LATENCY_SHOWN",
+          values = { { key = "world", label = "TT_WORLD" }, { key = "home", label = "TT_HOME" },
+                     { key = "both", label = "LATENCY_BOTH" } } },
+        { kind = "check", field = "showUnit", label = "SHOW_UNIT", tip = "TIP_SHOW_UNIT" },
+    },
     thresholds = THRESHOLDS.latency,
     tooltip = function(tt, cfg)
         local bwIn, bwOut, home, world = GetNetStats()
@@ -575,31 +659,36 @@ ns:RegisterModule("latency", {
 ---------------------------------------------------------------------------
 -- Local time and server time
 ---------------------------------------------------------------------------
--- "HH:MM" (24 h) or "H:MM AM/PM" (12 h), per the block's "24-hour clock" option
-local function FormatClock(h, m, cfg)
+-- "HH:MM" (24 h) or "H:MM AM/PM" (12 h), per the block's "24-hour clock" option,
+-- with ":SS" when the block shows the seconds
+local function FormatClock(h, m, cfg, sec)
     h, m = h or 0, m or 0
+    local seconds = (cfg and cfg.showSeconds and sec) and (":%02d"):format(sec) or ""
     if cfg and cfg.clock24 == false then
         local suffix = h >= 12 and "PM" or "AM"
         h = h % 12
         if h == 0 then h = 12 end
-        return ("%d:%02d %s"):format(h, m, suffix)
+        return ("%d:%02d%s %s"):format(h, m, seconds, suffix)
     end
-    return ("%02d:%02d"):format(h, m)
+    return ("%02d:%02d%s"):format(h, m, seconds)
 end
 
 -- Local time of the computer
 local function LocalTime(cfg)
     local t = date("*t")
-    return FormatClock(t.hour, t.min, cfg)
+    return FormatClock(t.hour, t.min, cfg, t.sec)
 end
 
--- Server (realm) time
+-- Server (realm) time; the game gives hours and minutes only: the seconds come from
+-- the server's clock (time zones are whole minutes, so its seconds are the realm's)
 local function ServerTime(cfg)
     local h, m = GetGameTime()
-    return FormatClock(h, m, cfg)
+    local now = GetServerTime and GetServerTime() or time()
+    return FormatClock(h, m, cfg, now % 60)
 end
 
 local CLOCK_OPTION = { kind = "check", field = "clock24", label = "CLOCK_24", tip = "TIP_CLOCK_24" }
+local SECONDS_OPTION = { kind = "check", field = "showSeconds", label = "SHOW_SECONDS", tip = "TIP_SHOW_SECONDS" }
 
 -- Tooltip shared by both time blocks
 local function TimeTooltip(tt, cfg)
@@ -640,7 +729,9 @@ ns:RegisterModule("time", {
           values = { { key = "auto", label = "TIME_AUTO" }, { key = "local", label = "TT_LOCAL_TIME" },
                      { key = "server", label = "TT_SERVER_TIME" } } },
         CLOCK_OPTION,
+        SECONDS_OPTION,
     },
+    defaults = { showSeconds = false },
     tooltip = TimeTooltip,
     secureMacro = "/run if ToggleCalendar then ToggleCalendar() end",
     clickHint = L.HINT_CALENDAR,
@@ -652,7 +743,8 @@ ns:RegisterModule("serverTime", {
     interval = 1,
     defaultEnabled = false,
     update = ServerTime,
-    options = { CLOCK_OPTION },
+    options = { CLOCK_OPTION, SECONDS_OPTION },
+    defaults = { showSeconds = false },
     tooltip = TimeTooltip,
     secureMacro = "/run if ToggleCalendar then ToggleCalendar() end",
     clickHint = L.HINT_CALENDAR,
@@ -674,22 +766,37 @@ ns:RegisterModule("xp", {
     icon = "Interface\\Icons\\Spell_Holy_SurgeOfLight",
     events = { "PLAYER_XP_UPDATE", "UPDATE_EXHAUSTION", "PLAYER_LEVEL_UP" },
     defaultEnabled = false,
-    defaults = { progressBar = true },
+    defaults = { progressBar = true, xpFormat = "percent", xpRested = true },
     progress = function()
         if AtMaxLevel() then return nil end
         local max = UnitXPMax("player")
         return max and max > 0 and UnitXP("player") / max or nil
     end,
-    update = function()
+    update = function(cfg)
         if AtMaxLevel() then return L.MAX_LEVEL end
         local cur, max = UnitXP("player"), UnitXPMax("player")
-        local text = ("%.1f%%"):format(Percent(cur, max))
+        local fmt = BreakUpLargeNumbers or tostring
+        local mode = cfg and cfg.xpFormat or "percent"
+        local text
+        if mode == "values" then
+            text = ("%s / %s"):format(fmt(cur), fmt(max))
+        elseif mode == "remaining" then
+            text = L.XP_TO_GO:format(fmt(max - cur))
+        else
+            text = ("%.1f%%"):format(Percent(cur, max))
+        end
         local rested = GetXPExhaustion()
-        if rested and rested > 0 then
+        if rested and rested > 0 and not (cfg and cfg.xpRested == false) then
             text = text .. (" |cff4da6ff+%.0f%%|r"):format(Percent(rested, max))
         end
         return text
     end,
+    options = {
+        { kind = "dropdown", field = "xpFormat", label = "XP_SHOWN", tip = "TIP_XP_SHOWN",
+          values = { { key = "percent", label = "XP_PERCENT" }, { key = "values", label = "XP_VALUES" },
+                     { key = "remaining", label = "XP_REMAINING" } } },
+        { kind = "check", field = "xpRested", label = "XP_RESTED", tip = "TIP_XP_RESTED" },
+    },
     tooltip = function(tt)
         tt:AddLine(L.TT_LEVEL:format(UnitLevel("player")), 1, 1, 1)
         if AtMaxLevel() then return end
@@ -723,15 +830,21 @@ ns:RegisterModule("coords", {
     icon = "Interface\\Icons\\INV_Misc_Map_01",
     interval = 0.25,
     defaultEnabled = false,
-    update = function()
+    update = function(cfg)
         local mapID = C_Map.GetBestMapForUnit("player")
         if not mapID then return nil end
         local pos = C_Map.GetPlayerMapPosition(mapID, "player")
         if not pos then return nil end
         local x, y = pos:GetXY()
         if not x or (x == 0 and y == 0) then return nil end
-        return ("%.1f, %.1f"):format(x * 100, y * 100)
+        local d = math.max(0, math.min(2, math.floor(tonumber(cfg and cfg.coordDecimals) or 1)))
+        local f = "%." .. d .. "f"
+        return (f .. ", " .. f):format(x * 100, y * 100)
     end,
+    options = {
+        { kind = "slider", field = "coordDecimals", label = "COORD_DECIMALS", tip = "TIP_COORD_DECIMALS",
+          min = 0, max = 2, step = 1, default = 1 },
+    },
     tooltip = function(tt)
         local mapID = C_Map.GetBestMapForUnit("player")
         local info = mapID and C_Map.GetMapInfo(mapID)
@@ -764,7 +877,7 @@ ns:RegisterModule("coords", {
             end
         end,
     },
-    defaults = { middleClick = "waypoint" },
+    defaults = { middleClick = "waypoint", coordDecimals = 1 },
 })
 
 -- Tooltip shared by the zone and subzone blocks
@@ -812,6 +925,10 @@ ns:RegisterModule("subzone", {
 -- Maximum names listed in a tooltip (the rest is shown as "and N more")
 local MAX_LINES = 20
 
+-- Friends and guild: members online only, or online / total
+local COUNT_OPTION = { kind = "dropdown", field = "countFormat", label = "COUNT_SHOWN", tip = "TIP_COUNT_SHOWN",
+    values = { { key = "online", label = "COUNT_ONLINE" }, { key = "onlineTotal", label = "COUNT_ONLINE_TOTAL" } } }
+
 ns:RegisterModule("friends", {
     label = "FRIENDS",
     icon = "Interface\\Icons\\INV_Misc_GroupNeedMore",
@@ -826,14 +943,19 @@ ns:RegisterModule("friends", {
         end
         return online == 0
     end,
-    update = function()
+    update = function(cfg)
         local online = C_FriendList.GetNumOnlineFriends() or 0
+        local total = C_FriendList.GetNumFriends() or 0
         if BNGetNumFriends then
-            local _, bnOnline = BNGetNumFriends()
+            local bnTotal, bnOnline = BNGetNumFriends()
             online = online + (bnOnline or 0)
+            total = total + (bnTotal or 0)
         end
+        if cfg and cfg.countFormat == "onlineTotal" then return ("%d / %d"):format(online, total) end
         return tostring(online)
     end,
+    defaults = { countFormat = "online" },
+    options = { COUNT_OPTION },
     tooltip = function(tt)
         local shown = 0
         local count = C_FriendList.GetNumFriends() or 0
@@ -871,11 +993,14 @@ ns:RegisterModule("guild", {
     requestInterval = 60,
     -- no guild: block hidden ("Hide when empty" option)
     isEmpty = function() return not IsInGuild() end,
-    update = function()
+    update = function(cfg)
         if not IsInGuild() then return L.NO_GUILD end
         local total, online = GetNumGuildMembers()
+        if cfg and cfg.countFormat == "online" then return tostring(online or 0) end
         return ("%d / %d"):format(online or 0, total or 0)
     end,
+    defaults = { countFormat = "onlineTotal" },
+    options = { COUNT_OPTION },
     tooltip = function(tt)
         if not IsInGuild() then return end
         local guildName = GetGuildInfo("player")
@@ -1140,18 +1265,28 @@ ns:RegisterModule("reputation", {
     icon = "Interface\\Icons\\INV_BannerPVP_02",
     events = { "UPDATE_FACTION" },
     isEmpty = function() return WatchedFaction() == nil end,
-    defaults = { progressBar = true },
+    defaults = { progressBar = true, repFormat = "standingPercent" },
     progress = function()
         local name, _, min, max, value = WatchedFaction()
         if not name or not (max and min and max > min) then return nil end
         return (value - min) / (max - min)
     end,
-    update = function()
+    update = function(cfg)
         local name, reaction, min, max, value = WatchedFaction()
         if not name then return L.NONE end
-        local pct = (max and min and max > min) and Percent(value - min, max - min) or 100
-        return ("%s %d%%"):format(StandingLabel(reaction), math.floor(pct))
+        local pct = math.floor((max and min and max > min) and Percent(value - min, max - min) or 100)
+        local mode = cfg and cfg.repFormat or "standingPercent"
+        if mode == "namePercent" then return ("%s %d%%"):format(name, pct) end
+        if mode == "percent" then return ("%d%%"):format(pct) end
+        if mode == "standing" then return StandingLabel(reaction) end
+        return ("%s %d%%"):format(StandingLabel(reaction), pct)
     end,
+    options = {
+        { kind = "dropdown", field = "repFormat", label = "REP_SHOWN", tip = "TIP_REP_SHOWN",
+          values = { { key = "standingPercent", label = "REP_STANDING_PERCENT" },
+                     { key = "namePercent", label = "REP_NAME_PERCENT" },
+                     { key = "percent", label = "REP_PERCENT" }, { key = "standing", label = "REP_STANDING" } } },
+    },
     tooltip = function(tt)
         local name, reaction, min, max, value = WatchedFaction()
         if not name then

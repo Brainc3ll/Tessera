@@ -81,7 +81,8 @@ Help tab inside the game explains everything.
   exactly there, with the same look, without moving anything else; a shown block swaps places,
   and the spacers of the ready-made layouts can be filled this way. A cross hides the block.
 - Per-block style, icons (same size, square or round frame, black and white), opacity, scale,
-  progress bar, thresholds, show on hover, alerts, click actions.
+  progress bar, thresholds, show on hover, alerts, click actions, and how the value is shown
+  (gold format, coin icons, rounding; bag slots; XP; durability; latency; seconds; decimals...).
 - DataBroker tab: other addons' DataBroker objects as blocks ("Plugins as blocks"); Tessera's
   blocks shared with Titan Panel, ChocolateBar, Bazooka... ("Sharing and mode"); a DataBroker mode,
   on automatically when such an addon is installed (Tessera then shows nothing itself), that can

@@ -5,7 +5,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.0-rc5 — 
 
-- Placement mode, easier without knowing the shortcuts: a cross on the hovered block hides it, and arrows replace it with another block in the exact same place. A plain right-click opens the quick menu (Alt + right-click still works).
+- Placement mode, easier without knowing the shortcuts: a cross on the hovered block hides it, and arrows replace it with another block in the exact same place. A plain right-click opens the quick menu (Alt + right-click still works). What can be done with the hovered block shows in a panel under the placement banner (draggable with it), no longer in a tooltip covering the block.
 - Replacing blocks: the list shows the hidden blocks (they take the place) apart from the shown ones (they swap places). A spacer can now be replaced by a block, to fill the room the ready-made layouts leave in their bars (Ctrl + Z brings it back). A bar's first block can be replaced without the bar losing its screen edge or its width. New help topic "Replacing blocks".
 - Placement mode: the names under the blocks no longer overlap each other nor go off screen (Compact and Left column layouts); when room is short, a name is shortened to its block's width.
 - New ready-made layout "Modern Forever" (Look tab): the top bar with the basics, and a second bar always shown with WoW Forever's blocks (Legacy, Comprehension, Camping, Honor, weapon skills).

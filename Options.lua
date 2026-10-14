@@ -2382,7 +2382,73 @@ function ns:UpdatePlacementBanner()
     end
     self:SkinWindow(b, b.text)
     b:Show()
+    self:ClearPlacementInfo()
     self:UpdateUndoButton()
+end
+
+-- Placement mode: what can be done with the hovered block, in a panel stuck to the
+-- banner (above it when the banner is low on the screen) rather than in a tooltip
+-- next to the block, where it covered the block's cross and arrows. Dragging the
+-- panel moves the banner with it. When nothing is hovered, it says so in one line.
+-- Returns false when the banner is not shown (the caller then uses a tooltip).
+local function HintLine(text)
+    -- "Drag: move the block" -> the gesture in gold, then what it does
+    local gesture, rest = text:match("^(.-)%s?:%s(.*)$")
+    if not gesture then return text end
+    return "|cffffd100" .. gesture .. "|r   " .. rest
+end
+
+function ns:ShowPlacementInfo(lines, title)
+    local b = self.banner
+    if not (b and b:IsShown()) then return false end
+    local info = b.info
+    if not info then
+        info = CreateFrame("Frame", nil, b, "BackdropTemplate")
+        info:SetWidth(b:GetWidth())
+        info:EnableMouse(true)
+        info:RegisterForDrag("LeftButton")
+        info:SetScript("OnDragStart", function() b:StartMoving() end)
+        info:SetScript("OnDragStop", function() b:GetScript("OnDragStop")(b) end)
+        info.title = info:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        info.title:SetPoint("TOPLEFT", 14, -10)
+        info.title:SetWidth(b:GetWidth() - 28)
+        info.title:SetJustifyH("LEFT")
+        info.text = info:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        info.text:SetWidth(b:GetWidth() - 28)
+        info.text:SetJustifyH("LEFT")
+        info.text:SetSpacing(3)
+        b.info = info
+    end
+    self:SkinWindow(info, info.title)
+    info.title:SetText(title or "")
+    info.title:SetShown(title ~= nil)
+    info.text:ClearAllPoints()
+    if title then
+        info.text:SetPoint("TOPLEFT", info.title, "BOTTOMLEFT", 0, -6)
+    else
+        info.text:SetPoint("TOPLEFT", 14, -10)
+    end
+    local out = {}
+    for i, line in ipairs(lines) do out[i] = HintLine(line) end
+    info.text:SetText(table.concat(out, "\n"))
+    info:SetHeight(20 + (title and (info.title:GetStringHeight() + 6) or 0) + info.text:GetStringHeight())
+    -- below the banner, or above it when the banner is in the lower half of the screen
+    info:ClearAllPoints()
+    local _, y = b:GetCenter()
+    if y and y < UIParent:GetHeight() / 2 then
+        info:SetPoint("BOTTOM", b, "TOP", 0, 4)
+    else
+        info:SetPoint("TOP", b, "BOTTOM", 0, -4)
+    end
+    info:Show()
+    return true
+end
+
+-- Back to "hover a block" when the mouse leaves the block
+function ns:ClearPlacementInfo()
+    if self.banner and self.banner:IsShown() then
+        self:ShowPlacementInfo({ L.PLACEMENT_INFO_IDLE })
+    end
 end
 
 -- The banner's Undo button is only clickable when there is something to undo

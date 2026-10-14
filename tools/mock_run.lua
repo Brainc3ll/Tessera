@@ -623,6 +623,11 @@ for _, step in ipairs({
         local f = ns.frames.fps
         assert(f.closeBtn and f.replaceBtn, "no buttons on the block")
         ns:ShowBlockControls(f)
+        f:GetScript("OnEnter")(f)
+        assert(ns.banner and ns.banner.info and ns.banner.info:IsShown(), "no hint panel under the banner")
+        f.replaceBtn:GetScript("OnEnter")(f.replaceBtn)
+        f.replaceBtn:GetScript("OnLeave")(f.replaceBtn)
+        f:GetScript("OnLeave")(f)
         f.closeBtn:GetScript("OnClick")(f.closeBtn)
         f.replaceBtn:GetScript("OnClick")(f.replaceBtn)
         f:GetScript("OnMouseUp")(f, "RightButton")

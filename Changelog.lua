@@ -15,7 +15,8 @@ ns.CHANGELOG = {
         en = {
             "Placement mode, easier without knowing the shortcuts: a cross on the hovered block hides it, and arrows "
                 .. "replace it with another block in the exact same place. A plain right-click opens the quick menu "
-                .. "(Alt + right-click still works).",
+                .. "(Alt + right-click still works). What can be done with the hovered block shows in a panel under the "
+                .. "placement banner (draggable with it), no longer in a tooltip covering the block.",
             "Replacing blocks: the list shows the hidden blocks (they take the place) apart from the shown ones (they "
                 .. "swap places). A spacer can now be replaced by a block, to fill the room the ready-made layouts "
                 .. "leave in their bars (Ctrl + Z brings it back). A bar's first block can be replaced without the bar "
@@ -44,7 +45,8 @@ ns.CHANGELOG = {
         fr = {
             "Mode placement, plus simple sans connaître les raccourcis : une croix sur le bloc survolé le masque, et "
                 .. "des flèches le remplacent par un autre bloc exactement à la même place. Un simple clic droit ouvre le "
-                .. "menu rapide (Alt + clic droit marche toujours).",
+                .. "menu rapide (Alt + clic droit marche toujours). Ce qu'on peut faire avec le bloc survolé s'affiche dans "
+                .. "un cadre sous le bandeau de placement (qui se déplace avec lui), plus dans une infobulle qui couvrait le bloc.",
             "Remplacer des blocs : la liste sépare les blocs masqués (ils prennent la place) des blocs affichés (ils "
                 .. "échangent leur place). Un espace peut maintenant être remplacé par un bloc, pour occuper la place que "
                 .. "les dispositions toutes prêtes laissent dans leurs barres (Ctrl + Z le fait revenir). Le premier bloc "

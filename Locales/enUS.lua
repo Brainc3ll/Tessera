@@ -319,7 +319,8 @@ local L = {
     TIP_UNDO = "Undoes the last move, merge, detach or hide. Shortcut: Ctrl + Z while this banner is shown.",
     HINT_QUICK_MENU = "Alt + right click: quick menu",
     HINT_UNDO = "Ctrl + Z: undo",
-    HINT_FROZEN = "Frozen group: unfreeze it with Alt + right click",
+    HINT_FROZEN = "Frozen group: unfreeze it with a right-click (quick menu)",
+    PLACEMENT_INFO_IDLE = "Hover a block: what you can do with it shows here. Drag this panel to move it with the banner.",
     SPACER = "Spacer",
     SPACER_NAME = "Spacer %d",
     SPACERS = "Spacers",
@@ -812,6 +813,7 @@ local L = {
     HELP_PLACE_10 = "- Replace with... (quick menu, or next to the block list in the Blocks tab): puts another block exactly in this one's place without moving the others, or swaps two shown blocks.",
     HELP_PLACE_11 = "- Group look (quick menu): this group only, fused, tiles or separate; \"As in the Look tab\" follows the general choice.",
     HELP_PLACE_12 = "- Drop a group against a screen edge: Tessera offers to stick it there, and along the top or bottom to stretch it over the whole width with spacer blocks (setting in the Look tab). If the bar then covers Blizzard frames, Tessera offers to make room in the Edit Mode (see that topic).",
+    HELP_PLACE_17 = "- Under the banner, a panel shows what you can do with the hovered block (above the banner when it is low on the screen); drag it to move both.",
     HELP_PLACE_13 = "- The banner can be dragged anywhere and remembers its place; it steps aside while the options window is open.",
     HELP_PLACE_14 = "- Blizzard's Edit Mode can unlock the blocks too (option in the General tab).",
     HELP_T_REPLACE = "Replacing blocks",
@@ -923,7 +925,7 @@ ns.L = L
 -- change to one line only asks translators to redo that line.
 ns.HELP_LAYOUT = {
     { title = "HELP_T_SHORT", lines = { "HELP_SHORT_1", "HELP_SHORT_6", "HELP_SHORT_2", "HELP_SHORT_3", "HELP_SHORT_4", "", "HELP_SHORT_5" } },
-    { title = "HELP_T_PLACE", lines = { "HELP_PLACE_1", "HELP_PLACE_2", "HELP_PLACE_3", "HELP_PLACE_4", "", "HELP_PLACE_5", "HELP_PLACE_15", "HELP_PLACE_6", "HELP_PLACE_16", "HELP_PLACE_7", "HELP_PLACE_8", "HELP_PLACE_9", "HELP_PLACE_10", "HELP_PLACE_11", "HELP_PLACE_12", "HELP_PLACE_13", "HELP_PLACE_14" } },
+    { title = "HELP_T_PLACE", lines = { "HELP_PLACE_1", "HELP_PLACE_2", "HELP_PLACE_3", "HELP_PLACE_4", "", "HELP_PLACE_5", "HELP_PLACE_15", "HELP_PLACE_6", "HELP_PLACE_16", "HELP_PLACE_7", "HELP_PLACE_8", "HELP_PLACE_9", "HELP_PLACE_10", "HELP_PLACE_11", "HELP_PLACE_12", "HELP_PLACE_17", "HELP_PLACE_13", "HELP_PLACE_14" } },
     { title = "HELP_T_REPLACE", lines = { "HELP_REPLACE_1", "HELP_REPLACE_2", "HELP_REPLACE_3", "HELP_REPLACE_4", "HELP_REPLACE_5", "HELP_REPLACE_6", "", "HELP_REPLACE_7" } },
     { title = "HELP_T_USE", lines = { "HELP_USE_1", "HELP_USE_2", "HELP_USE_3", "HELP_USE_4", "HELP_USE_5", "HELP_USE_6", "", "HELP_USE_7", "", "HELP_USE_8" } },
     { title = "HELP_T_BLOCKS", lines = { "HELP_BLOCKS_1", "HELP_BLOCKS_2", "HELP_BLOCKS_3", "HELP_BLOCKS_4", "HELP_BLOCKS_5", "HELP_BLOCKS_6" } },

@@ -120,7 +120,8 @@ Tessera category.
 When unlocked: drag a block to move it (or its whole group), drop it against another block to
 merge them, **Shift + drag** to detach it, the **cross** on a hovered block (or **Ctrl + click**)
 to hide it, its **arrows** to replace it with another block, **Ctrl + Z** to undo, **right-click**
-for the quick menu. When locked: hover for the tooltip, left-click to open
+for the quick menu; a panel under the placement banner shows what you can do with the hovered
+block. When locked: hover for the tooltip, left-click to open
 the related game window, **Shift + click** to copy the value to the chat, right-click for the
 block's settings, **Alt + right-click** for the quick menu.
 

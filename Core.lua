@@ -1044,16 +1044,16 @@ end
 -- Blocks
 ---------------------------------------------------------------------------
 -- Placement mode: reminder of the available gestures on the block
+-- (in the panel under the placement banner, so nothing covers the block's buttons;
+-- in a tooltip when the banner is not shown, e.g. while the options window is open)
 local function ShowPlacementHelp(self)
+    local lines = { L.HINT_DRAG, L.HINT_SHIFT_DRAG, L.HINT_CTRL_CLICK, L.HINT_REPLACE_BUTTON,
+        L.HINT_QUICK_MENU_PLACEMENT, L.HINT_UNDO }
+    if ns:IsFrozen(self.key) then lines = { L.HINT_FROZEN } end
+    if ns.ShowPlacementInfo and ns:ShowPlacementInfo(lines, ns:GetBlockName(self.key)) then return end
     ns.AnchorTooltip(self)
     GameTooltip:AddLine(ns:GetBlockName(self.key), 1, 0.82, 0)
-    GameTooltip:AddLine(L.HINT_DRAG, 1, 1, 1)
-    GameTooltip:AddLine(L.HINT_SHIFT_DRAG, 1, 1, 1)
-    GameTooltip:AddLine(L.HINT_CTRL_CLICK, 1, 1, 1)
-    GameTooltip:AddLine(L.HINT_REPLACE_BUTTON, 1, 1, 1, true)
-    GameTooltip:AddLine(L.HINT_QUICK_MENU_PLACEMENT, 1, 1, 1, true)
-    GameTooltip:AddLine(L.HINT_UNDO, 1, 1, 1)
-    if ns:IsFrozen(self.key) then GameTooltip:AddLine(L.HINT_FROZEN, 0.7, 0.7, 0.7) end
+    for _, line in ipairs(lines) do GameTooltip:AddLine(line, 1, 1, 1, true) end
     GameTooltip:Show()
 end
 
@@ -1098,6 +1098,7 @@ end
 
 local function OnLeave(self)
     if ns.hoveredBlock == self then ns.hoveredBlock = nil end
+    if not ns:IsLocked() and ns.ClearPlacementInfo then ns:ClearPlacementInfo() end
     local cfg, mod = ns.db.blocks[self.key], ns:GetModule(self.key)
     if mod and mod.onLeave then pcall(mod.onLeave, self, cfg) end
     GameTooltip:Hide()
@@ -1184,7 +1185,8 @@ function ns:ShowBlockControls(f)
     f.replaceBtn:SetShown(show)
 end
 
-local function ControlTooltip(btn, text)
+local function ControlTooltip(btn, text, f)
+    if ns.ShowPlacementInfo and ns:ShowPlacementInfo({ text }, ns:GetBlockName(f.key)) then return end
     GameTooltip:SetOwner(btn, "ANCHOR_TOP")
     GameTooltip:AddLine(text, 1, 1, 1, true)
     GameTooltip:Show()
@@ -1199,10 +1201,10 @@ local function CreateControl(f, path, corner, x, tip, onClick)
     b:SetPushedTexture(path .. "-Down")
     b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Round", "ADD")
     b:RegisterForClicks("LeftButtonUp")
-    b:SetScript("OnEnter", function(self) ControlTooltip(self, L[tip]) end)
+    b:SetScript("OnEnter", function(self) ControlTooltip(self, L[tip], f) end)
     b:SetScript("OnLeave", function()
         GameTooltip:Hide()
-        if f:IsMouseOver() then OnEnter(f) end
+        if f:IsMouseOver() then OnEnter(f) elseif ns.ClearPlacementInfo then ns:ClearPlacementInfo() end
     end)
     b:SetScript("OnClick", function(self)
         if ns:IsLocked() or ns:IsFrozen(f.key) or InCombatLockdown() then return end

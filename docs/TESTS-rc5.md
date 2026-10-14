@@ -1,6 +1,6 @@
 # Tests de la rc5 (jeudi 15 octobre)
 
-Version à tester : **Tessera-1.0.0-rc5-test7.zip** (version de test : elle a les commandes `/tes test`).
+Version à tester : **Tessera-1.0.0-rc5-test8.zip** (version de test : elle a les commandes `/tes test`).
 Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur Lua.
 
 ## 0. Préparation (5 min)
@@ -38,6 +38,7 @@ Profil « Test » avec tous les blocs à vérifier (même vides). Pour chacun : 
 ## 3 bis. Croix, flèches et remplacement (5 min)
 
 - [ ] Déverrouiller, survoler un bloc : une croix en haut à droite, des flèches en haut à gauche ; elles disparaissent quand la souris s'en va, pendant un glisser et en verrouillant.
+- [ ] Sous le bandeau, un cadre « Survole un bloc... » ; au survol d'un bloc, il montre ce qu'on peut en faire (plus d'infobulle sur la croix et les flèches). Bandeau déplacé en bas de l'écran : le cadre passe au-dessus. Glisser le cadre déplace le bandeau.
 - [ ] La croix masque le bloc ; Ctrl + Z le remet.
 - [ ] Les flèches : la liste montre d'abord les blocs masqués, puis les blocs affichés. Un bloc masqué prend la place exacte (même apparence, rien ne bouge) ; un bloc affiché échange sa place.
 - [ ] Un espace (disposition « Vitraux de Hurlevent » par exemple) : flèches, choisir un bloc : l'espace disparaît, le bloc prend sa place ; Ctrl + Z ramène l'espace.

@@ -7,7 +7,9 @@ Answer him in French; code, comments and commit messages in English.
 The documentation is as important as the code. With any new feature, block, option, command
 or visible fix, update:
 - the in-game help (Help tab, English and French) and the tooltip of every new option;
-- `Changelog.lua`, then `lua5.1 tools/changelog_md.lua > CHANGELOG.md`;
+- `Changelog.lua`, then `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Reread the whole entry of the
+  version: it must not contradict itself (a later change in the same version rewrites the earlier
+  line instead of adding a "fix" for something players never had);
 - `README.md` (highlights, block list, commands, file table, developer notes);
 - `docs/curseforge-description.md` and `docs/wago-description.md` (English and French parts);
 - `docs/summary.md` if the core of the addon changes, `docs/A-REPRENDRE.md` (status),

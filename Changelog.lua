@@ -22,27 +22,25 @@ ns.CHANGELOG = {
                 .. "leave in their bars (Ctrl + Z brings it back). A bar's first block can be replaced without the bar "
                 .. "losing its screen edge or its width. New help topic \"Replacing blocks\".",
             "Four new fantasy styles (Look tab), with the game's fonts: Runestone (text only, black and white, "
-                .. "silver edges), Grimoire (dark leather and gold), Parchment (parchment and brown ink), Arcane (deep "
+                .. "silver edges), Grimoire (dark leather and gold), Parchment (light parchment, almost black ink), Arcane (deep "
                 .. "violet, pale blue letters).",
             "The styles of FlareUI, ElvUI and EllesmereUI can be picked without that addon: they are then an "
-                .. "imitation, marked in the list, and the chat says what differs.",
+                .. "imitation, marked in the list, and the chat says what differs. FlareUI 1.x is only listed with "
+                .. "FlareUI 1.x installed (profiles using it keep it).",
             "More choices for how blocks show their value (Text tab, \"Value shown\"): gold (coin icons or colored letters, "
                 .. "gold and silver format, rounding, thousands separator), bags (free, used or free / total), XP "
                 .. "(percent, values or XP to go, rested XP or not), durability (most worn item or average), FPS and "
                 .. "latency (with or without the unit, home, world or both latencies), clocks (seconds), coordinates "
                 .. "(0 to 2 decimals), friends and guild (online or online / total), reputation (standing, faction "
                 .. "name, percent).",
-            "Blocks tab: how a block shows its value (gold format, clock, decimals, stat shown...) is now in the "
-                .. "Text sub-tab, under \"Value shown\"; Behaviour keeps the rest (goal, thresholds, hiding, clicks).",
-            "Styles: Parchment is easier to read (darker ink, colors in the values darkened); ElvUI shows the values "
-                .. "in its value color (blue by default) and EllesmereUI has its green accent between merged blocks, "
-                .. "so they no longer look alike. FlareUI 1.x is only listed with FlareUI 1.x installed (profiles "
-                .. "using it keep it).",
+            "Blocks tab: the gold format, the clock and the stat shown move from Behaviour to Text, with the "
+                .. "options above; Behaviour keeps the rest (goal, thresholds, hiding, clicks).",
+            "ElvUI and EllesmereUI styles no longer look alike: ElvUI shows the values in its value color (blue "
+                .. "by default), EllesmereUI has its green accent between merged blocks.",
             "Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category under "
                 .. "titles, with sample values; a banner switches the styles and can hide the game's interface. Your "
                 .. "layout comes back when you leave (also after a /reload); a fight ends the demo.",
-            "Group loot block: loot methods, \"Loot Method\" and \"Loot Threshold\" use the game's own names "
-                .. "(official in every language).",
+            "Group loot block: the loot methods use the game's own names (official in every language).",
             "Quick tour: a new step to try the ready-made layouts one after the other with arrows, right on the "
                 .. "screen; keep one, or yours comes back.",
             "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
@@ -77,29 +75,27 @@ ns.CHANGELOG = {
                 .. "d'une barre se remplace sans que la barre perde son bord de l'écran ni sa largeur. Nouveau sujet "
                 .. "d'aide « Remplacer des blocs ».",
             "Quatre nouveaux styles fantasy (onglet Apparence), avec les polices du jeu : Pierre runique (seulement "
-                .. "le texte, en noir et blanc, bords argentés), Grimoire (cuir sombre et or), Parchemin (parchemin et "
-                .. "encre brune), Arcanes (violet profond, lettres bleu pâle).",
+                .. "le texte, en noir et blanc, bords argentés), Grimoire (cuir sombre et or), Parchemin (parchemin clair, "
+                .. "encre presque noire), Arcanes (violet profond, lettres bleu pâle).",
             "Les styles de FlareUI, ElvUI et EllesmereUI se choisissent aussi sans l'addon : c'est alors une "
-                .. "imitation, marquée dans la liste, et la discussion dit ce qui change.",
+                .. "imitation, marquée dans la liste, et la discussion dit ce qui change. FlareUI 1.x n'est dans la "
+                .. "liste qu'avec FlareUI 1.x installé (les profils qui l'utilisent le gardent).",
             "Plus de choix pour l'affichage des valeurs (onglet Texte, « Valeur affichée ») : or (icônes des pièces ou lettres en "
                 .. "couleur, format or et argent, arrondi, séparateur des milliers), sacs (libres, utilisées ou libres / "
                 .. "total), XP (pourcentage, valeurs ou XP restante, XP de repos ou non), durabilité (pièce la plus "
                 .. "abîmée ou moyenne), FPS et latence (avec ou sans l'unité, latence locale, monde ou les deux), "
                 .. "horloges (secondes), coordonnées (0 à 2 décimales), amis et guilde (en ligne ou en ligne / total), "
                 .. "réputation (rang, nom de la faction, pourcentage).",
-            "Onglet Blocs : la façon dont un bloc affiche sa valeur (format de l'or, horloge, décimales, statistique "
-                .. "affichée...) est maintenant dans le sous-onglet Texte, sous « Valeur affichée » ; Comportement garde "
-                .. "le reste (objectif, seuils, masquage, clics).",
-            "Styles : Parchemin plus lisible (encre plus foncée, couleurs des valeurs assombries) ; ElvUI affiche les "
-                .. "valeurs dans sa couleur de valeur (bleu par défaut) et EllesmereUI a son accent vert entre les blocs "
-                .. "fusionnés : ils ne se ressemblent plus. FlareUI 1.x n'est plus dans la liste qu'avec FlareUI 1.x "
-                .. "installé (les profils qui l'utilisent le gardent).",
+            "Onglet Blocs : le format de l'or, l'horloge et la statistique affichée passent de Comportement à "
+                .. "Texte, avec les options ci-dessus ; Comportement garde le reste (objectif, seuils, masquage, clics).",
+            "Les styles ElvUI et EllesmereUI ne se ressemblent plus : ElvUI affiche les valeurs dans sa couleur de "
+                .. "valeur (bleu par défaut), EllesmereUI a son accent vert entre les blocs fusionnés.",
             "Mode démo (onglet Aide, fenêtre de bienvenue, /tessera demo) : tous les blocs d'un coup, rangés par "
                 .. "catégorie sous des titres, avec des valeurs d'exemple ; un bandeau change de style et peut masquer "
                 .. "l'interface du jeu. Ta disposition revient en quittant (aussi après un /reload) ; un combat termine "
                 .. "la démo.",
-            "Bloc butin du groupe : les modes de butin, le mode et le seuil de butin prennent les noms du jeu "
-                .. "lui-même (les noms officiels, dans toutes les langues).",
+            "Bloc butin du groupe : les modes de butin prennent les noms du jeu lui-même (les noms officiels, dans "
+                .. "toutes les langues).",
             "Visite rapide : une nouvelle étape pour essayer les dispositions toutes prêtes l'une après l'autre avec "
                 .. "des flèches, directement à l'écran ; garde-en une, ou la tienne revient.",
             "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "

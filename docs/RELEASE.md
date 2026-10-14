@@ -18,7 +18,7 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 
 ## Avant de lancer la publication (fait par Claude, vérifié par la machine)
 
-1. Nouvelle entrée en haut de `Changelog.lua` (anglais et français) **avec la date**, puis `lua5.1 tools/changelog_md.lua > CHANGELOG.md`.
+1. Nouvelle entrée en haut de `Changelog.lua` (anglais et français) **avec la date**, puis `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Relire toute l'entrée : elle ne doit pas se contredire (un changement fait plus tard dans la même version réécrit la ligne concernée, au lieu d'annoncer la « correction » de quelque chose que les joueurs n'ont jamais eu).
 2. La même version dans `Tessera.toc` (`## Version:`).
 3. Textes : `python3 build.py` dans les outils de traduction, puis `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua` (et pareil pour `frFR`).
 4. Documentation à jour (voir la liste ci-dessous).

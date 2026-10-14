@@ -109,7 +109,7 @@ end
 
 -- Fades the game's interface out, or back in: every frame of the interface (Blizzard's
 -- and other addons', e.g. FlareUI's) except Tessera's blocks, the demo banner and the
--- tooltip. Alpha only: allowed on every frame, nothing is moved or hidden for real.
+-- tooltips. Alpha only: nothing is moved or hidden for real.
 function ns:SetDemoHideUI(hide)
     self.demoUIHidden = hide or nil
     self.demoAlpha = self.demoAlpha or {}
@@ -117,16 +117,22 @@ function ns:SetDemoHideUI(hide)
         local keep = { [self.demoBanner or false] = true, [GameTooltip] = true }
         for _, f in pairs(self.frames) do keep[f] = true end
         for _, f in ipairs({ UIParent:GetChildren() }) do
-            local name = f.GetName and f:GetName() or ""
-            -- popups and menus stay visible (a question asked during the demo)
-            local dialog = name:match("^StaticPopup") or name:match("^DropDownList")
-            if not keep[f] and not dialog and self.demoAlpha[f] == nil and f.GetAlpha then
-                self.demoAlpha[f] = f:GetAlpha()
-                f:SetAlpha(0)
+            -- some of the game's frames are forbidden to addons (store, secure
+            -- dialogs): they cannot even be asked their name, so they are skipped
+            local forbidden = f.IsForbidden and f:IsForbidden()
+            if not forbidden and not keep[f] and self.demoAlpha[f] == nil then
+                local ok, name = pcall(f.GetName, f)
+                name = ok and name or ""
+                -- popups, menus and tooltips stay visible
+                local keepIt = name:match("^StaticPopup") or name:match("^DropDownList") or name:match("Tooltip")
+                if not keepIt then
+                    local okAlpha, alpha = pcall(f.GetAlpha, f)
+                    if okAlpha and pcall(f.SetAlpha, f, 0) then self.demoAlpha[f] = alpha end
+                end
             end
         end
     else
-        for f, alpha in pairs(self.demoAlpha) do f:SetAlpha(alpha) end
+        for f, alpha in pairs(self.demoAlpha) do pcall(f.SetAlpha, f, alpha) end
         self.demoAlpha = {}
     end
     if self.demoBanner then self.demoBanner.hideUI:SetChecked(hide and true or false) end

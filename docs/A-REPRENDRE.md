@@ -59,6 +59,12 @@ supprime jamais rien) alors que l'addon ne les lit plus.
 - Captures d'écran en jeu → GIF de défilement pour la description CurseForge.
 - Tests de l'alpha multi-versions ; tests en instance (profil donjon, masquer en instance, clics en combat).
 
+## Version multi-versions (après la 1.0.0, en 1.1) : approche validée le 14/10
+- Repartir de `main` (propre, audit Ketho à 0), pas de l'ancienne branche `multi-versions`.
+- Tous les secours pour Classic Era / BC / MoP dans un seul fichier de compatibilité (`Compat.lua`) : fonction moderne si elle existe, sinon l'ancienne, avec un commentaire par version du jeu ; le reste du code n'appelle que ces fonctions.
+- Tester chaque client (faux client `TESSERA_FLAVOR` + tests en jeu) avant toute publication.
+- Rien avant le 4/11 : `main` reste centré sur Forever.
+
 ## Idées notées (docs/IDEES-FUTUR.md et conversation)
 - Icônes nettes en 4K (Masque, icônes HD du jeu, option « icône nette », jeu d'icônes maison).
 - Réactifs de classe affichés à 0 en rouge, seuil réglable, liste complétée.

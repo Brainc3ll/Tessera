@@ -25,18 +25,8 @@ local CATEGORIES = {
     { title = "DEMO_CAT_SYSTEM", keys = { "fps", "latency", "memory", "volume", "played" } },
     { title = "DEMO_CAT_FOREVER", keys = { "legacy", "comprehension", "camping", "honor", "weaponSkills" } },
 }
-local COLUMN_W, COLUMN_GAP, TOP = 220, 30, -130
+local COLUMN_W, COLUMN_GAP, TOP = 240, 22, -130
 
--- Blizzard frames faded out by "Hide the game's interface" (alpha only: allowed on
--- every frame, nothing is moved or hidden for real); missing ones are skipped
-local UI_FRAMES = {
-    "MainMenuBar", "MainActionBar", "MultiBarBottomLeft", "MultiBarBottomRight", "MultiBarRight", "MultiBarLeft",
-    "StanceBar", "PetActionBar", "MicroButtonAndBagsBar", "MicroMenuContainer", "BagsBar", "PlayerFrame",
-    "TargetFrame", "PartyFrame", "MinimapCluster", "BuffFrame", "DebuffFrame", "ObjectiveTrackerFrame",
-    "QuestWatchFrame", "ChatFrame1", "ChatFrame1Tab", "GeneralDockManager", "ChatFrameMenuButton",
-    "QuickJoinToastButton", "ExpBar", "MainStatusTrackingBarContainer", "StatusTrackingBarManager",
-    "FlareUI_XPBar",
-}
 
 function ns:IsDemoActive()
     return self.sv ~= nil and self.sv.demoBackup ~= nil
@@ -87,7 +77,8 @@ local function BuildDemo(self)
             local cfg = blocks[key]
             if cfg then
                 cfg.enabled, cfg.showIcon, cfg.showLabel = true, true, true
-                cfg.width, cfg.autoWidth, cfg.justify, cfg.hideEmpty = COLUMN_W, true, "LEFT", false
+                -- fixed width: every column the same, none overlaps the next one
+                cfg.width, cfg.autoWidth, cfg.justify, cfg.hideEmpty = COLUMN_W, false, "LEFT", false
                 cfg.dock = { to = previous, side = "BOTTOM" }
                 previous = key
             end
@@ -116,28 +107,34 @@ local function UpdateBanner(self)
     self:SkinWindow(b, b.title)
 end
 
--- Fades Blizzard's interface out, or back in
+-- Fades the game's interface out, or back in: every frame of the interface (Blizzard's
+-- and other addons', e.g. FlareUI's) except Tessera's blocks, the demo banner and the
+-- tooltip. Alpha only: allowed on every frame, nothing is moved or hidden for real.
 function ns:SetDemoHideUI(hide)
     self.demoUIHidden = hide or nil
     self.demoAlpha = self.demoAlpha or {}
-    for _, name in ipairs(UI_FRAMES) do
-        local f = _G[name]
-        if type(f) == "table" and f.SetAlpha and f.GetAlpha then
-            if hide then
-                if self.demoAlpha[name] == nil then self.demoAlpha[name] = f:GetAlpha() end
+    if hide then
+        local keep = { [self.demoBanner or false] = true, [GameTooltip] = true }
+        for _, f in pairs(self.frames) do keep[f] = true end
+        for _, f in ipairs({ UIParent:GetChildren() }) do
+            local name = f.GetName and f:GetName() or ""
+            -- popups and menus stay visible (a question asked during the demo)
+            local dialog = name:match("^StaticPopup") or name:match("^DropDownList")
+            if not keep[f] and not dialog and self.demoAlpha[f] == nil and f.GetAlpha then
+                self.demoAlpha[f] = f:GetAlpha()
                 f:SetAlpha(0)
-            elseif self.demoAlpha[name] ~= nil then
-                f:SetAlpha(self.demoAlpha[name])
-                self.demoAlpha[name] = nil
             end
         end
+    else
+        for f, alpha in pairs(self.demoAlpha) do f:SetAlpha(alpha) end
+        self.demoAlpha = {}
     end
     if self.demoBanner then self.demoBanner.hideUI:SetChecked(hide and true or false) end
 end
 
 local function CreateBanner(self)
     local b = CreateFrame("Frame", "TesseraDemoBanner", UIParent, "BackdropTemplate")
-    b:SetSize(560, 92)
+    b:SetSize(660, 92)
     b:SetPoint("TOP", UIParent, "TOP", 0, -18)
     b:SetFrameStrata("DIALOG")
     b:SetClampedToScreen(true)
@@ -152,7 +149,7 @@ local function CreateBanner(self)
     b.title:SetText(L.DEMO_TITLE)
     b.sub = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     b.sub:SetPoint("TOPLEFT", b.title, "BOTTOMLEFT", 0, -4)
-    b.sub:SetWidth(528)
+    b.sub:SetWidth(628)
     b.sub:SetJustifyH("LEFT")
     b.sub:SetText(L.DEMO_SUBTITLE)
 
@@ -177,7 +174,8 @@ local function CreateBanner(self)
     prev:SetPoint("BOTTOMLEFT", 14, 12)
     b.style = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     b.style:SetPoint("LEFT", prev, "RIGHT", 8, 0)
-    b.style:SetWidth(200)
+    b.style:SetWidth(220)
+    b.style:SetWordWrap(false)
     local nextStyle = Button(">", 28, function() Switch(1) end)
     nextStyle:SetPoint("LEFT", b.style, "RIGHT", 8, 0)
 
@@ -185,9 +183,11 @@ local function CreateBanner(self)
     quit:SetPoint("BOTTOMRIGHT", -14, 12)
     b.hideUI = CreateFrame("CheckButton", nil, b, "UICheckButtonTemplate")
     b.hideUI:SetSize(24, 24)
-    b.hideUI:SetPoint("RIGHT", quit, "LEFT", -112, 0)
+    b.hideUI:SetPoint("LEFT", nextStyle, "RIGHT", 14, 0)
     b.hideUI.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     b.hideUI.label:SetPoint("LEFT", b.hideUI, "RIGHT", 2, 0)
+    b.hideUI.label:SetPoint("RIGHT", quit, "LEFT", -8, 0)
+    b.hideUI.label:SetJustifyH("LEFT")
     b.hideUI.label:SetText(L.DEMO_HIDE_UI)
     b.hideUI:SetScript("OnClick", function(btn) self:SetDemoHideUI(btn:GetChecked() and true or false) end)
     b.prev, b.nextStyle, b.quit = prev, nextStyle, quit

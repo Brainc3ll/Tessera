@@ -1666,14 +1666,18 @@ local function LootInfo()
     return method, Try(GetLootThreshold), master
 end
 
--- The game's own names first (official in every language), Tessera's as a fallback
+-- The game's own names first (official in every language), Tessera's as a fallback.
+-- The game writes them for the chat ("Loot: Group Loot", "Butin : Butin de groupe"):
+-- only the part after the colon is kept, with a capital letter.
 local GAME_LOOT_NAMES = {
     LOOT_FFA = "LOOT_FREE_FOR_ALL", LOOT_RR = "LOOT_ROUND_ROBIN", LOOT_MASTER = "LOOT_MASTER_LOOTER",
     LOOT_GROUP = "LOOT_GROUP_LOOT", LOOT_NBG = "LOOT_NEED_BEFORE_GREED", LOOT_PERSONAL = "LOOT_PERSONAL_LOOT",
 }
 local function GameText(name, fallback)
     local text = _G[name]
-    return (type(text) == "string" and text ~= "") and text or fallback
+    if type(text) ~= "string" or text == "" then return fallback end
+    text = text:match("^[^:]+:%s*(.+)$") or text
+    return (text:gsub("^%l", string.upper))
 end
 local function LootMethodName(method)
     local key = method ~= nil and LOOT_METHODS[method]
@@ -1707,9 +1711,9 @@ ns:RegisterModule("loot", {
             return
         end
         local method, threshold, master = LootInfo()
-        WHITE(tt, GameText("LOOT_METHOD", L.TT_LOOT_METHOD), LootMethodName(method))
+        WHITE(tt, L.TT_LOOT_METHOD, LootMethodName(method))
         local quality = QualityText(threshold)
-        if quality then WHITE(tt, GameText("LOOT_THRESHOLD", L.TT_LOOT_THRESHOLD), quality) end
+        if quality then WHITE(tt, L.TT_LOOT_THRESHOLD, quality) end
         if master then WHITE(tt, L.TT_LOOT_MASTER, master) end
     end,
     clickHint = L.HINT_ROLL,

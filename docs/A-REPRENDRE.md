@@ -37,6 +37,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - Changelog de la rc5 : ne garder que ce qui compte pour les joueurs (les détails internes vont dans les messages de commit).
 - Textes GitHub (README, descriptions CurseForge et Wago, résumé) : les mettre à jour et les clarifier.
 - Traductions : vérifier que chaque texte long est découpé en petites clés (aide aux traducteurs CurseForge), rappeler les étapes du nettoyage de l'ancien HELP_TEXT.
+- Documents de travail du dépôt (docs/ : A-REPRENDRE, IDEES-FUTUR, TESTS-rc5, PLAN, RELEASE...) : les remettre à jour avec ce qui a été fait ou non, retirer ce qui n'a plus lieu d'être.
 - Images : un GIF des styles du mode démo et des images de présentation à partir des captures fournies par Braincell1980, en anglais (jeu en anglais), sauf une capture qui montre que l'addon est en anglais et en français.
 
 ## Déjà sur main pour la version suivante

@@ -392,10 +392,29 @@ end
 -- left, top, w, h: position of the dropped block after snapping; exclude: its group.
 -- A side is a candidate only if the blocks overlap by more than a third of the
 -- smaller one along that side. Returns the closest { to, side } and its distance.
-function ns:FindDock(left, top, w, h, exclude)
+-- The block docked on that side of targetKey (a block of its own group), or nil
+local function DockedOn(self, targetKey, side, ignore)
+    for k, cfg in pairs(self.db.blocks) do
+        if not ignore[k] and cfg.dock and cfg.dock.to == targetKey and cfg.dock.side == side then return k end
+    end
+end
+
+-- allowInsert: the moved block is alone (no group): it may be slipped between two merged
+-- blocks (dropped against a side already taken, it takes that place and the block that was
+-- there docks to it). Returns { to, side, insert = key of the block pushed along } or nil.
+function ns:FindDock(left, top, w, h, exclude, allowInsert)
     -- all coordinates in UIParent units (blocks can have different scales)
     local right, bottom = left + w, top - h
     local best, bestDist = nil, DOCK_DISTANCE + 1
+    -- a group with a second row hanging below (above) it: that row lives along its bottom
+    -- (top) side, so nothing may dock there (it would sit on the row and mix both groups)
+    local hangSide = {}
+    for k, cfg in pairs(self.db.blocks) do
+        local target = not exclude[k] and cfg.anchor and ns.HangTarget(cfg.anchor)
+        if target and self.db.blocks[target] then
+            hangSide[self:GetRoot(target)] = cfg.anchor.below and "BOTTOM" or "TOP"
+        end
+    end
     for key, other in pairs(self.frames) do
         if not exclude[key] and self.db.blocks[key] and other:IsShown() and other:GetLeft()
             and not self:IsFrozen(key) then -- a frozen group accepts no new block
@@ -416,9 +435,16 @@ function ns:FindDock(left, top, w, h, exclude)
                 candidates.BOTTOM = math.abs(top - ob)
             end
             if blockedSide then candidates[blockedSide] = nil end
+            local hung = hangSide[self:GetRoot(key)]
+            if hung then candidates[hung] = nil end
             for side, dist in pairs(candidates) do
-                if dist < bestDist and not SideOccupied(self, key, side, exclude) then
-                    best, bestDist = { to = key, side = side }, dist
+                if dist < bestDist then
+                    if not SideOccupied(self, key, side, exclude) then
+                        best, bestDist = { to = key, side = side }, dist
+                    elseif allowInsert then
+                        local pushed = DockedOn(self, key, side, exclude)
+                        if pushed then best, bestDist = { to = key, side = side, insert = pushed }, dist end
+                    end
                 end
             end
         end

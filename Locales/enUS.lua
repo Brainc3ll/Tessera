@@ -795,6 +795,7 @@ local L = {
     HELP_PLACE_3 = "3. Drop it against another block (left, right, above or below): they merge and move together.",
     HELP_PLACE_4 = "4. Click \"Lock\" on the banner.",
     HELP_PLACE_5 = "- Shift + drag: take a block out of its group.",
+    HELP_PLACE_15 = "- Drop a single block against a side that is already taken: it slips in between, and the block that was there moves along. Handy to put a block back where it was.",
     HELP_PLACE_6 = "- Ctrl + click: hide a block (show it again in the Blocks tab).",
     HELP_PLACE_7 = "- Ctrl + Z, or Undo on the banner: undo the last action.",
     HELP_PLACE_8 = "- Alt + right-click: quick menu: settings, hide, detach, add a spacer, replace with..., group look, freeze the group, lock. Hovering an unlocked block reminds you of it.",
@@ -905,7 +906,7 @@ ns.L = L
 -- change to one line only asks translators to redo that line.
 ns.HELP_LAYOUT = {
     { title = "HELP_T_SHORT", lines = { "HELP_SHORT_1", "HELP_SHORT_2", "HELP_SHORT_3", "HELP_SHORT_4", "", "HELP_SHORT_5" } },
-    { title = "HELP_T_PLACE", lines = { "HELP_PLACE_1", "HELP_PLACE_2", "HELP_PLACE_3", "HELP_PLACE_4", "", "HELP_PLACE_5", "HELP_PLACE_6", "HELP_PLACE_7", "HELP_PLACE_8", "HELP_PLACE_9", "HELP_PLACE_10", "HELP_PLACE_11", "HELP_PLACE_12", "HELP_PLACE_13", "HELP_PLACE_14" } },
+    { title = "HELP_T_PLACE", lines = { "HELP_PLACE_1", "HELP_PLACE_2", "HELP_PLACE_3", "HELP_PLACE_4", "", "HELP_PLACE_5", "HELP_PLACE_15", "HELP_PLACE_6", "HELP_PLACE_7", "HELP_PLACE_8", "HELP_PLACE_9", "HELP_PLACE_10", "HELP_PLACE_11", "HELP_PLACE_12", "HELP_PLACE_13", "HELP_PLACE_14" } },
     { title = "HELP_T_USE", lines = { "HELP_USE_1", "HELP_USE_2", "HELP_USE_3", "HELP_USE_4", "HELP_USE_5", "HELP_USE_6", "", "HELP_USE_7", "", "HELP_USE_8" } },
     { title = "HELP_T_BLOCKS", lines = { "HELP_BLOCKS_1", "HELP_BLOCKS_2", "HELP_BLOCKS_3", "HELP_BLOCKS_4", "HELP_BLOCKS_5", "HELP_BLOCKS_6" } },
     { title = "HELP_T_LOOK", lines = { "HELP_LOOK_1", "HELP_LOOK_2", "HELP_LOOK_3", "HELP_LOOK_4", "HELP_LOOK_5", "HELP_LOOK_6" } },

@@ -895,8 +895,10 @@ function ns:SnapAndSave(f)
     local headKey, dock = f.key, nil
     if self.db.merge then
         local bestDist
+        -- a single block may be slipped between two merged blocks (FindDock)
+        local alone = next(group) ~= nil and next(group, next(group)) == nil
         for key, m in pairs(members) do
-            local d, dist = self:FindDock(m.left + dx, m.top + dy, m.w, m.h, exclude)
+            local d, dist = self:FindDock(m.left + dx, m.top + dy, m.w, m.h, exclude, alone)
             if d and (not bestDist or dist < bestDist) then headKey, dock, bestDist = key, d, dist end
         end
     end
@@ -921,7 +923,12 @@ function ns:SnapAndSave(f)
     local hl, ht = head.left + dx, head.top + dy
     cfg.point = self:MakeRelativePoint(hl, ht - head.h, hl + head.w, ht,
         self.frames[headKey]:GetEffectiveScale() / UIParent:GetEffectiveScale())
-    cfg.dock = dock
+    local pushed = dock and dock.insert
+    cfg.dock = dock and { to = dock.to, side = dock.side }
+    -- slipped between two blocks: the block that was on that side now docks to this one
+    if pushed and self.db.blocks[pushed] then
+        self.db.blocks[pushed].dock = { to = headKey, side = dock.side }
+    end
 
     -- Re-anchor the whole group (merges may have changed direction): first
     -- detach everything, then anchor from the head outward (never a loop)
@@ -946,6 +953,7 @@ function ns:SnapAndSave(f)
             end
         end
     end
+    if pushed then self:ReanchorAll() end
     self:RequestLayout()
     -- dropped against a screen edge: offer to stick it there (once the layout settled)
     if not dock then

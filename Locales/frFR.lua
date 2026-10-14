@@ -798,6 +798,7 @@ L.HELP_PLACE_2 = "2. Glisse un bloc (ou tout son groupe). Des lignes dorées mon
 L.HELP_PLACE_3 = "3. Pose-le contre un autre bloc (à gauche, à droite, au-dessus ou en dessous) : ils fusionnent et se déplacent ensemble."
 L.HELP_PLACE_4 = "4. Clique sur « Verrouiller » dans le bandeau."
 L.HELP_PLACE_5 = "- Maj + glisser : sortir un bloc de son groupe."
+L.HELP_PLACE_15 = "- Pose un bloc seul contre un côté déjà pris : il se glisse entre les deux, et le bloc qui était là se décale. Pratique pour remettre un bloc à sa place."
 L.HELP_PLACE_6 = "- Ctrl + clic : masquer un bloc (à réafficher dans l'onglet Blocs)."
 L.HELP_PLACE_7 = "- Ctrl + Z, ou Annuler dans le bandeau : annuler la dernière action."
 L.HELP_PLACE_8 = "- Alt + clic droit : menu rapide : réglages, masquer, détacher, ajouter un espace, remplacer par..., apparence du groupe, figer le groupe, verrouiller. Le survol d'un bloc déverrouillé te le rappelle."

@@ -893,3 +893,4 @@ L["HELP_USE_5"] = "- Launcher and DataBroker blocks pass every click on to their
 L["HELP_USE_6"] = "- Minimap button: click for the options, right-click to lock or unlock, drag it around the minimap. With FlareUI, Tessera is in FlareUI's addon bag instead."
 L["HELP_USE_7"] = "Mail, whispers, reputation, currencies, reagents, ammo and instances only appear when they have something to show, in a second row under the main bar. Friends, guild, talents, group... do the same (\"Hide when empty\" in the Behaviour tab)."
 L["HELP_USE_8"] = "Many blocks are hidden at first (server time, item level, volume, mana regeneration, character stats, group loot, the WoW Forever blocks...): pick one in the list at the top of the Blocks tab and check \"Show\"."
+L["HELP_PLACE_15"] = "- Drop a single block against a side that is already taken: it slips in between, and the block that was there moves along. Handy to put a block back where it was."

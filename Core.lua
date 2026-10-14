@@ -1222,7 +1222,11 @@ local function CreateControls(f)
             ns:HideBlock(f.key)
         end)
     f.replaceBtn = CreateControl(f, "Interface\\Buttons\\UI-RotationRight-Button", "TOPLEFT", 2,
-        "REPLACE_BUTTON_TIP", function(self) ns:OpenReplaceMenu(f.key, self) end)
+        "REPLACE_BUTTON_TIP", function()
+            -- the menu belongs to the block, not to the arrows: they hide as soon as the
+            -- mouse leaves the block, and a menu closes with the frame it belongs to
+            ns:OpenReplaceMenu(f.key, f)
+        end)
     -- the cross watches the mouse while shown and hides both buttons when it leaves
     f.closeBtn:SetScript("OnUpdate", function()
         if not ControlsWanted(f) then
@@ -1873,7 +1877,7 @@ local BASE_ROW = {
 -- and its visible blocks share the base bar's width.
 local SECOND_ROW = { "mail", "whispers", "reputation", "currency", "reagents", "ammo", "instances" }
 local SECOND_ROW_WIDTH = 60
--- "Modern Forever" layout: the same top bar, and a second bar always shown with WoW
+-- "Double bar" layout: the same top bar, and a second bar always shown with WoW
 -- Forever's own blocks (the blocks of the usual second row join it when they have
 -- something to show)
 local FOREVER_ROW = { "legacy", "comprehension", "camping", "honor", "weaponSkills",
@@ -2337,10 +2341,16 @@ function ns:ResetEverything()
     ReloadUI()
 end
 
--- Replaces the current profile with a ready-made layout (preset: one of ns.PRESETS)
-function ns:ResetProfile(preset)
+-- Shows a ready-made layout, without the message nor the Edit Mode offer: the quick
+-- tour tries them one after the other, then the player keeps one or gets theirs back
+function ns:TryPreset(preset)
     self.sv.profiles[self.profileName] = { pendingPreset = preset }
     self:LoadProfile()
+end
+
+-- Replaces the current profile with a ready-made layout (preset: one of ns.PRESETS)
+function ns:ResetProfile(preset)
+    self:TryPreset(preset)
     local name = L["PRESET_" .. (preset or "top"):upper()] or preset
     Print(L.PRESET_APPLIED:format(name))
     -- a bar stuck to an edge may cover Blizzard frames: offer to make room (EditMode.lua)

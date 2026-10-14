@@ -21,9 +21,11 @@ ns.CHANGELOG = {
                 .. "swap places). A spacer can now be replaced by a block, to fill the room the ready-made layouts "
                 .. "leave in their bars (Ctrl + Z brings it back). A bar's first block can be replaced without the bar "
                 .. "losing its screen edge or its width. New help topic \"Replacing blocks\".",
+            "Quick tour: a new step to try the ready-made layouts one after the other with arrows, right on the "
+                .. "screen; keep one, or yours comes back.",
             "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
                 .. "(Compact and Left column layouts); when room is short, a name is shortened to its block's width.",
-            "New ready-made layout \"Modern Forever\" (Look tab): the top bar with the basics, and a second bar "
+            "New ready-made layout \"Double bar\" (Look tab): the top bar with the basics, and a second bar "
                 .. "always shown with WoW Forever's blocks (Legacy, Comprehension, Camping, Honor, weapon skills).",
             "Placement: a single block dropped against a side already taken slips in between (the block that was "
                 .. "there moves along), so a block taken out of a bar can be put back in its place. Nothing docks any "
@@ -52,10 +54,12 @@ ns.CHANGELOG = {
                 .. "les dispositions toutes prêtes laissent dans leurs barres (Ctrl + Z le fait revenir). Le premier bloc "
                 .. "d'une barre se remplace sans que la barre perde son bord de l'écran ni sa largeur. Nouveau sujet "
                 .. "d'aide « Remplacer des blocs ».",
+            "Visite rapide : une nouvelle étape pour essayer les dispositions toutes prêtes l'une après l'autre avec "
+                .. "des flèches, directement à l'écran ; garde-en une, ou la tienne revient.",
             "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "
                 .. "(dispositions Compacte et Colonne à gauche) ; quand la place manque, un nom est raccourci à la "
                 .. "largeur de son bloc.",
-            "Nouvelle disposition toute prête « Moderne Forever » (onglet Apparence) : la barre du haut avec "
+            "Nouvelle disposition toute prête « Double barre » (onglet Apparence) : la barre du haut avec "
                 .. "l'essentiel, et une deuxième barre toujours affichée avec les blocs WoW Forever (héritage, "
                 .. "Compréhension, Camping, Honneur, compétences d'armes).",
             "Placement : un bloc seul posé contre un côté déjà pris se glisse entre les deux (le bloc qui était là se "

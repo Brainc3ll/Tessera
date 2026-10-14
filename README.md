@@ -96,7 +96,8 @@ Help tab inside the game explains everything.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
 - Tooltips your way: bigger or smaller, or only while holding Alt (General tab).
-- A quick tour on first launch (again from the Help tab).
+- A quick tour on first launch (again from the Help tab), where the ready-made layouts can be
+  tried one after the other right on the screen.
 - Blizzard's Edit Mode: a copy of your layout with room for Tessera's bars stuck to the top or
   bottom edge (your layout is never changed). Tested on Blizzard's interface (Modern, Classic)
   and FlareUI unchanged; with other interfaces, results may be unexpected.
@@ -154,7 +155,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Spacers.lua` | Spacer blocks (empty, separator line or text). |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
-| `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, debug report, Blizzard Settings page. |
+| `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, Blizzard Settings page. |
 
 The `docs/` folder (not shipped in the addon) holds the release guide (`docs/RELEASE.md`), the
 CurseForge and Wago descriptions, the strings sent to CurseForge's localization tool, the project

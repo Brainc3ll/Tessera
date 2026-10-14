@@ -2479,6 +2479,7 @@ StaticPopupDialogs["TESSERA_WELCOME"] = {
 ---------------------------------------------------------------------------
 local TUTORIAL_STEPS = {
     { text = "TUTORIAL_1" },
+    { text = "TUTORIAL_8", layouts = true, action = "TUTORIAL_DO_KEEP", run = function() ns:KeepTourLayout() end },
     { text = "TUTORIAL_2", action = "TUTORIAL_DO_UNLOCK", run = function() ns:SetLocked(false) end },
     { text = "TUTORIAL_3" },
     { text = "TUTORIAL_4" },
@@ -2488,8 +2489,62 @@ local TUTORIAL_STEPS = {
 }
 local tutorial
 
+-- The "ready-made layouts" step: the arrows show each layout at once on the screen.
+-- The player's profile is copied first and comes back when the step is left (or the
+-- tour closed), unless "Keep this layout" was clicked. Not during combat.
+local function UpdateLayoutRow()
+    local row = tutorial.layouts
+    local i = tutorial.layoutIndex
+    if i then
+        local preset = ns.PRESETS[i]:upper()
+        row.name:SetText(("%s  |cff999999(%d/%d)|r"):format(L["PRESET_" .. preset] or preset, i, #ns.PRESETS))
+        row.desc:SetText(tutorial.snapshot and (L["TIP_PRESET_" .. preset] or "") or L.TUTORIAL_LAYOUT_KEPT)
+    else
+        row.name:SetText(L.TUTORIAL_LAYOUT_CURRENT)
+        row.desc:SetText(L.TUTORIAL_LAYOUT_ARROWS)
+    end
+    row:SetHeight(30 + row.desc:GetStringHeight())
+    tutorial.action:SetEnabled(i ~= nil and tutorial.snapshot ~= nil)
+end
+
+local function TryTourLayout(delta)
+    if InCombatLockdown() then
+        ns.Print(L.REPLACE_IN_COMBAT)
+        return
+    end
+    if not tutorial.snapshot then tutorial.snapshot = ns.DeepCopy(ns.sv.profiles[ns.profileName]) end
+    local n, i = #ns.PRESETS, tutorial.layoutIndex
+    i = i and ((i - 1 + delta) % n + 1) or (delta > 0 and 1 or n)
+    tutorial.layoutIndex = i
+    ns:TryPreset(ns.PRESETS[i])
+    UpdateLayoutRow()
+    if tutorial.ShowStep then tutorial.ShowStep(tutorial.index) end -- new height
+end
+
+-- the player's own profile comes back (after the fight if one is going on)
+local function RestoreTourLayout()
+    if not tutorial or not tutorial.snapshot then return end
+    if InCombatLockdown() then
+        tutorial:RegisterEvent("PLAYER_REGEN_ENABLED")
+        return
+    end
+    ns.sv.profiles[ns.profileName] = tutorial.snapshot
+    tutorial.snapshot, tutorial.layoutIndex = nil, nil
+    ns:LoadProfile()
+end
+
+function ns:KeepTourLayout()
+    if not (tutorial and tutorial.snapshot and tutorial.layoutIndex) then return end
+    tutorial.snapshot = nil
+    local preset = ns.PRESETS[tutorial.layoutIndex]
+    self.Print(L.PRESET_APPLIED:format(L["PRESET_" .. preset:upper()] or preset))
+    C_Timer.After(1.5, function() if ns.OfferEditModeRoom then ns:OfferEditModeRoom(true) end end)
+    UpdateLayoutRow()
+end
+
 local function ShowTutorialStep(index)
     local step = TUTORIAL_STEPS[index]
+    if not step.layouts then RestoreTourLayout() end
     tutorial.index = index
     tutorial.title:SetText(L.TUTORIAL_TITLE:format(index, #TUTORIAL_STEPS))
     tutorial.text:SetText(L[step.text])
@@ -2502,7 +2557,13 @@ local function ShowTutorialStep(index)
         local w = (tutorial.action:GetFontString() and tutorial.action:GetFontString():GetStringWidth() or 120) + 32
         tutorial.action:SetWidth(math.min(348, math.max(150, w)))
     end
-    tutorial:SetHeight(tutorial.text:GetStringHeight() + 96 + (step.action and 30 or 0))
+    tutorial.layouts:SetShown(step.layouts == true)
+    local extra = 0
+    if step.layouts then
+        UpdateLayoutRow()
+        extra = tutorial.layouts:GetHeight() + 8
+    end
+    tutorial:SetHeight(tutorial.text:GetStringHeight() + 96 + (step.action and 30 or 0) + extra)
 end
 
 function ns:StartTutorial()
@@ -2542,6 +2603,38 @@ function ns:StartTutorial()
         tutorial.back:SetPoint("RIGHT", tutorial.next, "LEFT", -6, 0)
         tutorial.action = Button("", function() TUTORIAL_STEPS[tutorial.index].run() end)
         tutorial.action:SetPoint("BOTTOMLEFT", 16, 44) -- above the Back / Next row
+
+        -- ready-made layouts: < name > and the layout's description, under the text
+        local row = CreateFrame("Frame", nil, tutorial)
+        row:SetPoint("TOPLEFT", tutorial.text, "BOTTOMLEFT", 0, -10)
+        row:SetWidth(348)
+        local prev = Button("<", function() TryTourLayout(-1) end)
+        prev:SetParent(row)
+        prev:SetSize(28, 22)
+        prev:ClearAllPoints()
+        prev:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
+        local nextLayout = Button(">", function() TryTourLayout(1) end)
+        nextLayout:SetParent(row)
+        nextLayout:SetSize(28, 22)
+        nextLayout:ClearAllPoints()
+        nextLayout:SetPoint("TOPRIGHT", row, "TOPRIGHT", 0, 0)
+        row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        row.name:SetPoint("LEFT", prev, "RIGHT", 6, 0)
+        row.name:SetPoint("RIGHT", nextLayout, "LEFT", -6, 0)
+        row.desc = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        row.desc:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -8)
+        row.desc:SetWidth(348)
+        row.desc:SetJustifyH("LEFT")
+        row.desc:SetSpacing(2)
+        row.prev, row.nextLayout = prev, nextLayout
+        tutorial.layouts = row
+        tutorial.ShowStep = ShowTutorialStep
+        -- closing the tour gives the player's layout back too
+        tutorial:HookScript("OnHide", RestoreTourLayout)
+        tutorial:SetScript("OnEvent", function(frame)
+            frame:UnregisterEvent("PLAYER_REGEN_ENABLED")
+            RestoreTourLayout()
+        end)
     end
     self:SkinWindow(tutorial, tutorial.title)
     if panel and panel:IsShown() then panel:Hide() end -- the blocks must be visible

@@ -1,6 +1,6 @@
 # Tests de la rc5 (jeudi 15 octobre)
 
-Version à tester : **Tessera-1.0.0-rc5-test8.zip** (version de test : elle a les commandes `/tes test`).
+Version à tester : **Tessera-1.0.0-rc5-test9.zip** (version de test : elle a les commandes `/tes test`).
 Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur Lua.
 
 ## 0. Préparation (5 min)
@@ -16,6 +16,13 @@ Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur
 - [ ] Barre par défaut en haut, propre, aucune erreur.
 - [ ] Bouton rond de la minicarte : clic = options, clic droit = verrouiller / déverrouiller.
 - [ ] Si la barre couvre des cadres de Blizzard (barres d'action, minicarte…), Tessera propose de faire de la place dans le mode Édition.
+
+## 1 bis. Visite rapide : les dispositions (3 min)
+
+- [ ] Onglet Aide, « Visite rapide », étape 2 : les flèches < et > montrent chaque disposition tout de suite à l'écran, avec son nom et sa description.
+- [ ] Quitter l'étape (Suivant, Retour ou la croix) sans garder : ta disposition revient.
+- [ ] « Garder cette disposition » : elle reste, message dans la discussion.
+- [ ] La disposition « Double barre » (ancien nom : Moderne Forever).
 
 ## 2. Les blocs (10 min) : `/tes test blocs`
 

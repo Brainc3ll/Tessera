@@ -847,7 +847,28 @@ for _, step in ipairs({
     -- quick tour
     function()
         ns:StartTutorial()
-        for _ = 1, 8 do TesseraTutorial.next:GetScript("OnClick")() end
+        for _ = 1, 9 do TesseraTutorial.next:GetScript("OnClick")() end
+        -- the layouts step: try some, leave without keeping -> the player's layout comes back
+        ns:ResetProfile("left")
+        ns.db.blocks.time.width = 123
+        ns:StartTutorial()
+        TesseraTutorial.next:GetScript("OnClick")() -- step 2: layouts
+        TesseraTutorial.layouts.name:GetText()
+        TesseraTutorial.action:GetScript("OnClick")() -- nothing tried yet: no change
+        ns:KeepTourLayout()
+        for _ = 1, #ns.PRESETS + 1 do TesseraTutorial.layouts.nextLayout:GetScript("OnClick")() end
+        TesseraTutorial.layouts.prev:GetScript("OnClick")()
+        TesseraTutorial.next:GetScript("OnClick")() -- leaves the step
+        assert(ns.db.blocks.time.width == 123, "the player's layout comes back after the tour")
+        -- keep one
+        ns:StartTutorial()
+        TesseraTutorial.next:GetScript("OnClick")()
+        TesseraTutorial.layouts.nextLayout:GetScript("OnClick")()
+        TesseraTutorial.layouts.nextLayout:GetScript("OnClick")()
+        ns:KeepTourLayout()
+        TesseraTutorial:Hide()
+        assert(ns.db.blocks.time.width ~= 123, "a kept layout stays")
+        ns:ResetProfile("top")
     end,
     -- group looks: fused, tiles (joint between blocks), separate; old profiles keep their choice
     function()

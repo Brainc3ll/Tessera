@@ -16,19 +16,11 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - **1.0.0-rc5** : publiée le 15/10 (GitHub, CurseForge, Wago). Décision de Braincell1980 : s'il n'y a pas de nouvelle version de test avant le 22/10, la rc5 devient la 1.0.0 finale (même code, version renommée 1.0.0 et publiée le 4/11).
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche ci-dessous.
 
-## Après la publication de la rc5 : anciens blocs d'aide sur CurseForge (rappeler chaque étape à Braincell1980)
-L'aide est découpée en petites clés (HELP_<SUJET>_<n>). Les deux anciens blocs `HELP_TEXT` et
-`HELP_TEXT_BROKER` restent sur l'outil de traduction de CurseForge (l'envoi ne supprime jamais
-rien) alors que l'addon ne les lit plus. Dix autres textes inutilisés ont été retirés de l'addon
-le 15/10 (ex. MERGE, THEME_PREVIEW) : même traitement.
-1. Publier la rc5 : les nouvelles petites clés partent sur CurseForge.
-2. Regarder sur CurseForge (page Localization) si un traducteur a traduit `HELP_TEXT` ou
-   `HELP_TEXT_BROKER` dans une langue (espagnol, allemand...).
-3. Si oui : récupérer sa traduction, la découper ligne par ligne dans les nouvelles clés (même
-   ordre de sujets et de lignes que l'ancien bloc), et l'envoyer dans sa langue, pour que son
-   travail serve au nouveau système.
-4. Ensuite seulement : Braincell1980 supprime les textes inutilisés à la main sur la page
-   Localization de CurseForge.
+## Textes inutilisés sur CurseForge (15/10)
+Aucune traduction autre que l'anglais et le français n'existait : rien à récupérer. Braincell1980
+supprime à la main, sur la page Localization de CurseForge, les 13 textes que l'addon n'utilise
+plus : HELP_TEXT, HELP_TEXT_BROKER, CMD_BUG, MERGE, MERGE_HINT, PROFESSIONS, REPLACE_SWAP_MARK,
+SECTION_FRAME, TAB_VERSION, THEME_PREVIEW, TIP_MERGE, VERSION_LABEL, WELCOME_HELP.
 
 ## En attente de Braincell1980
 - Captures d'écran en client anglais (une par style en mode démo, « Masquer l'interface du jeu » coché, caméra fixe) → GIF des styles et images de présentation ; une capture en français pour montrer les deux langues.

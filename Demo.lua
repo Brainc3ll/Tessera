@@ -25,7 +25,7 @@ local CATEGORIES = {
     { title = "DEMO_CAT_SYSTEM", keys = { "fps", "latency", "memory", "volume", "played" } },
     { title = "DEMO_CAT_FOREVER", keys = { "legacy", "comprehension", "camping", "honor", "weaponSkills" } },
 }
-local COLUMN_W, COLUMN_GAP, TOP = 256, 20, -130
+local COLUMN_W, COLUMN_GAP, TOP = 272, 18, -130
 
 
 function ns:IsDemoActive()

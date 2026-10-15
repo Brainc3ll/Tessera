@@ -35,6 +35,16 @@ Pistes, par ordre d'intérêt :
 - **Jeu d'icônes HD propre à Tessera** (dessins originaux, 256 px), pour les blocs de Tessera seulement : échantillon fait le 11 octobre 2026 (`Tessera-apercu-HD.png`, icônes or, sacs, horloge, latence, Compréhension, camping, héritage et cadre « Mosaïque »). Les lanceurs et les blocs DataBroker gardent l'icône de leur addon.
 - Format des images à vérifier sur Forever (TGA sûr, PNG à tester).
 
+## Look « HD » (15 octobre 2026, à l'étude)
+
+Souhait de Braincell1980 : un Tessera beaucoup plus HD, même sur Forever (il fait « 2006 » aujourd'hui). Pistes :
+1. Lignes nettes au pixel près : bordures de 1 pixel réel calées sur les pixels de l'écran, à toutes les échelles.
+2. Images faites pour Tessera, dessinées en grand (256-512 px) : bordures, coins, léger dégradé, ombre douce, lueur au survol.
+3. Une police moderne libre de droits (licence OFL) livrée avec Tessera.
+4. Icônes : Masque, taille plafonnée à ce qui reste net (voir « Icônes nettes » plus haut).
+5. Petites animations : fondu, valeur qui glisse, survol qui s'allume.
+Méthode proposée : d'abord un nouveau style « HD » (points 1 à 3) à côté des autres, puis étendre ses images aux autres styles s'il plaît. Plutôt en 1.1. Avant de coder : une maquette (même barre, style actuel et style HD côte à côte).
+
 ## Idées tirées des autres addons de barres (13 octobre 2026)
 
 Comparaison avec Titan Panel, Arcana (ex-ChocolateBar), Bazooka, XIV_Databar Continued,

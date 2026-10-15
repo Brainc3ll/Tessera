@@ -478,6 +478,28 @@ for _, step in ipairs({
         local b = TesseraDemoBanner
         b.nextStyle:GetScript("OnClick")(b.nextStyle)
         b.prev:GetScript("OnClick")(b.prev)
+        -- mixed styles: after the styles, each column in its own style
+        local styles = #ns:GetAvailableThemes()
+        local before = b.style:GetText()
+        local mixed
+        for _ = 1, styles + 4 do
+            b.nextStyle:GetScript("OnClick")(b.nextStyle)
+            if b.style:GetText() == ns.L.DEMO_STYLE_MIXED:format(1, 4) then mixed = true break end
+        end
+        assert(mixed, "the switcher reaches the mixed styles")
+        local function Look(cfg)
+            return table.concat({ tostring(cfg.bg), tostring(cfg.border), tostring(cfg.font),
+                tostring(cfg.bgColor and cfg.bgColor.r) }, "|")
+        end
+        assert(Look(ns.db.blocks.gold) ~= Look(ns.db.blocks.friends), "each column has its own style")
+        local title = ns.db.blocks[ns.SPACER_PREFIX .. "demo2"].spacerText
+        assert(title ~= ns.L.DEMO_CAT_SOCIAL and title:find(ns.L.DEMO_CAT_SOCIAL, 1, true), "the column title names its style")
+        for _ = 1, styles + 4 do b.nextStyle:GetScript("OnClick")(b.nextStyle) end
+        assert(b.style:GetText() == ns.L.DEMO_STYLE_MIXED:format(1, 4), "the switcher goes round every step")
+        for _ = 1, 4 do b.nextStyle:GetScript("OnClick")(b.nextStyle) end
+        assert(ns.db.blocks[ns.SPACER_PREFIX .. "demo2"].spacerText == ns.L.DEMO_CAT_SOCIAL,
+            "one style again: plain column titles")
+        assert(before, "banner text")
         b.hideUI:SetChecked(true)
         b.hideUI:GetScript("OnClick")(b.hideUI)
         ns:UpdateLayout()

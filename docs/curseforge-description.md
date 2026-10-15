@@ -6,7 +6,7 @@ Tessera shows small blocks with the information you want (gold, bags, durability
 
 English and French.
 
-> **WoW Forever is in beta.** Tessera is developed and tested on the WoW Forever beta. Its new systems (Legacy, camping, Comprehension, PvP) have no official addon documentation yet and may change before or after release: a block may then need a Tessera update. Please report anything odd.
+> **Made for WoW Forever.** Tessera was developed and tested on WoW Forever. Its new systems (Legacy, camping, Comprehension, PvP) have no official addon documentation yet and may change: a block may then need a Tessera update. Please report anything odd.
 
 ## Blocks made for WoW Forever
 
@@ -15,7 +15,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 - **Legacy points**: your points on the Legacy track, the next reward, every reward of the track, and your Legacy challenges completed per category (Classes, Crafting, PvP, Dungeons, Raids, Adventure). A click opens the Legacy panel.
 - **Comprehension**: your skill for reading magical scrolls, and the scrolls in your bags. A click casts Scroll Comprehension.
 - **Camping**: time left on your camp buffs, or your campfire kit's cooldown; it hides itself when you have neither. A click lights a campfire with your kit.
-- **Honor**: your honor points (PvP ranks will follow once WoW Forever is released).
+- **Honor**: your honor points (PvP ranks will follow in a later version).
 - **Weapon skills**: read from Forever's skill list, with every skill in the tooltip.
 - Profession, talent and Legacy blocks open Forever's own windows.
 
@@ -24,7 +24,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 ## Features
 
 - **More than 40 information blocks**: gold (with a 7-day history and your characters' gold), bags (with junk value), durability, FPS and latency (with graphs), local and server time, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, played time, a personal goal, mana regeneration, character stats, group loot... plus the WoW Forever blocks above.
-- **Demo mode**: every block at once, sorted by category, with sample values, and a banner to switch the styles and hide the game's interface. Your layout comes back when you leave.
+- **Demo mode**: every block at once, sorted by category, with sample values, and a banner to switch the styles (or show them side by side, one per column) and hide the game's interface. Your layout comes back when you leave.
 - **Blocks that hide themselves** when they have nothing to show (mail, whispers, reputation, camping...), in a second row under the main bar.
 - **Launcher blocks** made from minimap buttons and addon compartment entries.
 - **DataBroker support**:
@@ -33,7 +33,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
   - when such an addon is installed, Tessera switches to a DataBroker mode (your display addon shows Tessera's blocks). This mode is explained on first use and can be turned off at any time, to use both.
 - **Merging in every direction**, with alignment guides, snapping (also to Blizzard frames), undo (Ctrl + Z), frozen groups, spacers (empty, separator line or text), global and per-group scale. Groups can look fused, like tiles with small joints, or separate. Groups can be stuck to the screen edges, and a bar stretched over the whole width like a taskbar. Blizzard's Edit Mode can unlock the blocks too, and one click brings back blocks lost off screen.
 - **Replace a block in place**: hover it in placement mode, click its arrows, pick another block: it shows up exactly there, with the same look, and nothing else moves. A block already shown swaps places with it, and the empty spacers of the ready-made layouts are there to be filled this way. A cross on the block hides it.
-- **20 styles**: matching FlareUI, ElvUI, EllesmereUI and Blizzard (Modern, Classic), Square styles, Clean, Transparent, four fantasy styles (Runestone: text only, black and white; Grimoire; Parchment; Arcane) and five made of the game's own frames (Royal Seal, Ironforge, Runeblade, Ember, Sylvan). When a supported interface is installed, Tessera shows its style on sample blocks and offers it; it never changes your style on its own. The interface styles can also be picked without that addon, as an imitation.
+- **19 styles**: matching FlareUI, ElvUI, EllesmereUI and Blizzard (Modern, Classic), Square styles, Clean, Transparent, four fantasy styles (Runestone: text only, black and white; Grimoire; Parchment; Arcane) and five made of the game's own frames (Royal Seal, Ironforge, Runeblade, Ember, Sylvan). When a supported interface is installed, Tessera shows its style on sample blocks and offers it; it never changes your style on its own. The interface styles can also be picked without that addon, as an imitation.
 - **Per-block settings**: text, frame, icons (same size for all, square or round frame, black and white), opacity, progress bar, color thresholds, show on hover, alerts, Shift + click and middle-click actions, and how the value is shown (gold with or without coin icons, rounded; free or used bag slots; XP in percent or to go; average durability; latency home or world; seconds; decimals...).
 - **Profiles**: per account or per character, export / import as text, ready-made layouts (top bar, Double bar with a second bar of WoW Forever blocks, bottom bar, left column, compact, around the gryphons with the WoW Forever blocks, and taskbar or menu bar layouts: Stormwind Stained Glass, Cathedral Rose Window, Tirisfal Orchard, Gnomeregan), automatic dungeon / raid profile. "Reset everything" really starts again from scratch.
 - **Share a style or a layout**: export only the look or only the placement as text. On import, Tessera first lists what is missing on your computer (another addon's blocks, LibSharedMedia fonts or frames, WoW Forever blocks) and asks before applying.
@@ -97,7 +97,7 @@ Tessera affiche de petits blocs avec les informations que tu veux (or, sacs, dur
 
 En anglais et en français.
 
-> **WoW Forever est en bêta.** Tessera est développé et testé sur la bêta de WoW Forever. Ses nouveaux systèmes (héritage, camping, Compréhension, JcJ) n'ont pas encore de documentation officielle pour les addons et peuvent changer avant ou après la sortie : un bloc peut alors demander une mise à jour de Tessera. Signale-nous tout ce qui te paraît bizarre.
+> **Fait pour WoW Forever.** Tessera a été développé et testé sur WoW Forever. Ses nouveaux systèmes (héritage, camping, Compréhension, JcJ) n'ont pas encore de documentation officielle pour les addons et peuvent changer : un bloc peut alors demander une mise à jour de Tessera. Signale-nous tout ce qui te paraît bizarre.
 
 ## Des blocs pensés pour WoW Forever
 
@@ -106,7 +106,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 - **Points d'héritage** : tes points sur le parcours Héritage, la prochaine récompense, toutes les récompenses du parcours et tes défis d'héritage accomplis par catégorie (Classes, Artisanat, JcJ, Donjons, Raids, Aventure). Un clic ouvre le panneau Héritage.
 - **Compréhension** : ta compétence pour lire les parchemins magiques, et les parchemins dans tes sacs. Un clic lance Compréhension de parchemin.
 - **Camping** : le temps restant de tes buffs de camp, ou la recharge de ton kit de feu de camp ; il se masque quand tu n'as ni l'un ni l'autre. Un clic allume un feu de camp avec ton kit.
-- **Honneur** : tes points d'honneur (les rangs JcJ suivront à la sortie de WoW Forever).
+- **Honneur** : tes points d'honneur (les rangs JcJ suivront dans une prochaine version).
 - **Compétences d'armes** : lues dans la liste de compétences de Forever, toutes les compétences dans l'infobulle.
 - Les blocs métiers, talents et héritage ouvrent les fenêtres propres à Forever.
 
@@ -115,7 +115,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 ## Fonctions
 
 - **Plus de 40 blocs d'informations** : or (avec l'historique sur 7 jours et l'or de tes personnages), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe... en plus des blocs WoW Forever ci-dessus.
-- **Mode démo** : tous les blocs d'un coup, rangés par catégorie, avec des valeurs d'exemple, et un bandeau pour changer de style et masquer l'interface du jeu. Ta disposition revient quand tu le quittes.
+- **Mode démo** : tous les blocs d'un coup, rangés par catégorie, avec des valeurs d'exemple, et un bandeau pour changer de style (ou les voir côte à côte, un par colonne) et masquer l'interface du jeu. Ta disposition revient quand tu le quittes.
 - **Des blocs qui se masquent** quand ils n'ont rien à montrer (courrier, chuchotements, réputation, camping...), dans une deuxième rangée sous la barre principale.
 - **Des blocs lanceurs** créés à partir des boutons de la minicarte et du compartiment d'addons.
 - **Support DataBroker** :
@@ -124,7 +124,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
   - quand un tel addon est installé, Tessera passe en mode DataBroker (ton addon d'affichage montre les blocs de Tessera). Ce mode est expliqué à la première utilisation et se désactive à tout moment, pour utiliser les deux.
 - **Fusion dans tous les sens**, avec guides d'alignement, aimantation (aussi aux cadres de Blizzard), annulation (Ctrl + Z), groupes figés, espaces (vide, ligne de séparation ou texte), échelle globale et par groupe. Les groupes peuvent être fusionnés, en tuiles avec de petits joints, ou séparés. Les groupes se collent aux bords de l'écran, et une barre peut s'étirer sur toute la largeur comme une barre des tâches. Le mode Édition de Blizzard peut aussi déverrouiller les blocs, et un clic ramène les blocs perdus hors de l'écran.
 - **Remplacer un bloc sur place** : survole-le en mode placement, clique sur ses flèches, choisis un autre bloc : il apparaît exactement là, avec la même apparence, et rien d'autre ne bouge. Un bloc déjà affiché échange sa place avec lui, et les espaces vides des dispositions toutes prêtes sont faits pour être remplis ainsi. Une croix sur le bloc le masque.
-- **20 styles** : assortis à FlareUI, ElvUI, EllesmereUI et Blizzard (Moderne, Classique), styles Carré, Épuré, Transparent, quatre styles fantasy (Pierre runique : seulement le texte, en noir et blanc ; Grimoire ; Parchemin ; Arcanes) et cinq faits des cadres du jeu (Sceau royal, Forgefer, Lame runique, Braise, Sylvestre). Quand une interface prise en charge est installée, Tessera montre son style sur des blocs d'exemple et te le propose ; il ne change jamais ton style tout seul. Les styles des interfaces se choisissent aussi sans l'addon, en imitation.
+- **19 styles** : assortis à FlareUI, ElvUI, EllesmereUI et Blizzard (Moderne, Classique), styles Carré, Épuré, Transparent, quatre styles fantasy (Pierre runique : seulement le texte, en noir et blanc ; Grimoire ; Parchemin ; Arcanes) et cinq faits des cadres du jeu (Sceau royal, Forgefer, Lame runique, Braise, Sylvestre). Quand une interface prise en charge est installée, Tessera montre son style sur des blocs d'exemple et te le propose ; il ne change jamais ton style tout seul. Les styles des interfaces se choisissent aussi sans l'addon, en imitation.
 - **Réglages par bloc** : texte, cadre, icônes (même taille pour toutes, cadre carré ou rond, noir et blanc), opacité, barre de progression, couleurs de seuil, affichage au survol, alertes, actions du Maj + clic et du clic milieu, et la façon d'afficher la valeur (or avec ou sans icônes des pièces, arrondi ; places libres ou utilisées des sacs ; XP en pourcentage ou restante ; durabilité moyenne ; latence locale ou monde ; secondes ; décimales...).
 - **Profils** : par compte ou par personnage, export / import en texte, dispositions toutes prêtes (barre en haut, Double barre avec une deuxième barre de blocs WoW Forever, barre en bas, colonne à gauche, compacte, autour des gryphons avec les blocs WoW Forever, et des dispositions façon barre des tâches ou barre de menus : Vitraux de Hurlevent, Rosace de la cathédrale, Vergers de Tirisfal, Gnomeregan), profil automatique en donjon / raid. « Tout réinitialiser » repart vraiment de zéro.
 - **Partager un style ou une disposition** : exporte seulement l'allure ou seulement le placement en texte. À l'import, Tessera liste d'abord ce qui manque sur ton ordinateur (blocs d'un autre addon, polices ou cadres LibSharedMedia, blocs WoW Forever) et demande avant d'appliquer.

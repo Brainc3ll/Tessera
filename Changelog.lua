@@ -13,11 +13,30 @@ ns.CHANGELOG = {
         version = "1.0.0",
         date = "", -- set when the version is published
         en = {
+            "First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour "
+                .. "shows the essentials, and the demo mode (Help tab) shows every block and every style.",
+            "In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, XP, "
+                .. "quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for "
+                .. "minimap and addon buttons, and DataBroker both ways.",
+            "Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. "
+                .. "Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.",
+            "Demo mode: after the styles, the switcher shows \"Mixed styles\", each column in its own style, "
+                .. "to compare them side by side.",
             "The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera "
                 .. "(it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar "
                 .. "changes size.",
         },
         fr = {
+            "Première version stable de Tessera, faite pour WoW Forever. Nouveau ? Tape /tessera : la visite "
+                .. "rapide montre l'essentiel, et le mode démo (onglet Aide) montre tous les blocs et tous les styles.",
+            "En bref : plus de 40 blocs d'informations (or, sacs, durabilité, FPS, latence, horloges, XP, quêtes, "
+                .. "métiers, réputation, courrier, systèmes propres à WoW Forever...), des blocs lanceurs pour les "
+                .. "boutons de la minicarte et des addons, et DataBroker dans les deux sens.",
+            "Les blocs posés les uns contre les autres s'assemblent comme les tesselles d'une mosaïque : barres, "
+                .. "colonnes, coins. Bords de l'écran, dispositions toutes prêtes, 19 styles, profils et partage "
+                .. "en texte.",
+            "Mode démo : après les styles, le sélecteur montre les « Styles mélangés », chaque colonne dans son "
+                .. "propre style, pour les comparer côte à côte.",
             "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
                 .. "après Tessera (elle restait en haut de l'écran, sous la barre d'XP), et garde sa largeur quand "
                 .. "la barre d'XP change de taille.",

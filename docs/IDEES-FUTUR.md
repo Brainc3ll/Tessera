@@ -79,7 +79,8 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 ## Mode démo (14 octobre 2026)
 
 - [Fait, rc5] Tous les blocs par catégorie, valeurs d'exemple, sélecteur de styles, interface du jeu masquable.
-- Pistes : bouton « capture » qui masque aussi le bandeau ; choisir les catégories affichées.
+- [Fait, 1.0.0] « Styles mélangés » : après les styles, chaque colonne dans son propre style (4 étapes).
+- Pistes : bouton « capture » qui masque aussi le bandeau ; choisir les catégories affichées ; style par groupe pour les joueurs (menu Alt + clic droit, à côté de « Apparence du groupe »), après la 1.0.0.
 
 ## Remplacement de blocs (14 octobre 2026)
 

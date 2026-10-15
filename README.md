@@ -13,9 +13,9 @@ It only uses data provided by the game itself, and embeds no library. LibSharedM
 when another addon provides it, to offer that addon's fonts, backgrounds and borders, and
 LibDataBroker to exchange data with DataBroker addons.
 
-> **WoW Forever is in beta.** Tessera is developed and tested on the WoW Forever beta. Its own
-> systems (Legacy, camping, Comprehension, PvP) have no official addon documentation yet and may
-> change before or after release; a block may then need an update.
+> **Made for WoW Forever.** Tessera was developed and tested on WoW Forever. Its own systems
+> (Legacy, camping, Comprehension, PvP) have no official addon documentation yet and may change;
+> a block may then need an update.
 
 ## Screenshots
 
@@ -82,7 +82,8 @@ Help tab inside the game explains everything.
   and stretched like a taskbar, and ready-made layouts give a starting point (among them "Double
   bar": the top bar and a second bar always shown with the WoW Forever blocks).
 - **Demo mode:** every block at once, sorted by category, with sample values; a banner switches
-  the styles and hides the game's interface, for screenshots. Your layout comes back afterwards.
+  the styles (or shows them side by side, one per column: "Mixed styles") and hides the game's
+  interface, for screenshots. Your layout comes back afterwards.
 - **Blocks made for WoW Forever's own systems**, which can also be shared with DataBroker
   display addons (Titan Panel, ChocolateBar, Bazooka...):
   - Legacy points: your points, the next reward, every reward of the track and your Legacy
@@ -91,7 +92,7 @@ Help tab inside the game explains everything.
     Comprehension;
   - Camping: time left on your camp buffs, or your campfire kit's cooldown; a click lights a
     campfire with the kit;
-  - Honor: your honor points (PvP ranks once WoW Forever is released);
+  - Honor: your honor points (PvP ranks in a later version);
   - weapon skills read from Forever's skill list; profession, talent and Legacy blocks that open
     Forever's own windows.
 - More than 40 blocks in all: gold (with history), bags (with junk value), durability (with the
@@ -117,7 +118,7 @@ Help tab inside the game explains everything.
   sharing, in one place.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- 20 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
+- 19 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
   imitation), Square styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
   Parchment; Arcane) and styles made of the game's own frames (Royal Seal, Ironforge, Runeblade, Ember, Sylvan).
 - Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options.
@@ -183,7 +184,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
 | `Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
 | `Spacers.lua` | Spacer blocks (empty, separator line or text). |
-| `Demo.lua` | Demo mode: every block by category with sample values, style switcher, the player's profile put aside and given back. |
+| `Demo.lua` | Demo mode: every block by category with sample values, style switcher (also mixed styles, one per column), the player's profile put aside and given back. |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
 | `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, Blizzard Settings page. |

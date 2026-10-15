@@ -7,7 +7,8 @@ local L = ns.L
 -- Every information block, sorted by category in columns, each column under a
 -- title (a spacer block in text mode), with sample values (preview mode) and a
 -- label. A banner says it is a demo, switches the style with arrows, can hide
--- Blizzard's interface and ends the demo.
+-- Blizzard's interface and ends the demo. After the styles come a few "mixed
+-- styles" steps: each column in its own style, its name in the column's title.
 -- It is not a layout: the player's profile is copied aside (also in the saved
 -- variables, in case of /reload or logout) and comes back intact when the demo
 -- ends; blocks stay locked meanwhile. A fight ends the demo (after the fight:
@@ -26,6 +27,7 @@ local CATEGORIES = {
     { title = "DEMO_CAT_FOREVER", keys = { "legacy", "comprehension", "camping", "honor", "weaponSkills" } },
 }
 local COLUMN_W, COLUMN_GAP, TOP = 272, 18, -130
+local MIXED_STEPS = 4 -- 4 x 6 columns: every style is shown at least once
 
 
 function ns:IsDemoActive()
@@ -90,20 +92,66 @@ local function BuildDemo(self)
     self:ApplyTheme(self.db.theme)
 end
 
--- The style switcher of the banner: the styles of the Look tab, one after the other
+-- The style switcher of the banner: the styles of the Look tab, one after the other,
+-- then the mixed styles steps. Returns the current step and the list of styles.
 local function ThemeIndex(self)
     local list = self:GetAvailableThemes()
+    if self.demoPos and self.demoPos <= #list + MIXED_STEPS then return self.demoPos, list end
     for i, t in ipairs(list) do
         if t.key == self:GetTheme() then return i, list end
     end
     return 1, list
 end
 
+-- Style name without its note in brackets ("Blizzard modern (Retail, Forever)"),
+-- short enough for a column title
+local function ShortName(name)
+    return (name:gsub("%s*%b()", ""))
+end
+
+-- Mixed styles step m: column c takes the next style of the list
+local function MixedTheme(list, m, c)
+    return list[((m - 1) * #CATEGORIES + c - 1) % #list + 1]
+end
+
+-- Applies a step of the switcher: one style for every block, or one per column
+local function ApplyStep(self, pos, list)
+    self.demoPos = pos
+    local m = pos - #list
+    local columns = Columns()
+    local first = m > 0 and MixedTheme(list, m, 1) or list[pos]
+    if not first then return end
+    self.demoTheme = first.key
+    self:ApplyTheme(first.key)
+    for c, column in ipairs(columns) do
+        local title = self.SPACER_PREFIX .. ("demo%d"):format(c)
+        local tcfg = self.db.blocks[title]
+        local theme = m > 0 and MixedTheme(list, m, c) or nil
+        if tcfg then
+            tcfg.spacerText = theme and L.DEMO_COLUMN_STYLE:format(L[column.title], ShortName(theme.name))
+                or L[column.title]
+        end
+        if theme and c > 1 then
+            for _, key in ipairs({ title, unpack(column.keys) }) do
+                if self.db.blocks[key] then
+                    self:ApplyThemeToCfg(self.db.blocks[key], theme.key)
+                    self:ApplyStyle(key)
+                end
+            end
+        end
+    end
+    self:UpdateAll()
+end
+
 local function UpdateBanner(self)
     local b = self.demoBanner
     if not b then return end
     local i, list = ThemeIndex(self)
-    b.style:SetText(L.DEMO_STYLE:format(list[i] and list[i].name or "?", i, #list))
+    if i > #list then
+        b.style:SetText(L.DEMO_STYLE_MIXED:format(i - #list, MIXED_STEPS))
+    else
+        b.style:SetText(L.DEMO_STYLE:format(list[i] and list[i].name or "?", i, #list))
+    end
     self:SkinWindow(b, b.title)
 end
 
@@ -169,11 +217,7 @@ local function CreateBanner(self)
     local function Switch(delta)
         if InCombatLockdown() then return end
         local i, list = ThemeIndex(self)
-        local t = list[(i - 1 + delta) % #list + 1]
-        if t then
-            self.demoTheme = t.key
-            self:ApplyTheme(t.key)
-        end
+        ApplyStep(self, (i - 1 + delta) % (#list + MIXED_STEPS) + 1, list)
         UpdateBanner(self)
     end
     local prev = Button("<", 28, function() Switch(-1) end)
@@ -227,6 +271,7 @@ function ns:StartDemo()
     self.sv.demoBackup = { profile = self.profileName, data = self.DeepCopy(self.sv.profiles[self.profileName]) }
     self.sv.profiles[self.profileName] = { pendingPreset = "top" }
     self:LoadProfile()
+    self.demoPos = nil -- the demo opens on one style (the last one shown, or the player's)
     BuildDemo(self)
     self:RefreshAllBlocks()
     self:ReanchorAll()

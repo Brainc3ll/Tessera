@@ -69,6 +69,8 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 - [Fait, rc5] Styles des interfaces (FlareUI, ElvUI, EllesmereUI) choisissables sans l'addon, en imitation.
 - En réserve : « Forge naine » (fer sombre, texte orange braise).
 - Styles pour d'autres interfaces (TukUI, GW2 UI, NDui, KkthnxUI, SpartanUI…), en 1.1.
+- Style « écran de sélection » (15/10, intéresse Braincell1980) : le look des écrans avant d'entrer en jeu (choix et création de personnage) : fond brun très sombre, liseré or fin aux coins ouvragés, titres or en Friz Quadrata, valeurs claires. À vérifier d'abord avec une sonde de la version debug (pendant la bêta si possible) : les images de ces écrans sont-elles accessibles à un addon une fois en jeu sur Forever ? Si oui, vraies bordures et vrais coins ; sinon, imitation avec les cadres du jeu (comme Sceau royal).
+- Option « icônes en médaillon » (même jour) : icônes rondes cerclées d'or, comme les icônes de faction, race et classe de ces écrans ; pour ce style ou pour tous.
 
 ## Affichage des valeurs (14 octobre 2026)
 

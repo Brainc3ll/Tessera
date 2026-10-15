@@ -3,6 +3,10 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0 — 
+
+- The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera (it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar changes size.
+
 ## 1.0.0-rc5 — 2026-10-15
 
 - Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category, with sample values. Its banner switches the styles and can hide the game's interface, for screenshots. Your layout comes back when you leave.

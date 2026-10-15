@@ -450,6 +450,21 @@ for _, step in ipairs({
         assert(not ns.brokerModeActive, "broker mode not off")
     end,
     function() for _, t in ipairs(ns:GetAvailableThemes()) do ns:ApplyTheme(t.key); ns:UpdateLayout() end end,
+    -- FlareUI's XP bar turned on after the profile was made: the top bar follows it
+    function()
+        ns:ResetProfile("top")
+        local root = ns:GetRoot("gold")
+        assert(ns.db.blocks[root].anchor and ns.db.blocks[root].anchor.frame == "FlareUI_XPBar", "top bar follows FlareUI's XP bar")
+        local xp = CreateFrame("Frame", "FlareUI_XPBar", UIParent)
+        _G.FlareUI_XPBar = xp
+        xp:SetSize(560, 14)
+        xp:Show()
+        ns.db.blocks[root].anchor = { top = -6 } -- a bar made by an older version
+        ns:ReanchorAll()
+        ns:UpdateLayout()
+        _G.FlareUI_XPBar = nil
+        ns:ResetProfile("top")
+    end,
     -- demo mode: every block with sample values, styles switched from the banner;
     -- the player's profile comes back, also after a /reload during the demo
     function()

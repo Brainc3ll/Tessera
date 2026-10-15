@@ -14,6 +14,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 ## Versions
 - **1.0.0-rc4** : publiée le 13/10 (GitHub, CurseForge, Wago).
 - **1.0.0-rc5** : publiée le 15/10 (GitHub, CurseForge, Wago). Décision de Braincell1980 : s'il n'y a pas de nouvelle version de test avant le 22/10, la rc5 devient la 1.0.0 finale (même code, version renommée 1.0.0 et publiée le 4/11).
+- **1.0.0** (en préparation, pas publiée) : correction du 15/10 : la barre du haut suit la barre d'XP de FlareUI même quand FlareUI ou sa barre d'XP est activé après coup. Zip de test 1.0.0-test1. Une nouvelle version de test existe donc avant le 22 : la 1.0.0 sera cette version-ci, une fois testée.
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche ci-dessous.
 
 ## Textes inutilisés sur CurseForge

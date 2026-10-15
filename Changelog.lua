@@ -10,6 +10,20 @@ local _, ns = ...
 
 ns.CHANGELOG = {
     {
+        version = "1.0.0",
+        date = "", -- set when the version is published
+        en = {
+            "The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera "
+                .. "(it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar "
+                .. "changes size.",
+        },
+        fr = {
+            "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
+                .. "après Tessera (elle restait en haut de l'écran, sous la barre d'XP), et garde sa largeur quand "
+                .. "la barre d'XP change de taille.",
+        },
+    },
+    {
         version = "1.0.0-rc5",
         date = "2026-10-15",
         en = {

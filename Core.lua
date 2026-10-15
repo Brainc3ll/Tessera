@@ -1931,6 +1931,13 @@ local FLAREUI_XPBAR = "FlareUI_XPBar"
 --   no frame:                  at the top of the screen, "top" px from the edge
 -- f.centerOffset (computed by UpdateLayout) centers the whole group on the reference.
 -- Returns false when the block has no such anchor (caller then uses cfg.point).
+-- The frame a top bar follows: its own, or FlareUI's XP bar for a bar of the default
+-- layout made before this was saved (anchor.top without a frame)
+function ns.AnchorFrameName(anchor)
+    if not anchor then return nil end
+    return anchor.frame or (anchor.top and FLAREUI_XPBAR) or nil
+end
+
 local hookedFrames = {}
 function ns:AnchorToFrame(f, cfg)
     local anchor = cfg.anchor
@@ -1961,7 +1968,8 @@ function ns:AnchorToFrame(f, cfg)
         end
         return false
     end
-    local target = anchor.frame and _G[anchor.frame]
+    local name = ns.AnchorFrameName(anchor)
+    local target = name and _G[name]
     if not target or not target.GetBottom then
         f:SetPoint("TOPLEFT", UIParent, "TOP", offset, anchor.top or BASE_TOP)
         return true
@@ -1980,9 +1988,11 @@ function ns:AnchorToFrame(f, cfg)
         end
         target:HookScript("OnShow", Reanchor)
         target:HookScript("OnHide", Reanchor)
+        -- its width changes (FlareUI's settings): the bar is laid out again
+        target:HookScript("OnSizeChanged", function() if ns.built then ns:RequestLayout() end end)
     end
     if target:IsShown() then
-        f:SetPoint("TOPLEFT", target, "BOTTOMLEFT", offset, -(anchor.gap or 0))
+        f:SetPoint("TOPLEFT", target, "BOTTOMLEFT", offset, -(anchor.gap or BASE_GAP))
     else
         f:SetPoint("TOPLEFT", target, "TOPLEFT", offset, 0)
     end
@@ -1992,7 +2002,8 @@ end
 -- Horizontal offset that centers the group (width groupWidth, head at headX
 -- from the group's left edge) on its anchor's reference
 function ns:GetCenterOffset(cfg, groupWidth, headX, f)
-    local target = cfg.anchor.frame and _G[cfg.anchor.frame]
+    local name = ns.AnchorFrameName(cfg.anchor)
+    local target = name and _G[name]
     if target and target.GetWidth and target:GetWidth() > 0 then
         -- the target's width, converted to the block's own units (it may have its own scale)
         local width = target:GetWidth()
@@ -2234,11 +2245,9 @@ function ns:ApplyBaseLayout(p, preset)
                 cfg.anchor = { bottom = 140 } -- kept centered at the bottom of the screen
             else
                 cfg.point = { "TOPLEFT", "TOP", math.floor(x + 0.5), BASE_TOP }
-                cfg.anchor = { top = BASE_TOP }
-                if self:HasFlareUIMedia() then
-                    cfg.anchor.frame, cfg.anchor.gap = FLAREUI_XPBAR, BASE_GAP
-                    cfg.anchor.fill = not compact
-                end
+                -- under FlareUI's XP bar whenever it exists, also when FlareUI or its XP bar
+                -- is turned on later (without it, at the top of the screen)
+                cfg.anchor = { top = BASE_TOP, frame = FLAREUI_XPBAR, gap = BASE_GAP, fill = not compact }
             end
             previous = item.key
         end

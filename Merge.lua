@@ -597,9 +597,10 @@ function ns:UpdateLayout()
         for key, cfg in pairs(self.db.blocks) do
             local a, f = cfg.anchor, self.frames[key]
             if a and a.fill and f and not self:GetDockTarget(key) then
-                if pass == "frame" and a.frame and _G[a.frame] and _G[a.frame].GetWidth then
+                local name = ns.AnchorFrameName(a)
+                if pass == "frame" and name and _G[name] and _G[name].GetWidth then
                     -- the frame's width, converted to this block's own units
-                    local frame = _G[a.frame]
+                    local frame = _G[name]
                     Fill(key, frame:GetWidth() * frame:GetEffectiveScale() / f:GetEffectiveScale())
                 elseif pass == "below" and ns.HangTarget(a) and self.db.blocks[ns.HangTarget(a)] then
                     local baseMembers = GroupMembers(self:GetRoot(ns.HangTarget(a)))

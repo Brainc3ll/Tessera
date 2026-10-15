@@ -21,6 +21,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera (it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar changes size.
+- A second row ("Double bar", the rows of blocks that hide when empty) dropped right against its bar keeps its place and its full width: it merged into the bar and shrank, its names cut short.
 
 ## 1.0.0-rc5 — 2026-10-15
 

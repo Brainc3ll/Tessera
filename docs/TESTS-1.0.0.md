@@ -1,6 +1,6 @@
 # Tests de la 1.0.0 (avant le 22 octobre)
 
-Version à tester : **Tessera-1.0.0-test3.zip** (version de test : elle a les commandes `/tes test`).
+Version à tester : **Tessera-1.0.0-test4.zip** (version de test : elle a les commandes `/tes test`).
 C'est la future 1.0.0 : elle se teste comme un nouveau joueur qui découvre l'addon.
 Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur Lua.
 
@@ -40,6 +40,11 @@ Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur
 - [ ] Dispositions Vitrail de Hurlevent, Rosace, Verger de Tirisfal, Gnomeregan : la date est à côté de l'horloge.
 - [ ] « Autour des gryphons » : deux rectangles nets, bords bien droits ; à droite, heure et date dans le coin.
 - [ ] Mode démo : la date est dans la colonne Monde.
+
+## 3 ter. Deuxième rangée (3 min) : corrigé dans la test4
+
+- [ ] Disposition « Double barre » (ou visite rapide, étape des dispositions), mode placement : glisser la deuxième rangée vers le bas, puis la reposer tout contre la barre du haut. Elle reprend sa place, toute sa largeur, et tous ses noms (rien de coupé ou de manquant).
+- [ ] Onglet À propos > Historique : la 1.0.0 est rangée en Nouveautés, Améliorations, Corrections.
 
 ## 4. Instance (si le temps)
 

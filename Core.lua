@@ -916,11 +916,14 @@ function ns:SnapAndSave(f)
     -- A second row (hanging below or above another group) dropped back against that
     -- group, roughly where it hangs: it keeps hanging there (centered, full width), as if
     -- it had not moved. Otherwise it would become an ordinary group and lose its place.
-    if not dock then
+    -- This also applies when the drop would merge it into that group (dropped right
+    -- against it): merging would make it a narrow column of the bar.
+    do
         local rowRoot = self:GetRoot(f.key)
         local rowCfg = self.db.blocks[rowRoot]
         local base = rowCfg and rowCfg.anchor and ns.HangTarget(rowCfg.anchor)
-        if base and self.db.blocks[base] and not group[base] then
+        local baseGroup = base and self.db.blocks[base] and self:GetSubtree(self:GetRoot(base))
+        if baseGroup and not group[base] and (not dock or baseGroup[dock.to]) then
             local gl, gb, gr, gt
             for _, m in pairs(members) do
                 local l, t = m.left + dx, m.top + dy

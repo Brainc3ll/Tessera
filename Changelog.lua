@@ -90,11 +90,17 @@ ns.CHANGELOG = {
                 "The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera "
                     .. "(it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar "
                     .. "changes size.",
+                "A second row (\"Double bar\", the rows of blocks that hide when empty) dropped right against "
+                    .. "its bar keeps its place and its full width: it merged into the bar and shrank, its names "
+                    .. "cut short.",
               },
               fr = {
                 "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
                     .. "après Tessera (elle restait en haut de l'écran, sous la barre d'XP), et garde sa largeur "
                     .. "quand la barre d'XP change de taille.",
+                "Une deuxième rangée (« Double barre », les rangées de blocs qui se masquent quand ils sont vides) "
+                    .. "reposée tout contre sa barre garde sa place et toute sa largeur : elle se fondait dans la "
+                    .. "barre et rétrécissait, ses noms coupés.",
               } },
         },
     },

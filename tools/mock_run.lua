@@ -695,6 +695,33 @@ for _, step in ipairs({
         end
         ns:ResetProfile("top")
     end,
+    -- the second row of "Double bar" dropped back right against its bar: it keeps hanging
+    -- there (full width, centered) instead of merging into the bar as a narrow column
+    function()
+        ns:ResetProfile("forever")
+        ns:UpdateLayout()
+        local rowKey, base
+        for key, cfg in pairs(ns.db.blocks) do
+            if cfg.enabled and cfg.anchor and cfg.anchor.below then rowKey, base = key, cfg.anchor.below end
+        end
+        assert(rowKey, "Double bar has a second row")
+        local baseGroup = ns:GetSubtree(ns:GetRoot(base))
+        local rowGroup = ns:GetSubtree(rowKey)
+        -- the bar from y 100 to 80, the row dropped just under it (where it hangs)
+        local realRect, realDock = ns.GetRectUI, ns.FindDock
+        ns.GetRectUI = function(_, frame)
+            if baseGroup[frame.key] then return 100, 80, 700, 100 end
+            if rowGroup[frame.key] then return 150, 58, 650, 79 end
+            return realRect(ns, frame)
+        end
+        ns.FindDock = function() return { to = base, side = "BOTTOM" }, 1 end
+        ns:SnapAndSave(ns.frames[rowKey])
+        ns.GetRectUI, ns.FindDock = realRect, realDock
+        local cfg = ns.db.blocks[rowKey]
+        assert(cfg.anchor and cfg.anchor.below == base and cfg.anchor.fill, "the row keeps hanging under its bar")
+        assert(not cfg.dock, "the row is not merged into the bar")
+        ns:ResetProfile("top")
+    end,
     -- changelog sorted by kind since 1.0.0 (older entries: a plain list)
     function()
         local sections = ns.ChangelogSections(ns.CHANGELOG[1], "fr")

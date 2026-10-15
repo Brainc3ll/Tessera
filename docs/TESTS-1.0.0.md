@@ -34,7 +34,7 @@ Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur
 
 ## 3 bis. Bloc Date et dispositions (5 min) : nouveau dans la test3
 
-- [ ] Onglet Blocs : ajouter le bloc Date ; sous-onglet Texte : essayer les 6 formats (noms des jours et mois en français, « jeu. 15 oct. »).
+- [ ] Onglet Blocs : ajouter le bloc Date ; sous-onglet Texte : essayer les 6 formats (noms des jours et mois en français, « Jeu. 15 oct. »).
 - [ ] Date du serveur : même date que la locale (sauf autour de minuit) ; infobulle : la date complète.
 - [ ] Clic sur le bloc : le calendrier s'ouvre.
 - [ ] Dispositions Vitrail de Hurlevent, Rosace, Verger de Tirisfal, Gnomeregan : la date est à côté de l'horloge.

@@ -10,5 +10,12 @@ for _, entry in ipairs(ns.CHANGELOG) do
     print("")
     print(("## %s — %s"):format(entry.version, entry.date))
     print("")
-    for _, line in ipairs(entry.en) do print("- " .. line) end
+    for i, section in ipairs(ns.ChangelogSections(entry, "en")) do
+        if section.title then
+            if i > 1 then print("") end
+            print("### " .. section.title)
+            print("")
+        end
+        for _, line in ipairs(section.lines) do print("- " .. line) end
+    end
 end

@@ -9,7 +9,9 @@ or visible fix, update:
 - the in-game help (Help tab, English and French) and the tooltip of every new option;
 - `Changelog.lua`, then `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Reread the whole entry of the
   version: it must not contradict itself (a later change in the same version rewrites the earlier
-  line instead of adding a "fix" for something players never had);
+  line instead of adding a "fix" for something players never had). Sort the changes by kind
+  (`sections`: intro, new, improved, fixed). The changelog stays in `Changelog.lua` (English and
+  French), never in the strings sent to CurseForge's translation tool;
 - `README.md` (highlights, block list, commands, file table, developer notes);
 - `docs/curseforge-description.md` and `docs/wago-description.md` (English and French parts);
 - `docs/summary.md` if the core of the addon changes, `docs/A-REPRENDRE.md` (status),

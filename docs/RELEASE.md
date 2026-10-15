@@ -18,7 +18,7 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 
 ## Avant de lancer la publication (fait par Claude, vérifié par la machine)
 
-1. Nouvelle entrée en haut de `Changelog.lua` (anglais et français) **avec la date**, puis `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Relire toute l'entrée : elle ne doit pas se contredire (un changement fait plus tard dans la même version réécrit la ligne concernée, au lieu d'annoncer la « correction » de quelque chose que les joueurs n'ont jamais eu).
+1. Nouvelle entrée en haut de `Changelog.lua` (anglais et français) **avec la date**, puis `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Relire toute l'entrée : elle ne doit pas se contredire (un changement fait plus tard dans la même version réécrit la ligne concernée, au lieu d'annoncer la « correction » de quelque chose que les joueurs n'ont jamais eu). Trier les changements par catégorie (`sections` : intro, nouveautés, améliorations, corrections). Le changelog reste dans `Changelog.lua` (anglais et français), jamais dans les textes envoyés à l'outil de traduction de CurseForge.
 2. La même version dans `Tessera.toc` (`## Version:`).
 3. Textes : `python3 build.py` dans les outils de traduction, puis `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua` (et pareil pour `frFR`).
 4. Documentation à jour (voir la liste ci-dessous).
@@ -33,7 +33,7 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 |---|---|
 | Aide en jeu (onglet Aide, anglais et français) | le sujet concerné ; un nouvel onglet ou une nouvelle section a son paragraphe |
 | Infobulles des options | une infobulle claire pour chaque nouvelle option |
-| `Changelog.lua` / `CHANGELOG.md` | une ligne par nouveauté ou correction visible |
+| `Changelog.lua` / `CHANGELOG.md` | une ligne par nouveauté ou correction visible, rangée dans sa catégorie |
 | `README.md` | points forts, liste des blocs, commandes, tableau des fichiers, partie développeurs |
 | `docs/curseforge-description.md` et `docs/wago-description.md` | la page des joueurs, anglais et français (à recoller à la main sur CurseForge et Wago quand elle change) |
 | `docs/summary.md` | titre, résumé, texte « About » de GitHub, si le cœur de l'addon change |

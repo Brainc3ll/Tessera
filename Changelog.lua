@@ -3,53 +3,99 @@ local _, ns = ...
 -- ========================================================================
 -- Changelog.lua: version history shown in the options "About" tab (Changelog topic)
 -- ========================================================================
--- Newest entry first. Each entry has a version, a date (YYYY-MM-DD) and the
--- list of changes in English (en) and French (fr). Players see the French
--- list when their game is in French, the English one otherwise.
--- Keep CHANGELOG.md (for GitHub and CurseForge) in sync with this file.
+-- Newest entry first. Each entry has a version, a date (YYYY-MM-DD) and its changes
+-- in English (en) and French (fr). Players see the French list when their game is in
+-- French, the English one otherwise. The changelog is not sent to CurseForge's
+-- translation tool: it stays in this file, in English and French only.
+-- Since 1.0.0, changes are sorted by kind: entry.sections = { { kind = ..., en = {...},
+-- fr = {...} }, ... }, kinds in this order: intro (no title), new, improved, fixed.
+-- Older entries keep a plain list (entry.en / entry.fr).
+-- Keep CHANGELOG.md (for GitHub and CurseForge) in sync: tools/changelog_md.lua.
+
+-- Titles of the kinds of changes
+ns.CHANGELOG_KINDS = {
+    new = { en = "New", fr = "Nouveautés" },
+    improved = { en = "Improvements", fr = "Améliorations" },
+    fixed = { en = "Fixes", fr = "Corrections" },
+}
+
+-- The changes of an entry as a list of { title = text or nil, lines = { ... } }
+function ns.ChangelogSections(entry, lang)
+    if not entry.sections then
+        return { { lines = entry[lang] or entry.en or {} } }
+    end
+    local out = {}
+    for _, section in ipairs(entry.sections) do
+        local kind = ns.CHANGELOG_KINDS[section.kind]
+        local lines = section[lang] or section.en or {}
+        if #lines > 0 then
+            table.insert(out, { title = kind and (kind[lang] or kind.en), lines = lines })
+        end
+    end
+    return out
+end
 
 ns.CHANGELOG = {
     {
         version = "1.0.0",
         date = "", -- set when the version is published
-        en = {
-            "First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour "
-                .. "shows the essentials, and the demo mode (Help tab) shows every block and every style.",
-            "In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, "
-                .. "quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for "
-                .. "minimap and addon buttons, and DataBroker both ways.",
-            "Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. "
-                .. "Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.",
-            "Demo mode: after the styles, the switcher shows \"Mixed styles\", each column in its own style, "
-                .. "to compare them side by side.",
-            "New Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several "
-                .. "orders, local or server date; click: calendar. The taskbar and menu bar layouts show it next "
-                .. "to the clock.",
-            "\"Around the gryphons\" layout: two neat rectangles, the date and the clock in the corner on the "
-                .. "right (pick the layout again to get it).",
-            "The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera "
-                .. "(it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar "
-                .. "changes size.",
-        },
-        fr = {
-            "Première version stable de Tessera, faite pour WoW Forever. Nouveau ? Tape /tessera : la visite "
-                .. "rapide montre l'essentiel, et le mode démo (onglet Aide) montre tous les blocs et tous les styles.",
-            "En bref : plus de 40 blocs d'informations (or, sacs, durabilité, FPS, latence, horloges, date, XP, quêtes, "
-                .. "métiers, réputation, courrier, systèmes propres à WoW Forever...), des blocs lanceurs pour les "
-                .. "boutons de la minicarte et des addons, et DataBroker dans les deux sens.",
-            "Les blocs posés les uns contre les autres s'assemblent comme les tesselles d'une mosaïque : barres, "
-                .. "colonnes, coins. Bords de l'écran, dispositions toutes prêtes, 19 styles, profils et partage "
-                .. "en texte.",
-            "Mode démo : après les styles, le sélecteur montre les « Styles mélangés », chaque colonne dans son "
-                .. "propre style, pour les comparer côte à côte.",
-            "Nouveau bloc Date (masqué au départ, ajoute-le depuis l'onglet Blocs) : courte ou longue, en chiffres "
-                .. "dans plusieurs ordres, date locale ou du serveur ; clic : calendrier. Les dispositions barre des "
-                .. "tâches et barre de menus l'affichent à côté de l'horloge.",
-            "Disposition « Autour des gryphons » : deux rectangles nets, la date et l'heure dans le coin à droite "
-                .. "(choisis à nouveau la disposition pour l'avoir).",
-            "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
-                .. "après Tessera (elle restait en haut de l'écran, sous la barre d'XP), et garde sa largeur quand "
-                .. "la barre d'XP change de taille.",
+        sections = {
+            { kind = "intro",
+              en = {
+                "First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour "
+                    .. "shows the essentials, and the demo mode (Help tab) shows every block and every style.",
+                "In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, "
+                    .. "XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks "
+                    .. "for minimap and addon buttons, and DataBroker both ways.",
+                "Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. "
+                    .. "Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.",
+              },
+              fr = {
+                "Première version stable de Tessera, faite pour WoW Forever. Nouveau ? Tape /tessera : la visite "
+                    .. "rapide montre l'essentiel, et le mode démo (onglet Aide) montre tous les blocs et tous les "
+                    .. "styles.",
+                "En bref : plus de 40 blocs d'informations (or, sacs, durabilité, FPS, latence, horloges, date, XP, "
+                    .. "quêtes, métiers, réputation, courrier, systèmes propres à WoW Forever...), des blocs lanceurs "
+                    .. "pour les boutons de la minicarte et des addons, et DataBroker dans les deux sens.",
+                "Les blocs posés les uns contre les autres s'assemblent comme les tesselles d'une mosaïque : "
+                    .. "barres, colonnes, coins. Bords de l'écran, dispositions toutes prêtes, 19 styles, profils et "
+                    .. "partage en texte.",
+              } },
+            { kind = "new",
+              en = {
+                "Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several "
+                    .. "orders, local or server date; click: calendar. The taskbar and menu bar layouts show it "
+                    .. "next to the clock.",
+                "Demo mode: after the styles, the switcher shows \"Mixed styles\", each column in its own style, "
+                    .. "to compare them side by side.",
+              },
+              fr = {
+                "Bloc Date (masqué au départ, ajoute-le depuis l'onglet Blocs) : courte ou longue, en chiffres dans "
+                    .. "plusieurs ordres, date locale ou du serveur ; clic : calendrier. Les dispositions barre des "
+                    .. "tâches et barre de menus l'affichent à côté de l'horloge.",
+                "Mode démo : après les styles, le sélecteur montre les « Styles mélangés », chaque colonne dans son "
+                    .. "propre style, pour les comparer côte à côte.",
+              } },
+            { kind = "improved",
+              en = {
+                "\"Around the gryphons\" layout: two neat rectangles, the date and the clock in the corner on the "
+                    .. "right (pick the layout again to get it).",
+              },
+              fr = {
+                "Disposition « Autour des gryphons » : deux rectangles nets, la date et l'heure dans le coin à "
+                    .. "droite (choisis à nouveau la disposition pour l'avoir).",
+              } },
+            { kind = "fixed",
+              en = {
+                "The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera "
+                    .. "(it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar "
+                    .. "changes size.",
+              },
+              fr = {
+                "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
+                    .. "après Tessera (elle restait en haut de l'écran, sous la barre d'XP), et garde sa largeur "
+                    .. "quand la barre d'XP change de taille.",
+              } },
         },
     },
     {

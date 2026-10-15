@@ -695,6 +695,13 @@ for _, step in ipairs({
         end
         ns:ResetProfile("top")
     end,
+    -- changelog sorted by kind since 1.0.0 (older entries: a plain list)
+    function()
+        local sections = ns.ChangelogSections(ns.CHANGELOG[1], "fr")
+        assert(not sections[1].title and sections[2].title == "Nouveautés", "changelog sections")
+        local old = ns.ChangelogSections(ns.CHANGELOG[#ns.CHANGELOG], "en")
+        assert(#old == 1 and not old[1].title and #old[1].lines > 0, "old entries: one plain list")
+    end,
     -- date block: formats, names from the game's texts, local or server date
     function()
         local t = { year = 2026, month = 10, day = 15, wday = 5 }

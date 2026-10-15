@@ -180,7 +180,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `EditMode.lua` | Blizzard's Edit Mode: a copy of the player's layout with room for Tessera's bars stuck to the top or bottom edge, back to the original, cleanup of Tessera's copies (recognized by a fingerprint). |
 | `Profiles.lua` | Profile export / import (text), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
-| `Changelog.lua` | Version history for the in-game About tab (Changelog topic) (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
+| `Changelog.lua` | Version history for the in-game About tab (Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (not sent to CurseForge's translation tool) (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
 | `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
 | `Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
 | `Spacers.lua` | Spacer blocks (empty, separator line or text). |

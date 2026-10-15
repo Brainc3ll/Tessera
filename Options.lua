@@ -2038,9 +2038,16 @@ local function ChangelogText()
     for _, entry in ipairs(ns.CHANGELOG or {}) do
         -- an empty line after the version title and between changes, for more air
         table.insert(lines, ("|cffffd100%s|r  |cff999999%s|r"):format(entry.version, entry.date or ""))
-        for _, change in ipairs(entry[lang] or entry.en or {}) do
-            table.insert(lines, "")
-            table.insert(lines, "- " .. change)
+        -- changes sorted by kind (new, improvements, fixes) since 1.0.0
+        for _, section in ipairs(ns.ChangelogSections(entry, lang)) do
+            if section.title then
+                table.insert(lines, "")
+                table.insert(lines, ("|cff8fc7ff%s|r"):format(section.title))
+            end
+            for _, change in ipairs(section.lines) do
+                table.insert(lines, "")
+                table.insert(lines, "- " .. change)
+            end
         end
         table.insert(lines, "")
         table.insert(lines, "")

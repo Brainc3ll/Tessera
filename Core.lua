@@ -2041,22 +2041,18 @@ end
 -- "Around the gryphons": one group in each bottom corner of the screen, on both
 -- sides of the action bars. Anchored to the screen's corners (a plain cfg.point),
 -- so it fits every resolution and interface, whatever the action bars look like.
--- Each group is 2 blocks wide and 3 rows high (about the height of two action
--- bars). "rows" go from the bottom up, each row from the corner toward the center.
--- The first block of each row never hides itself: the bottom one is the group's
--- head, in the corner, the others are docked above it; the second block of a row
--- may hide (Comprehension, Camping...) without leaving a gap. Blocks that hide when
--- empty ("hide") form a small row above the group, starting at the screen's edge.
+-- Each group is a clean rectangle, 2 blocks wide and 3 rows high (about the height
+-- of two action bars). "rows" go from the bottom up, each row from the corner toward
+-- the center. The group is built as two columns: blocks merged vertically share one
+-- width (Merge.lua), so each column is as wide as its widest block and the edges stay
+-- straight; no block of the group hides when empty, so no hole either.
 -- Blocks that do not exist on this client (WoW Forever ones elsewhere) are skipped.
 local GRYPHON_GROUPS = {
-    { corner = "BOTTOMLEFT", x = 4, inward = "RIGHT", align = "LEFT",
-      rows = { { "legacy", "comprehension" }, { "durability", "camping" }, { "gold", "bags" } },
-      hide = { "mail", "whispers", "reputation" } },
-    { corner = "BOTTOMRIGHT", x = -4, inward = "LEFT", align = "RIGHT",
-      rows = { { "honor", "weaponSkills" }, { "latency", "fps" }, { "time", "xp" } },
-      hide = { "friends", "guild", "group", "talents" } },
+    { corner = "BOTTOMLEFT", x = 4, inward = "RIGHT",
+      rows = { { "legacy", "comprehension" }, { "durability", "camping" }, { "gold", "bags" } } },
+    { corner = "BOTTOMRIGHT", x = -4, inward = "LEFT",
+      rows = { { "time", "date" }, { "latency", "fps" }, { "honor", "weaponSkills" } } },
 }
-local GRYPHON_HIDE_EMPTY = { comprehension = true, camping = true }
 local GRYPHON_WIDTH, GRYPHON_Y = 56, 4
 
 function ns:ApplyGryphonsLayout(p)
@@ -2073,38 +2069,32 @@ function ns:ApplyGryphonsLayout(p)
         cfg.enabled = true
         cfg.width, cfg.height = GRYPHON_WIDTH, BASE_HEIGHT
         cfg.anchor, cfg.point, cfg.dock = nil, nil, nil
-        if GRYPHON_HIDE_EMPTY[key] then cfg.hideEmpty = true end
+        cfg.hideEmpty = false -- a hidden block would leave a hole in the rectangle
         used[key] = true
         return cfg
     end
     for _, g in ipairs(GRYPHON_GROUPS) do
-        local head, below -- group head, first block of the row below
+        local corner, inner -- previous block of each column (corner side, center side)
         for _, row in ipairs(g.rows) do
             local keys = Present(row)
-            for i, key in ipairs(keys) do
-                local cfg = Prepare(key)
-                if i > 1 then
-                    cfg.dock = { to = keys[i - 1], side = g.inward }
-                elseif below then
-                    cfg.dock = { to = below, side = "TOP" }
+            local a, b = keys[1], keys[2]
+            if a then
+                local cfg = Prepare(a)
+                if corner then
+                    cfg.dock = { to = corner, side = "TOP" }
                 else
                     cfg.point = { g.corner, g.corner, g.x, GRYPHON_Y }
-                    head = key
                 end
+                corner = a
             end
-            if keys[1] then below = keys[1] end
-        end
-        -- blocks that hide when empty: above the top row, from the screen's edge inward
-        if head then
-            local hide = Present(g.hide)
-            for i, key in ipairs(hide) do
-                local cfg = Prepare(key)
-                cfg.hideEmpty = true
-                if i == 1 then
-                    cfg.anchor = { above = below, gap = 0, align = g.align }
+            if b then
+                local cfg = Prepare(b)
+                if inner then
+                    cfg.dock = { to = inner, side = "TOP" }
                 else
-                    cfg.dock = { to = hide[i - 1], side = g.inward }
+                    cfg.dock = { to = a, side = g.inward }
                 end
+                inner = b
             end
         end
     end
@@ -2119,28 +2109,28 @@ end
 -- several in a row rather than one huge one, so each can later be replaced by a
 -- block ("Replace with..."). A bar along the top or bottom edge is stuck to it and
 -- stretched over the whole width: only its spacers stretch (see Merge.lua), the
--- blocks keep their size. Placed like the real ones: clock at the right end of the
+-- blocks keep their size. Placed like the real ones: clock and date at the right end of the
 -- taskbar / menu bar (in the center of the top bar for Gnomeregan), network (latency),
 -- volume and FPS next to it.
 local SPACER = "|spacer"
 local OS_LAYOUTS = {
     stormwind = { -- a taskbar along the bottom, pinned blocks on the left
         { edge = "BOTTOM", items = { "bags", "legacy", "comprehension", "camping", "honor",
-            SPACER, SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "mail", "whispers" } },
+            SPACER, SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "date", "mail", "whispers" } },
     },
     cathedral = { -- the same taskbar with its blocks in the center
         { edge = "BOTTOM", items = { "zone", SPACER, SPACER, SPACER, "gold", "bags", "legacy", "comprehension",
-            "camping", SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "mail", "whispers" } },
+            "camping", SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "date", "mail", "whispers" } },
     },
     tirisfal = { -- a menu bar along the top and a dock
         { edge = "TOP", items = { "zone", "subzone", "coords", SPACER, SPACER, SPACER, SPACER,
-            "bags", "durability", "fps", "latency", "volume", "time" } },
+            "bags", "durability", "fps", "latency", "volume", "time", "date" } },
         -- the Dock, on the left edge (an option of the real one): the bottom of the
         -- screen belongs to the action bars
         { edge = "LEFT", items = { "legacy", "comprehension", "camping", "honor", "weaponSkills", "gold" } },
     },
     gnomeregan = { -- a top bar with the clock in the center
-        { edge = "TOP", items = { "zone", SPACER, SPACER, SPACER, "time", SPACER, SPACER, SPACER,
+        { edge = "TOP", items = { "zone", SPACER, SPACER, SPACER, "time", "date", SPACER, SPACER, SPACER,
             "gold", "bags", "fps", "latency", "volume" } },
     },
 }

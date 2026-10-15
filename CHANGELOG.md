@@ -6,9 +6,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ## 1.0.0 — 
 
 - First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour shows the essentials, and the demo mode (Help tab) shows every block and every style.
-- In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for minimap and addon buttons, and DataBroker both ways.
+- In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for minimap and addon buttons, and DataBroker both ways.
 - Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.
 - Demo mode: after the styles, the switcher shows "Mixed styles", each column in its own style, to compare them side by side.
+- New Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several orders, local or server date; click: calendar. The taskbar and menu bar layouts show it next to the clock.
+- "Around the gryphons" layout: two neat rectangles, the date and the clock in the corner on the right (pick the layout again to get it).
 - The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera (it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar changes size.
 
 ## 1.0.0-rc5 — 2026-10-15

@@ -752,6 +752,93 @@ ns:RegisterModule("serverTime", {
 })
 
 ---------------------------------------------------------------------------
+-- Date
+---------------------------------------------------------------------------
+-- Full day and month names come from the game's own texts (translated in every
+-- language); short names from Tessera's (a list per language, e.g. "Jan,Feb,..."),
+-- since cutting a name gives wrong abbreviations in some languages.
+local WEEKDAYS = { "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" }
+local MONTHS = { "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER",
+    "OCTOBER", "NOVEMBER", "DECEMBER" }
+
+local function ShortNames(list)
+    local names = {}
+    for name in (list or ""):gmatch("[^,]+") do table.insert(names, name) end
+    return names
+end
+local SHORT_DAYS, SHORT_MONTHS = ShortNames(L.DATE_DAYS_SHORT), ShortNames(L.DATE_MONTHS_SHORT)
+
+local function TitleCase(s)
+    return (s:gsub("^%l", string.upper))
+end
+
+-- Today's date, local or server ("realm") one: { year, month, day, wday } (wday 1 = Sunday)
+local function Today(server)
+    if server then
+        local get = C_DateAndTime and C_DateAndTime.GetCurrentCalendarTime
+        local ok, t = pcall(function() return get and get() end)
+        if ok and type(t) == "table" and t.monthDay then
+            return { year = t.year, month = t.month, day = t.monthDay, wday = t.weekday }
+        end
+    end
+    local t = date("*t")
+    return { year = t.year, month = t.month, day = t.day, wday = t.wday }
+end
+
+-- Formats a date: short "Thu 15 Oct", long "Thursday 15 October", dmy "15/10/2026", dm
+-- "15/10", mdy "10/15/2026", iso "2026-10-15" (the order of the named formats is a text
+-- of each language: {wd} day name, {d} day, {mon} month name, {y} year)
+local function FormatDate(t, format)
+    if format == "dmy" then return ("%02d/%02d/%d"):format(t.day, t.month, t.year) end
+    if format == "dm" then return ("%02d/%02d"):format(t.day, t.month) end
+    if format == "mdy" then return ("%02d/%02d/%d"):format(t.month, t.day, t.year) end
+    if format == "iso" then return ("%d-%02d-%02d"):format(t.year, t.month, t.day) end
+    local wd, mon, pattern
+    if format == "long" then
+        wd = _G["WEEKDAY_" .. (WEEKDAYS[t.wday] or "")] or WEEKDAYS[t.wday] or "?"
+        mon = _G["FULLDATE_MONTH_" .. (MONTHS[t.month] or "")] or MONTHS[t.month] or "?"
+        pattern = L.DATE_PATTERN_LONG
+    else
+        wd, mon, pattern = SHORT_DAYS[t.wday] or "?", SHORT_MONTHS[t.month] or "?", L.DATE_PATTERN_SHORT
+    end
+    local text = pattern:gsub("{(%a+)}", { wd = wd, d = tostring(t.day), mon = mon, y = tostring(t.year) })
+    return TitleCase(text)
+end
+ns.FormatDate = FormatDate
+
+local function SameDay(a, b)
+    return a.year == b.year and a.month == b.month and a.day == b.day
+end
+
+ns:RegisterModule("date", {
+    label = "DATE",
+    icon = "Interface\\Icons\\INV_Scroll_05",
+    interval = 30,
+    defaultEnabled = false,
+    defaults = { dateFormat = "short", dateSource = "local" },
+    update = function(cfg)
+        return FormatDate(Today(cfg.dateSource == "server"), cfg.dateFormat)
+    end,
+    options = {
+        { kind = "dropdown", field = "dateFormat", tab = "text", label = "DATE_FORMAT", tip = "TIP_DATE_FORMAT",
+          values = { { key = "short", label = "DATE_FMT_SHORT" }, { key = "long", label = "DATE_FMT_LONG" },
+                     { key = "dmy", label = "DATE_FMT_DMY" }, { key = "dm", label = "DATE_FMT_DM" },
+                     { key = "mdy", label = "DATE_FMT_MDY" }, { key = "iso", label = "DATE_FMT_ISO" } } },
+        { kind = "dropdown", field = "dateSource", tab = "text", label = "DATE_SOURCE", tip = "TIP_DATE_SOURCE",
+          values = { { key = "local", label = "TT_LOCAL_DATE" }, { key = "server", label = "TT_SERVER_DATE" } } },
+    },
+    tooltip = function(tt)
+        local here, realm = Today(false), Today(true)
+        tt:AddDoubleLine(L.TT_LOCAL_DATE, FormatDate(here, "long"), 1, 1, 1, 1, 1, 1)
+        if not SameDay(here, realm) then
+            tt:AddDoubleLine(L.TT_SERVER_DATE, FormatDate(realm, "long"), 1, 1, 1, 1, 1, 1)
+        end
+    end,
+    secureMacro = "/run if ToggleCalendar then ToggleCalendar() end",
+    clickHint = L.HINT_CALENDAR,
+})
+
+---------------------------------------------------------------------------
 -- Experience
 ---------------------------------------------------------------------------
 -- True at max level. Uses the modern API if present, else "no XP bar" means max level

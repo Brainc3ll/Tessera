@@ -1,6 +1,6 @@
 # Tests de la 1.0.0 (avant le 22 octobre)
 
-Version à tester : **Tessera-1.0.0-test2.zip** (version de test : elle a les commandes `/tes test`).
+Version à tester : **Tessera-1.0.0-test3.zip** (version de test : elle a les commandes `/tes test`).
 C'est la future 1.0.0 : elle se teste comme un nouveau joueur qui découvre l'addon.
 Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur Lua.
 
@@ -31,6 +31,15 @@ Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur
 
 - [ ] Partir de zéro avec FlareUI, valider le style FlareUI proposé, PUIS activer la barre d'XP de FlareUI : la barre de Tessera se place sous la barre d'XP sans /reload.
 - [ ] Désactiver la barre d'XP : la barre de Tessera remonte.
+
+## 3 bis. Bloc Date et dispositions (5 min) : nouveau dans la test3
+
+- [ ] Onglet Blocs : ajouter le bloc Date ; sous-onglet Texte : essayer les 6 formats (noms des jours et mois en français, « jeu. 15 oct. »).
+- [ ] Date du serveur : même date que la locale (sauf autour de minuit) ; infobulle : la date complète.
+- [ ] Clic sur le bloc : le calendrier s'ouvre.
+- [ ] Dispositions Vitrail de Hurlevent, Rosace, Verger de Tirisfal, Gnomeregan : la date est à côté de l'horloge.
+- [ ] « Autour des gryphons » : deux rectangles nets, bords bien droits ; à droite, heure et date dans le coin.
+- [ ] Mode démo : la date est dans la colonne Monde.
 
 ## 4. Instance (si le temps)
 

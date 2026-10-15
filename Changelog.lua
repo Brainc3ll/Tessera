@@ -15,13 +15,18 @@ ns.CHANGELOG = {
         en = {
             "First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour "
                 .. "shows the essentials, and the demo mode (Help tab) shows every block and every style.",
-            "In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, XP, "
+            "In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, "
                 .. "quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for "
                 .. "minimap and addon buttons, and DataBroker both ways.",
             "Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. "
                 .. "Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.",
             "Demo mode: after the styles, the switcher shows \"Mixed styles\", each column in its own style, "
                 .. "to compare them side by side.",
+            "New Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several "
+                .. "orders, local or server date; click: calendar. The taskbar and menu bar layouts show it next "
+                .. "to the clock.",
+            "\"Around the gryphons\" layout: two neat rectangles, the date and the clock in the corner on the "
+                .. "right (pick the layout again to get it).",
             "The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera "
                 .. "(it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar "
                 .. "changes size.",
@@ -29,7 +34,7 @@ ns.CHANGELOG = {
         fr = {
             "Première version stable de Tessera, faite pour WoW Forever. Nouveau ? Tape /tessera : la visite "
                 .. "rapide montre l'essentiel, et le mode démo (onglet Aide) montre tous les blocs et tous les styles.",
-            "En bref : plus de 40 blocs d'informations (or, sacs, durabilité, FPS, latence, horloges, XP, quêtes, "
+            "En bref : plus de 40 blocs d'informations (or, sacs, durabilité, FPS, latence, horloges, date, XP, quêtes, "
                 .. "métiers, réputation, courrier, systèmes propres à WoW Forever...), des blocs lanceurs pour les "
                 .. "boutons de la minicarte et des addons, et DataBroker dans les deux sens.",
             "Les blocs posés les uns contre les autres s'assemblent comme les tesselles d'une mosaïque : barres, "
@@ -37,6 +42,11 @@ ns.CHANGELOG = {
                 .. "en texte.",
             "Mode démo : après les styles, le sélecteur montre les « Styles mélangés », chaque colonne dans son "
                 .. "propre style, pour les comparer côte à côte.",
+            "Nouveau bloc Date (masqué au départ, ajoute-le depuis l'onglet Blocs) : courte ou longue, en chiffres "
+                .. "dans plusieurs ordres, date locale ou du serveur ; clic : calendrier. Les dispositions barre des "
+                .. "tâches et barre de menus l'affichent à côté de l'horloge.",
+            "Disposition « Autour des gryphons » : deux rectangles nets, la date et l'heure dans le coin à droite "
+                .. "(choisis à nouveau la disposition pour l'avoir).",
             "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
                 .. "après Tessera (elle restait en haut de l'écran, sous la barre d'XP), et garde sa largeur quand "
                 .. "la barre d'XP change de taille.",

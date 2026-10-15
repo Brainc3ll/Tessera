@@ -19,7 +19,7 @@ local CATEGORIES = {
     { title = "DEMO_CAT_CHARACTER", keys = { "gold", "bags", "durability", "xp", "rested", "stats", "regen", "speed",
         "talents", "itemLevel" } },
     { title = "DEMO_CAT_SOCIAL", keys = { "friends", "guild", "group", "whispers", "mail", "loot" } },
-    { title = "DEMO_CAT_WORLD", keys = { "zone", "subzone", "coords", "time", "serverTime", "hearthstone", "instances",
+    { title = "DEMO_CAT_WORLD", keys = { "zone", "subzone", "coords", "time", "serverTime", "date", "hearthstone", "instances",
         "reset" } },
     { title = "DEMO_CAT_PROGRESS", keys = { "reputation", "currency", "quests", "goal", "profession1", "profession2",
         "cooking", "firstAid", "fishing", "ammo", "reagents" } },

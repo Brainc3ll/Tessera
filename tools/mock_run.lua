@@ -677,17 +677,46 @@ for _, step in ipairs({
         ns:UpdateLayout()
         local b = ns.db.blocks
         assert(b.legacy.point and b.legacy.point[1] == "BOTTOMLEFT" and not b.legacy.dock, "legacy heads the left group")
-        assert(b.honor.point and b.honor.point[1] == "BOTTOMRIGHT" and not b.honor.dock, "honor heads the right group")
+        assert(b.time.point and b.time.point[1] == "BOTTOMRIGHT" and not b.time.dock, "time heads the right group")
         assert(b.comprehension.dock and b.comprehension.dock.to == "legacy" and b.comprehension.dock.side == "RIGHT", "row 1")
-        assert(b.durability.dock and b.durability.dock.to == "legacy" and b.durability.dock.side == "TOP", "row 2 head")
-        assert(b.camping.dock and b.camping.dock.to == "durability", "camping dock")
-        assert(b.gold.dock and b.gold.dock.to == "durability" and b.bags.dock.to == "gold", "row 3")
-        assert(b.weaponSkills.dock and b.weaponSkills.dock.side == "LEFT", "right group grows inward")
-        assert(b.mail.anchor and b.mail.anchor.above == "gold" and b.mail.anchor.align == "LEFT", "left hidden row")
-        assert(b.friends.anchor and b.friends.anchor.above == "time" and b.friends.anchor.align == "RIGHT", "right hidden row")
-        assert(b.coords and not b.coords.enabled, "other blocks hidden")
-        local exported = ns:SanitizeProfile(ns:DecodeProfile(ns:ExportProfile()))
-        assert(exported and exported.blocks.mail.anchor.align == "LEFT", "align lost by export")
+        assert(b.durability.dock and b.durability.dock.to == "legacy" and b.durability.dock.side == "TOP", "column 1")
+        assert(b.camping.dock and b.camping.dock.to == "comprehension" and b.camping.dock.side == "TOP", "column 2")
+        assert(b.gold.dock.to == "durability" and b.bags.dock.to == "camping", "row 3")
+        assert(b.date.dock and b.date.dock.to == "time" and b.date.dock.side == "LEFT", "right group grows inward")
+        assert(not b.camping.hideEmpty and not b.comprehension.hideEmpty, "no hole in the rectangles")
+        assert(not b.mail.enabled and b.coords and not b.coords.enabled, "other blocks hidden")
+        -- each column as wide as its widest block: straight edges
+        local f = ns.frames
+        for _, column in ipairs({ { "legacy", "durability", "gold" }, { "comprehension", "camping", "bags" },
+                                  { "time", "latency", "honor" }, { "date", "fps", "weaponSkills" } }) do
+            for _, key in ipairs(column) do
+                assert(math.abs(f[key]:GetWidth() - f[column[1]]:GetWidth()) < 0.01, "column width " .. key)
+            end
+        end
+        ns:ResetProfile("top")
+    end,
+    -- date block: formats, names from the game's texts, local or server date
+    function()
+        local t = { year = 2026, month = 10, day = 15, wday = 5 }
+        assert(ns.FormatDate(t, "dmy") == "15/10/2026" and ns.FormatDate(t, "dm") == "15/10", "numeric dates")
+        assert(ns.FormatDate(t, "mdy") == "10/15/2026" and ns.FormatDate(t, "iso") == "2026-10-15", "other orders")
+        local short = ns.FormatDate(t, "short")
+        assert(short:find("15", 1, true) and not short:find("{", 1, true), "short date: " .. short)
+        _G.WEEKDAY_THURSDAY, _G.FULLDATE_MONTH_OCTOBER = "Thursday", "October"
+        assert(ns.FormatDate(t, "long") == "Thursday 15 October", "long date with the game's names")
+        _G.WEEKDAY_THURSDAY, _G.FULLDATE_MONTH_OCTOBER = nil, nil
+        local cfg = ns.db.blocks.date
+        assert(cfg and not cfg.enabled, "new block hidden by default")
+        cfg.enabled = true
+        for _, fmt in ipairs({ "short", "long", "dmy", "dm", "mdy", "iso" }) do
+            cfg.dateFormat = fmt
+            for _, source in ipairs({ "local", "server" }) do
+                cfg.dateSource = source
+                ns:UpdateBlock("date")
+            end
+        end
+        GameTooltip:ClearLines()
+        ns.modules.date.tooltip(GameTooltip, cfg)
         ns:ResetProfile("top")
     end,
     -- replace a block in place, then swap two shown blocks
@@ -801,6 +830,7 @@ for _, step in ipairs({
             assert(stretched == 1 and spacers >= 4, preset .. ": one stretched bar with several spacers")
         end
         assert(b.time.enabled and b.time.dock, "clock in the bar")
+        assert(b.date.enabled and b.date.dock and b.date.dock.to == "time", "date next to the clock")
         ns:ResetProfile("top")
     end,
     -- insert an empty spacer next to a block, in between if needed

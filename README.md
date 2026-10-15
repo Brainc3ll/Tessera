@@ -166,7 +166,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 
 The `docs/` folder (not shipped in the addon) holds the release guide (`docs/RELEASE.md`), the
 CurseForge and Wago descriptions, the strings sent to CurseForge's localization tool, the project
-status, plans and ideas (in French), and the logo in large sizes (`docs/art`). `CLAUDE.md` holds
+status and ideas (in French), finished plans (`docs/archive`), and the logo in large sizes (`docs/art`). `CLAUDE.md` holds
 the working rules of the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon

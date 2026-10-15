@@ -34,7 +34,6 @@ le 15/10 (ex. MERGE, THEME_PREVIEW) : même traitement.
 - « On publie » pour la rc5.
 - Captures d'écran en client anglais (une par style en mode démo, « Masquer l'interface du jeu » coché, caméra fixe) → GIF des styles et images de présentation ; une capture en français pour montrer les deux langues.
 - Test en instance (profil donjon, masquer en instance, clics en combat).
-- Les deux documents `PLAN-edit-mode.md` et `PLAN-options-apparence.md` sont entièrement réalisés (rc3) : les supprimer ou les garder marqués « terminé » ?
 
 ## Visibilité
 - Tessera est sur CurseForge et Wago (projet ANz7wj64, description = `docs/wago-description.md`).
@@ -51,4 +50,4 @@ le 15/10 (ex. MERGE, THEME_PREVIEW) : même traitement.
 - `TesseraDev.lua` (commandes de test et de développement) et `make_test_zip.sh` : `/home/claude/tessera-dev/`, ajoutés seulement aux zips de test.
 - Générateur des textes (`help_struct.py`, `help_texts.py`...) : `/home/claude/tessera-tools/gen`, `python3 build.py`.
 
-Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
+Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`. Les plans terminés (mode Édition, onglet Apparence) sont gardés comme archive dans `docs/archive/`.

@@ -1,6 +1,6 @@
 # Tests de la rc5 (jeudi 15 octobre)
 
-Version à tester : **Tessera-1.0.0-rc5-test17.zip** (version de test : elle a les commandes `/tes test`).
+Version à tester : **Tessera-1.0.0-rc5-test18.zip** (version de test : elle a les commandes `/tes test`).
 Note chaque souci avec une capture et, s'il y a une erreur, le texte de l'erreur Lua.
 
 ## 0. Préparation (5 min)
@@ -102,6 +102,7 @@ Contre un ou plusieurs mobs, avec la barre de test (`/tes test blocs`) :
 - [ ] Onglet Apparence : Pierre runique : seulement le texte, blanc et gris, aucune couleur (or, durabilité...), bords argentés ; les lanceurs gardent une icône grise.
 - [ ] Grimoire, Parchemin, Arcanes : lisibles ? (Parchemin : les valeurs en couleur restent-elles lisibles sur le fond clair ?)
 - [ ] Revenir à un autre style : les icônes et les couleurs reviennent.
+- [ ] Les cinq styles faits des cadres du jeu : Sceau royal (bordure dorée, marbre), Forgefer (bordure de pierre, roche), Lame runique, Braise, Sylvestre (bordure d'infobulle teintée) : beaux ? lisibles ? les bordures épaisses vont-elles avec les blocs fusionnés ?
 - [ ] Sans FlareUI / ElvUI / EllesmereUI : leurs styles sont dans la liste, marqués « (sans l'addon) » ; en choisir un écrit dans la discussion ce qui change.
 - [ ] Avec FlareUI installé : la fenêtre qui propose son style apparaît toujours (une seule fois).
 
@@ -114,6 +115,11 @@ Contre un ou plusieurs mobs, avec la barre de test (`/tes test blocs`) :
 
 - [ ] Onglet Profils : choisir un « Profil en donjon et en raid ».
 - [ ] Entrer dans un donjon : ce profil se charge ; quelques clics en combat ; en sortant, le profil normal revient.
+
+## 8 bis. Onglet À propos
+
+- [ ] Ouvrir l'onglet À propos : il s'ouvre sur « À propos », pas sur le Changelog (même après avoir lu le Changelog).
+- [ ] Après une mise à jour, « Voir les nouveautés » ouvre bien le Changelog.
 
 ## 9. Fin
 

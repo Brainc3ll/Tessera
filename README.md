@@ -55,8 +55,10 @@ Help tab inside the game explains everything.
 
 - **Mosaic placement:** blocks are placed anywhere and merge in every direction when dropped
   against each other: a bar, a column, a corner, an L shape... Bars can be stuck to a screen edge
-  and stretched like a taskbar, and ready-made layouts give a starting point (among them "Modern
-  Forever": the top bar and a second bar always shown with the WoW Forever blocks).
+  and stretched like a taskbar, and ready-made layouts give a starting point (among them "Double
+  bar": the top bar and a second bar always shown with the WoW Forever blocks).
+- **Demo mode:** every block at once, sorted by category, with sample values; a banner switches
+  the styles and hides the game's interface, for screenshots. Your layout comes back afterwards.
 - **Blocks made for WoW Forever's own systems**, which can also be shared with DataBroker
   display addons (Titan Panel, ChocolateBar, Bazooka...):
   - Legacy points: your points, the next reward, every reward of the track and your Legacy
@@ -91,10 +93,10 @@ Help tab inside the game explains everything.
   sharing, in one place.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- Themes matching FlareUI (2.x or 1.x), ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
-  imitation), Square styles, Clean, Transparent, and fantasy styles: Runestone (text only, black and white),
-  Grimoire, Parchment, Arcane; profiles with export/import, ready-made layouts and an automatic dungeon/raid profile;
-  accessibility options.
+- 20 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
+  imitation), Square styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
+  Parchment; Arcane) and styles made of the game's own frames (Royal Seal, Ironforge, Runeblade, Ember, Sylvan).
+- Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
 - Tooltips your way: bigger or smaller, or only while holding Alt (General tab).
@@ -147,7 +149,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
 | `Core.lua` | Shared namespace, media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
-| `Themes.lua` | Visual themes (FlareUI 2.x and 1.x, EllesmereUI, ElvUI, Blizzard modern/classic, the Square styles, clean, transparent). |
+| `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard modern/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
 | `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, centering, second row), unlock-mode name tags, border seams and corner joins. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `EditMode.lua` | Blizzard's Edit Mode: a copy of the player's layout with room for Tessera's bars stuck to the top or bottom edge, back to the original, cleanup of Tessera's copies (recognized by a fingerprint). |
@@ -277,8 +279,10 @@ public documentation yet. What Tessera found, with the development probes below:
   (`SecureClicks.lua`).
 - **Combat lockdown.** Secure buttons cannot be created, moved or hidden in combat; they are
   positioned in screen coordinates and re-synced after combat.
-- **Modern vs classic API.** The code tries the modern `C_*` functions first and falls back to
-  the classic globals, so a block keeps working whichever one this client provides.
+- **Forever-only functions.** The code uses the modern `C_*` API of this client. Functions that
+  only exist on WoW Forever, and other addons' globals, are read through `_G["Name"]` and called
+  in `pcall`: if the game removes or changes one, the block shows nothing instead of an error
+  (`tools/fuzz_blocks.lua` checks it).
 
 ### Saved variables
 
@@ -341,15 +345,13 @@ stops if it fails.
 The mock only catches Lua errors (nil calls, typos, load order); it does not replace testing
 in game.
 
-Then test in game.
-
 ### Test builds
 
 Released versions have no command a player does not need. The test builds given to the
 author for his test sessions add one extra file (`TesseraDev.lua`, kept out of this repository
 and never packaged) at the end of `Tessera.toc`: `/tessera test` (blocks to check, layouts for
 the name tags, tooltip settings, back to the player's profile) and the development commands
-(debug report, WoW Forever probes, shape test, theme previews). `Core.lua` only calls
+(debug report, WoW Forever probes, shape test). `Core.lua` only calls
 `ns.DevCommand` when that file is there; the mock loads it with `TESSERA_DEV=<path>`.
 
 ## License

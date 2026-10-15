@@ -1,7 +1,7 @@
 # Idées pour le futur
 
 Idées notées pour plus tard : elles seront reprises ou pas. Rien ici n'est validé ni prévu à une date.
-Les projets déjà validés ont leur propre plan (`PLAN-edit-mode.md`, `PLAN-options-apparence.md`).
+Les idées faites sont marquées [Fait] avec leur version.
 
 ## Cadres décoratifs autour d'un groupe (11 octobre 2026)
 
@@ -20,7 +20,7 @@ Points à étudier le moment venu :
 - **Images** : les cadres doivent être des textures libres de droits, ou créées pour Tessera (pas d'images reprises d'autres jeux ou addons). LibSharedMedia pourrait servir pour les textures fournies par d'autres addons.
 - **Comportement** : le cadre suit le groupe (déplacement, blocs masqués qui le font rétrécir), ne bloque pas les clics, et reste sous le plan d'affichage des blocs.
 - **Groupes collés aux bords** : pas de cadre du côté de l'écran, comme pour la bordure.
-- **Réglages** : choix du cadre, de sa couleur, de sa taille, des éléments décoratifs, par groupe (dans l'onglet Apparence prévu par `PLAN-options-apparence.md`).
+- **Réglages** : choix du cadre, de sa couleur, de sa taille, des éléments décoratifs, par groupe (dans l'onglet Apparence).
 - **Performance** : rester léger (quelques textures par groupe, pas d'animation coûteuse).
 
 ## Icônes nettes sur les grands écrans (4K) (11 octobre 2026)
@@ -62,6 +62,22 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 - Changement de spécialisation de butin.
 - Masquer les barres pendant les combats de mascottes (pas sur Forever pour le moment).
 - Outils de raid (appel, compte à rebours, marqueurs) : à revoir selon la demande.
+
+## Styles (14-15 octobre 2026)
+
+- [Fait, rc5] Quatre styles fantasy (Pierre runique, Grimoire, Parchemin, Arcanes) et cinq styles faits des cadres du jeu (Sceau royal, Forgefer, Lame runique, Braise, Sylvestre).
+- [Fait, rc5] Styles des interfaces (FlareUI, ElvUI, EllesmereUI) choisissables sans l'addon, en imitation.
+- En réserve : « Forge naine » (fer sombre, texte orange braise).
+- Styles pour d'autres interfaces (TukUI, GW2 UI, NDui, KkthnxUI, SpartanUI…), en 1.1.
+
+## Affichage des valeurs (14 octobre 2026)
+
+- [Fait, rc5] Or (icônes ou lettres, or et argent, arrondi, séparateur), sacs, XP, durabilité, FPS, latence, secondes, coordonnées, amis, guilde, réputation : sous-onglet Texte, « Valeur affichée ».
+
+## Mode démo (14 octobre 2026)
+
+- [Fait, rc5] Tous les blocs par catégorie, valeurs d'exemple, sélecteur de styles, interface du jeu masquable.
+- Pistes : bouton « capture » qui masque aussi le bandeau ; choisir les catégories affichées.
 
 ## Remplacement de blocs (14 octobre 2026)
 

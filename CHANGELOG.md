@@ -5,25 +5,16 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.0-rc5 — 
 
-- Placement mode, easier without knowing the shortcuts: a cross on the hovered block hides it, and arrows replace it with another block in the exact same place. A plain right-click opens the quick menu (Alt + right-click still works). What can be done with the hovered block shows in a panel under the placement banner (draggable with it), no longer in a tooltip covering the block.
-- Replacing blocks: the list shows the hidden blocks (they take the place) apart from the shown ones (they swap places). A spacer can now be replaced by a block, to fill the room the ready-made layouts leave in their bars (Ctrl + Z brings it back). A bar's first block can be replaced without the bar losing its screen edge or its width. New help topic "Replacing blocks".
-- Four new fantasy styles (Look tab), with the game's fonts: Runestone (text only, black and white, silver edges), Grimoire (dark leather and gold), Parchment (light parchment, almost black ink), Arcane (deep violet, pale blue letters). The Morpheus font (Runestone, Grimoire, Parchment) is shown 2 points larger, its letters being small; Runestone writes the coins as letters and shows no pictures in the values.
-- The styles of FlareUI, ElvUI and EllesmereUI can be picked without that addon: they are then an imitation, marked in the list, and the chat says what differs. FlareUI 1.x is only listed with FlareUI 1.x installed (profiles using it keep it).
-- More choices for how blocks show their value (Text tab, "Value shown"): gold (coin icons or colored letters, gold and silver format, rounding, thousands separator), bags (free, used or free / total), XP (percent, values or XP to go, rested XP or not), durability (most worn item or average), FPS and latency (with or without the unit, home, world or both latencies), clocks (seconds), coordinates (0 to 2 decimals), friends and guild (online or online / total), reputation (standing, faction name, percent).
-- Blocks tab: the gold format, the clock and the stat shown move from Behaviour to Text, with the options above; Behaviour keeps the rest (goal, thresholds, hiding, clicks).
-- ElvUI and EllesmereUI styles no longer look alike: ElvUI shows the values in its value color (blue by default), EllesmereUI has its green accent between merged blocks.
-- Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category under titles, with sample values; a banner switches the styles and can hide the game's interface. Your layout comes back when you leave (also after a /reload); a fight ends the demo.
-- Group loot block: the loot methods use the game's own names (official in every language).
-- Quick tour: a new step to try the ready-made layouts one after the other with arrows, right on the screen; keep one, or yours comes back.
-- Placement mode: the names under the blocks no longer overlap each other nor go off screen (Compact and Left column layouts); when room is short, a name is shortened to its block's width.
-- New ready-made layout "Double bar" (Look tab): the top bar with the basics, and a second bar always shown with WoW Forever's blocks (Legacy, Comprehension, Camping, Honor, weapon skills).
-- Placement: a single block dropped against a side already taken slips in between (the block that was there moves along), so a block taken out of a bar can be put back in its place. Nothing docks any more on the side of a bar where its second row hangs (that mixed both groups). A second row dragged and dropped back against its bar keeps hanging there, centered and full width.
-- Blocks made for WoW Forever's own systems are more robust: if the game changes at release, they show nothing rather than an error.
-- Help: where to find the blocks hidden at first, tooltips while holding Alt, /roll on the group loot block, the stat shown on the stats block; /tessera help is in the chat command list.
-- Help split into small texts: easier to translate with CurseForge's tool, and a change to one line no longer asks translators to redo the whole help.
-- FlareUI styles (2.x, 1.x and Square): the font of FlareUI's XP bar, Arial Narrow by default, or the one picked in FlareUI's settings. Blocks already in a FlareUI style keep their font: pick the style again in the Look tab to get it.
-- Development commands removed from released versions: only the commands useful to players remain.
-- Code checked with Ketho's WoW API annotations (the tool addon reviewers use): no deprecated function, no unknown global; old fallbacks for other game versions removed.
+- Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category, with sample values. Its banner switches the styles and can hide the game's interface, for screenshots. Your layout comes back when you leave.
+- Placement mode made easier: a cross on the hovered block hides it, arrows replace it with another block in the exact same place, and a right-click opens the quick menu. What you can do with the hovered block shows in a panel under the banner.
+- Replacing blocks: a hidden block takes the place, a shown block swaps places, and the spacers of the ready-made layouts can be replaced by blocks. New help topic "Replacing blocks".
+- Nine new styles: Runestone (text only, black and white), Grimoire, Parchment and Arcane, and five made of the game's own frames: Royal Seal, Ironforge, Runeblade, Ember and Sylvan.
+- The FlareUI, ElvUI and EllesmereUI styles can be picked without that addon: they are then an imitation, and the chat says what differs. ElvUI and EllesmereUI no longer look alike. The FlareUI styles use the font of FlareUI's XP bar (pick the style again to get it).
+- "Value shown" (Blocks tab, Text): gold (coin icons or letters, gold and silver, rounding, thousands separator), bags, XP, durability, FPS, latency, seconds on the clocks, coordinates, friends and guild, reputation.
+- New ready-made layout "Double bar": the top bar and a second bar of WoW Forever blocks. The quick tour lets you try every layout on your screen.
+- Placement: a single block slips in between two merged blocks, a second row put back against its bar stays centered under it, and the names under the blocks no longer overlap.
+- Group loot block: the game's official names for the loot methods. WoW Forever blocks show nothing rather than an error if the game changes.
+- Help completed, and split into short texts that are easier to translate on CurseForge.
 
 ## 1.0.0-rc4 — 2026-10-13
 

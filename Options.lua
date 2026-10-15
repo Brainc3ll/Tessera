@@ -2083,6 +2083,8 @@ local function BuildAboutPage(page)
         }
         return "about", sections
     end)
+    -- the tab always opens on "About" (the "what's new" popup then asks for the changelog)
+    page:HookScript("OnShow", function() aboutContent:ShowTopic(1) end)
 end
 
 -- Small screens: the window shrinks so a column of blocks still fits on each side

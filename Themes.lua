@@ -23,6 +23,9 @@ local L = ns.L
 --   Fantasy styles, with the game's fonts: Runestone (black and white, text only, silver
 --   edge), Grimoire (dark leather, gold), Parchment (light parchment, brown ink),
 --   Arcane (deep violet, pale blue letters)
+--   Styles made of the game's own frames: Royal Seal (gold dialog border, marble),
+--   Ironforge (stone dialog border, rock), and the tooltip border tinted: Runeblade (icy
+--   blue), Ember (fire), Sylvan (green)
 --
 -- Every style can be picked, also when its UI is not installed: it is then an imitation
 -- (FlareUI's thin border replaced by a plain one, the default fonts and colors of ElvUI
@@ -449,7 +452,92 @@ ns.themes = {
             return FlatWindow({ 0.07, 0.035, 0.13, 0.97 }, { 0.56, 0.32, 0.88, 1 }, { 0.72, 0.86, 1 })
         end,
     },
+    -- Styles made of the game's own frames (dialog borders, tooltip border, marble and
+    -- rock backgrounds) with a fantasy touch
+    {
+        -- Royal Seal: a Stormwind charter: the gold dialog border on dark marble, golden letters
+        key = "royalSeal",
+        name = L.THEME_ROYAL_SEAL,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "marble"
+            cfg.bgColor = { r = 0.42, g = 0.38, b = 0.35, a = 0.96 }
+            cfg.border = "gold"
+            cfg.borderSize = 14
+            cfg.borderColor = { r = 1, g = 1, b = 1, a = 1 }
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.9, g = 0.72, b = 0.3, a = 0.45 }
+            cfg.font, cfg.outline = "morpheus", "OUTLINE"
+            cfg.textTint = { r = 1, g = 0.86, b = 0.45, a = 1 }
+        end,
+        window = function()
+            return {
+                bgFile = "Interface\\FrameGeneral\\UI-Background-Marble",
+                edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border",
+                edgeSize = 32, inset = 11, tile = true, tileSize = 256,
+                bg = { 0.5, 0.46, 0.43, 1 }, border = { 1, 1, 1, 1 }, title = { 1, 0.86, 0.45 },
+            }
+        end,
+    },
+    {
+        -- Ironforge: the stone dialog border on rock, warm white letters
+        key = "ironforge",
+        name = L.THEME_IRONFORGE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "rock"
+            cfg.bgColor = { r = 0.6, g = 0.55, b = 0.5, a = 0.96 }
+            cfg.border = "dialog"
+            cfg.borderSize = 14
+            cfg.borderColor = { r = 1, g = 1, b = 1, a = 1 }
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.7, g = 0.66, b = 0.6, a = 0.45 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+            cfg.textTint = { r = 1, g = 0.93, b = 0.82, a = 1 }
+        end,
+        window = function()
+            return {
+                bgFile = "Interface\\FrameGeneral\\UI-Background-Rock",
+                edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+                edgeSize = 32, inset = 11, tile = true, tileSize = 256,
+                bg = { 0.6, 0.55, 0.5, 1 }, border = { 1, 1, 1, 1 }, title = { 1, 0.82, 0 },
+            }
+        end,
+    },
 }
+
+-- Three more styles with the game's tooltip border, tinted: they only differ by their
+-- colors (background, border, text)
+local function TooltipStyle(key, name, bg, edge, text)
+    return {
+        key = key,
+        name = name,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = bg[1], g = bg[2], b = bg[3], a = 0.92 }
+            cfg.border = "tooltip"
+            cfg.borderSize = 12
+            cfg.borderColor = { r = edge[1], g = edge[2], b = edge[3], a = 1 }
+            cfg.separators = true
+            cfg.separatorColor = { r = edge[1], g = edge[2], b = edge[3], a = 0.45 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+            cfg.textTint = { r = text[1], g = text[2], b = text[3], a = 1 }
+        end,
+        window = function()
+            return {
+                bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+                edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+                edgeSize = 16, inset = 5,
+                bg = { bg[1], bg[2], bg[3], 0.97 }, border = { edge[1], edge[2], edge[3], 1 }, title = text,
+            }
+        end,
+    }
+end
+-- Runeblade: icy blue (death knights, Northrend); Ember: fire and forge; Sylvan: night elves, druids
+table.insert(ns.themes, TooltipStyle("runeblade", L.THEME_RUNEBLADE, { 0.03, 0.05, 0.09 }, { 0.55, 0.8, 1 }, { 0.75, 0.9, 1 }))
+table.insert(ns.themes, TooltipStyle("ember", L.THEME_EMBER, { 0.1, 0.04, 0.02 }, { 1, 0.45, 0.15 }, { 1, 0.72, 0.4 }))
+table.insert(ns.themes, TooltipStyle("sylvan", L.THEME_SYLVAN, { 0.03, 0.08, 0.04 }, { 0.45, 0.8, 0.4 }, { 0.75, 1, 0.7 }))
 
 -- The center of modern tooltips is a white texture that the game tints with
 -- TOOLTIP_DEFAULT_BACKGROUND_COLOR (SharedTooltipTemplates.lua); we do the same
@@ -457,11 +545,6 @@ function ns.TooltipBackgroundRGB()
     local c = TOOLTIP_DEFAULT_BACKGROUND_COLOR
     if c and c.GetRGB then return c:GetRGB() end
     return 0.09, 0.09, 0.19
-end
-
--- Previews of themes for UIs that are not installed: for development only
-function ns.PreviewThemesEnabled()
-    return ns.sv and ns.sv.previewThemes == true
 end
 
 local byKey = {}

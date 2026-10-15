@@ -13,118 +13,56 @@ ns.CHANGELOG = {
         version = "1.0.0-rc5",
         date = "", -- set when the version is published
         en = {
-            "Placement mode, easier without knowing the shortcuts: a cross on the hovered block hides it, and arrows "
-                .. "replace it with another block in the exact same place. A plain right-click opens the quick menu "
-                .. "(Alt + right-click still works). What can be done with the hovered block shows in a panel under the "
-                .. "placement banner (draggable with it), no longer in a tooltip covering the block.",
-            "Replacing blocks: the list shows the hidden blocks (they take the place) apart from the shown ones (they "
-                .. "swap places). A spacer can now be replaced by a block, to fill the room the ready-made layouts "
-                .. "leave in their bars (Ctrl + Z brings it back). A bar's first block can be replaced without the bar "
-                .. "losing its screen edge or its width. New help topic \"Replacing blocks\".",
-            "Four new fantasy styles (Look tab), with the game's fonts: Runestone (text only, black and white, "
-                .. "silver edges), Grimoire (dark leather and gold), Parchment (light parchment, almost black ink), Arcane (deep "
-                .. "violet, pale blue letters). The Morpheus font (Runestone, Grimoire, Parchment) is shown 2 points "
-                .. "larger, its letters being small; "
-                .. "Runestone writes the coins as letters and shows no pictures in the values.",
-            "The styles of FlareUI, ElvUI and EllesmereUI can be picked without that addon: they are then an "
-                .. "imitation, marked in the list, and the chat says what differs. FlareUI 1.x is only listed with "
-                .. "FlareUI 1.x installed (profiles using it keep it).",
-            "More choices for how blocks show their value (Text tab, \"Value shown\"): gold (coin icons or colored letters, "
-                .. "gold and silver format, rounding, thousands separator), bags (free, used or free / total), XP "
-                .. "(percent, values or XP to go, rested XP or not), durability (most worn item or average), FPS and "
-                .. "latency (with or without the unit, home, world or both latencies), clocks (seconds), coordinates "
-                .. "(0 to 2 decimals), friends and guild (online or online / total), reputation (standing, faction "
-                .. "name, percent).",
-            "Blocks tab: the gold format, the clock and the stat shown move from Behaviour to Text, with the "
-                .. "options above; Behaviour keeps the rest (goal, thresholds, hiding, clicks).",
-            "ElvUI and EllesmereUI styles no longer look alike: ElvUI shows the values in its value color (blue "
-                .. "by default), EllesmereUI has its green accent between merged blocks.",
-            "Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category under "
-                .. "titles, with sample values; a banner switches the styles and can hide the game's interface. Your "
-                .. "layout comes back when you leave (also after a /reload); a fight ends the demo.",
-            "Group loot block: the loot methods use the game's own names (official in every language).",
-            "Quick tour: a new step to try the ready-made layouts one after the other with arrows, right on the "
-                .. "screen; keep one, or yours comes back.",
-            "Placement mode: the names under the blocks no longer overlap each other nor go off screen "
-                .. "(Compact and Left column layouts); when room is short, a name is shortened to its block's width.",
-            "New ready-made layout \"Double bar\" (Look tab): the top bar with the basics, and a second bar "
-                .. "always shown with WoW Forever's blocks (Legacy, Comprehension, Camping, Honor, weapon skills).",
-            "Placement: a single block dropped against a side already taken slips in between (the block that was "
-                .. "there moves along), so a block taken out of a bar can be put back in its place. Nothing docks any "
-                .. "more on the side of a bar where its second row hangs (that mixed both groups). A second row "
-                .. "dragged and dropped back against its bar keeps hanging there, centered and full width.",
-            "Blocks made for WoW Forever's own systems are more robust: if the game changes at release, they "
-                .. "show nothing rather than an error.",
-            "Help: where to find the blocks hidden at first, tooltips while holding Alt, /roll on the group loot "
-                .. "block, the stat shown on the stats block; /tessera help is in the chat command list.",
-            "Help split into small texts: easier to translate with CurseForge's tool, and a change to one line "
-                .. "no longer asks translators to redo the whole help.",
-            "FlareUI styles (2.x, 1.x and Square): the font of FlareUI's XP bar, Arial Narrow by default, or the "
-                .. "one picked in FlareUI's settings. Blocks already in a FlareUI style keep their font: pick the style "
-                .. "again in the Look tab to get it.",
-            "Development commands removed from released versions: only the commands useful to players remain.",
-            "Code checked with Ketho's WoW API annotations (the tool addon reviewers use): no deprecated function, "
-                .. "no unknown global; old fallbacks for other game versions removed.",
+            "Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category, with "
+                .. "sample values. Its banner switches the styles and can hide the game's interface, for screenshots. "
+                .. "Your layout comes back when you leave.",
+            "Placement mode made easier: a cross on the hovered block hides it, arrows replace it with another "
+                .. "block in the exact same place, and a right-click opens the quick menu. What you can do with the "
+                .. "hovered block shows in a panel under the banner.",
+            "Replacing blocks: a hidden block takes the place, a shown block swaps places, and the spacers of the "
+                .. "ready-made layouts can be replaced by blocks. New help topic \"Replacing blocks\".",
+            "Nine new styles: Runestone (text only, black and white), Grimoire, Parchment and Arcane, and five "
+                .. "made of the game's own frames: Royal Seal, Ironforge, Runeblade, Ember and Sylvan.",
+            "The FlareUI, ElvUI and EllesmereUI styles can be picked without that addon: they are then an "
+                .. "imitation, and the chat says what differs. ElvUI and EllesmereUI no longer look alike. The FlareUI "
+                .. "styles use the font of FlareUI's XP bar (pick the style again to get it).",
+            "\"Value shown\" (Blocks tab, Text): gold (coin icons or letters, gold and silver, rounding, "
+                .. "thousands separator), bags, XP, durability, FPS, latency, seconds on the clocks, coordinates, "
+                .. "friends and guild, reputation.",
+            "New ready-made layout \"Double bar\": the top bar and a second bar of WoW Forever blocks. The quick "
+                .. "tour lets you try every layout on your screen.",
+            "Placement: a single block slips in between two merged blocks, a second row put back against its bar "
+                .. "stays centered under it, and the names under the blocks no longer overlap.",
+            "Group loot block: the game's official names for the loot methods. WoW Forever blocks show nothing "
+                .. "rather than an error if the game changes.",
+            "Help completed, and split into short texts that are easier to translate on CurseForge.",
         },
         fr = {
-            "Mode placement, plus simple sans connaître les raccourcis : une croix sur le bloc survolé le masque, et "
-                .. "des flèches le remplacent par un autre bloc exactement à la même place. Un simple clic droit ouvre le "
-                .. "menu rapide (Alt + clic droit marche toujours). Ce qu'on peut faire avec le bloc survolé s'affiche dans "
-                .. "un cadre sous le bandeau de placement (qui se déplace avec lui), plus dans une infobulle qui couvrait le bloc.",
-            "Remplacer des blocs : la liste sépare les blocs masqués (ils prennent la place) des blocs affichés (ils "
-                .. "échangent leur place). Un espace peut maintenant être remplacé par un bloc, pour occuper la place que "
-                .. "les dispositions toutes prêtes laissent dans leurs barres (Ctrl + Z le fait revenir). Le premier bloc "
-                .. "d'une barre se remplace sans que la barre perde son bord de l'écran ni sa largeur. Nouveau sujet "
-                .. "d'aide « Remplacer des blocs ».",
-            "Quatre nouveaux styles fantasy (onglet Apparence), avec les polices du jeu : Pierre runique (seulement "
-                .. "le texte, en noir et blanc, bords argentés), Grimoire (cuir sombre et or), Parchemin (parchemin clair, "
-                .. "encre presque noire), Arcanes (violet profond, lettres bleu pâle). La police Morpheus (Pierre runique, Grimoire, "
-                .. "Parchemin) est affichée 2 points plus grand "
-                .. "(ses lettres sont petites) ; Pierre runique écrit les pièces en lettres et n'affiche aucune image dans "
-                .. "les valeurs.",
-            "Les styles de FlareUI, ElvUI et EllesmereUI se choisissent aussi sans l'addon : c'est alors une "
-                .. "imitation, marquée dans la liste, et la discussion dit ce qui change. FlareUI 1.x n'est dans la "
-                .. "liste qu'avec FlareUI 1.x installé (les profils qui l'utilisent le gardent).",
-            "Plus de choix pour l'affichage des valeurs (onglet Texte, « Valeur affichée ») : or (icônes des pièces ou lettres en "
-                .. "couleur, format or et argent, arrondi, séparateur des milliers), sacs (libres, utilisées ou libres / "
-                .. "total), XP (pourcentage, valeurs ou XP restante, XP de repos ou non), durabilité (pièce la plus "
-                .. "abîmée ou moyenne), FPS et latence (avec ou sans l'unité, latence locale, monde ou les deux), "
-                .. "horloges (secondes), coordonnées (0 à 2 décimales), amis et guilde (en ligne ou en ligne / total), "
-                .. "réputation (rang, nom de la faction, pourcentage).",
-            "Onglet Blocs : le format de l'or, l'horloge et la statistique affichée passent de Comportement à "
-                .. "Texte, avec les options ci-dessus ; Comportement garde le reste (objectif, seuils, masquage, clics).",
-            "Les styles ElvUI et EllesmereUI ne se ressemblent plus : ElvUI affiche les valeurs dans sa couleur de "
-                .. "valeur (bleu par défaut), EllesmereUI a son accent vert entre les blocs fusionnés.",
             "Mode démo (onglet Aide, fenêtre de bienvenue, /tessera demo) : tous les blocs d'un coup, rangés par "
-                .. "catégorie sous des titres, avec des valeurs d'exemple ; un bandeau change de style et peut masquer "
-                .. "l'interface du jeu. Ta disposition revient en quittant (aussi après un /reload) ; un combat termine "
-                .. "la démo.",
-            "Bloc butin du groupe : les modes de butin prennent les noms du jeu lui-même (les noms officiels, dans "
-                .. "toutes les langues).",
-            "Visite rapide : une nouvelle étape pour essayer les dispositions toutes prêtes l'une après l'autre avec "
-                .. "des flèches, directement à l'écran ; garde-en une, ou la tienne revient.",
-            "Mode placement : les noms sous les blocs ne se chevauchent plus et ne sortent plus de l'écran "
-                .. "(dispositions Compacte et Colonne à gauche) ; quand la place manque, un nom est raccourci à la "
-                .. "largeur de son bloc.",
-            "Nouvelle disposition toute prête « Double barre » (onglet Apparence) : la barre du haut avec "
-                .. "l'essentiel, et une deuxième barre toujours affichée avec les blocs WoW Forever (héritage, "
-                .. "Compréhension, Camping, Honneur, compétences d'armes).",
-            "Placement : un bloc seul posé contre un côté déjà pris se glisse entre les deux (le bloc qui était là se "
-                .. "décale) : un bloc sorti d'une barre peut être remis à sa place. Plus rien ne s'accroche sur le côté "
-                .. "d'une barre où pend sa deuxième rangée (les deux groupes se mélangeaient). Une deuxième rangée "
-                .. "déplacée puis reposée contre sa barre y reste accrochée, centrée et sur toute la largeur.",
-            "Les blocs des systèmes propres à WoW Forever sont plus solides : si le jeu change à sa sortie, ils "
-                .. "n'affichent rien plutôt qu'une erreur.",
-            "Aide : où trouver les blocs masqués au départ, infobulles en tenant Alt, /roll sur le bloc butin du "
-                .. "groupe, statistique affichée du bloc statistiques ; /tessera help dans la liste des commandes.",
-            "Aide découpée en petits textes : plus facile à traduire avec l'outil de CurseForge, et changer une ligne "
-                .. "ne demande plus aux traducteurs de refaire toute l'aide.",
-            "Styles FlareUI (2.x, 1.x et Carré) : la police de la barre d'XP de FlareUI, Arial Narrow par défaut, ou "
-                .. "celle choisie dans les réglages de FlareUI. Les blocs déjà en style FlareUI gardent leur police : "
-                .. "choisis à nouveau le style dans l'onglet Apparence pour l'avoir.",
-            "Commandes de développement retirées des versions publiées : il ne reste que les commandes utiles aux joueurs.",
-            "Code vérifié avec les annotations de l'API WoW de Ketho (l'outil des relecteurs d'addons) : aucune "
-                .. "fonction obsolète, aucune variable globale inconnue ; anciens secours pour d'autres versions du jeu retirés.",
+                .. "catégorie, avec des valeurs d'exemple. Son bandeau change de style et peut masquer l'interface du "
+                .. "jeu, pour les captures. Ta disposition revient quand tu le quittes.",
+            "Mode placement plus simple : une croix sur le bloc survolé le masque, des flèches le remplacent par "
+                .. "un autre bloc exactement à la même place, et un clic droit ouvre le menu rapide. Ce qu'on peut faire "
+                .. "avec le bloc survolé s'affiche dans un cadre sous le bandeau.",
+            "Remplacer des blocs : un bloc masqué prend la place, un bloc affiché échange sa place, et les "
+                .. "espaces des dispositions toutes prêtes peuvent être remplacés par des blocs. Nouveau sujet d'aide « "
+                .. "Remplacer des blocs ».",
+            "Neuf nouveaux styles : Pierre runique (seulement le texte, en noir et blanc), Grimoire, Parchemin et "
+                .. "Arcanes, et cinq faits des cadres du jeu : Sceau royal, Forgefer, Lame runique, Braise et Sylvestre.",
+            "Les styles FlareUI, ElvUI et EllesmereUI se choisissent aussi sans l'addon : c'est alors une "
+                .. "imitation, et la discussion dit ce qui change. ElvUI et EllesmereUI ne se ressemblent plus. Les "
+                .. "styles FlareUI prennent la police de la barre d'XP de FlareUI (choisis à nouveau le style pour "
+                .. "l'avoir).",
+            "« Valeur affichée » (onglet Blocs, Texte) : or (icônes des pièces ou lettres, or et argent, arrondi, "
+                .. "séparateur des milliers), sacs, XP, durabilité, FPS, latence, secondes des horloges, coordonnées, "
+                .. "amis et guilde, réputation.",
+            "Nouvelle disposition toute prête « Double barre » : la barre du haut et une deuxième barre de blocs "
+                .. "WoW Forever. La visite rapide permet d'essayer toutes les dispositions sur ton écran.",
+            "Placement : un bloc seul se glisse entre deux blocs fusionnés, une deuxième rangée remise contre sa "
+                .. "barre reste centrée dessous, et les noms sous les blocs ne se chevauchent plus.",
+            "Bloc butin du groupe : les noms officiels du jeu pour les modes de butin. Les blocs WoW Forever "
+                .. "n'affichent rien plutôt qu'une erreur si le jeu change.",
+            "Aide complétée, et découpée en petits textes plus faciles à traduire sur CurseForge.",
         },
     },
     {

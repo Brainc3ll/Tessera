@@ -663,8 +663,8 @@ end
 --   charProfiles[char]   per-character profile when useGlobal is false
 --   chars[char]          gold and class of each character (gold tooltip)
 --   Account-wide options: borderReach[border] (corner join tuning), quiet (no chat
---   output), hideMinimapButton, welcomed (welcome popup shown), previewThemes
---   (development only).
+--   output), hideMinimapButton, welcomed (welcome popup shown), demoBackup (the
+--   player's profile while the demo mode is on, see Demo.lua).
 local function InitDB()
     TesseraDB = TesseraDB or {}
     local sv = TesseraDB

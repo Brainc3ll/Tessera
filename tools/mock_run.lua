@@ -383,7 +383,7 @@ for _, step in ipairs({
     -- development and test commands: only with a test build's extra file (TESSERA_DEV)
     function()
         if not ns.DevCommand then return end
-        for _, cmd in ipairs({ "debug", "debug", "debug legacy", "debug skills", "atelier", "atelier",
+        for _, cmd in ipairs({ "debug", "debug", "debug legacy", "debug skills",
             "test", "test blocs", "test compacte", "test colonne", "test infobulles", "test infobulles",
             "test flare", "test fin" }) do
             SlashCmdList.TESSERA(cmd)

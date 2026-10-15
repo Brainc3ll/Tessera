@@ -3,7 +3,7 @@
 ## Calendrier jusqu'à la 1.0.0 (validé le 13/10)
 La bêta de WoW Forever ferme le **22 octobre** : après, plus aucun test en jeu avant la sortie.
 Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
-- **15/10 : rc5** prête (tests de la test17 réussis, mode DataBroker testé dans les deux sens ; seule l'instance n'a pas été testée).
+- **15/10 : rc5** publiée (tests de la test17 réussis, mode DataBroker testé dans les deux sens ; seule l'instance n'a pas été testée).
 - **16-19/10 :** tests larges (instance, raid, combat, groupe ; Blizzard seul, FlareUI, Bazooka).
 - **19-20/10 : version candidate 1.0.0** ; **20-21/10 :** dernier test de cette version exacte (c'est elle qui part le 4/11, sans retouche).
 - **Avant le 22, en jeu :** captures en client anglais (pour les images et le GIF des styles du mode démo).
@@ -13,7 +13,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 
 ## Versions
 - **1.0.0-rc4** : publiée le 13/10 (GitHub, CurseForge, Wago).
-- **1.0.0-rc5** : prête à publier, en attente du « on publie » de Braincell1980 (une publication va toujours sur GitHub, CurseForge et Wago à la fois). Contenu : voir `CHANGELOG.md`. Zips de test test1 à test18.
+- **1.0.0-rc5** : publiée le 15/10 (GitHub, CurseForge, Wago). Décision de Braincell1980 : s'il n'y a pas de nouvelle version de test avant le 22/10, la rc5 devient la 1.0.0 finale (même code, version renommée 1.0.0 et publiée le 4/11).
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche ci-dessous.
 
 ## Après la publication de la rc5 : anciens blocs d'aide sur CurseForge (rappeler chaque étape à Braincell1980)
@@ -31,7 +31,6 @@ le 15/10 (ex. MERGE, THEME_PREVIEW) : même traitement.
    Localization de CurseForge.
 
 ## En attente de Braincell1980
-- « On publie » pour la rc5.
 - Captures d'écran en client anglais (une par style en mode démo, « Masquer l'interface du jeu » coché, caméra fixe) → GIF des styles et images de présentation ; une capture en français pour montrer les deux langues.
 - Test en instance (profil donjon, masquer en instance, clics en combat).
 

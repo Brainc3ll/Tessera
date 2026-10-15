@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.0.0-rc5 — 
+## 1.0.0-rc5 — 2026-10-15
 
 - Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category, with sample values. Its banner switches the styles and can hide the game's interface, for screenshots. Your layout comes back when you leave.
 - Placement mode made easier: a cross on the hovered block hides it, arrows replace it with another block in the exact same place, and a right-click opens the quick menu. What you can do with the hovered block shows in a panel under the banner.

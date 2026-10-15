@@ -11,7 +11,7 @@ local _, ns = ...
 ns.CHANGELOG = {
     {
         version = "1.0.0-rc5",
-        date = "", -- set when the version is published
+        date = "2026-10-15",
         en = {
             "Demo mode (Help tab, welcome window, /tessera demo): every block at once, sorted by category, with "
                 .. "sample values. Its banner switches the styles and can hide the game's interface, for screenshots. "

@@ -22,13 +22,13 @@ Fait le 15/10 : les 12 textes que l'addon n'utilise plus ont été supprimés de
 de CurseForge (TAB_VERSION n'y était pas : retiré avant le premier envoi des textes).
 
 ## En attente de Braincell1980
-- Captures d'écran en client anglais (une par style en mode démo, « Masquer l'interface du jeu » coché, caméra fixe) → GIF des styles et images de présentation ; une capture en français pour montrer les deux langues.
+- (Facultatif) une capture du mode démo en français avec la version actuelle (style Grimoire, « 12/19 ») pour refaire `docs/media/english-french.jpg`, dont la moitié française vient d'une version plus ancienne.
 - Test en instance (profil donjon, masquer en instance, clics en combat).
 
 ## Visibilité
 - Tessera est sur CurseForge et Wago (projet ANz7wj64, description = `docs/wago-description.md`).
 - Pistes : Reddit (r/WoWUI avec le paragraphe « AI Disclaimer », subreddit Forever), Discords Forever (publicité autorisée par Malkkav), WoWInterface (catégorie la plus proche en précisant « WoW Forever »), pic de promotion vers le 4 novembre.
-- Images à faire : GIF des styles du mode démo, captures en anglais, bannière avec le nouveau logo.
+- Images faites le 15/10 (`docs/media`, affichées dans le README) : bannière animée (Blizzard moderne puis FlareUI), trois GIF des styles du mode démo (moins de 2 Mo chacun), image anglais / français. Pour CurseForge et Wago : à envoyer dans leur galerie d'images.
 
 ## Version multi-versions (après la 1.0.0, en 1.1) : approche validée le 14/10
 - Repartir de `main` (propre, audit Ketho à 0), pas de l'ancienne branche `multi-versions`.

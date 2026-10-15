@@ -1,5 +1,7 @@
 # Tessera – Mosaic Info Bars & Data Blocks
 
+![Tessera: your info, one tile at a time](docs/media/banner.gif)
+
 **Download:** [CurseForge](https://www.curseforge.com/wow/addons/tessera) · [Wago](https://addons.wago.io/addons/tessera) · [GitHub releases](https://github.com/Brainc3ll/Tessera/releases)
 
 Tessera is a World of Warcraft addon for **WoW Forever** that shows small information blocks
@@ -14,6 +16,28 @@ LibDataBroker to exchange data with DataBroker addons.
 > **WoW Forever is in beta.** Tessera is developed and tested on the WoW Forever beta. Its own
 > systems (Legacy, camping, Comprehension, PvP) have no official addon documentation yet and may
 > change before or after release; a block may then need an update.
+
+## Screenshots
+
+Demo mode (`/tessera demo`) shows every block at once with sample values. The same blocks in
+the 19 styles (FlareUI is shown with the addon installed; without their addon, the interface
+styles are an imitation):
+
+**Interface and Blizzard styles**
+
+![FlareUI, EllesmereUI, ElvUI, Blizzard modern and Blizzard classic styles](docs/media/styles-interfaces.gif)
+
+**Square, Clean and Transparent styles**
+
+![FlareUI Square, Blizzard Modern Square, Blizzard Classic Square, Clean and Transparent styles](docs/media/styles-clean.gif)
+
+**Fantasy styles and styles made from the game's frames**
+
+![Runestone, Grimoire, Parchment, Arcane, Royal Seal, Ironforge, Runeblade, Ember and Sylvan styles](docs/media/styles-fantasy.gif)
+
+**English and French built in**
+
+![The demo mode in English and in French](docs/media/english-french.jpg)
 
 ## About this project: how Tessera is made
 
@@ -166,7 +190,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 
 The `docs/` folder (not shipped in the addon) holds the release guide (`docs/RELEASE.md`), the
 CurseForge and Wago descriptions, the strings sent to CurseForge's localization tool, the project
-status and ideas (in French), finished plans (`docs/archive`), and the logo in large sizes (`docs/art`). `CLAUDE.md` holds
+status and ideas (in French), finished plans (`docs/archive`), the logo in large sizes (`docs/art`), and the banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds
 the working rules of the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon

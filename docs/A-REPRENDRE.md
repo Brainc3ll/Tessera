@@ -14,11 +14,11 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 ## Versions
 - **1.0.0-rc4** : publiée le 13/10 (GitHub, CurseForge, Wago).
 - **1.0.0-rc5** : publiée le 15/10 (GitHub, CurseForge, Wago). Décision de Braincell1980 : s'il n'y a pas de nouvelle version de test avant le 22/10, la rc5 devient la 1.0.0 finale (même code, version renommée 1.0.0 et publiée le 4/11).
-- **1.0.0** (en préparation, pas publiée) : correction du 15/10 : la barre du haut suit la barre d'XP de FlareUI même quand FlareUI ou sa barre d'XP est activé après coup. Zip de test 1.0.0-test1. Puis 1.0.0-test2 (15/10, demande de Braincell1980 : refléter la future 1.0.0, pensée pour les nouveaux joueurs) : « Styles mélangés » dans le mode démo, changelog 1.0.0 écrit pour ceux qui découvrent Tessera, plus de « bêta » dans l'aide, le README et les descriptions, 19 styles partout. Liste de tests : `docs/TESTS-1.0.0.md`. Testée le 15/10 : points 0 à 3 OK (nouveau joueur, Styles mélangés, barre d'XP de FlareUI) ; reste l'instance (point 4). Puis 1.0.0-test3 (15/10 au soir) : nouveau bloc Date (formats, locale ou serveur, clic : calendrier), date à côté de l'horloge dans les quatre dispositions façon barre des tâches et dans le mode démo, « Autour des gryphons » en deux rectangles nets. Puis 1.0.0-test4 : changelog trié par catégorie ; correction : une deuxième rangée reposée tout contre sa barre se fondait dans la barre (vu en vidéo par Braincell1980 pendant la visite rapide). La 1.0.0 sera la test4, une fois testée (points 3 bis, 3 ter et instance).
+- **1.0.0** (en préparation, pas publiée) : correction du 15/10 : la barre du haut suit la barre d'XP de FlareUI même quand FlareUI ou sa barre d'XP est activé après coup. Zip de test 1.0.0-test1. Puis 1.0.0-test2 (15/10, demande de Braincell1980 : refléter la future 1.0.0, pensée pour les nouveaux joueurs) : « Styles mélangés » dans le mode démo, changelog 1.0.0 écrit pour ceux qui découvrent Tessera, plus de « bêta » dans l'aide, le README et les descriptions, 19 styles partout. Liste de tests : `docs/TESTS-1.0.0.md`. Testée le 15/10 : points 0 à 3 OK (nouveau joueur, Styles mélangés, barre d'XP de FlareUI) ; reste l'instance (point 4). Puis 1.0.0-test3 (15/10 au soir) : nouveau bloc Date (formats, locale ou serveur, clic : calendrier), date à côté de l'horloge dans les quatre dispositions façon barre des tâches et dans le mode démo, « Autour des gryphons » en deux rectangles nets. Puis 1.0.0-test4 : changelog trié par catégorie ; correction : une deuxième rangée reposée tout contre sa barre se fondait dans la barre (vu en vidéo par Braincell1980 pendant la visite rapide). Testée le 16/10 : tout OK à 99 %, seule l'instance reste à faire (`docs/TESTS-1.0.0.md`). La 1.0.0 sera la test4 (ou une test5 si on y ajoute quelque chose).
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche ci-dessous.
 
 ## Build de WoW Forever du 16/10
-Nouveau build (en-tête de la minicarte et cadres d'unité revus, nouveau tutoriel) : FlareUI cassé sans erreur Lua, correction en cours chez Malkkav. Tessera sans FlareUI, testé le 16/10 : bouton de la minicarte, déplacement, Héritage, Compréhension, « faire de la place » dans le mode Édition OK. Reste à voir : liste des lanceurs, nouveau personnage (tutoriel + bienvenue de Tessera), clic sur le bloc Guilde.
+Nouveau build (en-tête de la minicarte et cadres d'unité revus, nouveau tutoriel) : FlareUI cassé sans erreur Lua, correction en cours chez Malkkav. Tessera sans FlareUI, testé le 16/10 : tout OK. À revoir quand FlareUI sera corrigé : la barre sous sa barre d'XP, ses lanceurs dans le sac de la minicarte.
 
 ## Textes inutilisés sur CurseForge
 Fait le 15/10 : les 12 textes que l'addon n'utilise plus ont été supprimés de la page Localization
@@ -26,7 +26,7 @@ de CurseForge (TAB_VERSION n'y était pas : retiré avant le premier envoi des t
 
 ## En attente de Braincell1980
 - (Facultatif) une capture du mode démo en français avec la version actuelle (style Grimoire, « 12/19 ») pour refaire `docs/media/english-french.jpg`, dont la moitié française vient d'une version plus ancienne.
-- Test en instance (profil donjon, masquer en instance, clics en combat).
+- Test en instance (profil donjon, masquer en instance, clics en combat) : le seul test restant de la 1.0.0.
 
 ## Visibilité
 - Tessera est sur CurseForge et Wago (projet ANz7wj64, description = `docs/wago-description.md`).

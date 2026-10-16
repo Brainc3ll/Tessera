@@ -225,41 +225,17 @@ local emButton
 function ns:ShowEditModeLayerButton(show)
     local em = EditModeManagerFrame
     if not show or not em or self.brokerModeActive or InCombatLockdown() then
-        if emButton then
-            emButton:Hide()
-            emButton.seen = nil -- glows again the next time Edit Mode opens
-        end
+        if emButton then emButton:Hide() end
         return
     end
     if not emButton then
         emButton = CreateFrame("Button", "TesseraEditModeLayerButton", UIParent, "UIPanelButtonTemplate")
         emButton:SetSize(170, 24)
-        -- a soft golden glow that pulses until the mouse goes over the button, so it is
-        -- not missed under Edit Mode's big window
-        local glow = emButton:CreateTexture(nil, "BACKGROUND")
-        glow:SetTexture("Interface\\Buttons\\WHITE8X8")
-        glow:SetVertexColor(1, 0.82, 0.2)
-        glow:SetBlendMode("ADD")
-        glow:SetPoint("TOPLEFT", -5, 5)
-        glow:SetPoint("BOTTOMRIGHT", 5, -5)
-        emButton.glow = glow
-        if glow.CreateAnimationGroup then
-            local pulse = glow:CreateAnimationGroup()
-            pulse:SetLooping("BOUNCE")
-            local fade = pulse:CreateAnimation("Alpha")
-            fade:SetFromAlpha(0.1)
-            fade:SetToAlpha(0.7)
-            fade:SetDuration(0.7)
-            emButton.pulse = pulse
-        end
         emButton:SetScript("OnClick", function()
             ns:ToggleTempLayer()
             ns:ShowEditModeLayerButton(true)
         end)
         emButton:SetScript("OnEnter", function(b)
-            b.seen = true
-            b.glow:Hide()
-            if b.pulse then b.pulse:Stop() end
             GameTooltip:SetOwner(b, "ANCHOR_BOTTOM")
             GameTooltip:SetText(L.LAYER_TOGGLE)
             GameTooltip:AddLine(L.TIP_LAYER_TOGGLE, 1, 1, 1, true)
@@ -277,10 +253,6 @@ function ns:ShowEditModeLayerButton(show)
     end
     emButton:SetText(self:LayerShown() == "behind" and L.LAYER_BEHIND_STATE or L.LAYER_FRONT_STATE)
     emButton:Show()
-    if not emButton.seen then
-        emButton.glow:Show()
-        if emButton.pulse and not emButton.pulse:IsPlaying() then emButton.pulse:Play() end
-    end
 end
 
 StaticPopupDialogs["TESSERA_LAYER"] = {

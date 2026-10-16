@@ -18,7 +18,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche ci-dessous.
 
 ## Build de WoW Forever du 16/10
-Nouveau build (en-tête de la minicarte et cadres d'unité revus, nouveau tutoriel) : FlareUI cassé sans erreur Lua, correction en cours chez Malkkav. Tessera sans FlareUI, testé le 16/10 : bouton de la minicarte, déplacement, Héritage, Compréhension OK. Reste à voir : liste des lanceurs, nouveau personnage (tutoriel + bienvenue de Tessera), « faire de la place » dans le mode Édition, clic sur le bloc Guilde.
+Nouveau build (en-tête de la minicarte et cadres d'unité revus, nouveau tutoriel) : FlareUI cassé sans erreur Lua, correction en cours chez Malkkav. Tessera sans FlareUI, testé le 16/10 : bouton de la minicarte, déplacement, Héritage, Compréhension, « faire de la place » dans le mode Édition OK. Reste à voir : liste des lanceurs, nouveau personnage (tutoriel + bienvenue de Tessera), clic sur le bloc Guilde.
 
 ## Textes inutilisés sur CurseForge
 Fait le 15/10 : les 12 textes que l'addon n'utilise plus ont été supprimés de la page Localization

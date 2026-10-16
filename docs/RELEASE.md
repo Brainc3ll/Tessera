@@ -70,3 +70,7 @@ Ce qu'elle ne peut pas vérifier (la clarté des textes, le détail de l'aide) r
 - Les autres langues sont traduites par la communauté sur CurseForge et ajoutées au zip à chaque publication.
 - Les textes qui n'existent plus restent sur CurseForge (aucun travail de traducteur n'est supprimé).
 - Si CurseForge refuse l'envoi des textes, la publication continue sans les traductions de la communauté.
+
+## Faire le ménage des textes sur CurseForge
+
+Quand l'addon n'utilise plus certains textes : page Localization de CurseForge, **Import**, langue **English**, coller tout `docs/localization/enUS.lua`, option des phrases absentes réglée pour les **supprimer** ; puis **Import** en **French** avec `docs/localization/frFR.lua` et l'option « ne rien faire ». Fait ainsi le 16/10/2026 (43 textes retirés d'un coup).

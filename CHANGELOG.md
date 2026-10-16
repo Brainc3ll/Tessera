@@ -13,6 +13,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several orders, local or server date; click: calendar. The taskbar and menu bar layouts show it next to the clock.
 - Demo mode: after the styles, the switcher shows "Mixed styles", each column in its own style, to compare them side by side.
+- Gold block: a character you deleted or renamed can be removed from the tooltip (Alt + right-click on the block, "Forget a character").
 
 ### Improvements
 

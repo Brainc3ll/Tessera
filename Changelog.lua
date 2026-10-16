@@ -68,6 +68,8 @@ ns.CHANGELOG = {
                     .. "next to the clock.",
                 "Demo mode: after the styles, the switcher shows \"Mixed styles\", each column in its own style, "
                     .. "to compare them side by side.",
+                "Gold block: a character you deleted or renamed can be removed from the tooltip (Alt + right-click "
+                    .. "on the block, \"Forget a character\").",
               },
               fr = {
                 "Bloc Date (masqué au départ, ajoute-le depuis l'onglet Blocs) : courte ou longue, en chiffres dans "
@@ -75,6 +77,8 @@ ns.CHANGELOG = {
                     .. "tâches et barre de menus l'affichent à côté de l'horloge.",
                 "Mode démo : après les styles, le sélecteur montre les « Styles mélangés », chaque colonne dans son "
                     .. "propre style, pour les comparer côte à côte.",
+                "Bloc Or : un personnage supprimé ou renommé peut être retiré de l'infobulle (Alt + clic droit sur le "
+                    .. "bloc, « Oublier un personnage »).",
               } },
             { kind = "improved",
               en = {

@@ -95,7 +95,7 @@ Help tab inside the game explains everything.
   - Honor: your honor points (PvP ranks in a later version);
   - weapon skills read from Forever's skill list; profession, talent and Legacy blocks that open
     Forever's own windows.
-- More than 40 blocks in all: gold (with history), bags (with junk value), durability (with the
+- More than 40 blocks in all: gold (with history and your characters' gold; Alt + right-click forgets a deleted character), bags (with junk value), durability (with the
   repair cost), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
   zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class

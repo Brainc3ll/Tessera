@@ -509,6 +509,17 @@ function ns:OpenQuickMenu(key)
                     function() self:PushUndo(); self:SetGroupOwnLook(key, look) end)
             end
         end
+        -- Gold block: forget a character (deleted or renamed) from its tooltip
+        if key == "gold" then
+            local others = self:GetOtherCharacters()
+            if #others > 0 then
+                local sub = root:CreateButton(L.GOLD_FORGET)
+                if sub.SetScrollMode then sub:SetScrollMode(400) end
+                for _, name in ipairs(others) do
+                    sub:CreateButton(ns.ShortCharName(name), function() self:AskForgetCharacter(name) end)
+                end
+            end
+        end
         root:CreateCheckbox(L.MENU_FREEZE,
             function() return self:IsFrozen(key) end,
             function() self:SetFrozen(key, not self:IsFrozen(key)) end)

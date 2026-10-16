@@ -722,6 +722,27 @@ for _, step in ipairs({
         assert(not cfg.dock, "the row is not merged into the bar")
         ns:ResetProfile("top")
     end,
+    -- Gold block: forget a character (deleted or renamed) from its tooltip
+    function()
+        ns:RecordMoney()
+        local other = "Oldtoon-" .. GetRealmName()
+        ns.sv.chars[other] = { money = 5000, class = "MAGE" }
+        ns.sv.goldHistory = ns.sv.goldHistory or {}
+        ns.sv.goldHistory[other] = { ["2026-10-15"] = 100 }
+        local list = ns:GetOtherCharacters()
+        assert(#list == 1 and list[1] == other, "other characters listed")
+        assert(ns.ShortCharName(other) == "Oldtoon", "realm suffix removed")
+        ns.db.blocks.gold.enabled = true
+        ns:RefreshAllBlocks()
+        GameTooltip:ClearLines()
+        ns.modules.gold.tooltip(GameTooltip, ns.db.blocks.gold)
+        ns:OpenQuickMenu("gold")
+        ns:AskForgetCharacter(other)
+        assert(not ns:ForgetCharacter(ns.charKey), "the current character cannot be forgotten")
+        assert(ns:ForgetCharacter(other), "character forgotten")
+        assert(not ns.sv.chars[other] and not ns.sv.goldHistory[other], "gold and history removed")
+        assert(ns.sv.chars[ns.charKey], "current character kept")
+    end,
     -- changelog sorted by kind since 1.0.0 (older entries: a plain list)
     function()
         local sections = ns.ChangelogSections(ns.CHANGELOG[1], "fr")

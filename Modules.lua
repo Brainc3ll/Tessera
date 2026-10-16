@@ -387,15 +387,14 @@ ns:RegisterModule("gold", {
         end
         if #chars > 1 then
             table.sort(chars, function(a, b) return a.money > b.money end)
-            local realm = "-" .. (GetRealmName() or "")
             tt:AddLine(" ")
             tt:AddLine(L.TT_CHARACTERS, 1, 0.82, 0)
             for _, c in ipairs(chars) do
                 local r, g, b = ClassColor(c.class)
-                local shortName = c.name:sub(-#realm) == realm and c.name:sub(1, -#realm - 1) or c.name
-                tt:AddDoubleLine(shortName, ns.FormatMoney(c.money), r, g, b, 1, 1, 1)
+                tt:AddDoubleLine(ns.ShortCharName(c.name), ns.FormatMoney(c.money), r, g, b, 1, 1, 1)
             end
             tt:AddDoubleLine(L.TT_TOTAL, ns.FormatMoney(total), 1, 0.82, 0, 1, 1, 1)
+            tt:AddLine(L.GOLD_FORGET_HINT, 0.6, 0.6, 0.6)
         end
     end,
     secureMacro = "/run ToggleAllBags()",

@@ -2421,6 +2421,47 @@ function ns:RecordMoney()
     self.lastMoney = money
 end
 
+-- A character's name without this realm's suffix ("Name-Realm" -> "Name")
+function ns.ShortCharName(name)
+    local realm = "-" .. (GetRealmName() or "")
+    return name:sub(-#realm) == realm and name:sub(1, -#realm - 1) or name
+end
+
+-- The other characters whose gold is remembered, sorted by name
+function ns:GetOtherCharacters()
+    local list = {}
+    for name in pairs(self.sv and self.sv.chars or {}) do
+        if name ~= self.charKey then table.insert(list, name) end
+    end
+    table.sort(list)
+    return list
+end
+
+-- Forgets a character's gold and gold history (Gold block tooltip). The profile it
+-- uses is kept: if it logs in again, it gets its layout back and reappears in the list.
+function ns:ForgetCharacter(name)
+    if not (self.sv and name and name ~= self.charKey and self.sv.chars[name]) then return false end
+    self.sv.chars[name] = nil
+    if self.sv.goldHistory then self.sv.goldHistory[name] = nil end
+    self.Print(L.GOLD_FORGOTTEN:format(ns.ShortCharName(name)))
+    if self.frames.gold then self:UpdateBlock("gold") end
+    return true
+end
+
+StaticPopupDialogs["TESSERA_FORGET_CHARACTER"] = {
+    text = "%s",
+    button1 = YES,
+    button2 = NO,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function(_, name) ns:ForgetCharacter(name) end,
+}
+
+function ns:AskForgetCharacter(name)
+    StaticPopup_Show("TESSERA_FORGET_CHARACTER", L.GOLD_FORGET_CONFIRM:format(ns.ShortCharName(name)), nil, name)
+end
+
 ---------------------------------------------------------------------------
 -- Events
 ---------------------------------------------------------------------------

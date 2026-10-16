@@ -62,7 +62,7 @@ Ce qu'elle ne peut pas vérifier (la clarté des textes, le détail de l'aide) r
 
 - **Description des pages** : CurseForge et Wago ne lisent pas le dépôt ; recoller `docs/curseforge-description.md` sur CurseForge et `docs/wago-description.md` sur Wago (onglet General ; l'import automatique de la description depuis GitHub est désactivé sur Wago).
 - **« About » du dépôt GitHub** : roue dentée sur la page du dépôt, texte et topics dans `docs/summary.md`.
-- **Captures d'écran** : `/tessera preview` (valeurs d'exemple) ou `/tessera preview forever` ; éviter les pseudos d'autres joueurs, les notifications du bureau et les boutons d'autres addons.
+- **Captures d'écran** : `/tessera preview` (valeurs d'exemple) ou le mode démo (`/tessera demo`) ; éviter les pseudos d'autres joueurs, les notifications du bureau et les boutons d'autres addons.
 
 ## Traductions (automatique)
 

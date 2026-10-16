@@ -139,7 +139,6 @@ Help tab inside the game explains everything.
 | `/tessera reset` | Reset everything: empties the saved variables, then reloads the interface |
 | `/tessera minimap` | Show or hide the minimap button |
 | `/tessera preview` | Sample values in every block (for screenshots) |
-| `/tessera preview forever` | The WoW Forever blocks alone, with sample values |
 | `/tessera demo` | Demo mode: every block by category, sample values, style switcher (again to leave) |
 | `/tessera bug` | Report to copy into a bug report |
 | `/tessera broker` | DataBroker mode on or off |

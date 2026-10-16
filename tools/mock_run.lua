@@ -661,15 +661,15 @@ for _, step in ipairs({
         local after = ns.db.blocks.gold.dock
         assert((before == nil) == (after == nil), "layout not restored after the shape test")
     end,
-    -- WoW Forever screenshot preview: every arrangement, then back to normal
+    -- the screenshot helper of an older test version, left open: the layout comes back
     function()
         local goldEnabled = ns.db.blocks.gold.enabled
-        for _ = 1, 4 do ns:PreviewForever("") end
-        assert(not ns.sv.foreverPreviewBackup, "forever preview not finished after the last arrangement")
-        ns:PreviewForever("")
-        ns:PreviewForever("fin")
-        assert(ns.db.blocks.gold.enabled == goldEnabled, "blocks not restored after the forever preview")
-        assert(not ns.previewMode, "preview mode left on")
+        local positions = {}
+        for key, cfg in pairs(ns.db.blocks) do positions[key] = { enabled = cfg.enabled } end
+        ns.sv.foreverPreviewBackup = { positions = positions, extra = {}, mode = 1 }
+        ns.db.blocks.gold.enabled = not goldEnabled
+        ns:RestoreForeverPreview()
+        assert(not ns.sv.foreverPreviewBackup and ns.db.blocks.gold.enabled == goldEnabled, "layout given back")
     end,
     -- "around the gryphons" layout: one group in each bottom corner of the screen
     function()

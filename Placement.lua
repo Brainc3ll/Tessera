@@ -731,20 +731,8 @@ function Tessera_ToggleOptions()
 end
 
 ---------------------------------------------------------------------------
--- Positions of every block, saved and given back (used by /tessera preview forever)
+-- Positions of every block given back (an older test version saved them aside)
 ---------------------------------------------------------------------------
-local function SnapshotPositions(self)
-    local snap = {}
-    for key, cfg in pairs(self.db.blocks) do
-        local s = {}
-        for _, field in ipairs(POSITION_FIELDS) do s[field] = self.DeepCopy(cfg[field]) end
-        -- a spacer may be deleted (replaced by a block): keep all of it
-        if ns.IsSpacerKey(key) then s.spacer = self.DeepCopy(cfg) end
-        snap[key] = s
-    end
-    return snap
-end
-
 local function RestorePositions(self, snap)
     for key, s in pairs(snap) do
         local cfg = self.db.blocks[key]
@@ -756,101 +744,25 @@ local function RestorePositions(self, snap)
     self:RequestLayout()
 end
 
----------------------------------------------------------------------------
--- Screenshot helper: WoW Forever blocks only (/tessera preview forever)
----------------------------------------------------------------------------
--- Shows only the blocks made for WoW Forever, with sample values, in the middle
--- of the screen. Each call shows the next arrangement: merged in a row, apart,
--- merged in a column; "fin" (or the call after the last arrangement) puts every
--- block back. The layout before is kept in the saved variables (like the shape
--- test), so a /reload in between can still be undone.
-local FOREVER_KEYS = { "legacy", "comprehension", "camping", "honor", "weaponSkills" }
-ns.FOREVER_KEYS = FOREVER_KEYS -- also checked on import (Profiles.lua)
-local FOREVER_MODES = { "row", "apart", "column" }
+-- The blocks made for WoW Forever (checked on import, Profiles.lua)
+ns.FOREVER_KEYS = { "legacy", "comprehension", "camping", "honor", "weaponSkills" }
+
+-- An older test version had a screenshot helper that put the player's layout aside
+-- (sv.foreverPreviewBackup): left open at logout, the layout is given back at login
 local EXTRA_FIELDS = { "showIcon", "showLabel" }
-
-function ns:PreviewForever(arg)
-    local backup = self.sv.foreverPreviewBackup
-    local function Stop()
-        if not backup then return end
-        RestorePositions(self, backup.positions)
-        for key, s in pairs(backup.extra) do
-            local cfg = self.db.blocks[key]
-            if cfg then for _, field in ipairs(EXTRA_FIELDS) do cfg[field] = s[field] end end
-        end
-        self.sv.foreverPreviewBackup = nil
-        self:RefreshAllBlocks()
-        self:ReanchorAll()
-        self:ClearUndo()
-        self:SetPreview(false)
-    end
-    if arg == "fin" or arg == "stop" or arg == "off" then
-        Stop()
-        return
-    end
-    if InCombatLockdown() then
-        self.Print("[preview] pas pendant un combat.")
-        return
-    end
-    local keys = {}
-    for _, key in ipairs(FOREVER_KEYS) do
-        if self.modules[key] and self.db.blocks[key] then table.insert(keys, key) end
-    end
-    if #keys == 0 then
-        self.Print("[preview] aucun bloc WoW Forever sur ce client.")
-        return
-    end
-    local mode = backup and (backup.mode % #FOREVER_MODES) + 1 or 1
-    if backup and backup.mode == #FOREVER_MODES then
-        Stop() -- after the last arrangement: back to normal
-        return
-    end
-    if not backup then
-        backup = { positions = SnapshotPositions(self), extra = {} }
-        for key, cfg in pairs(self.db.blocks) do
-            local s = {}
-            for _, field in ipairs(EXTRA_FIELDS) do s[field] = cfg[field] end
-            backup.extra[key] = s
-        end
-        self.sv.foreverPreviewBackup = backup
-    else
-        RestorePositions(self, backup.positions)
-    end
-    backup.mode = mode
-
-    -- only the WoW Forever blocks, with icon and label
-    local wanted = {}
-    for _, key in ipairs(keys) do wanted[key] = true end
-    for key, cfg in pairs(self.db.blocks) do
-        if wanted[key] then
-            cfg.enabled, cfg.showIcon, cfg.showLabel = true, true, true
-            cfg.anchor, cfg.dock = nil, nil
-        else
-            cfg.enabled = false
-        end
-    end
-    local name = FOREVER_MODES[mode]
-    for i, key in ipairs(keys) do
+function ns:RestoreForeverPreview()
+    local backup = self.sv and self.sv.foreverPreviewBackup
+    if type(backup) ~= "table" then return end
+    self.sv.foreverPreviewBackup = nil
+    if type(backup.positions) == "table" then RestorePositions(self, backup.positions) end
+    for key, saved in pairs(type(backup.extra) == "table" and backup.extra or {}) do
         local cfg = self.db.blocks[key]
-        if name == "apart" then
-            cfg.point = { "CENTER", "CENTER", math.floor((i - (#keys + 1) / 2) * 190), 120 }
-        elseif i == 1 then
-            cfg.point = { "CENTER", "CENTER", 0, 120 }
-        else
-            cfg.dock = { to = keys[i - 1], side = name == "column" and "BOTTOM" or "RIGHT" }
+        if cfg and type(saved) == "table" then
+            for _, field in ipairs(EXTRA_FIELDS) do cfg[field] = saved[field] end
         end
     end
     self:RefreshAllBlocks()
     self:ReanchorAll()
-    self:RequestLayout()
-    self:ClearUndo()
-    if not self.previewMode then self:SetPreview(true) else self:UpdateAll() end
-    local labels = { row = "fusionnés en ligne", apart = "séparés", column = "fusionnés en colonne" }
-    self.Print(("[preview] blocs WoW Forever %s (%d/%d). /tes preview forever : la suite ; "
-        .. "/tes preview forever fin : tout remettre."):format(labels[name], mode, #FOREVER_MODES))
-    if self.brokerModeActive then
-        self.Print("[preview] le mode DataBroker est actif : désactive-le (/tes broker) pour voir les blocs.")
-    end
 end
 
 ---------------------------------------------------------------------------

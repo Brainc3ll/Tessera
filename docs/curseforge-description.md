@@ -53,7 +53,6 @@ Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains e
 | /tessera reset | Reset everything (all settings, then the interface reloads) |
 | /tessera minimap | Show or hide the minimap button |
 | /tessera preview | Sample values in every block (for screenshots) |
-| /tessera preview forever | The WoW Forever blocks alone, with sample values |
 | /tessera demo | Demo mode: every block by category, sample values, style switcher (again to leave) |
 | /tessera broker | DataBroker mode on or off |
 | /tessera recover | Bring back blocks that stick out of the screen |
@@ -144,7 +143,6 @@ Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** expli
 | /tessera reset | Tout réinitialiser (tous les réglages, puis l'interface se recharge) |
 | /tessera minimap | Afficher ou masquer le bouton de la minicarte |
 | /tessera preview | Valeurs d'exemple dans tous les blocs (pour les captures) |
-| /tessera preview forever | Les blocs WoW Forever seuls, avec des valeurs d'exemple |
 | /tessera demo | Mode démo : tous les blocs par catégorie, valeurs d'exemple, sélecteur de styles (à nouveau pour quitter) |
 | /tessera broker | Activer ou désactiver le mode DataBroker |
 | /tessera recover | Ramener les blocs qui dépassent de l'écran |

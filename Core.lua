@@ -2518,6 +2518,8 @@ local function Build()
     C_Timer.After(10, function() ns.alertsReady = true end)
     -- positions saved by older versions -> relative to the nearest screen anchor
     C_Timer.After(2, function() ns:MigratePositions() end)
+    -- a screenshot helper of an older test version left open: the layout comes back
+    if ns.RestoreForeverPreview then ns:RestoreForeverPreview() end
     -- Edit Mode copies left by an older test version (Layers.lua)
     C_Timer.After(4, function() if ns.CheckEditModeCopies then ns:CheckEditModeCopies() end end)
     if ns.UpdatePlacementBanner then ns:UpdatePlacementBanner() end
@@ -2631,9 +2633,6 @@ RunCommand = function(msg)
     elseif msg == "bug" then
         -- the same report, to paste in a bug report (see README / GitHub)
         if ns.BugReport then ns:BugReport() end
-    elseif msg:match("^preview forever") or msg:match("^apercu forever") or msg:match("^aperçu forever") then
-        -- screenshots: only the WoW Forever blocks (Placement.lua)
-        ns:PreviewForever(strtrim(msg:match("forever(.*)") or ""))
     elseif msg == "demo" or msg == "démo" then
         -- every block by category, with sample values and a style switcher (Demo.lua)
         if ns:IsDemoActive() then ns:StopDemo() else ns:StartDemo() end

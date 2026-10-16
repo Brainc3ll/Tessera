@@ -112,7 +112,7 @@ end
 -- 4. Slash commands
 ---------------------------------------------------------------------------
 -- documented commands (what follows "/tessera ")
-local PUBLIC = { "lock", "unlock", "reset", "minimap", "preview", "preview forever", "demo", "recover", "broker", "bug", "help" }
+local PUBLIC = { "lock", "unlock", "reset", "minimap", "preview", "demo", "recover", "broker", "bug", "help" }
 -- never documented: French aliases of public commands. Development and test commands are not
 -- allowed in the addon at all: they live in the test builds' extra file (TesseraDev.lua).
 local HIDDEN = { minicarte = true, apercu = true, ["aperçu"] = true, recuperer = true, ["récupérer"] = true,

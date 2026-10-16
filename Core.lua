@@ -785,8 +785,6 @@ function ns:SetProfile(name)
         self.sv.charProfiles[self.charKey] = name
     end
     self:LoadProfile()
-    -- the Edit Mode layout made for this profile, if any (EditMode.lua)
-    C_Timer.After(1, function() if ns.CheckEditModeForProfile then ns:CheckEditModeForProfile() end end)
 end
 
 -- Switches between account-wide and per-character profiles, keeping the current one
@@ -1368,7 +1366,8 @@ function ns:ApplyStyle(key)
 
     f:SetScale(self:GetBlockScale(key))
     f:SetSize(cfg.width, cfg.height)
-    f:SetFrameStrata(cfg.strata)
+    -- in front of or behind Blizzard's frames; placement mode can change it for a while
+    f:SetFrameStrata(self.tempStrata or cfg.strata)
 
     f:ClearAllPoints()
     if not self:AnchorDocked(f, cfg) and not self:AnchorToFrame(f, cfg) then
@@ -1529,6 +1528,8 @@ function ns:SetLocked(locked, silent)
     if not locked and self.DemoBlocksUnlock and self:DemoBlocksUnlock() then return end
     self.db.locked = locked
     self:RefreshLockState()
+    -- in front of or behind the Blizzard frames the blocks cover? (Layers.lua)
+    if locked and self.OnBlocksLocked then self:OnBlocksLocked() end
     if self.RefreshOptions then self:RefreshOptions() end
     if not silent then Print(locked and L.CMD_LOCKED or L.CMD_UNLOCKED) end
 end
@@ -2024,10 +2025,8 @@ end
 --   left     column on the left of the screen, every block stacked
 --   compact  top bar with small blocks, sized to their content
 --   gryphons two groups in the bottom corners of the screen, WoW Forever blocks included
---   stormwind, cathedral, tirisfal, gnomeregan   bars stuck to a screen edge, like
---            the taskbars and menu bars of desktop systems (see OS_LAYOUTS)
-ns.PRESETS = { "top", "forever", "bottom", "left", "compact", "gryphons", "stormwind", "cathedral", "tirisfal",
-    "gnomeregan" }
+--   rampart  a bar stuck to the top edge, stretched over the whole width (see EDGE_LAYOUTS)
+ns.PRESETS = { "top", "forever", "bottom", "left", "compact", "gryphons", "rampart" }
 
 -- Last step of every ready-made layout: icon without label on all data blocks
 -- (even hidden ones), the theme's look, remembered for future blocks
@@ -2107,40 +2106,25 @@ function ns:ApplyGryphonsLayout(p)
     end
 end
 
--- Layouts in the spirit of desktop systems (Warcraft-flavored names). Each bar is a list of blocks from left
--- to right (or top to bottom for a column); SPACER marks an empty spacer block,
--- several in a row rather than one huge one, so each can later be replaced by a
--- block ("Replace with..."). A bar along the top or bottom edge is stuck to it and
--- stretched over the whole width: only its spacers stretch (see Merge.lua), the
--- blocks keep their size. Placed like the real ones: clock and date at the right end of the
--- taskbar / menu bar (in the center of the top bar for Gnomeregan), network (latency),
--- volume and FPS next to it.
+-- Bars stuck to a screen edge. Each bar is a list of blocks from left to right (or top
+-- to bottom for a column); SPACER marks an empty spacer block, several in a row rather
+-- than one huge one, so each can later be replaced by a block ("Replace with..."). A bar
+-- along the top or bottom edge is stuck to it and stretched over the whole width: only
+-- its spacers stretch (see Merge.lua), the blocks keep their size.
 local SPACER = "|spacer"
-local OS_LAYOUTS = {
-    stormwind = { -- a taskbar along the bottom, pinned blocks on the left
-        { edge = "BOTTOM", items = { "bags", "legacy", "comprehension", "camping", "honor",
-            SPACER, SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "date", "mail", "whispers" } },
-    },
-    cathedral = { -- the same taskbar with its blocks in the center
-        { edge = "BOTTOM", items = { "zone", SPACER, SPACER, SPACER, "gold", "bags", "legacy", "comprehension",
-            "camping", SPACER, SPACER, SPACER, "fps", "latency", "volume", "time", "date", "mail", "whispers" } },
-    },
-    tirisfal = { -- a menu bar along the top and a dock
-        { edge = "TOP", items = { "zone", "subzone", "coords", SPACER, SPACER, SPACER, SPACER,
-            "bags", "durability", "fps", "latency", "volume", "time", "date" } },
-        -- the Dock, on the left edge (an option of the real one): the bottom of the
-        -- screen belongs to the action bars
-        { edge = "LEFT", items = { "legacy", "comprehension", "camping", "honor", "weaponSkills", "gold" } },
-    },
-    gnomeregan = { -- a top bar with the clock in the center
-        { edge = "TOP", items = { "zone", SPACER, SPACER, SPACER, "time", "date", SPACER, SPACER, SPACER,
-            "gold", "bags", "fps", "latency", "volume" } },
+local EDGE_LAYOUTS = {
+    -- Rampart Walk ("Chemin de ronde"): the character on the left, WoW Forever in the
+    -- center, system information (FPS, latency, clock, date) on the right
+    rampart = {
+        { edge = "TOP", items = { "zone", "gold", "bags", "durability", SPACER, SPACER, SPACER,
+            "legacy", "comprehension", "camping", SPACER, SPACER, SPACER,
+            "mail", "fps", "latency", "time", "date" } },
     },
 }
-local OS_HIDE_EMPTY = { comprehension = true, camping = true, mail = true, whispers = true }
-local OS_WIDTH = 56
+local EDGE_HIDE_EMPTY = { comprehension = true, camping = true, mail = true, whispers = true }
+local EDGE_WIDTH = 56
 
-function ns:ApplyOSLayout(p, preset)
+function ns:ApplyEdgeLayout(p, preset)
     local used = {}
     local function NewSpacer()
         local n = 1
@@ -2150,7 +2134,7 @@ function ns:ApplyOSLayout(p, preset)
         p.blocks[key].width = 8 -- a stretched bar gives its spacers the room left
         return key
     end
-    for _, bar in ipairs(OS_LAYOUTS[preset] or {}) do
+    for _, bar in ipairs(EDGE_LAYOUTS[preset] or {}) do
         local keys = {}
         for _, item in ipairs(bar.items) do
             if item == SPACER then
@@ -2164,9 +2148,9 @@ function ns:ApplyOSLayout(p, preset)
             local cfg = p.blocks[key]
             cfg.enabled = true
             cfg.height = BASE_HEIGHT
-            if not self.IsSpacerKey(key) then cfg.width = OS_WIDTH end
+            if not self.IsSpacerKey(key) then cfg.width = EDGE_WIDTH end
             cfg.anchor, cfg.point, cfg.dock, cfg.edges, cfg.stretch = nil, nil, nil, nil, nil
-            if OS_HIDE_EMPTY[key] then cfg.hideEmpty = true end
+            if EDGE_HIDE_EMPTY[key] then cfg.hideEmpty = true end
             used[key] = true
             if i > 1 then
                 cfg.dock = { to = keys[i - 1], side = column and "BOTTOM" or "RIGHT" }
@@ -2199,8 +2183,8 @@ function ns:ApplyBaseLayout(p, preset)
             end
         end
     end
-    if OS_LAYOUTS[preset] then
-        self:ApplyOSLayout(p, preset)
+    if EDGE_LAYOUTS[preset] then
+        self:ApplyEdgeLayout(p, preset)
         FinishBaseLayout(self, p)
         WithSeparators()
         return
@@ -2381,7 +2365,9 @@ end
 -- Shows a ready-made layout, without the message nor the Edit Mode offer: the quick
 -- tour tries them one after the other, then the player keeps one or gets theirs back
 function ns:TryPreset(preset)
-    self.sv.profiles[self.profileName] = { pendingPreset = preset }
+    -- the player's style stays: a layout changes the placement, not the look
+    local old = self.sv.profiles[self.profileName] or {}
+    self.sv.profiles[self.profileName] = { pendingPreset = preset, theme = old.theme, autoTheme = old.autoTheme }
     self:LoadProfile()
 end
 
@@ -2390,8 +2376,8 @@ function ns:ResetProfile(preset)
     self:TryPreset(preset)
     local name = L["PRESET_" .. (preset or "top"):upper()] or preset
     Print(L.PRESET_APPLIED:format(name))
-    -- a bar stuck to an edge may cover Blizzard frames: offer to make room (EditMode.lua)
-    C_Timer.After(1.5, function() if ns.OfferEditModeRoom then ns:OfferEditModeRoom(true) end end)
+    -- blocks over Blizzard frames: in front or behind them? (Layers.lua)
+    C_Timer.After(1.5, function() if ns.AskLayer then ns:AskLayer() end end)
 end
 
 ---------------------------------------------------------------------------
@@ -2532,6 +2518,8 @@ local function Build()
     C_Timer.After(10, function() ns.alertsReady = true end)
     -- positions saved by older versions -> relative to the nearest screen anchor
     C_Timer.After(2, function() ns:MigratePositions() end)
+    -- Edit Mode copies left by an older test version (Layers.lua)
+    C_Timer.After(4, function() if ns.CheckEditModeCopies then ns:CheckEditModeCopies() end end)
     if ns.UpdatePlacementBanner then ns:UpdatePlacementBanner() end
     C_Timer.After(5, function()
         if ns.ShowWelcomeIfNeeded then ns:ShowWelcomeIfNeeded() end

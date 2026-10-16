@@ -101,3 +101,8 @@ Pistes pour après la 1.0.0 :
 - remplacer en glissant : poser un bloc sur un autre en tenant Alt prend sa place (sans passer par la liste) ;
 - dans la liste, l'aperçu de la valeur de chaque bloc (comme sur les blocs d'exemple), pour choisir sans essayer ;
 - « blocs suggérés » en haut de la liste selon la classe et le niveau (munitions pour un chasseur, composants pour un mage...).
+
+## Cadres de Blizzard (16 octobre 2026)
+
+- [Fait, 1.0.0] Tessera ne déplace plus les cadres de Blizzard : blocs devant ou derrière (bouton temporaire en mode placement, question au verrouillage, onglet Apparence).
+- [Fait, 1.0.0] Une seule disposition collée en haut, « Chemin de ronde », à la place des dispositions façon système.

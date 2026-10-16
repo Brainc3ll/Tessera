@@ -89,7 +89,7 @@ local G = setmetatable({}, { __index = function(_, k) return _G[k] end })
 UIParent = NewObject("Frame"); UIParent.__w, UIParent.__h = 1366, 768
 GameTooltip = NewObject("GameTooltip"); GameTooltip.__name = "GameTooltip"
 Minimap = NewObject("Frame"); Minimap.__w, Minimap.__h = 140, 140
--- Blizzard's Edit Mode (EditMode.lua): two frames at the bottom of the screen and
+-- Blizzard's Edit Mode (Layers.lua): two frames at the bottom of the screen and
 -- the chat, a "Modern" preset, the player's layouts saved by SaveLayouts
 Enum = { EditModeLayoutType = { Preset = 0, Account = 1, Character = 2, Override = 3 },
     EditModeSystem = { ActionBar = 0, ChatFrame = 8, MicroMenu = 13 } }
@@ -873,7 +873,7 @@ for _, step in ipairs({
         ns:StickToEdges(root, { LEFT = true })
         local exported = ns:SanitizeProfile(ns:DecodeProfile(ns:ExportProfile()))
         assert(exported.blocks[root].edges and exported.blocks[root].edges.LEFT, "edges lost by export")
-        for _, preset in ipairs({ "stormwind", "cathedral", "tirisfal", "gnomeregan" }) do
+        for _, preset in ipairs({ "rampart" }) do
             ns:ResetProfile(preset)
             ns:UpdateLayout()
             b = ns.db.blocks
@@ -910,7 +910,7 @@ for _, step in ipairs({
             assert(not (c.dock and c.dock.to == k), k .. " docked to itself")
         end
         -- stretched bar: no second row
-        ns:ResetProfile("gnomeregan")
+        ns:ResetProfile("rampart")
         b = ns.db.blocks
         assert(not ns:CanInsertSpacer("time", "TOP"), "no row above in a stretched bar")
         assert(ns:InsertSpacer("time", "LEFT"), "left is fine in a stretched bar")
@@ -934,7 +934,7 @@ for _, step in ipairs({
         end
         ns:ApplyTheme("flat")
         assert(ns.db.blocks.gold.separators == false, "other styles: no separators")
-        ns:ResetProfile("gnomeregan")
+        ns:ResetProfile("rampart")
         assert(ns.db.blocks.time.separators == true, "Forever layouts: separators on")
         ns:UpdateLayout()
         ns:ResetProfile("top")
@@ -1004,51 +1004,72 @@ for _, step in ipairs({
         ns:SetMinimapButtonShown(false)
         ns:SetMinimapButtonShown(true)
     end,
-    -- Edit Mode: a copy of the layout with room for a bar stuck to the bottom
+    -- in front of or behind Blizzard's frames: the question when blocks cover them,
+    -- the temporary switch of placement mode, the Look tab buttons
     function()
-        assert(ns.EditModeCopyName("Modern++", {}) == "Modern++ (Tessera 1)", "copy name")
-        assert(ns.EditModeCopyName("Modern++", { ["Modern++ (Tessera 1)"] = true }) == "Modern++ (Tessera 2)", "next number")
-        local long = ns.EditModeCopyName(("é"):rep(40), {})
-        local _, chars = long:gsub("[^\128-\191]", "")
-        assert(chars == 30, "name cut to 30 characters: " .. chars)
-        ns:ResetProfile("stormwind")
+        local function RunTimers()
+            local queued = __timers; __timers = {}
+            for _, fn in ipairs(queued) do fn() end
+        end
+        -- a ready-made layout keeps the player's style
+        ns.db.theme = "grimoire"
+        ns:ResetProfile("rampart")
+        assert(ns.db.theme == "grimoire", "the style stays when a layout is applied")
+        ns.db.theme = nil
+        local shown = {}
+        local realShow = StaticPopup_Show
+        StaticPopup_Show = function(which, a, b, data) table.insert(shown, { which = which, text = a, data = data }) end
+        ns:ResetProfile("rampart")
+        RunTimers()
         local rect = ns.GroupRectUI
-        ns.GroupRectUI = function() return 0, 0, 1366, 24 end -- the bar along the bottom edge
-        local moves = ns:PlanEditModeRoom(EditModePresetLayoutManager:GetCopyOfPresetLayouts()[1])
-        assert(#moves == 1 and moves[1].sys.system == 13 and moves[1].dy == 24,
-            "only the micro menu moves, by what the main bar needs: " .. tostring(moves[1] and moves[1].dy))
-        assert(ns:OfferEditModeRoom() == true, "offer shown")
-        assert(ns:ApplyEditModeRoom() == true, "copy made")
-        local copy = EM.layouts.layouts[1]
-        assert(copy.layoutName == "Moderne (Tessera 1)" and copy.layoutType == 1, "copy of the preset, account type")
-        assert(EM.layouts.activeLayout == 4, "copy active (after the 3 presets)")
-        assert(copy.systems[1].anchorInfo.offsetY == 30 and copy.systems[1].isInDefaultPosition == false,
-            "micro menu moved up from its real place: " .. tostring(copy.systems[1].anchorInfo.offsetY))
-        assert(copy.systems[3].anchorInfo.offsetY == 153, "chat untouched")
-        assert(ns:GetEditModeStatus():find("Tessera copy"), "bug report knows the copy")
-        -- again from the copy: the same copy is updated, no new layout
-        ns:OfferEditModeRoom()
-        ns:ApplyEditModeRoom()
-        assert(#EM.layouts.layouts == 1, "copy reused")
-        -- back to the original, then cleaning up: a layout of the player with a
-        -- Tessera-like name is never deleted
-        assert(ns:RevertEditModeLayout() and EM.layouts.activeLayout == 1, "back to Moderne")
-        table.insert(EM.layouts.layouts, { layoutName = "Moderne (Tessera 2)", layoutType = 1, systems = EMSystems() })
-        local list = ns:GetEditModeCopies()
-        assert(#list == 1 and list[1] == "Moderne (Tessera 1)", "only Tessera's own copy is listed")
-        ns:OfferEditModeCleanup()
-        ns:DeleteEditModeCopies()
-        assert(#EM.layouts.layouts == 1 and EM.layouts.layouts[1].layoutName == "Moderne (Tessera 2)",
-            "the player's layout is kept")
-        -- full: nothing is made
-        for i = 1, 4 do table.insert(EM.layouts.layouts, { layoutName = "L" .. i, layoutType = 1, systems = EMSystems() }) end
-        ns:OfferEditModeRoom()
-        assert(ns:ApplyEditModeRoom() == false and #EM.layouts.layouts == 5, "limit respected")
-        ns:CheckEditModeRoom()
-        ns:CheckEditModeForProfile()
+        ns.GroupRectUI = function() return 0, 0, 1366, 24 end -- a bar along the bottom edge
+        local labels, covering = ns:GetCoveredFrames()
+        assert(#labels >= 1 and next(covering), "the bar covers the action bars and the menu")
+        ns.db.layerAsked = nil
+        ns:AskLayer()
+        local ask = shown[#shown]
+        assert(ask and ask.which == "TESSERA_LAYER", "question asked")
+        StaticPopupDialogs.TESSERA_LAYER.OnCancel(nil, ask.data, "clicked")
+        local root = next(ask.data)
+        assert(ns.db.blocks[root].strata == "BACKGROUND", "blocks behind")
+        local count = #shown
+        ns:AskLayer()
+        assert(#shown == count, "asked once for the same situation")
+        -- placement mode: a temporary switch, nothing saved; locking ends it
+        ns:SetLocked(false, true)
+        ns:ToggleTempLayer()
+        assert(ns.tempStrata == "HIGH" and ns.db.blocks[root].strata == "BACKGROUND", "temporary, not saved")
+        ns:SetLocked(true, true)
+        assert(not ns.tempStrata, "the temporary layer ends when locking")
+        -- Look tab: every block in front
+        ns:SetLayer("front")
+        assert(ns.db.blocks[root].strata == "HIGH" and ns.db.groupDefaults.strata == "HIGH", "all blocks in front")
+        StaticPopupDialogs.TESSERA_LAYER.OnAccept(nil, ask.data)
         ns.GroupRectUI = rect
+        -- an Edit Mode copy left by an older test version, active: back to the player's layout
+        local copy = { layoutName = "Moderne (Tessera 1)", layoutType = 1, systems = EMSystems() }
+        EM.layouts = { activeLayout = 4, layouts = { copy } }
+        ns.sv.editModeCopies = { [copy.layoutName] = { layoutType = 1, fingerprint = ns.EditModeFingerprint(copy) } }
+        ns.sv.editModeOriginal = { name = "Moderne", layoutType = 0 }
+        assert(ns:GetEditModeStatus():find("Tessera copy"), "bug report knows the copy")
+        ns:CheckEditModeCopies()
+        assert(shown[#shown].which == "TESSERA_EDITMODE_LEGACY", "offered to go back")
+        ns:LeaveEditModeCopy()
+        RunTimers()
+        assert(EM.layouts.activeLayout == 1 and #EM.layouts.layouts == 0, "back to Moderne, copy deleted")
+        assert(not ns.sv.editModeCopies and not ns.sv.editModeOriginal, "nothing left to ask")
+        -- a copy not in use, and a layout of the player: only the copy goes, silently
+        local mine = { layoutName = "Mine", layoutType = 1, systems = EMSystems() }
+        copy = { layoutName = "Classique (Tessera 1)", layoutType = 1, systems = EMSystems() }
+        EM.layouts = { activeLayout = 4, layouts = { mine, copy } }
+        ns.sv.editModeCopies = { [copy.layoutName] = { layoutType = 1, fingerprint = ns.EditModeFingerprint(copy) } }
+        ns:CheckEditModeCopies()
+        assert(#EM.layouts.layouts == 1 and EM.layouts.layouts[1].layoutName == "Mine", "the player's layout is kept")
+        assert(not ns.sv.editModeCopies, "copies forgotten")
         EM.layouts = { activeLayout = 1, layouts = {} }
+        StaticPopup_Show = realShow
         ns:ResetProfile("top")
+        RunTimers()
     end,
     -- quick tour
     function()
@@ -1087,7 +1108,7 @@ for _, step in ipairs({
         assert(ns.db.merge == true and ns:JointGap() >= 2, "tiles keep the groups, with a joint")
         ns.db.jointGap = 6
         ns:UpdateLayout()
-        ns:ResetProfile("stormwind")
+        ns:ResetProfile("rampart")
         ns:UpdateLayout()
         ns:SetGroupLook("separate")
         assert(ns.db.merge == false and ns:JointGap() == 0, "separate: no joint")

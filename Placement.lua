@@ -1028,10 +1028,6 @@ function ns:StickToEdges(rootKey, edges, align)
     cfg.stretch = stretch and (edges.TOP and "TOP" or "BOTTOM") or nil
     self:RefreshAllBlocks()
     self:RequestLayout()
-    -- stuck to the top or bottom: Blizzard frames may be in the way (EditMode.lua)
-    if (edges.TOP or edges.BOTTOM) and self.OfferEditModeRoom then
-        C_Timer.After(0.5, function() self:OfferEditModeRoom(true) end)
-    end
 end
 
 -- After a drop: is the group against a screen edge? Then stick it, or ask how

@@ -11,9 +11,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### New
 
-- Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several orders, local or server date; click: calendar. The taskbar and menu bar layouts show it next to the clock.
+- Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several orders, local or server date; click: calendar. The Rampart Walk layout shows it next to the clock.
 - Demo mode: after the styles, the switcher shows "Mixed styles", each column in its own style, to compare them side by side.
 - Gold block: a character you deleted or renamed can be removed from the tooltip (Alt + right-click on the block, "Forget a character").
+- Ready-made layout "Rampart Walk": a bar stuck to the top of the screen over its whole width, the WoW Forever blocks in the center and system information (FPS, latency, clock, date) on the right.
+- Blocks over Blizzard's frames (action bars, minimap, buffs): you choose whether they stay in front or behind. Tessera asks when you lock the blocks, and in placement mode a button of the banner switches every block for a while to see what is underneath. Look tab: all blocks in front or behind.
 
 ### Improvements
 
@@ -23,6 +25,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera (it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar changes size.
 - A second row ("Double bar", the rows of blocks that hide when empty) dropped right against its bar keeps its place and its full width: it merged into the bar and shrank, its names cut short.
+- Applying a ready-made layout keeps your style (it went back to the automatic one).
 
 ## 1.0.0-rc5 — 2026-10-15
 

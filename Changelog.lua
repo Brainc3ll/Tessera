@@ -64,21 +64,35 @@ ns.CHANGELOG = {
             { kind = "new",
               en = {
                 "Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several "
-                    .. "orders, local or server date; click: calendar. The taskbar and menu bar layouts show it "
-                    .. "next to the clock.",
+                    .. "orders, local or server date; click: calendar. The Rampart Walk layout shows it next to "
+                    .. "the clock.",
                 "Demo mode: after the styles, the switcher shows \"Mixed styles\", each column in its own style, "
                     .. "to compare them side by side.",
                 "Gold block: a character you deleted or renamed can be removed from the tooltip (Alt + right-click "
                     .. "on the block, \"Forget a character\").",
+                "Ready-made layout \"Rampart Walk\": a bar stuck to the top of the screen over its whole width, "
+                    .. "the WoW Forever blocks in the center and system information (FPS, latency, clock, date) on "
+                    .. "the right.",
+                "Blocks over Blizzard's frames (action bars, minimap, buffs): you choose whether they stay in front "
+                    .. "or behind. Tessera asks when you lock the blocks, and in placement mode a button of the "
+                    .. "banner switches every block for a while to see what is underneath. Look tab: all blocks in "
+                    .. "front or behind.",
               },
               fr = {
                 "Bloc Date (masqué au départ, ajoute-le depuis l'onglet Blocs) : courte ou longue, en chiffres dans "
-                    .. "plusieurs ordres, date locale ou du serveur ; clic : calendrier. Les dispositions barre des "
-                    .. "tâches et barre de menus l'affichent à côté de l'horloge.",
+                    .. "plusieurs ordres, date locale ou du serveur ; clic : calendrier. La disposition Chemin de ronde "
+                    .. "l'affiche à côté de l'horloge.",
                 "Mode démo : après les styles, le sélecteur montre les « Styles mélangés », chaque colonne dans son "
                     .. "propre style, pour les comparer côte à côte.",
                 "Bloc Or : un personnage supprimé ou renommé peut être retiré de l'infobulle (Alt + clic droit sur le "
                     .. "bloc, « Oublier un personnage »).",
+                "Disposition toute prête « Chemin de ronde » : une barre collée en haut de l'écran sur toute sa "
+                    .. "largeur, les blocs WoW Forever au centre et les infos système (FPS, latence, heure, date) à "
+                    .. "droite.",
+                "Blocs par-dessus les cadres de Blizzard (barres d'action, minicarte, buffs) : tu choisis s'ils "
+                    .. "restent devant ou derrière. Tessera le demande quand tu verrouilles les blocs, et en mode "
+                    .. "placement un bouton du bandeau bascule tous les blocs un moment pour voir ce qu'il y a dessous. "
+                    .. "Onglet Apparence : tous les blocs devant ou derrière.",
               } },
             { kind = "improved",
               en = {
@@ -97,6 +111,7 @@ ns.CHANGELOG = {
                 "A second row (\"Double bar\", the rows of blocks that hide when empty) dropped right against "
                     .. "its bar keeps its place and its full width: it merged into the bar and shrank, its names "
                     .. "cut short.",
+                "Applying a ready-made layout keeps your style (it went back to the automatic one).",
               },
               fr = {
                 "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
@@ -105,6 +120,7 @@ ns.CHANGELOG = {
                 "Une deuxième rangée (« Double barre », les rangées de blocs qui se masquent quand ils sont vides) "
                     .. "reposée tout contre sa barre garde sa place et toute sa largeur : elle se fondait dans la "
                     .. "barre et rétrécissait, ses noms coupés.",
+                "Appliquer une disposition toute prête garde ton style (il revenait au style automatique).",
               } },
         },
     },

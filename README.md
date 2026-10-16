@@ -114,8 +114,8 @@ Help tab inside the game explains everything.
   blocks shared with Titan Panel, ChocolateBar, Bazooka... ("Sharing and mode"); a DataBroker mode,
   on automatically when such an addon is installed (Tessera then shows nothing itself), that can
   be turned off to use both.
-- Look tab: styles, how groups look, screen edges, ready-made layouts, Blizzard's Edit Mode and
-  sharing, in one place.
+- Look tab: styles, how groups look, screen edges, ready-made layouts, blocks in front of or behind
+  Blizzard's frames, and sharing, in one place.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
 - 19 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
@@ -128,9 +128,9 @@ Help tab inside the game explains everything.
 - A quick tour on first launch (again from the Help tab), where the ready-made layouts can be
   tried one after the other right on the screen, and a demo mode showing every block by category
   with sample values and a style switcher.
-- Blizzard's Edit Mode: a copy of your layout with room for Tessera's bars stuck to the top or
-  bottom edge (your layout is never changed). Tested on Blizzard's interface (Modern, Classic)
-  and FlareUI unchanged; with other interfaces, results may be unexpected.
+- In front of or behind Blizzard's frames: Tessera never moves them. When blocks cover some of them
+  (action bars, minimap, buffs), you choose whether the blocks stay in front or behind; placement
+  mode can switch every block for a while to see what is underneath.
 
 | Command | Effect |
 |---|---|
@@ -177,7 +177,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard modern/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
 | `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, centering, second row), unlock-mode name tags, border seams and corner joins. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
-| `EditMode.lua` | Blizzard's Edit Mode: a copy of the player's layout with room for Tessera's bars stuck to the top or bottom edge, back to the original, cleanup of Tessera's copies (recognized by a fingerprint). |
+| `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
 | `Profiles.lua` | Profile export / import (text), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
 | `Changelog.lua` | Version history for the in-game About tab (Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (not sent to CurseForge's translation tool) (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |

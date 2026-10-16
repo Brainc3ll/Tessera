@@ -1735,15 +1735,13 @@ local function BuildLookPage(page)
         StaticPopup_Show("TESSERA_APPLY_PRESET", nil, nil, chosenPreset)
     end, nil, nil, L.TIP_PRESET_APPLY), 2)
 
-    -- Blizzard's Edit Mode: a copy of the player's layout with room for Tessera's bars
+    -- Blizzard's frames: all blocks in front of them or behind them (Layers.lua)
     P.Gap(2, 10)
-    Place(CreateHeader(page, L.SECTION_EDITMODE), 2)
-    Place(CreateButton(page, L.EDITMODE_ROOM, function() ns:OfferEditModeRoom() end,
-        nil, nil, L.TIP_EDITMODE_ROOM), 2)
-    Place(CreateButton(page, L.EDITMODE_REVERT, function() ns:RevertEditModeLayout() end,
-        nil, nil, L.TIP_EDITMODE_REVERT), 2)
-    Place(CreateButton(page, L.EDITMODE_CLEANUP, function() ns:OfferEditModeCleanup() end,
-        nil, nil, L.TIP_EDITMODE_CLEANUP), 2)
+    Place(CreateHeader(page, L.SECTION_LAYER), 2)
+    Place(CreateButton(page, L.LAYER_ALL_FRONT, function() ns:SetLayer("front") end,
+        nil, nil, L.TIP_LAYER_ALL_FRONT), 2)
+    Place(CreateButton(page, L.LAYER_ALL_BEHIND, function() ns:SetLayer("behind") end,
+        nil, nil, L.TIP_LAYER_ALL_BEHIND), 2)
 end
 
 -- Builds the "Profiles" tab
@@ -2368,6 +2366,13 @@ function ns:UpdatePlacementBanner()
         b.text:SetPoint("TOPLEFT", 14, -11)
         b.text:SetText(L.PLACEMENT_TITLE)
 
+        -- every block in front of or behind Blizzard's frames for a while (Layers.lua)
+        b.layer = CreateFrame("Button", nil, b, "UIPanelButtonTemplate")
+        b.layer:SetSize(150, 20)
+        b.layer:SetPoint("TOPRIGHT", -12, -8)
+        b.layer:SetScript("OnClick", function() ns:ToggleTempLayer() end)
+        AttachTip(b.layer, L.LAYER_TOGGLE, L.TIP_LAYER_TOGGLE)
+
         b.hint = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         b.hint:SetPoint("TOPLEFT", 14, -30)
         b.hint:SetWidth(372)
@@ -2422,6 +2427,7 @@ function ns:UpdatePlacementBanner()
         self.banner = b
     end
     self:SkinWindow(b, b.text)
+    b.layer:SetText(self:LayerShown() == "behind" and L.LAYER_BEHIND_STATE or L.LAYER_FRONT_STATE)
     b:Show()
     self:ClearPlacementInfo()
     self:UpdateUndoButton()
@@ -2579,7 +2585,7 @@ function ns:KeepTourLayout()
     tutorial.snapshot = nil
     local preset = ns.PRESETS[tutorial.layoutIndex]
     self.Print(L.PRESET_APPLIED:format(L["PRESET_" .. preset:upper()] or preset))
-    C_Timer.After(1.5, function() if ns.OfferEditModeRoom then ns:OfferEditModeRoom(true) end end)
+    C_Timer.After(1.5, function() if ns.AskLayer then ns:AskLayer() end end)
     UpdateLayoutRow()
 end
 

@@ -106,3 +106,4 @@ Pistes pour après la 1.0.0 :
 
 - [Fait, 1.0.0] Tessera ne déplace plus les cadres de Blizzard : blocs devant ou derrière (bouton temporaire en mode placement, question au verrouillage, onglet Apparence).
 - [Fait, 1.0.0] Une seule disposition collée en haut, « Chemin de ronde », à la place des dispositions façon système.
+- Faire briller (« glow ») les boutons utiles à découvrir, comme le bouton devant / derrière du mode Édition, jusqu'au premier survol (16/10, Braincell1980 : vers une 1.0.5, si le glow de la test9 plaît). Pistes : le bouton devant / derrière du bandeau, « Mode démo » à la première ouverture, les flèches de remplacement la première fois.

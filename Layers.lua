@@ -10,8 +10,9 @@ local L = ns.L
 --   * in placement mode, a button of the banner (and a small one under Blizzard's Edit
 --     Mode window) puts every block in front or behind for a while, to see what is
 --     underneath (nothing is saved);
---   * when the blocks are locked again, or a ready-made layout is applied, and blocks
---     cover Blizzard frames, Tessera asks which to keep (once for the same situation);
+--   * after using that switch, locking the blocks again (or closing Edit Mode) asks
+--     which layer to keep; applying a ready-made layout whose blocks cover Blizzard
+--     frames asks too (once for the same situation);
 --   * the Look tab puts all blocks in front or behind at any time.
 -- Older test versions could make a copy of the player's Edit Mode layout: a player
 -- still on such a copy is offered, once, to go back to his own layout (end of file).
@@ -199,23 +200,33 @@ end
 
 -- After locking or applying a layout: blocks over Blizzard frames? Ask which layer to
 -- keep, once for the same situation (force: ask even if already answered)
+-- (force: the player used the temporary switch: always ask, for every block when none
+-- covers a Blizzard frame; returns true when the question is shown)
 function ns:AskLayer(force)
     if not self.db or self.brokerModeActive or (self.IsDemoActive and self:IsDemoActive()) then return end
     if InCombatLockdown() then return end
     local labels, covering, signature = self:GetCoveredFrames()
-    if #labels == 0 then return end
+    if #labels == 0 then
+        if not force then return end
+        StaticPopup_Show("TESSERA_LAYER_ALL")
+        return true
+    end
     if not force and self.db.layerAsked == signature then return end
     self.db.layerAsked = signature
     StaticPopup_Show("TESSERA_LAYER", table.concat(labels, ", "), nil, covering)
+    return true
 end
 
--- When the blocks are locked: the temporary layer ends, then the question
+-- When the blocks are locked again (placement mode, or Blizzard's Edit Mode closed):
+-- only if the player used the temporary switch, he says which layer to keep (the
+-- switch stays on screen until the answer). Without the switch, nothing is asked.
 function ns:OnBlocksLocked()
-    if self.tempStrata then
-        self.tempStrata = nil
-        self:ApplyLayers()
-    end
-    C_Timer.After(0.3, function() ns:AskLayer() end)
+    if not self.tempStrata then return end
+    C_Timer.After(0.3, function()
+        if not ns.tempStrata or ns:AskLayer(true) then return end
+        ns.tempStrata = nil -- no question possible (combat...): back to the saved layer
+        ns:ApplyLayers()
+    end)
 end
 
 -- Blizzard's Edit Mode: a small button under its window (above it when the window is
@@ -225,7 +236,10 @@ local emButton
 function ns:ShowEditModeLayerButton(show)
     local em = EditModeManagerFrame
     if not show or not em or self.brokerModeActive or InCombatLockdown() then
-        if emButton then emButton:Hide() end
+        if emButton then
+            emButton:Hide()
+            emButton.seen = nil -- breathes again the next time Edit Mode opens
+        end
         return
     end
     if not emButton then
@@ -235,7 +249,34 @@ function ns:ShowEditModeLayerButton(show)
             ns:ToggleTempLayer()
             ns:ShowEditModeLayerButton(true)
         end)
+        -- it "breathes" until the mouse goes over it: a copy of its own highlight that
+        -- lights up and fades, so it is not missed under Edit Mode's big window
+        local hl = emButton.GetHighlightTexture and emButton:GetHighlightTexture()
+        local glow = emButton:CreateTexture(nil, "OVERLAY")
+        local atlas = hl and hl.GetAtlas and hl:GetAtlas()
+        if atlas then
+            glow:SetAtlas(atlas)
+        else
+            glow:SetTexture(hl and hl.GetTexture and hl:GetTexture() or "Interface\\Buttons\\UI-Panel-Button-Highlight")
+            if hl and hl.GetTexCoord then glow:SetTexCoord(hl:GetTexCoord()) end
+        end
+        glow:SetBlendMode("ADD")
+        glow:SetVertexColor(1, 0.85, 0.3)
+        glow:SetAllPoints(hl or emButton)
+        emButton.glow = glow
+        if glow.CreateAnimationGroup then
+            local pulse = glow:CreateAnimationGroup()
+            pulse:SetLooping("BOUNCE")
+            local fade = pulse:CreateAnimation("Alpha")
+            fade:SetFromAlpha(0.15)
+            fade:SetToAlpha(1)
+            fade:SetDuration(0.6)
+            emButton.pulse = pulse
+        end
         emButton:SetScript("OnEnter", function(b)
+            b.seen = true
+            b.glow:Hide()
+            if b.pulse then b.pulse:Stop() end
             GameTooltip:SetOwner(b, "ANCHOR_BOTTOM")
             GameTooltip:SetText(L.LAYER_TOGGLE)
             GameTooltip:AddLine(L.TIP_LAYER_TOGGLE, 1, 1, 1, true)
@@ -253,7 +294,24 @@ function ns:ShowEditModeLayerButton(show)
     end
     emButton:SetText(self:LayerShown() == "behind" and L.LAYER_BEHIND_STATE or L.LAYER_FRONT_STATE)
     emButton:Show()
+    if not emButton.seen then
+        emButton.glow:Show()
+        if emButton.pulse and not emButton.pulse:IsPlaying() then emButton.pulse:Play() end
+    end
 end
+
+StaticPopupDialogs["TESSERA_LAYER_ALL"] = {
+    text = L.LAYER_ASK_ALL,
+    button1 = L.LAYER_FRONT,
+    button2 = L.LAYER_BEHIND,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = false,
+    OnAccept = function() ns:SetLayer("front") end,
+    OnCancel = function(_, _, reason)
+        if reason == "clicked" then ns:SetLayer("behind") end
+    end,
+}
 
 StaticPopupDialogs["TESSERA_LAYER"] = {
     text = L.LAYER_ASK,

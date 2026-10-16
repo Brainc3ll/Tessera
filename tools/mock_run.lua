@@ -1035,18 +1035,44 @@ for _, step in ipairs({
         local count = #shown
         ns:AskLayer()
         assert(#shown == count, "asked once for the same situation")
+        -- locking without touching the switch: no question
+        count = #shown
+        ns:SetLocked(false, true)
+        ns:SetLocked(true, true)
+        RunTimers()
+        assert(#shown == count, "no question without the switch")
         -- placement mode: a temporary switch, nothing saved; locking ends it
         ns:SetLocked(false, true)
         ns:ToggleTempLayer()
         assert(ns.tempStrata == "HIGH" and ns.db.blocks[root].strata == "BACKGROUND", "temporary, not saved")
+        -- locking after the switch: the player is asked which layer to keep (even for the
+        -- same situation), the switch stays on screen until the answer
+        count = #shown
         ns:SetLocked(true, true)
-        assert(not ns.tempStrata, "the temporary layer ends when locking")
-        -- the small button under Blizzard's Edit Mode window: same switch, the question on closing
+        RunTimers()
+        assert(#shown == count + 1 and shown[#shown].which == "TESSERA_LAYER", "asked after the switch")
+        assert(ns.tempStrata, "the switch stays until the answer")
+        StaticPopupDialogs.TESSERA_LAYER.OnAccept(nil, shown[#shown].data)
+        assert(not ns.tempStrata and ns.db.blocks[root].strata == "HIGH", "kept in front")
+        -- nothing covered: the question is about every block
+        local covered = ns.GetCoveredFrames
+        ns.GetCoveredFrames = function() return {}, {}, "" end
+        ns:ToggleTempLayer()
+        ns:OnBlocksLocked()
+        RunTimers()
+        assert(shown[#shown].which == "TESSERA_LAYER_ALL", "asked for every block")
+        StaticPopupDialogs.TESSERA_LAYER_ALL.OnCancel(nil, nil, "clicked")
+        assert(not ns.tempStrata and ns.db.blocks.gold.strata == "BACKGROUND", "every block behind")
+        ns.GetCoveredFrames = covered
+        -- the button under Blizzard's Edit Mode window: same switch, the question on closing
         ns:ShowEditModeLayerButton(true)
+        TesseraEditModeLayerButton:GetScript("OnEnter")(TesseraEditModeLayerButton)
         TesseraEditModeLayerButton:GetScript("OnClick")(TesseraEditModeLayerButton)
         assert(ns.tempStrata, "switched from Edit Mode")
         ns:OnBlocksLocked()
-        assert(not ns.tempStrata, "the switch ends when Edit Mode closes")
+        RunTimers()
+        assert(shown[#shown].which:find("TESSERA_LAYER"), "asked when Edit Mode closes")
+        StaticPopupDialogs.TESSERA_LAYER.OnAccept(nil, shown[#shown].data)
         ns:ShowEditModeLayerButton(false)
         -- Look tab: every block in front
         ns:SetLayer("front")

@@ -1,12 +1,18 @@
 # Tests de la 1.0.0 (avant le 22 octobre)
 
-Version testée : **Tessera-1.0.0-test4.zip**, puis **Tessera-1.0.0-test10.zip**. Le 16/10, Braincell1980 valide tout le reste à 99 % :
+Version testée : **Tessera-1.0.0-test4.zip**, puis **Tessera-1.0.0-test10.zip**, puis **Tessera-1.0.0-test11.zip** pour le point ci-dessous. Le 16/10, Braincell1980 valide tout le reste à 99 % :
 nouveau joueur, Styles mélangés, barre d'XP de FlareUI, bloc Date et dispositions, deuxième rangée,
 changelog trié, et le nouveau build de WoW Forever du 16/10 (sans FlareUI, cassé par ce build).
 
 ## Test6 à test10 : validées le 16/10
 
 Devant / derrière (bandeau, question au verrouillage, onglet Apparence, bouton sous la fenêtre du mode Édition), Chemin de ronde, style gardé en appliquant une disposition, aide et visite rapide, `/tessera preview forever` retirée.
+
+## Nouveau dans la test11 (5 min)
+
+- [ ] Mode Édition de Blizzard : le bouton sous sa fenêtre « respire » (sa propre surbrillance, dorée, s'allume et s'éteint) jusqu'au premier survol ; à la prochaine ouverture du mode Édition, il respire de nouveau.
+- [ ] Sans toucher au bouton : verrouiller les blocs ou fermer le mode Édition ne demande rien.
+- [ ] Après avoir touché au bouton (bandeau du mode placement ou mode Édition) : en verrouillant ou en fermant le mode Édition, Tessera demande « Devant » ou « Derrière », même si aucun bloc ne recouvre de cadre (la question porte alors sur tous les blocs). Les blocs restent comme tu les as basculés jusqu'à ta réponse.
 
 ## Reste à faire
 

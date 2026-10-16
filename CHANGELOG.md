@@ -15,7 +15,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Demo mode: after the styles, the switcher shows "Mixed styles", each column in its own style, to compare them side by side.
 - Gold block: a character you deleted or renamed can be removed from the tooltip (Alt + right-click on the block, "Forget a character").
 - Ready-made layout "Rampart Walk": a bar stuck to the top of the screen over its whole width, the WoW Forever blocks in the center and system information (FPS, latency, clock, date) on the right.
-- Blocks over Blizzard's frames (action bars, minimap, buffs): you choose whether they stay in front or behind. Tessera asks when you lock the blocks; in placement mode (and in Blizzard's Edit Mode, under its window) a button switches every block for a while to see what is underneath. Look tab: all blocks in front or behind.
+- Blocks over Blizzard's frames (action bars, minimap, buffs): you choose whether they stay in front or behind. In placement mode (and in Blizzard's Edit Mode, under its window, where it glows until you hover it) a button switches every block for a while to see what is underneath; when you are done, Tessera asks which to keep. Look tab: all blocks in front or behind.
 
 ### Improvements
 

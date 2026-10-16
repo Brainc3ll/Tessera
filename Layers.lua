@@ -7,8 +7,9 @@ local L = ns.L
 -- Tessera never moves Blizzard's frames. When its blocks cover some of them (action
 -- bars, minimap, buffs...), the player chooses whether the blocks are drawn in front
 -- of them or behind them (the frame strata of the blocks, cfg.strata):
---   * in placement mode, a button of the banner puts every block in front or behind
---     for a while, to see what is underneath (nothing is saved);
+--   * in placement mode, a button of the banner (and a small one under Blizzard's Edit
+--     Mode window) puts every block in front or behind for a while, to see what is
+--     underneath (nothing is saved);
 --   * when the blocks are locked again, or a ready-made layout is applied, and blocks
 --     cover Blizzard frames, Tessera asks which to keep (once for the same situation);
 --   * the Look tab puts all blocks in front or behind at any time.
@@ -215,6 +216,43 @@ function ns:OnBlocksLocked()
         self:ApplyLayers()
     end
     C_Timer.After(0.3, function() ns:AskLayer() end)
+end
+
+-- Blizzard's Edit Mode: a small button under its window (above it when the window is
+-- near the bottom of the screen), never over it. Same switch as the placement banner;
+-- closing Edit Mode ends it and asks which layer to keep.
+local emButton
+function ns:ShowEditModeLayerButton(show)
+    local em = EditModeManagerFrame
+    if not show or not em or self.brokerModeActive or InCombatLockdown() then
+        if emButton then emButton:Hide() end
+        return
+    end
+    if not emButton then
+        emButton = CreateFrame("Button", "TesseraEditModeLayerButton", UIParent, "UIPanelButtonTemplate")
+        emButton:SetSize(150, 20)
+        emButton:SetScript("OnClick", function()
+            ns:ToggleTempLayer()
+            ns:ShowEditModeLayerButton(true)
+        end)
+        emButton:SetScript("OnEnter", function(b)
+            GameTooltip:SetOwner(b, "ANCHOR_BOTTOM")
+            GameTooltip:SetText(L.LAYER_TOGGLE)
+            GameTooltip:AddLine(L.TIP_LAYER_TOGGLE, 1, 1, 1, true)
+            GameTooltip:Show()
+        end)
+        emButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    end
+    emButton:SetFrameStrata(em.GetFrameStrata and em:GetFrameStrata() or "DIALOG")
+    emButton:SetFrameLevel((em.GetFrameLevel and em:GetFrameLevel() or 1) + 5)
+    emButton:ClearAllPoints()
+    if ((em.GetBottom and em:GetBottom()) or 100) > 40 then
+        emButton:SetPoint("TOP", em, "BOTTOM", 0, -4)
+    else
+        emButton:SetPoint("BOTTOM", em, "TOP", 0, 4)
+    end
+    emButton:SetText(self:LayerShown() == "behind" and L.LAYER_BEHIND_STATE or L.LAYER_FRONT_STATE)
+    emButton:Show()
 end
 
 StaticPopupDialogs["TESSERA_LAYER"] = {

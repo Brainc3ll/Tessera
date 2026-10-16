@@ -74,9 +74,9 @@ ns.CHANGELOG = {
                     .. "the WoW Forever blocks in the center and system information (FPS, latency, clock, date) on "
                     .. "the right.",
                 "Blocks over Blizzard's frames (action bars, minimap, buffs): you choose whether they stay in front "
-                    .. "or behind. Tessera asks when you lock the blocks, and in placement mode a button of the "
-                    .. "banner switches every block for a while to see what is underneath. Look tab: all blocks in "
-                    .. "front or behind.",
+                    .. "or behind. Tessera asks when you lock the blocks; in placement mode (and in Blizzard's Edit "
+                    .. "Mode, under its window) a button switches every block for a while to see what is underneath. "
+                    .. "Look tab: all blocks in front or behind.",
               },
               fr = {
                 "Bloc Date (masqué au départ, ajoute-le depuis l'onglet Blocs) : courte ou longue, en chiffres dans "
@@ -90,9 +90,10 @@ ns.CHANGELOG = {
                     .. "largeur, les blocs WoW Forever au centre et les infos système (FPS, latence, heure, date) à "
                     .. "droite.",
                 "Blocs par-dessus les cadres de Blizzard (barres d'action, minicarte, buffs) : tu choisis s'ils "
-                    .. "restent devant ou derrière. Tessera le demande quand tu verrouilles les blocs, et en mode "
-                    .. "placement un bouton du bandeau bascule tous les blocs un moment pour voir ce qu'il y a dessous. "
-                    .. "Onglet Apparence : tous les blocs devant ou derrière.",
+                    .. "restent devant ou derrière. Tessera le demande quand tu verrouilles les blocs ; en mode "
+                    .. "placement (et dans le mode Édition de Blizzard, sous sa fenêtre) un bouton bascule tous les "
+                    .. "blocs un moment pour voir ce qu'il y a dessous. Onglet Apparence : tous les blocs devant ou "
+                    .. "derrière.",
               } },
             { kind = "improved",
               en = {

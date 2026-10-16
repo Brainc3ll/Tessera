@@ -694,11 +694,17 @@ function ns:HookEditMode()
             ns.db.unlockedByEditMode = true
             ns:SetLocked(false, true)
         end
+        -- the small "in front / behind" button under Edit Mode's window (Layers.lua)
+        if ns.ShowEditModeLayerButton then ns:ShowEditModeLayerButton(true) end
     end)
     frame:HookScript("OnHide", function()
+        if ns.ShowEditModeLayerButton then ns:ShowEditModeLayerButton(false) end
         if ns.db and ns.db.unlockedByEditMode then
             ns.db.unlockedByEditMode = nil
             if not ns.db.locked then ns:SetLocked(true, true) end
+        elseif ns.tempStrata and ns.OnBlocksLocked then
+            -- blocks switched while they stayed locked: the switch ends, then the question
+            ns:OnBlocksLocked()
         end
     end)
 end

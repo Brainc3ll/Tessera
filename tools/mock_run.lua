@@ -1041,6 +1041,13 @@ for _, step in ipairs({
         assert(ns.tempStrata == "HIGH" and ns.db.blocks[root].strata == "BACKGROUND", "temporary, not saved")
         ns:SetLocked(true, true)
         assert(not ns.tempStrata, "the temporary layer ends when locking")
+        -- the small button under Blizzard's Edit Mode window: same switch, the question on closing
+        ns:ShowEditModeLayerButton(true)
+        TesseraEditModeLayerButton:GetScript("OnClick")(TesseraEditModeLayerButton)
+        assert(ns.tempStrata, "switched from Edit Mode")
+        ns:OnBlocksLocked()
+        assert(not ns.tempStrata, "the switch ends when Edit Mode closes")
+        ns:ShowEditModeLayerButton(false)
         -- Look tab: every block in front
         ns:SetLayer("front")
         assert(ns.db.blocks[root].strata == "HIGH" and ns.db.groupDefaults.strata == "HIGH", "all blocks in front")

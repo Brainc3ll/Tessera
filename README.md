@@ -130,7 +130,7 @@ Help tab inside the game explains everything.
   with sample values and a style switcher.
 - In front of or behind Blizzard's frames: Tessera never moves them. When blocks cover some of them
   (action bars, minimap, buffs), you choose whether the blocks stay in front or behind; placement
-  mode can switch every block for a while to see what is underneath.
+  mode (and Blizzard's Edit Mode) can switch every block for a while to see what is underneath.
 
 | Command | Effect |
 |---|---|

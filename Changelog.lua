@@ -113,6 +113,8 @@ ns.CHANGELOG = {
                     .. "its bar keeps its place and its full width: it merged into the bar and shrank, its names "
                     .. "cut short.",
                 "Applying a ready-made layout keeps your style (it went back to the automatic one).",
+                "After a loading screen (boat, portal, instance), the durability and other blocks no longer stay "
+                    .. "on \"n/a\": they are read again once the game is ready.",
               },
               fr = {
                 "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
@@ -122,6 +124,8 @@ ns.CHANGELOG = {
                     .. "reposée tout contre sa barre garde sa place et toute sa largeur : elle se fondait dans la "
                     .. "barre et rétrécissait, ses noms coupés.",
                 "Appliquer une disposition toute prête garde ton style (il revenait au style automatique).",
+                "Après un écran de chargement (bateau, portail, instance), la durabilité et les autres blocs ne restent "
+                    .. "plus sur « n/d » : ils sont relus une fois le jeu prêt.",
               } },
         },
     },

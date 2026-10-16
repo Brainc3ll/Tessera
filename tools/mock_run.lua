@@ -743,6 +743,17 @@ for _, step in ipairs({
         assert(not ns.sv.chars[other] and not ns.sv.goldHistory[other], "gold and history removed")
         assert(ns.sv.chars[ns.charKey], "current character kept")
     end,
+    -- after a loading screen (boat, portal...), blocks are looked at again a moment later:
+    -- data not ready right away (durability...) does not stay "N/A"
+    function()
+        local real, n = ns.UpdateAll, 0
+        ns.UpdateAll = function() n = n + 1 end
+        Fire("PLAYER_ENTERING_WORLD")
+        local queued = __timers; __timers = {}
+        for _, fn in ipairs(queued) do fn() end
+        ns.UpdateAll = real
+        assert(n >= 3, "blocks updated again after the loading screen: " .. n)
+    end,
     -- changelog sorted by kind since 1.0.0 (older entries: a plain list)
     function()
         local sections = ns.ChangelogSections(ns.CHANGELOG[1], "fr")

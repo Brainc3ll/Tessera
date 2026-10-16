@@ -2585,6 +2585,11 @@ eventFrame:SetScript("OnEvent", function(_, event)
                 C_Timer.After(1, function() ns:RefreshAllBlocks() end)
             end
             ns:UpdateAll()
+            -- after every loading screen (boat, portal, instance...), some game data is
+            -- not ready yet (durability, item level, bags...): blocks that only update on
+            -- their event would keep showing "N/A". A second and a third look settle them.
+            C_Timer.After(1, function() ns:UpdateAll() end)
+            C_Timer.After(4, function() ns:UpdateAll() end)
         end
     elseif event == "PLAYER_MONEY" then
         ns:RecordMoney()

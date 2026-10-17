@@ -26,6 +26,11 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - **1.0.0** (4 novembre) : la rc6 plus les corrections éventuelles. Au moment de la publier : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, avant le commit « Prepare 1.0.0-rc6 »), version dans le .toc.
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche plus bas.
 
+## Bugs à corriger pour la 1.0.0 (vidéos de Braincell1980, 17/10, rc6)
+- Deuxième rangée (blocs « masquer si vide ») : quand un bloc toujours visible (Cuisine) y est posé et que les autres se masquent, il reste seul et s'étire sur toute la largeur de la barre (« 3 / 75 » centré sur toute la rangée).
+- En posant le groupe BugSack + Mémoire des addons au bout de la deuxième rangée, Mémoire des addons et Cuisine se superposent (textes « 32.3 » et « 3/75 » l'un sur l'autre) jusqu'au verrouillage.
+- À vérifier : l'infobulle de Mémoire des addons donne 56 Mo pour Tessera, beaucoup trop pour des barres d'infos (fuite ou mesure fausse ?).
+
 ## Textes sur CurseForge
 - 16/10 : import anglais par Braincell1980 avec suppression des phrases absentes (43 textes retirés), puis import français. Méthode à garder pour les gros ménages.
 - 17/10 : `TIP_COLORBLIND` supprimé à la main ; la rc6 a envoyé les nouveaux textes (couleurs des seuils, `HELP_LOOK_11`) et 5 textes corrigés à la relecture (`HELP_PLACE_12`, `TUTORIAL_5`, `SECTION_EDGES`, `HELP_GENERAL_3`, `HELP_BLOCKS_4` en français).

@@ -4,7 +4,7 @@ Ce dossier `docs/` n'est pas inclus dans l'addon (voir `.pkgmeta`) : il sert au 
 
 ## Ce qui est automatique
 
-Un seul bouton publie partout : le workflow **Package and release** (onglet Actions du dépôt GitHub → « Run workflow », ou `gh workflow run release.yml`). Dans l'ordre, il :
+Un seul bouton publie partout : le workflow **Package and release** (onglet Actions du dépôt GitHub → « Run workflow », ou `gh workflow run release.yml` ; si GraphQL est bloqué : `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`). Pousser un tag `v…` lance aussi le workflow. Dans l'ordre, il :
 
 1. **vérifie la documentation** (`tools/check_docs.lua`, voir plus bas) : si elle n'est pas à jour, rien n'est publié ;
 2. lit la version dans `Tessera.toc` et crée le tag `v<version>` ;

@@ -16,6 +16,10 @@ Bouton du mode Édition qui respire, question seulement après avoir utilisé le
 
 Noms complets de WoW Forever (Or, profils, jeu de règles), police de FlareUI, raccourcis « Cadre / Texte de tous les blocs », style FlareUI (lignes bronze, barre de progression texturée), couleurs des seuils.
 
+## Publiée en rc6 le 17/10
+
+Tout ce qui précède est dans la 1.0.0-rc6 (GitHub, CurseForge, Wago).
+
 ## Reste à faire
 
 - [ ] Instance : profil donjon, masquer en instance, clics sur les blocs en combat ; aucune erreur Lua.

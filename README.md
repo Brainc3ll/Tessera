@@ -115,7 +115,7 @@ Help tab inside the game explains everything.
   on automatically when such an addon is installed (Tessera then shows nothing itself), that can
   be turned off to use both.
 - Look tab: styles, how groups look, screen edges, ready-made layouts, blocks in front of or behind
-  Blizzard's frames, and sharing, in one place.
+  Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
 - 19 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an

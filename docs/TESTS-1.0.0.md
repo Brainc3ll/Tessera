@@ -1,6 +1,6 @@
 # Tests de la 1.0.0 (avant le 22 octobre)
 
-Version testée : **Tessera-1.0.0-test4.zip**, puis **Tessera-1.0.0-test10.zip**, puis **Tessera-1.0.0-test12.zip**, puis **Tessera-1.0.0-test13.zip** pour le point ci-dessous. Le 16/10, Braincell1980 valide tout le reste à 99 % :
+Version testée : **Tessera-1.0.0-test4.zip**, puis **Tessera-1.0.0-test10.zip**, puis **Tessera-1.0.0-test12.zip**, puis **Tessera-1.0.0-test14.zip** pour les points ci-dessous. Le 16/10, Braincell1980 valide tout le reste à 99 % :
 nouveau joueur, Styles mélangés, barre d'XP de FlareUI, bloc Date et dispositions, deuxième rangée,
 changelog trié, et le nouveau build de WoW Forever du 16/10 (sans FlareUI, cassé par ce build).
 
@@ -12,11 +12,13 @@ Devant / derrière (bandeau, question au verrouillage, onglet Apparence, bouton 
 
 Bouton du mode Édition qui respire, question seulement après avoir utilisé le bouton, plus de « n/d » après un chargement (bateau, pierre de foyer).
 
-## Nouveau dans la test13 (5 min)
+## Nouveau dans la test13 et la test14 (5 min)
 
 - [ ] Infobulle du bloc Or : tes personnages apparaissent avec leur nom complet (« Ellen Kemp ») ; deux personnages au même prénom ont chacun leur ligne (se connecter avec chacun une fois).
 - [ ] Ton profil (par personnage, si tu en utilises) et ton or sont gardés après la mise à jour.
 - [ ] Avec FlareUI : changer la police des raccourcis dans FlareUI, puis reprendre le style FlareUI dans Tessera : le texte des blocs prend cette police.
+
+- [ ] Onglet Apparence, sous le style : « Cadre de tous les blocs... » ouvre l'onglet Blocs sur « Tous les blocs », sous-onglet Cadre ; « Texte de tous les blocs... » pareil sur Texte. Les deux boutons sont côte à côte, comme « Exporter le style » et « Exporter la disposition » : textes lisibles, rien de coupé.
 
 ## Reste à faire
 

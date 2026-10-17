@@ -780,6 +780,12 @@ for _, step in ipairs({
         ns.charKey = before
         _G.RegionalUniqueNamesEnabled, _G.UnitNameUnmodified = realRegional, realUnmod
     end,
+    -- Look tab shortcuts: the Blocks tab on "All blocks", Frame or Text
+    function()
+        ns:OpenAllBlocks(3)
+        ns:OpenAllBlocks(2)
+        ns:ToggleOptions()
+    end,
     -- changelog sorted by kind since 1.0.0 (older entries: a plain list)
     function()
         local sections = ns.ChangelogSections(ns.CHANGELOG[1], "fr")

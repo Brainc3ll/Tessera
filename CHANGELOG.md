@@ -20,6 +20,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Improvements
 
 - "Around the gryphons" layout: two neat rectangles, the date and the clock in the corner on the right (pick the layout again to get it).
+- Look tab: "Frame of all blocks..." and "Text of all blocks..." lead straight to those settings (Blocks tab, All blocks).
 
 ### Fixes
 

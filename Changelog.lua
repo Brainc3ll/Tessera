@@ -99,10 +99,14 @@ ns.CHANGELOG = {
               en = {
                 "\"Around the gryphons\" layout: two neat rectangles, the date and the clock in the corner on the "
                     .. "right (pick the layout again to get it).",
+                "Look tab: \"Frame of all blocks...\" and \"Text of all blocks...\" lead straight to those settings "
+                    .. "(Blocks tab, All blocks).",
               },
               fr = {
                 "Disposition « Autour des gryphons » : deux rectangles nets, la date et l'heure dans le coin à "
                     .. "droite (choisis à nouveau la disposition pour l'avoir).",
+                "Onglet Apparence : « Cadre de tous les blocs... » et « Texte de tous les blocs... » mènent tout droit "
+                    .. "à ces réglages (onglet Blocs, Tous les blocs).",
               } },
             { kind = "fixed",
               en = {

@@ -1666,6 +1666,16 @@ local function BuildLookPage(page)
     Place(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
         function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
         function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), 1)
+    -- the frame and text of every block are set in the Blocks tab ("All blocks"): two
+    -- shortcuts here, where players look first (not in DataBroker mode: no blocks)
+    -- side by side, on one row
+    local function HasBlocks() return not ns.brokerModeActive end
+    local half = (COL_W - 6) / 2
+    local frameAll = Place(CreateButton(page, L.LOOK_ALL_FRAME, function() ns:OpenAllBlocks(3) end,
+        HasBlocks, half, L.TIP_LOOK_ALL_FRAME), 1)
+    local textAll = CreateButton(page, L.LOOK_ALL_TEXT, function() ns:OpenAllBlocks(2) end,
+        HasBlocks, half, L.TIP_LOOK_ALL_TEXT)
+    textAll:SetPoint("LEFT", frameAll, "RIGHT", 6, 0)
 
     P.Gap(1, 10)
     Place(CreateHeader(page, L.SECTION_GROUP_LOOK), 1)
@@ -1684,12 +1694,14 @@ local function BuildLookPage(page)
     -- sharing the style or the layout alone (the import window reads both, and profiles)
     P.Gap(1, 10)
     Place(CreateHeader(page, L.SECTION_SHARE), 1)
-    Place(CreateButton(page, L.EXPORT_STYLE, function()
+    -- the two exports side by side, on one row
+    local exportStyle = Place(CreateButton(page, L.EXPORT_STYLE, function()
         ns:ShowTextWindow(L.EXPORT_STYLE_TITLE, ns:ExportStyle())
-    end, nil, nil, L.TIP_EXPORT_STYLE), 1)
-    Place(CreateButton(page, L.EXPORT_LAYOUT, function()
+    end, nil, half, L.TIP_EXPORT_STYLE), 1)
+    local exportLayout = CreateButton(page, L.EXPORT_LAYOUT, function()
         ns:ShowTextWindow(L.EXPORT_LAYOUT_TITLE, ns:ExportLayout())
-    end, nil, nil, L.TIP_EXPORT_LAYOUT), 1)
+    end, nil, half, L.TIP_EXPORT_LAYOUT)
+    exportLayout:SetPoint("LEFT", exportStyle, "RIGHT", 6, 0)
     Place(CreateButton(page, L.IMPORT_SHARED, function() ns:OpenImportWindow() end,
         nil, nil, L.TIP_IMPORT_SHARED), 1)
 
@@ -2220,6 +2232,15 @@ function ns:OpenOptions(pageIndex, blockKey)
     panel:Show()
     ns:ApplyOptionsMode()
     ns.ShowOptionsPage(pageIndex or PAGE_BLOCKS)
+end
+
+-- Opens the Blocks tab on "All blocks", at a sub-tab (2 Text, 3 Frame): the shortcuts
+-- of the Look tab, where players look first for the look of every block
+function ns:OpenAllBlocks(sub)
+    selected = ALL
+    self:OpenOptions(PAGE_BLOCKS)
+    if ns.ShowBlockSub then ns.ShowBlockSub(sub) end
+    ns:RefreshOptions()
 end
 
 -- Opens the Blocks tab with a given block selected (the DataBroker tab in DataBroker mode)

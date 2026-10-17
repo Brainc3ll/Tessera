@@ -565,7 +565,10 @@ function ns:UpdateLayout()
     end
     -- spacersOnly: in a bar stretched over the screen width, only its spacers take
     -- the extra room (the blocks keep their size); without spacers, all share it
-    local function Fill(rootKey, total, spacersOnly)
+    -- atMostDouble: a second row only shares the base bar's width when its blocks at
+    -- most double their width; otherwise (one or two blocks left, the others hidden
+    -- because empty) it keeps their own sizes, centered under the bar
+    local function Fill(rootKey, total, spacersOnly, atMostDouble)
         local members, horizontal = GroupMembers(rootKey)
         if not horizontal or #members == 0 then return end
         local sum = 0
@@ -573,6 +576,7 @@ function ns:UpdateLayout()
         sum = sum + self:JointGap(rootKey) * (#members - 1) -- the joints between tiles take their share
         local extra = math.floor(total - sum)
         if extra <= 0 then return end
+        if atMostDouble and extra > sum then return end
         local takers = members
         if spacersOnly then
             local spacers = {}
@@ -606,7 +610,7 @@ function ns:UpdateLayout()
                     local baseMembers = GroupMembers(self:GetRoot(ns.HangTarget(a)))
                     local total = 0
                     for _, k in ipairs(baseMembers) do total = total + need[k][1] end
-                    Fill(key, total)
+                    Fill(key, total, false, true)
                 end
             end
         end
@@ -1263,6 +1267,36 @@ end
 -- reference (offset from GetCenterOffset in Core.lua); only when the offset changed.
 -- width: final width of each visible block, from UpdateLayout.
 function ns:CenterAnchoredGroups(width)
+    -- a second row hangs below (above) its whole base group: when a block of that group
+    -- reaches lower (higher) than the block the row hangs from (a column merged into the
+    -- bar), the row moves down (up) by that much instead of covering it
+    for key in pairs(width) do
+        local cfg, f = self.db.blocks[key], self.frames[key]
+        local below = cfg and cfg.anchor and ns.HangTarget(cfg.anchor)
+        local base = below and self.frames[below]
+        if base and not self:GetDockTarget(key) then
+            local _, bb, _, bt = self:GetRectUI(base)
+            local baseRoot, depth = self:GetRoot(below), 0
+            if bb then
+                for k in pairs(width) do
+                    local o = self.frames[k]
+                    if k ~= below and o and self:GetRoot(k) == baseRoot then
+                        local _, ob, _, ot = self:GetRectUI(o)
+                        if ob and cfg.anchor.below then depth = math.max(depth, bb - ob)
+                        elseif ot then depth = math.max(depth, ot - bt) end
+                    end
+                end
+            end
+            -- UIParent units to this block's own units
+            local drop = math.floor(depth * UIParent:GetEffectiveScale() / f:GetEffectiveScale() + 0.5)
+            if drop < 1 then drop = 0 end
+            if (f.hangDrop or 0) ~= drop then
+                f.hangDrop = drop
+                f:ClearAllPoints()
+                self:AnchorToFrame(f, cfg)
+            end
+        end
+    end
     for key in pairs(width) do
         local cfg, f = self.db.blocks[key], self.frames[key]
         -- a row aligned on one edge (cfg.anchor.align) is not centered

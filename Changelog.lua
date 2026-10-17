@@ -37,6 +37,30 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.0.0-rc6-hotfix",
+        date = "", -- set when the version is published
+        sections = {
+            { kind = "fixed",
+              en = {
+                "A block left alone in the second row (the others hidden because they are empty) keeps its own "
+                    .. "width instead of stretching over the whole bar.",
+                "A group of several rows merged into a bar that has a second row no longer covers that row: the "
+                    .. "row moves down below it.",
+                "Values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar "
+                    .. "each time: much less work, and much less memory shown for Tessera.",
+              },
+              fr = {
+                "Un bloc resté seul dans la deuxième rangée (les autres masqués parce que vides) garde sa propre "
+                    .. "largeur au lieu de s'étirer sur toute la barre.",
+                "Un groupe de plusieurs rangées collé à une barre qui a une deuxième rangée ne recouvre plus cette "
+                    .. "rangée : elle descend en dessous.",
+                "Les valeurs qui changent chaque seconde (FPS, latence, coordonnées, heure) ne reconstruisent plus "
+                    .. "toutes les barres à chaque fois : beaucoup moins de travail, et beaucoup moins de mémoire "
+                    .. "affichée pour Tessera.",
+              } },
+        },
+    },
+    {
         version = "1.0.0-rc6",
         date = "2026-10-17",
         sections = {

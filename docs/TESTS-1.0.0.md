@@ -20,6 +20,12 @@ Noms complets de WoW Forever (Or, profils, jeu de règles), police de FlareUI, r
 
 Tout ce qui précède est dans la 1.0.0-rc6 (GitHub, CurseForge, Wago).
 
+## Test17 = 1.0.0-rc6-hotfix (5 min)
+
+- [ ] Poser Cuisine (ou un autre bloc toujours visible) au bout de la deuxième rangée, verrouiller : elle garde sa taille, centrée sous la barre, au lieu de s'étirer sur toute la largeur.
+- [ ] Coller le groupe BugSack + Mémoire des addons au bout de la barre du haut : rien ne se superpose, la deuxième rangée descend sous Mémoire des addons.
+- [ ] Bloc Mémoire des addons : la mémoire de Tessera reste basse (quelques Mo) après 10 minutes de jeu, au lieu de 56 Mo.
+
 ## Reste à faire
 
 - [ ] Instance : profil donjon, masquer en instance, clics sur les blocs en combat ; aucune erreur Lua.

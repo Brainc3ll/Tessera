@@ -1,4 +1,4 @@
-# À reprendre (état au 17 octobre 2026)
+# À reprendre (état au 17 octobre 2026, après-midi)
 
 ## Calendrier jusqu'à la 1.0.0 (validé le 13/10)
 La bêta de WoW Forever ferme le **22 octobre** : après, plus aucun test en jeu avant la sortie.
@@ -26,10 +26,11 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - **1.0.0** (4 novembre) : la rc6 plus les corrections éventuelles. Au moment de la publier : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, avant le commit « Prepare 1.0.0-rc6 »), version dans le .toc.
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche plus bas.
 
-## Bugs à corriger pour la 1.0.0 (vidéos de Braincell1980, 17/10, rc6)
-- Deuxième rangée (blocs « masquer si vide ») : quand un bloc toujours visible (Cuisine) y est posé et que les autres se masquent, il reste seul et s'étire sur toute la largeur de la barre (« 3 / 75 » centré sur toute la rangée).
-- En posant le groupe BugSack + Mémoire des addons au bout de la deuxième rangée, Mémoire des addons et Cuisine se superposent (textes « 32.3 » et « 3/75 » l'un sur l'autre) jusqu'au verrouillage.
-- À vérifier : l'infobulle de Mémoire des addons donne 56 Mo pour Tessera, beaucoup trop pour des barres d'infos (fuite ou mesure fausse ?).
+## 1.0.0-rc6-hotfix (préparée le 17/10, zip test17, pas publiée)
+Bugs vus dans les vidéos de Braincell1980 (17/10, rc6), corrigés :
+- un bloc resté seul dans la deuxième rangée (Cuisine) ne s'étire plus sur toute la barre : la rangée ne prend la largeur de la barre que si ses blocs doublent au plus leur largeur (`Fill`, `atMostDouble`, Merge.lua) ;
+- un groupe de plusieurs rangées collé à la barre (BugSack + Mémoire des addons) ne recouvre plus la deuxième rangée : elle descend sous le bloc le plus bas du groupe (`hangDrop`, `CenterAnchoredGroups`) ;
+- 56 Mo pour Tessera : chaque changement de texte (FPS, latence, coordonnées toutes les 0,25 s, heure) relançait toute la mise en page (≈ 50 Ko de déchets à chaque fois). Maintenant seulement si la taille du texte change. À vérifier en jeu avec le bloc Mémoire des addons.
 
 ## Textes sur CurseForge
 - 16/10 : import anglais par Braincell1980 avec suppression des phrases absentes (43 textes retirés), puis import français. Méthode à garder pour les gros ménages.

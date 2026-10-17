@@ -757,6 +757,52 @@ for _, step in ipairs({
         assert(not cfg.dock, "the row is not merged into the bar")
         ns:ResetProfile("top")
     end,
+    -- a second row: a lone block left in it keeps its own width (not the whole bar's);
+    -- a column merged into the bar pushes the row down instead of being covered;
+    -- a text that changes without changing size asks for no new layout
+    function()
+        ns:ResetProfile("top")
+        ns:UpdateLayout()
+        local rowKey, base
+        for key, cfg in pairs(ns.db.blocks) do
+            if cfg.enabled and cfg.anchor and cfg.anchor.below then rowKey, base = key, cfg.anchor.below end
+        end
+        assert(rowKey, "the top bar has a second row")
+        local row = ns:GetSubtree(rowKey)
+        for k in pairs(row) do if k ~= rowKey and ns.frames[k] then ns.frames[k]:Hide() end end
+        ns.frames[rowKey]:Show()
+        ns:UpdateLayout()
+        local barWidth = 0
+        for k in pairs(ns:GetSubtree(ns:GetRoot(base))) do
+            local f = ns.frames[k]
+            if f and f:IsShown() then barWidth = barWidth + f:GetWidth() end
+        end
+        assert(ns.frames[rowKey]:GetWidth() < barWidth / 2, "a lone block in the second row is not stretched")
+        -- a block of the bar reaches 20 below the block the row hangs from
+        local baseGroup = ns:GetSubtree(ns:GetRoot(base))
+        local deep
+        for k in pairs(baseGroup) do if k ~= base and ns.frames[k] and ns.frames[k]:IsShown() then deep = k end end
+        local realRect = ns.GetRectUI
+        ns.GetRectUI = function(_, frame)
+            if frame.key == deep then return 300, 60, 340, 100 end
+            if baseGroup[frame.key] then return 100, 80, 140, 100 end
+            return realRect(ns, frame)
+        end
+        ns:UpdateLayout()
+        ns.GetRectUI = realRect
+        assert(ns.frames[rowKey].hangDrop == 20, "the row moves under the deepest block: " .. tostring(ns.frames[rowKey].hangDrop))
+        ns:UpdateLayout()
+        assert((ns.frames[rowKey].hangDrop or 0) == 0, "and back up when it is gone")
+        -- same size, new text: no layout
+        local f, calls = ns.frames.fps, 0
+        local real = ns.RequestLayout
+        ns.RequestLayout = function() calls = calls + 1 end
+        f.lastText = "something else"
+        ns:UpdateBlock("fps")
+        ns.RequestLayout = real
+        assert(calls == 0, "a text of the same size asks for no layout")
+        ns:ResetProfile("top")
+    end,
     -- Gold block: forget a character (deleted or renamed) from its tooltip
     function()
         ns:RecordMoney()
@@ -830,8 +876,12 @@ for _, step in ipairs({
     end,
     -- changelog sorted by kind since 1.0.0 (older entries: a plain list)
     function()
-        local sections = ns.ChangelogSections(ns.CHANGELOG[1], "fr")
+        local rc6
+        for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.0.0-rc6" then rc6 = e end end
+        local sections = ns.ChangelogSections(rc6, "fr")
         assert(not sections[1].title and sections[2].title == "Nouveautés", "changelog sections")
+        local top = ns.ChangelogSections(ns.CHANGELOG[1], "fr")
+        assert(top[1].title, "an entry without intro starts with a titled section")
         local old = ns.ChangelogSections(ns.CHANGELOG[#ns.CHANGELOG], "en")
         assert(#old == 1 and not old[1].title and #old[1].lines > 0, "old entries: one plain list")
     end,

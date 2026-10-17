@@ -1679,7 +1679,17 @@ function ns:UpdateBlock(key)
         if f.lastText == nil then f.text:SetText("") end -- forces a redraw
         f.lastText = text
         f.text:SetText(text)
-        self:RequestLayout()
+        -- a new layout only when the text needs another size: values that change every
+        -- second (FPS, latency, coordinates, clock) would otherwise rebuild every bar each
+        -- time, and that garbage made Tessera look like it used tens of megabytes
+        local text_ = f.text
+        local tw = (text_.GetUnboundedStringWidth and text_:GetUnboundedStringWidth()) or text_:GetStringWidth() or 0
+        local th = text_:GetStringHeight() or 0
+        tw, th = math.ceil(tw), math.ceil(th)
+        if f.textW ~= tw or f.textH ~= th then
+            f.textW, f.textH = tw, th
+            self:RequestLayout()
+        end
     end
 
     if cfg.showIcon then
@@ -2050,13 +2060,13 @@ function ns:AnchorToFrame(f, cfg)
             -- row aligned on one edge of the block below instead of centered
             -- (above a group in a screen corner: starts at the screen's edge)
             if anchor.align == "LEFT" then
-                f:SetPoint("BOTTOMLEFT", base, "TOPLEFT", 0, anchor.gap or 0)
+                f:SetPoint("BOTTOMLEFT", base, "TOPLEFT", 0, (anchor.gap or 0) + (f.hangDrop or 0))
             elseif anchor.align == "RIGHT" then
-                f:SetPoint("BOTTOMRIGHT", base, "TOPRIGHT", 0, anchor.gap or 0)
+                f:SetPoint("BOTTOMRIGHT", base, "TOPRIGHT", 0, (anchor.gap or 0) + (f.hangDrop or 0))
             elseif anchor.above then
-                f:SetPoint("BOTTOMLEFT", base, "TOPLEFT", offset, anchor.gap or 0)
+                f:SetPoint("BOTTOMLEFT", base, "TOPLEFT", offset, (anchor.gap or 0) + (f.hangDrop or 0))
             else
-                f:SetPoint("TOPLEFT", base, "BOTTOMLEFT", offset, -(anchor.gap or 0))
+                f:SetPoint("TOPLEFT", base, "BOTTOMLEFT", offset, -(anchor.gap or 0) - (f.hangDrop or 0))
             end
             return true
         end

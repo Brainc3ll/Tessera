@@ -3,6 +3,14 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0-rc6-hotfix — 
+
+### Fixes
+
+- A block left alone in the second row (the others hidden because they are empty) keeps its own width instead of stretching over the whole bar.
+- A group of several rows merged into a bar that has a second row no longer covers that row: the row moves down below it.
+- Values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar each time: much less work, and much less memory shown for Tessera.
+
 ## 1.0.0-rc6 — 2026-10-17
 
 - Release candidate 6, the last one before 1.0.0 (November 4): everything planned for 1.0.0 is in. New here? Type /tessera: the quick tour shows the essentials, and the demo mode (Help tab) shows every block and every style.

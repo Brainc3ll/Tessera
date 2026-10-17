@@ -14,7 +14,7 @@ Bouton du mode Édition qui respire, question seulement après avoir utilisé le
 
 ## Nouveau dans la test13 et la test14 (5 min)
 
-- [ ] Infobulle du bloc Or : tes personnages apparaissent avec leur nom complet (« Ellen Kemp ») ; deux personnages au même prénom ont chacun leur ligne (se connecter avec chacun une fois).
+- [ ] Infobulle du bloc Or : tes personnages apparaissent avec leur nom complet (« Ellen Kemp ») ; deux personnages au même prénom ont chacun leur ligne (se connecter avec chacun une fois). Un personnage d'un autre jeu de règles (PvP par exemple) a sa propre ligne, suivie du nom du jeu de règles.
 - [ ] Ton profil (par personnage, si tu en utilises) et ton or sont gardés après la mise à jour.
 - [ ] Avec FlareUI : changer la police des raccourcis dans FlareUI, puis reprendre le style FlareUI dans Tessera : le texte des blocs prend cette police.
 

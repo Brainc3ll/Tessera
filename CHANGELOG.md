@@ -30,7 +30,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - A second row ("Double bar", the rows of blocks that hide when empty) dropped right against its bar keeps its place and its full width: it merged into the bar and shrank, its names cut short.
 - Applying a ready-made layout keeps your style (it went back to the automatic one).
 - After a loading screen (boat, portal, instance), the durability and other blocks no longer stay on "n/a": they are read again once the game is ready.
-- WoW Forever characters with the same first name (Ellen Kemp, Ellen Sept) no longer share their gold line and their profile: each one is recognized by its full name, and the FlareUI styles find FlareUI's font for it again.
+- WoW Forever characters with the same first name (Ellen Kemp, Ellen Sept) no longer share their gold line and their profile: each one is recognized by its full name and its ruleset, and the FlareUI styles find FlareUI's font for it again.
 
 ## 1.0.0-rc5 — 2026-10-15
 

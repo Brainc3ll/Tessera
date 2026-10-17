@@ -789,29 +789,36 @@ for _, step in ipairs({
         ns.UpdateAll = real
         assert(n >= 3, "blocks updated again after the loading screen: " .. n)
     end,
-    -- WoW Forever names characters "First name Surname" (unique in the region): that full
-    -- name is the character's key, and data saved under the earlier key moves to it
+    -- WoW Forever names characters "First name Surname": the full name and the realm (ruleset)
+    -- are the character's key, and data saved under the earlier keys moves to it
     function()
         local realRegional, realUnmod = _G.RegionalUniqueNamesEnabled, _G.UnitNameUnmodified
         _G.RegionalUniqueNamesEnabled = function() return true end
         _G.UnitNameUnmodified = function() return "Ellen", "Kemp" end
-        assert(ns.CharacterKey() == "Ellen Kemp", "full name as key: " .. ns.CharacterKey())
+        local realm = GetRealmName()
+        local key = "Ellen Kemp-" .. realm
+        assert(ns.CharacterKey() == key, "full name and realm as key: " .. ns.CharacterKey())
         local old = ns.LegacyCharacterKey()
         local before = ns.charKey
         ns.sv.charProfiles[old] = "Mine"
         ns.sv.chars[old] = { money = 42, class = "MAGE" }
+        ns.sv.goldHistory = ns.sv.goldHistory or {}
+        ns.sv.goldHistory["Ellen Kemp"] = { 1 } -- saved by a 1.0.0 test version
         ns.charKey = ns.CharacterKey()
         ns:MigrateCharacterKey(old)
-        assert(ns.sv.charProfiles["Ellen Kemp"] == "Mine" and not ns.sv.charProfiles[old], "profile moved")
-        assert(ns.sv.chars["Ellen Kemp"].money == 42 and not ns.sv.chars[old], "gold moved")
-        assert(ns.ShortCharName("Ellen Kemp") == "Ellen Kemp", "full name shown as is")
-        -- FlareUI's font, read from its AceDB profile under the new key
+        ns:MigrateCharacterKey(ns.TestCharacterKey())
+        assert(ns.sv.charProfiles[key] == "Mine" and not ns.sv.charProfiles[old], "profile moved")
+        assert(ns.sv.chars[key].money == 42 and not ns.sv.chars[old], "gold moved")
+        assert(ns.sv.goldHistory[key] and not ns.sv.goldHistory["Ellen Kemp"], "test key moved")
+        assert(ns.ShortCharName(key) == "Ellen Kemp", "same realm: full name only")
+        assert(ns.ShortCharName("Ellen Kemp-Other PvP") == "Ellen Kemp-Other PvP", "other ruleset: with its name")
+        -- FlareUI's font, read from its AceDB profile under AceDB's key (the full name alone)
         _G.FlareUI2_DB = { profileKeys = { ["Ellen Kemp"] = "Perso" },
             profiles = { Perso = { actionbars = { hotkeyFont = { face = "Friz Quadrata TT", flags = "NONE" } } } } }
         local theme = ns:GetThemeInfo("flareui2")
         assert(theme, "FlareUI style")
         _G.FlareUI2_DB = nil
-        ns.sv.charProfiles["Ellen Kemp"], ns.sv.chars["Ellen Kemp"] = nil, nil
+        ns.sv.charProfiles[key], ns.sv.chars[key], ns.sv.goldHistory[key] = nil, nil, nil
         ns.charKey = before
         _G.RegionalUniqueNamesEnabled, _G.UnitNameUnmodified = realRegional, realUnmod
     end,

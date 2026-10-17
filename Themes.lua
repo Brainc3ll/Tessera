@@ -61,9 +61,9 @@ local function FlareFont()
         local db = _G[name]
         if type(db) == "table" and type(db.profiles) == "table" then
             -- AceDB's key for this character: "Name - Realm", or on WoW Forever the full
-            -- name alone (same rule as ns.CharacterKey, written by AceDB)
+            -- name alone (AceDB's rule; Tessera's own key adds the realm)
             local keys = type(db.profileKeys) == "table" and db.profileKeys or {}
-            local full = ns.CharacterKey and ns.CharacterKey()
+            local full = ns.FullCharName and ns.FullCharName()
             local profileName = (full and keys[full])
                 or keys[(UnitName("player") or "") .. " - " .. (GetRealmName() or "")] or "Default"
             local profile = db.profiles[profileName]

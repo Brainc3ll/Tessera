@@ -695,6 +695,7 @@ local function InitDB()
     ns.sv = sv
     ns.charKey = ns.CharacterKey()
     ns:MigrateCharacterKey(ns.LegacyCharacterKey())
+    ns:MigrateCharacterKey(ns.TestCharacterKey())
     ns:ApplyLevelPalette()
     -- already in a dungeon at login / reload: start directly with its profile
     if ns.GetSituationProfile then ns.profileOverride = ns:GetSituationProfile() end
@@ -707,7 +708,9 @@ end
 -- profile of each character). WoW Forever names characters "First name Surname",
 -- unique in the whole region (no realm): the full name is the key there, as AceDB
 -- does. Elsewhere: "Name-Realm". (RegionalUniqueNamesEnabled is WoW Forever's own.)
-function ns.CharacterKey()
+-- WoW Forever's full name ("Ellen Kemp", first name and surname) when the game uses
+-- regional unique names, otherwise nil
+function ns.FullCharName()
     local regional = _G["RegionalUniqueNamesEnabled"]
     local ok, on = pcall(function() return regional and regional() end)
     if ok and on and UnitNameUnmodified then
@@ -716,7 +719,13 @@ function ns.CharacterKey()
             return (surname and surname ~= "") and (name .. " " .. surname) or name
         end
     end
-    return (UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
+end
+
+-- The character's key in Tessera's saved data: "Name-Realm", with the full name on WoW
+-- Forever ("Ellen Kemp-<ruleset>"): two characters never share it, even with the same
+-- full name on two rulesets
+function ns.CharacterKey()
+    return (ns.FullCharName() or UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
 end
 
 -- The key earlier versions used ("Name-Realm", the first name only on WoW Forever)
@@ -724,7 +733,12 @@ function ns.LegacyCharacterKey()
     return (UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
 end
 
--- Data saved under the earlier key moves to the new one, once (nothing is lost: the
+-- The key of the 1.0.0 test versions on WoW Forever: the full name alone
+function ns.TestCharacterKey()
+    return ns.FullCharName()
+end
+
+-- Data saved under an earlier key moves to the new one, once (nothing is lost: the
 -- character keeps its profile, its gold and its gold history)
 function ns:MigrateCharacterKey(old)
     local new, sv = self.charKey, self.sv

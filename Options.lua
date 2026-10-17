@@ -1218,13 +1218,19 @@ local function BuildGeneralPage(page)
     -- Accessibility (account-wide: they concern the player, not a layout)
     P.Gap(2, 8)
     Place(CreateHeader(page, L.SECTION_ACCESSIBILITY), 2)
-    Place(CreateCheck(page, L.COLORBLIND,
-        function() return ns.sv.colorblind end,
+    -- threshold colors: automatic (soft with a FlareUI style), bright, soft, colorblind
+    Place(CreateDropdown(page, L.LEVEL_PALETTE, {
+            { key = "auto", name = L.LEVEL_PALETTE_AUTO },
+            { key = "bright", name = L.LEVEL_PALETTE_BRIGHT },
+            { key = "soft", name = L.LEVEL_PALETTE_SOFT },
+            { key = "colorblind", name = L.COLORBLIND },
+        },
+        function() return ns:GetLevelPalette() end,
         function(v)
-            ns.sv.colorblind = v or nil
+            ns.sv.levelPalette = v ~= "auto" and v or nil
             ns:ApplyLevelPalette()
             ns:UpdateAll()
-        end, nil, L.TIP_COLORBLIND), 2)
+        end, nil, nil, L.TIP_LEVEL_PALETTE), 2)
     Place(CreateCheck(page, L.HIGH_CONTRAST,
         function() return ns.sv.highContrast end,
         function(v)

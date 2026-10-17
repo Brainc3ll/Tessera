@@ -313,16 +313,31 @@ function ns.IsSpacerKey(key)
     return type(key) == "string" and key:sub(1, #SPACER_PREFIX) == SPACER_PREFIX
 end
 
--- Threshold colors: 1 = good, 2 = warning, 3 = critical. The colorblind-friendly
--- palette (blue / orange / purple) replaces them when that option is on.
+-- Threshold colors: 1 = good, 2 = warning, 3 = critical. Account-wide choice
+-- (sv.levelPalette): "bright", "soft" (FlareUI's unit frame tones), "colorblind"
+-- (blue / orange / purple) or nil = automatic: soft with a FlareUI style, bright otherwise.
 ns.LEVEL_COLORS = { "4dff4d", "ffd933", "ff4d4d" }
 local PALETTES = {
-    normal = { "4dff4d", "ffd933", "ff4d4d" },
+    bright = { "4dff4d", "ffd933", "ff4d4d" },
+    -- FlareUI 2.1's "FlareUI" colour palette: health 0.15/0.82/0.15, neutral 0.93/0.78/0.25,
+    -- hostile 0.87/0.27/0.27
+    soft = { "26d126", "edc740", "de4545" },
     colorblind = { "4da6ff", "ffb000", "c060ff" },
 }
+function ns:GetLevelPalette()
+    local sv = self.sv
+    if not sv then return "bright" end
+    -- before 1.0.0 the colorblind palette was a checkbox
+    if sv.colorblind then sv.levelPalette, sv.colorblind = "colorblind", nil end
+    return sv.levelPalette or "auto"
+end
 function ns:ApplyLevelPalette()
-    local palette = (self.sv and self.sv.colorblind) and PALETTES.colorblind or PALETTES.normal
-    for i, hex in ipairs(palette) do ns.LEVEL_COLORS[i] = hex end
+    local key = self:GetLevelPalette()
+    if key == "auto" then
+        local theme = self.db and self.GetTheme and self:GetTheme()
+        key = (theme == "flareui2" or theme == "flareui") and "soft" or "bright"
+    end
+    for i, hex in ipairs(PALETTES[key] or PALETTES.bright) do ns.LEVEL_COLORS[i] = hex end
 end
 
 -- Color of the player's class (for the "class color" options)
@@ -491,6 +506,7 @@ local BLOCK_DEFAULTS = {
     iconDesaturate = false,   -- black and white icon
     separators = false,       -- thin line between merged blocks (see Merge.lua, DrawSeparators)
     separatorColor = { r = 0.8, g = 0.6, b = 0.34, a = 0.5 },
+    barTexture = false,       -- progress bar texture ("lsm:<name>"; false = plain color)
     -- set by some styles (Themes.lua), cleared by the others:
     hideIcons = false,        -- text only (launchers keep their icon)
     monochrome = false,       -- black and white: grey text, no colors in the values, grey icons
@@ -522,7 +538,7 @@ local STYLE_KEYS = {
     "height", "justify", "strata", "font", "fontSize", "outline", "textColor",
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
-    "hideIcons", "monochrome", "textTint", "inkColors",
+    "barTexture", "hideIcons", "monochrome", "textTint", "inkColors",
 }
 ns.STYLE_KEYS = STYLE_KEYS -- also what a style export carries (Profiles.lua)
 
@@ -785,6 +801,7 @@ function ns:LoadProfile()
     end
     -- the automatic style follows the installed UI (e.g. FlareUI 1.x updated to 2.x)
     if self.SyncAutoTheme then pcall(self.SyncAutoTheme, self) end
+    self:ApplyLevelPalette() -- the automatic palette follows the profile's style
     if self.ClearUndo then self:ClearUndo() end
     if self.built then
         self:RefreshAllBlocks()
@@ -1679,13 +1696,26 @@ function ns:UpdateBar(f, cfg, mod, level)
     end
     f.barFraction = fraction
     local hex = level and not cfg.monochrome and self.LEVEL_COLORS[level]
+    local r, g, b, a
     if cfg.monochrome then
-        f.bar:SetColorTexture(0.7, 0.7, 0.7, 0.3)
+        r, g, b, a = 0.7, 0.7, 0.7, 0.3
     elseif hex then
-        f.bar:SetColorTexture(tonumber(hex:sub(1, 2), 16) / 255, tonumber(hex:sub(3, 4), 16) / 255,
-            tonumber(hex:sub(5, 6), 16) / 255, 0.35)
+        r, g, b, a = tonumber(hex:sub(1, 2), 16) / 255, tonumber(hex:sub(3, 4), 16) / 255,
+            tonumber(hex:sub(5, 6), 16) / 255, 0.35
     else
-        f.bar:SetColorTexture(0.35, 0.6, 1, 0.35)
+        r, g, b, a = 0.35, 0.6, 1, 0.35
+    end
+    -- a bar texture from LibSharedMedia (the FlareUI style's "FlareUI Forever"), tinted
+    -- by the color; without it (addon missing), the plain color
+    local file = self:GetBarTextureFile(cfg.barTexture)
+    if file then
+        f.bar:SetTexture(file)
+        f.bar:SetVertexColor(r, g, b, math.min(1, a + 0.15))
+        f.barTextured = true
+    else
+        f.bar:SetVertexColor(1, 1, 1, 1)
+        f.bar:SetColorTexture(r, g, b, a)
+        f.barTextured = nil
     end
     self:ResizeBar(f)
 end
@@ -1696,7 +1726,17 @@ function ns:ResizeBar(f)
     local inner = f:GetWidth() - 2 * (f.inset or 0)
     local w = inner * f.barFraction
     f.bar:SetWidth(math.max(0.01, w))
+    -- a texture is cut at the fill, as a status bar does, not squeezed
+    if f.barTextured then f.bar:SetTexCoord(0, math.max(0.001, f.barFraction), 0, 1)
+    else f.bar:SetTexCoord(0, 1, 0, 1) end
     f.bar:SetShown(w >= 0.5)
+end
+
+-- File of a bar texture setting ("lsm:<name>", a LibSharedMedia status bar), nil if missing
+function ns:GetBarTextureFile(setting)
+    if type(setting) ~= "string" or setting:sub(1, 4) ~= "lsm:" then return nil end
+    local LSM = self:GetLSM()
+    return LSM and LSM:Fetch("statusbar", setting:sub(5), true) or nil
 end
 
 -- Short flash (three pulses) to draw attention to a block

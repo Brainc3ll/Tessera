@@ -135,6 +135,11 @@ ns.themes = {
             cfg.borderSize = thin and 8 or 1
             cfg.borderColor = { r = 0.80, g = 0.60, b = 0.34, a = 1 }
             cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
+            -- lines between merged blocks in the muted bronze of FlareUI's settings panel (#9C7A4A)
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.61, g = 0.48, b = 0.29, a = 0.9 }
+            -- progress bars with FlareUI's "FlareUI Forever" texture (its unit frames' bars)
+            cfg.barTexture = "lsm:FlareUI Forever"
         end,
         window = function()
             -- the Collections tile under a 50% black wash = the tile tinted at half brightness
@@ -611,6 +616,7 @@ function ns:ApplyThemeToCfg(cfg, key)
     cfg.iconShape, cfg.iconSize = "none", 0
     cfg.iconBorderColor = { r = 0, g = 0, b = 0, a = 1 }
     cfg.separators = false -- only some styles draw lines between merged blocks
+    cfg.barTexture = false -- only some styles give the progress bars a texture
     -- text only, black and white, the style's text color: only some styles
     cfg.hideIcons, cfg.monochrome, cfg.inkColors = false, false, false
     cfg.textTint = { r = 1, g = 1, b = 1, a = 0 }
@@ -622,7 +628,7 @@ end
 local function RestyleProfile(self, key, restyle)
     for _, field in ipairs({ "bg", "bgColor", "border", "borderSize", "borderColor", "font", "outline",
                              "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor",
-                             "hideIcons", "monochrome", "textTint", "inkColors" }) do
+                             "barTexture", "hideIcons", "monochrome", "textTint", "inkColors" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end
@@ -639,7 +645,9 @@ end
 function ns:ApplyTheme(key)
     if not byKey[key] or not byKey[key].available() then return false end
     self.db.theme = key
+    self:ApplyLevelPalette() -- the automatic palette follows the style
     RestyleProfile(self, key, true)
+    if self.UpdateAll then self:UpdateAll() end -- values in the new threshold colors
     if self.SkinOptions then self:SkinOptions() end
     return true
 end

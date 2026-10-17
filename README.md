@@ -118,10 +118,11 @@ Help tab inside the game explains everything.
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- 19 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
-  imitation), Square styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
+- 19 styles: matching FlareUI (with FlareUI 2.1's bronze lines and bar texture), ElvUI, EllesmereUI or
+  Blizzard's look (also without that addon, as an imitation), Square styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
   Parchment; Arcane) and styles made of the game's own frames (Royal Seal, Ironforge, Runeblade, Ember, Sylvan).
-- Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options.
+- Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options
+  (threshold colors: bright, soft like FlareUI or colorblind; high contrast; minimum text size).
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
 - Tooltips your way: bigger or smaller, or only while holding Alt (General tab).

@@ -40,7 +40,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 - **In front of or behind Blizzard's frames**: Tessera never moves them. When blocks cover the action bars, the minimap or the buffs, you choose whether they stay in front or behind; placement mode (and Blizzard's Edit Mode) switches every block for a while to see what is underneath.
 - **Tooltips your way**: bigger or smaller, or only while holding Alt.
 - **Help built in**: a quick tour on first launch (try the ready-made layouts right on your screen), a demo mode with every block and a style switcher, a Help tab split into short topics, and a tooltip on every option.
-- **Accessibility**: colorblind-friendly colors, high contrast, minimum text size.
+- **Accessibility**: threshold colors (bright, soft like FlareUI, or colorblind-friendly), high contrast, minimum text size.
 
 ## Getting started
 
@@ -130,7 +130,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 - **Devant ou derrière les cadres de Blizzard** : Tessera ne les déplace jamais. Quand des blocs recouvrent les barres d'action, la minicarte ou les buffs, tu choisis s'ils restent devant ou derrière ; le mode placement (et le mode Édition de Blizzard) bascule tous les blocs un moment pour voir ce qu'il y a dessous.
 - **Infobulles à ta façon** : plus grandes ou plus petites, ou seulement en tenant Alt.
 - **Aide intégrée** : une visite rapide au premier lancement (essaie les dispositions toutes prêtes directement sur ton écran), un mode démo avec tous les blocs et un sélecteur de styles, un onglet Aide découpé en sujets courts, et une infobulle sur chaque option.
-- **Accessibilité** : couleurs pour daltoniens, contraste renforcé, taille de texte minimale.
+- **Accessibilité** : couleurs des seuils (vives, adoucies comme FlareUI, ou pour daltoniens), contraste renforcé, taille de texte minimale.
 
 ## Pour commencer
 

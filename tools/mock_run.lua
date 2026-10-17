@@ -591,6 +591,41 @@ for _, step in ipairs({
         ns:ApplyTheme("flareui2")
         ns.HasFlareUIMedia = has
     end,
+    -- threshold colors: automatic = soft with the FlareUI style, bright otherwise; the old
+    -- colorblind checkbox becomes the colorblind palette; the FlareUI style draws bronze
+    -- lines and textures the progress bars when FlareUI's bar texture is there
+    function()
+        local has, lsm = ns.HasFlareUIMedia, ns.GetLSM
+        ns.HasFlareUIMedia = function() return true end
+        ns.GetLSM = function() return { Fetch = function(_, kind, name)
+            if kind == "statusbar" and name == "FlareUI Forever" then return "flare-forever.tga" end
+            if kind == "border" then return "flare-thin.tga" end
+        end } end
+        ns.sv.levelPalette, ns.sv.colorblind = nil, true
+        assert(ns:GetLevelPalette() == "colorblind" and ns.sv.colorblind == nil, "colorblind not converted")
+        ns.sv.levelPalette = nil
+        ns:ApplyTheme("flareui2")
+        assert(ns.LEVEL_COLORS[1] == "26d126", "FlareUI style: soft colors")
+        local cfg, f = ns.db.blocks.xp, ns.frames.xp
+        assert(cfg.separators and cfg.barTexture == "lsm:FlareUI Forever", "FlareUI style: lines and bar texture")
+        cfg.progressBar = true
+        local file
+        local set = f.bar.SetTexture
+        f.bar.SetTexture = function(self, t) file = t; if set then return set(self, t) end end
+        ns:UpdateBar(f, cfg, { progress = function() return 0.5 end }, 1)
+        assert(file == "flare-forever.tga" and f.barTextured, "progress bar not textured")
+        ns.GetLSM = function() return nil end
+        ns:UpdateBar(f, cfg, { progress = function() return 0.5 end }, 1)
+        assert(not f.barTextured, "without FlareUI: plain color")
+        f.bar.SetTexture = set
+        ns.GetLSM = lsm
+        ns:ApplyTheme("flat")
+        assert(ns.LEVEL_COLORS[1] == "4dff4d" and not cfg.barTexture, "other style: bright, no texture")
+        ns.sv.levelPalette = "soft"; ns:ApplyLevelPalette()
+        assert(ns.LEVEL_COLORS[3] == "de4545", "soft chosen")
+        ns.sv.levelPalette = nil; ns:ApplyLevelPalette()
+        ns.HasFlareUIMedia = has
+    end,
     -- an interface missing for one session gets its style back when it returns
     function()
         local has = ns.HasFlareUIMedia

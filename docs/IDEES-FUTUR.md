@@ -107,3 +107,9 @@ Pistes pour après la 1.0.0 :
 - [Fait, 1.0.0] Tessera ne déplace plus les cadres de Blizzard : blocs devant ou derrière (bouton temporaire en mode placement, question au verrouillage, onglet Apparence).
 - [Fait, 1.0.0] Une seule disposition collée en haut, « Chemin de ronde », à la place des dispositions façon système.
 - Faire découvrir les boutons utiles (16/10, décidé par Braincell1980, après la sortie, vers une 1.0.5) : la bulle d'aide des tutoriels de Blizzard (le système existe sur Forever), une seule fois, qui pointe le bouton et explique à quoi il sert ; ensuite le bouton « respire » (sa propre surbrillance qui s'allume et s'éteint doucement) jusqu'au premier survol. D'abord pour le bouton devant / derrière du mode Édition ; pistes : celui du bandeau, « Mode démo », les flèches de remplacement. Le halo doré carré essayé dans la test9 est écarté (trop moche).
+
+## Idées tirées de FlareUI 2.1.1 (17 octobre 2026)
+
+- [Fait, 1.0.0] Style FlareUI : lignes bronze éteint (#9C7A4A) entre les blocs collés, barres de progression à la texture « FlareUI Forever », couleurs des seuils adoucies (palette « FlareUI » de ses cadres d'unité).
+- Recherche dans les options, avec sous chaque résultat l'endroit du réglage (« Blocs › Tous les blocs › Cadre »), comme la fenêtre de réglages de FlareUI. Plutôt en 1.1.
+- Style « Forever » fait de l'anneau bronze et de la plaque des cadres d'unité du jeu (atlas `UI-HUD-UnitFrame-*-PortraitOn`), avec les icônes en médaillon. FlareUI découpe déjà une image en rond sur Forever (masque) : la question des masques (voir « Formes de blocs ») a sa réponse. Avec la version « look ».

@@ -101,12 +101,23 @@ ns.CHANGELOG = {
                     .. "right (pick the layout again to get it).",
                 "Look tab: \"Frame of all blocks...\" and \"Text of all blocks...\" lead straight to those settings "
                     .. "(Blocks tab, All blocks).",
+                "FlareUI style, with FlareUI 2.1's new looks: bronze lines between merged blocks and, with FlareUI "
+                    .. "installed, progress bars with the texture of its unit frames (pick the style again to get "
+                    .. "them).",
+                "Threshold colors (General tab, Accessibility): automatic, bright, soft like FlareUI's unit frames "
+                    .. "or colorblind. Automatic gives the soft colors with a FlareUI style.",
               },
               fr = {
                 "Disposition « Autour des gryphons » : deux rectangles nets, la date et l'heure dans le coin à "
                     .. "droite (choisis à nouveau la disposition pour l'avoir).",
                 "Onglet Apparence : « Cadre de tous les blocs... » et « Texte de tous les blocs... » mènent tout droit "
                     .. "à ces réglages (onglet Blocs, Tous les blocs).",
+                "Style FlareUI, avec les nouveaux looks de FlareUI 2.1 : lignes bronze entre les blocs collés et, "
+                    .. "avec FlareUI installé, barres de progression à la texture de ses cadres d'unité (choisis à "
+                    .. "nouveau le style pour les avoir).",
+                "Couleurs des seuils (onglet Général, Accessibilité) : automatiques, vives, adoucies comme les cadres "
+                    .. "d'unité de FlareUI ou pour daltoniens. Automatiques donne les couleurs adoucies avec un style "
+                    .. "FlareUI.",
               } },
             { kind = "fixed",
               en = {

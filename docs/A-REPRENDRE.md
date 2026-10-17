@@ -12,7 +12,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 
 ## Versions
 - **1.0.0-rc4** : publiée le 13/10. **1.0.0-rc5** : publiée le 15/10.
-- **1.0.0-rc6** préparée le 17/10 (test16 validée en jeu ; version dans le .toc et le changelog, date à mettre) : attend « on publie ». Pour la 1.0.0, remettre l'intro « Première version stable » (historique git de Changelog.lua). La **1.0.0** (4 novembre) : la rc6 (raccourcis « Cadre / Texte de tous les blocs » dans l'onglet Apparence ; style FlareUI aux looks de FlareUI 2.1.1 et couleurs des seuils, le 17/10) (noms de personnages de WoW Forever : « Prénom Nom » ; Tessera garde nom complet + jeu de règles comme clé, au cas où le même nom existe sur deux jeux de règles ; vu le 17/10), plus l'instance. Depuis la rc5 :
+- **1.0.0-rc6** publiée le 17/10 (GitHub, CurseForge, Wago ; test16 validée en jeu). À faire par Braincell1980 : descriptions CurseForge et Wago, Discord. Pour la 1.0.0, remettre l'intro « Première version stable » (historique git de Changelog.lua). La **1.0.0** (4 novembre) : la rc6 (raccourcis « Cadre / Texte de tous les blocs » dans l'onglet Apparence ; style FlareUI aux looks de FlareUI 2.1.1 et couleurs des seuils, le 17/10) (noms de personnages de WoW Forever : « Prénom Nom » ; Tessera garde nom complet + jeu de règles comme clé, au cas où le même nom existe sur deux jeux de règles ; vu le 17/10), plus l'instance. Depuis la rc5 :
   - correction : la barre du haut suit la barre d'XP de FlareUI même activée après coup ;
   - mode démo : « Styles mélangés » ;
   - nouveau bloc Date ; « Oublier un personnage » dans le bloc Or ;

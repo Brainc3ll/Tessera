@@ -9,7 +9,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - A block left alone in the second row (the others hidden because they are empty) keeps its own width instead of stretching over the whole bar.
 - A group of several rows merged into a bar that has a second row no longer covers that row: the row moves down below it.
-- Values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar each time: much less work, and much less memory shown for Tessera.
+- Much less memory shown for Tessera: values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar each time, and moving blocks in placement mode no longer piles up work at every frame.
 
 ## 1.0.0-rc6 — 2026-10-17
 

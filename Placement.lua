@@ -306,18 +306,21 @@ function ns:UpdateGuides()
     local bestX, bestY, gx, gy = SNAP + 1, SNAP + 1, nil, nil
     for _, m in ipairs(guide.members) do
         local l, b, r, t = ml + m[1], mt + m[2], ml + m[3], mt + m[4]
+        -- (every frame while dragging: no table built here, only comparisons)
         for _, o in ipairs(guide.rects) do
-            for _, x in ipairs({ o[1], o[3] }) do
-                for _, edge in ipairs({ l, r }) do
-                    local d = math.abs(edge - x)
-                    if d < bestX then bestX, gx = d, x end
-                end
+            for xi = 1, 3, 2 do
+                local x = o[xi]
+                local d = math.abs(l - x)
+                if d < bestX then bestX, gx = d, x end
+                d = math.abs(r - x)
+                if d < bestX then bestX, gx = d, x end
             end
-            for _, y in ipairs({ o[2], o[4] }) do
-                for _, edge in ipairs({ b, t }) do
-                    local d = math.abs(edge - y)
-                    if d < bestY then bestY, gy = d, y end
-                end
+            for yi = 2, 4, 2 do
+                local y = o[yi]
+                local d = math.abs(b - y)
+                if d < bestY then bestY, gy = d, y end
+                d = math.abs(t - y)
+                if d < bestY then bestY, gy = d, y end
             end
         end
     end

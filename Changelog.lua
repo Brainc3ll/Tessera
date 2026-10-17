@@ -46,17 +46,18 @@ ns.CHANGELOG = {
                     .. "width instead of stretching over the whole bar.",
                 "A group of several rows merged into a bar that has a second row no longer covers that row: the "
                     .. "row moves down below it.",
-                "Values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar "
-                    .. "each time: much less work, and much less memory shown for Tessera.",
+                "Much less memory shown for Tessera: values that change every second (FPS, latency, coordinates, "
+                    .. "clock) no longer rebuild every bar each time, and moving blocks in placement mode no longer "
+                    .. "piles up work at every frame.",
               },
               fr = {
                 "Un bloc resté seul dans la deuxième rangée (les autres masqués parce que vides) garde sa propre "
                     .. "largeur au lieu de s'étirer sur toute la barre.",
                 "Un groupe de plusieurs rangées collé à une barre qui a une deuxième rangée ne recouvre plus cette "
                     .. "rangée : elle descend en dessous.",
-                "Les valeurs qui changent chaque seconde (FPS, latence, coordonnées, heure) ne reconstruisent plus "
-                    .. "toutes les barres à chaque fois : beaucoup moins de travail, et beaucoup moins de mémoire "
-                    .. "affichée pour Tessera.",
+                "Beaucoup moins de mémoire affichée pour Tessera : les valeurs qui changent chaque seconde (FPS, "
+                    .. "latence, coordonnées, heure) ne reconstruisent plus toutes les barres à chaque fois, et déplacer "
+                    .. "des blocs en mode placement n'accumule plus de travail à chaque image.",
               } },
         },
     },

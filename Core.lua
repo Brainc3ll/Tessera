@@ -1801,8 +1801,9 @@ end
 -- group (a merged group, plus its second row, reacts as one), and show in combat
 -- if asked. Always fully shown while placing blocks.
 local FADE_STEP = 0.25
+local hovered = {} -- reused: UpdateFades runs 10 times a second
 function ns:UpdateFades()
-    local hovered = {}
+    wipe(hovered)
     for key, f in pairs(self.frames) do
         if f:IsShown() and f:IsMouseOver() then hovered[self:GetVisualRoot(key)] = true end
     end

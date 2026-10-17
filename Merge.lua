@@ -154,10 +154,11 @@ function ns:GetEffectiveDock(key)
 end
 
 -- Head block of the group (the one that is docked to nothing)
+-- (no table per call: it runs for every block several times a second; a dock loop,
+-- which AnchorDocked refuses anyway, simply stops after MAX_CHAIN steps)
+local MAX_CHAIN = 500
 function ns:GetRoot(key)
-    local seen = {}
-    while not seen[key] do
-        seen[key] = true
+    for _ = 1, MAX_CHAIN do
         local target = self:GetDockTarget(key)
         if not target then return key end
         key = target
@@ -169,13 +170,13 @@ end
 function ns:GetSubtree(key)
     local set = { [key] = true }
     for k in pairs(self.db.blocks) do
-        local seen, cur = {}, k
-        while cur and not seen[cur] do
+        local cur = k
+        for _ = 1, MAX_CHAIN do
+            if not cur then break end
             if cur == key then
                 set[k] = true
                 break
             end
-            seen[cur] = true
             cur = self:GetDockTarget(cur)
         end
     end
@@ -193,9 +194,8 @@ end
 -- Head of the "visual" group: a second row anchored below a group counts as part
 -- of it, so the borders between the two rows are joined like a single frame
 function ns:GetVisualRoot(key)
-    local root, seen = self:GetRoot(key), {}
-    while not seen[root] do
-        seen[root] = true
+    local root = self:GetRoot(key)
+    for _ = 1, MAX_CHAIN do
         local cfg = self.db.blocks[root]
         local below = cfg and ns.HangTarget(cfg.anchor)
         if not below or not self.db.blocks[below] then break end

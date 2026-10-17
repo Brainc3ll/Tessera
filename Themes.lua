@@ -60,8 +60,12 @@ local function FlareFont()
     for _, name in ipairs({ "FlareUI2_DB", "FlareUI_DB" }) do
         local db = _G[name]
         if type(db) == "table" and type(db.profiles) == "table" then
-            local charKey = (UnitName("player") or "") .. " - " .. (GetRealmName() or "")
-            local profileName = type(db.profileKeys) == "table" and db.profileKeys[charKey] or "Default"
+            -- AceDB's key for this character: "Name - Realm", or on WoW Forever the full
+            -- name alone (same rule as ns.CharacterKey, written by AceDB)
+            local keys = type(db.profileKeys) == "table" and db.profileKeys or {}
+            local full = ns.CharacterKey and ns.CharacterKey()
+            local profileName = (full and keys[full])
+                or keys[(UnitName("player") or "") .. " - " .. (GetRealmName() or "")] or "Default"
             local profile = db.profiles[profileName]
             local font = type(profile) == "table" and type(profile.actionbars) == "table"
                 and profile.actionbars.hotkeyFont

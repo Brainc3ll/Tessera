@@ -754,6 +754,32 @@ for _, step in ipairs({
         ns.UpdateAll = real
         assert(n >= 3, "blocks updated again after the loading screen: " .. n)
     end,
+    -- WoW Forever names characters "First name Surname" (unique in the region): that full
+    -- name is the character's key, and data saved under the earlier key moves to it
+    function()
+        local realRegional, realUnmod = _G.RegionalUniqueNamesEnabled, _G.UnitNameUnmodified
+        _G.RegionalUniqueNamesEnabled = function() return true end
+        _G.UnitNameUnmodified = function() return "Ellen", "Kemp" end
+        assert(ns.CharacterKey() == "Ellen Kemp", "full name as key: " .. ns.CharacterKey())
+        local old = ns.LegacyCharacterKey()
+        local before = ns.charKey
+        ns.sv.charProfiles[old] = "Mine"
+        ns.sv.chars[old] = { money = 42, class = "MAGE" }
+        ns.charKey = ns.CharacterKey()
+        ns:MigrateCharacterKey(old)
+        assert(ns.sv.charProfiles["Ellen Kemp"] == "Mine" and not ns.sv.charProfiles[old], "profile moved")
+        assert(ns.sv.chars["Ellen Kemp"].money == 42 and not ns.sv.chars[old], "gold moved")
+        assert(ns.ShortCharName("Ellen Kemp") == "Ellen Kemp", "full name shown as is")
+        -- FlareUI's font, read from its AceDB profile under the new key
+        _G.FlareUI2_DB = { profileKeys = { ["Ellen Kemp"] = "Perso" },
+            profiles = { Perso = { actionbars = { hotkeyFont = { face = "Friz Quadrata TT", flags = "NONE" } } } } }
+        local theme = ns:GetThemeInfo("flareui2")
+        assert(theme, "FlareUI style")
+        _G.FlareUI2_DB = nil
+        ns.sv.charProfiles["Ellen Kemp"], ns.sv.chars["Ellen Kemp"] = nil, nil
+        ns.charKey = before
+        _G.RegionalUniqueNamesEnabled, _G.UnitNameUnmodified = realRegional, realUnmod
+    end,
     -- changelog sorted by kind since 1.0.0 (older entries: a plain list)
     function()
         local sections = ns.ChangelogSections(ns.CHANGELOG[1], "fr")

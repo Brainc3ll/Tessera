@@ -12,7 +12,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 
 ## Versions
 - **1.0.0-rc4** : publiée le 13/10. **1.0.0-rc5** : publiée le 15/10.
-- **1.0.0** (pas publiée) : ce sera exactement la **test12** (testée), une fois l'instance testée. Depuis la rc5 :
+- **1.0.0** (pas publiée) : ce sera la **test13** une fois testée (noms de personnages de WoW Forever : « Prénom Nom », unique dans la région ; vu le 17/10), plus l'instance. Depuis la rc5 :
   - correction : la barre du haut suit la barre d'XP de FlareUI même activée après coup ;
   - mode démo : « Styles mélangés » ;
   - nouveau bloc Date ; « Oublier un personnage » dans le bloc Or ;

@@ -115,6 +115,9 @@ ns.CHANGELOG = {
                 "Applying a ready-made layout keeps your style (it went back to the automatic one).",
                 "After a loading screen (boat, portal, instance), the durability and other blocks no longer stay "
                     .. "on \"n/a\": they are read again once the game is ready.",
+                "WoW Forever characters with the same first name (Ellen Kemp, Ellen Sept) no longer share their "
+                    .. "gold line and their profile: each one is recognized by its full name, and the FlareUI styles "
+                    .. "find FlareUI's font for it again.",
               },
               fr = {
                 "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
@@ -126,6 +129,9 @@ ns.CHANGELOG = {
                 "Appliquer une disposition toute prête garde ton style (il revenait au style automatique).",
                 "Après un écran de chargement (bateau, portail, instance), la durabilité et les autres blocs ne restent "
                     .. "plus sur « n/d » : ils sont relus une fois le jeu prêt.",
+                "Les personnages de WoW Forever qui ont le même prénom (Ellen Kemp, Ellen Sept) ne partagent plus "
+                    .. "leur ligne d'or ni leur profil : chacun est reconnu par son nom complet, et les styles FlareUI "
+                    .. "retrouvent sa police FlareUI.",
               } },
         },
     },

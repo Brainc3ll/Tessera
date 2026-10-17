@@ -252,6 +252,11 @@ Blizzard windows through `secureMacro` cannot do so from another addon's bar.
 
 ### WoW Forever specifics
 
+- **Character names:** WoW Forever names characters "First name Surname", unique in the whole
+  region (`RegionalUniqueNamesEnabled`, read through `_G`). Tessera keys a character's saved data
+  (gold, per-character profile) by that full name, as AceDB does (`ns.CharacterKey`), and moves
+  data saved under the older "Name-Realm" key once (`ns:MigrateCharacterKey`).
+
 WoW Forever runs on the modern client (Midnight-era API) but has systems of its own, without
 public documentation yet. What Tessera found, with the development probes below:
 

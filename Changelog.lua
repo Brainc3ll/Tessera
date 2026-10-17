@@ -37,29 +37,19 @@ end
 
 ns.CHANGELOG = {
     {
-        version = "1.0.0",
+        version = "1.0.0-rc6",
         date = "", -- set when the version is published
         sections = {
             { kind = "intro",
               en = {
-                "First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour "
-                    .. "shows the essentials, and the demo mode (Help tab) shows every block and every style.",
-                "In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, "
-                    .. "XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks "
-                    .. "for minimap and addon buttons, and DataBroker both ways.",
-                "Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. "
-                    .. "Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.",
+                "Release candidate 6, the last one before 1.0.0 (November 4): everything planned for 1.0.0 is in. "
+                    .. "New here? Type /tessera: the quick tour shows the essentials, and the demo mode (Help tab) "
+                    .. "shows every block and every style.",
               },
               fr = {
-                "Première version stable de Tessera, faite pour WoW Forever. Nouveau ? Tape /tessera : la visite "
-                    .. "rapide montre l'essentiel, et le mode démo (onglet Aide) montre tous les blocs et tous les "
-                    .. "styles.",
-                "En bref : plus de 40 blocs d'informations (or, sacs, durabilité, FPS, latence, horloges, date, XP, "
-                    .. "quêtes, métiers, réputation, courrier, systèmes propres à WoW Forever...), des blocs lanceurs "
-                    .. "pour les boutons de la minicarte et des addons, et DataBroker dans les deux sens.",
-                "Les blocs posés les uns contre les autres s'assemblent comme les tesselles d'une mosaïque : "
-                    .. "barres, colonnes, coins. Bords de l'écran, dispositions toutes prêtes, 19 styles, profils et "
-                    .. "partage en texte.",
+                "Version candidate 6, la dernière avant la 1.0.0 (4 novembre) : tout ce qui est prévu pour la 1.0.0 "
+                    .. "y est. Nouveau ? Tape /tessera : la visite rapide montre l'essentiel, et le mode démo "
+                    .. "(onglet Aide) montre tous les blocs et tous les styles.",
               } },
             { kind = "new",
               en = {

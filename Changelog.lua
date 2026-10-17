@@ -38,7 +38,7 @@ end
 ns.CHANGELOG = {
     {
         version = "1.0.0-rc6-hotfix",
-        date = "", -- set when the version is published
+        date = "2026-10-17",
         sections = {
             { kind = "fixed",
               en = {
@@ -47,8 +47,8 @@ ns.CHANGELOG = {
                 "A group of several rows merged into a bar that has a second row no longer covers that row: the "
                     .. "row moves down below it.",
                 "Much less memory shown for Tessera: values that change every second (FPS, latency, coordinates, "
-                    .. "clock) no longer rebuild every bar each time, and moving blocks in placement mode no longer "
-                    .. "piles up work at every frame.",
+                    .. "clock) no longer rebuild every bar each time, moving blocks in placement mode no longer piles "
+                    .. "up work at every frame, and what placing the blocks used is freed when you lock them.",
               },
               fr = {
                 "Un bloc resté seul dans la deuxième rangée (les autres masqués parce que vides) garde sa propre "
@@ -56,8 +56,9 @@ ns.CHANGELOG = {
                 "Un groupe de plusieurs rangées collé à une barre qui a une deuxième rangée ne recouvre plus cette "
                     .. "rangée : elle descend en dessous.",
                 "Beaucoup moins de mémoire affichée pour Tessera : les valeurs qui changent chaque seconde (FPS, "
-                    .. "latence, coordonnées, heure) ne reconstruisent plus toutes les barres à chaque fois, et déplacer "
-                    .. "des blocs en mode placement n'accumule plus de travail à chaque image.",
+                    .. "latence, coordonnées, heure) ne reconstruisent plus toutes les barres à chaque fois, déplacer des "
+                    .. "blocs en mode placement n'accumule plus de travail à chaque image, et ce que le placement a utilisé est "
+                    .. "libéré quand tu verrouilles les blocs.",
               } },
         },
     },

@@ -3,13 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.0.0-rc6-hotfix — 
+## 1.0.0-rc6-hotfix — 2026-10-17
 
 ### Fixes
 
 - A block left alone in the second row (the others hidden because they are empty) keeps its own width instead of stretching over the whole bar.
 - A group of several rows merged into a bar that has a second row no longer covers that row: the row moves down below it.
-- Much less memory shown for Tessera: values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar each time, and moving blocks in placement mode no longer piles up work at every frame.
+- Much less memory shown for Tessera: values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar each time, moving blocks in placement mode no longer piles up work at every frame, and what placing the blocks used is freed when you lock them.
 
 ## 1.0.0-rc6 — 2026-10-17
 

@@ -25,7 +25,9 @@ Tout ce qui précède est dans la 1.0.0-rc6 (GitHub, CurseForge, Wago).
 - [x] (test17) Poser Cuisine (ou un autre bloc toujours visible) au bout de la deuxième rangée, verrouiller : elle garde sa taille, centrée sous la barre, au lieu de s'étirer sur toute la largeur.
 - [x] (test17) Coller le groupe BugSack + Mémoire des addons au bout de la barre du haut : rien ne se superpose, la deuxième rangée descend sous Mémoire des addons.
 - [x] (test17) Bloc Mémoire des addons : 3-4 Mo au repos après un rechargement.
-- [ ] (test18) Même chose après quelques minutes de mode placement (déplacer des blocs, des groupes) : la mémoire de Tessera ne monte plus à 43 Mo.
+- [x] (test18) Même chose après quelques minutes de mode placement (déplacer des blocs, des groupes) : la mémoire de Tessera ne monte plus à 43 Mo.
+
+Publiée en 1.0.0-rc6-hotfix le 17/10 (avec en plus le nettoyage de la mémoire au verrouillage).
 
 ## Reste à faire
 

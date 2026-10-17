@@ -5,7 +5,7 @@ La bêta de WoW Forever ferme le **22 octobre** : après, plus aucun test en jeu
 Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - **15/10 :** rc5 publiée (GitHub, CurseForge, Wago).
 - **15-17/10 :** zips de test 1.0.0-test1 à test16, tous validés en jeu par Braincell1980.
-- **17/10 :** rc6 publiée (GitHub, CurseForge, Wago), la dernière version candidate.
+- **17/10 :** rc6 publiée (GitHub, CurseForge, Wago), la dernière version candidate, puis la rc6-hotfix l'après-midi.
 - **Avant le 22, en jeu :** le test en instance (seul test restant) ; retours éventuels des joueurs de la rc6.
 - **22/10 - 3/11 : hors jeu seulement** : entrée 1.0.0 du changelog, images dans les galeries de CurseForge et Wago, post Reddit, messages Discord.
 - **4/11 :** publication de la 1.0.0 (après « on publie ») et promotion ; garder de la marge pour une 1.0.1 rapide si la sortie change des identifiants.
@@ -13,6 +13,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 
 ## Versions
 - **1.0.0-rc4** : publiée le 13/10. **1.0.0-rc5** : publiée le 15/10.
+- **1.0.0-rc6-hotfix** : publiée le 17/10 l'après-midi (3 corrections, voir plus bas).
 - **1.0.0-rc6** : publiée le 17/10 (dispatch du workflow par l'API REST de GitHub : `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`). Depuis la rc5 :
   - nouveau bloc Date ; « Oublier un personnage » dans le bloc Or ; mode démo : « Styles mélangés » ;
   - Tessera ne déplace plus les cadres de Blizzard : blocs devant ou derrière (bouton du bandeau et bouton qui respire sous la fenêtre du mode Édition ; question seulement après avoir utilisé le bouton ; onglet Apparence ; question aussi en appliquant une disposition qui recouvre des cadres). Ne plus mentionner l'ancien système aux joueurs (demande de Braincell1980) ; un joueur encore sur une ancienne copie se voit proposer de revenir à sa disposition ;
@@ -23,14 +24,14 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
   - noms de WoW Forever « Prénom Nom » : la clé d'un personnage est nom complet + jeu de règles (or, historique, profil) ; les données des anciennes clés sont déplacées ;
   - corrections : barre du haut sous la barre d'XP de FlareUI activée après coup, deuxième rangée reposée contre sa barre, style gardé en appliquant une disposition, plus de « n/d » après un écran de chargement ;
   - `/tessera preview forever` retirée (le mode démo la remplace) ; textes sans « bêta », 19 styles partout, changelog trié par catégorie.
-- **1.0.0** (4 novembre) : la rc6 plus les corrections éventuelles. Au moment de la publier : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, avant le commit « Prepare 1.0.0-rc6 »), version dans le .toc.
+- **1.0.0** (4 novembre) : la rc6-hotfix plus les corrections éventuelles. Au moment de la publier : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, avant le commit « Prepare 1.0.0-rc6 »), version dans le .toc.
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche plus bas.
 
-## 1.0.0-rc6-hotfix (préparée le 17/10, zips test17 puis test18, pas publiée)
+## 1.0.0-rc6-hotfix (publiée le 17/10 ; test17 et test18 validées en jeu)
 Bugs vus dans les vidéos de Braincell1980 (17/10, rc6), corrigés :
 - un bloc resté seul dans la deuxième rangée (Cuisine) ne s'étire plus sur toute la barre : la rangée ne prend la largeur de la barre que si ses blocs doublent au plus leur largeur (`Fill`, `atMostDouble`, Merge.lua) ;
 - un groupe de plusieurs rangées collé à la barre (BugSack + Mémoire des addons) ne recouvre plus la deuxième rangée : elle descend sous le bloc le plus bas du groupe (`hangDrop`, `CenterAnchoredGroups`) ;
-- 56 Mo pour Tessera : chaque changement de texte (FPS, latence, coordonnées toutes les 0,25 s, heure) relançait toute la mise en page (≈ 50 Ko de déchets à chaque fois). Maintenant seulement si la taille du texte change. Test17 : 3-4 Mo au repos (validé), mais 43 Mo vite atteints en mode placement. Test18 : plus de tables créées à chaque image pendant un glisser (lignes d'alignement, environ 10 Ko par image avant), ni dans `GetRoot` / `GetSubtree` / `GetVisualRoot` / `UpdateFades` (appelés pour chaque bloc plusieurs fois par seconde).
+- 56 Mo pour Tessera : chaque changement de texte (FPS, latence, coordonnées toutes les 0,25 s, heure) relançait toute la mise en page (≈ 50 Ko de déchets à chaque fois). Maintenant seulement si la taille du texte change. Test17 : 3-4 Mo au repos (validé), mais 43 Mo vite atteints en mode placement. Test18 : plus de tables créées à chaque image pendant un glisser (lignes d'alignement, environ 10 Ko par image avant), ni dans `GetRoot` / `GetSubtree` / `GetVisualRoot` / `UpdateFades` (appelés pour chaque bloc plusieurs fois par seconde). Validé (« moins gourmand »). En plus, à la demande de Braincell1980 : un nettoyage de la mémoire (`collectgarbage`) une seconde après le verrouillage des blocs, jamais en combat.
 
 ## Textes sur CurseForge
 - 16/10 : import anglais par Braincell1980 avec suppression des phrases absentes (43 textes retirés), puis import français. Méthode à garder pour les gros ménages.

@@ -1599,6 +1599,15 @@ function ns:SetLocked(locked, silent)
     if locked and self.OnBlocksLocked then self:OnBlocksLocked() end
     if self.RefreshOptions then self:RefreshOptions() end
     if not silent then Print(locked and L.CMD_LOCKED or L.CMD_UNLOCKED) end
+    -- back to the game: free at once what placing the blocks left in memory (layouts,
+    -- moves), instead of waiting for the game's slow cleaning; never in combat
+    if locked and not self.lockCleanPending then
+        self.lockCleanPending = true
+        C_Timer.After(1, function()
+            ns.lockCleanPending = nil
+            if ns:IsLocked() and not InCombatLockdown() then collectgarbage("collect") end
+        end)
+    end
 end
 
 -- Refreshes a block's text and icon from its module. mod.update(cfg, key)

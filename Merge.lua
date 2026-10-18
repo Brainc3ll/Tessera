@@ -942,16 +942,24 @@ local function CopyPiece(f, pool, id, src, name, e, along)
     tex:SetDrawLayer(src:GetDrawLayer())
     local atlas = src.GetAtlas and src:GetAtlas()
     if atlas then
-        tex:SetTexCoord(0, 1, 0, 1)
-        tex:SetAtlas(atlas)
+        -- as Blizzard's NineSlice does it: the mirroring (texture coordinates) and the
+        -- tiling first, then the atlas. A bottom edge is often the top edge mirrored, and
+        -- tiling set after the atlas repeated the wrong part of the sheet (thin vertical
+        -- marks along the bottom of a block over a short second row)
+        local ulx, uly, _, lly, urx = src:GetTexCoord()
+        local flipH = ulx and urx and ulx > urx
+        local flipV = uly and lly and uly > lly
+        tex:SetTexCoord(flipH and 1 or 0, flipH and 0 or 1, flipV and 1 or 0, flipV and 0 or 1)
         if src.GetHorizTile then
             tex:SetHorizTile(src:GetHorizTile())
             tex:SetVertTile(src:GetVertTile())
         end
+        tex:SetAtlas(atlas, true)
     elseif name and e and e > 0 then
-        -- border tile at the right length (repeated if longer than one tile)
+        -- border tile at the right length (repeated if longer than one tile); the tile
+        -- count is in screen pixels, as in Blizzard's Backdrop.lua
         tex:SetTexture(src:GetTexture(), "REPEAT", "REPEAT")
-        tex:SetTexCoord(EdgeCoords(name, along / e))
+        tex:SetTexCoord(EdgeCoords(name, along * f:GetEffectiveScale() / e))
     else
         tex:SetTexture(src:GetTexture())
         tex:SetTexCoord(0, 1, 0, 1)

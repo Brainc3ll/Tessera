@@ -87,12 +87,13 @@ ns.CHANGELOG = {
               } },
             { kind = "fixed",
               en = {
-                "Switching styles several times no longer leaves pieces of the previous border (with its colors) "
-                    .. "where merged blocks meet.",
+                "Borders where merged blocks meet are clean again: no pieces of the previous style after "
+                    .. "switching styles, and no thin vertical marks along the bottom of a bar above a short second row.",
               },
               fr = {
-                "Changer plusieurs fois de style ne laisse plus de morceaux de l'ancienne bordure (avec ses "
-                    .. "couleurs) là où les blocs fusionnés se rejoignent.",
+                "Les bordures entre blocs fusionnés sont de nouveau propres : plus de morceaux de l'ancien style "
+                    .. "après un changement de style, ni de petits traits verticaux sous une barre au-dessus d'une "
+                    .. "deuxième rangée courte.",
               } },
         },
     },

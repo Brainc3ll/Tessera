@@ -29,11 +29,12 @@ Tout ce qui précède est dans la 1.0.0-rc6 (GitHub, CurseForge, Wago).
 
 Publiée en 1.0.0-rc6-hotfix le 17/10 (avec en plus le nettoyage de la mémoire au verrouillage).
 
-## Test19 et test20 (5 min)
+## Test19 à test21 (5 min)
 
 - [ ] Onglet Blocs, « Tous les blocs », Cadre : cocher « Fond couleur de classe », « Cadre de l'icône couleur de classe » (avec un cadre d'icône carré ou rond) et « Lignes couleur de classe » (avec les séparateurs) : tout prend la couleur de ta classe, le fond garde son opacité.
 - [ ] Un bloc espace en mode ligne (Comportement) : « Ligne couleur de classe ».
 - [ ] Onglet Général, « Couleurs : vives ou adoucies » : Adoucies assombrit un peu les couleurs de classe (blocs et noms dans l'infobulle de l'Or), Vives les remet, Pour daltoniens les laisse vives.
+- [ ] (test21) Barre avec une deuxième rangée courte (un seul bloc), dans plusieurs styles dont Blizzard moderne : la bordure sous la barre est continue, sans petits traits verticaux.
 - [ ] (test20) Changer plusieurs fois de style (Braise, Carré, FlareUI, Pierre runique...) : aucune trace de l'ancienne bordure entre les blocs fusionnés ; les cases couleur de classe se décochent ; la liste est par ordre alphabétique.
 - [ ] Un autre personnage d'une autre classe sur le même profil : ses blocs prennent sa couleur.
 

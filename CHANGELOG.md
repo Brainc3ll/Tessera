@@ -20,7 +20,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Fixes
 
-- Switching styles several times no longer leaves pieces of the previous border (with its colors) where merged blocks meet.
+- Borders where merged blocks meet are clean again: no pieces of the previous style after switching styles, and no thin vertical marks along the bottom of a bar above a short second row.
 
 ## 1.0.0-rc6-hotfix — 2026-10-17
 

@@ -40,6 +40,7 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
 
 ## Rules set by Braincell1980
 - Every player-facing English text (help, tooltips, changelog, descriptions, README, posts) goes through the `stop-slop` skill before it is written; French texts follow the same principles (active voice, no filler).
+- Texts inside the addon (help, tooltips, changelog) name FlareUI only to describe the built-in styles.
 - Never tag, release or publish without his explicit go ("on publie"); hold pushes when he asks to.
 - Debug builds are never pushed to git.
 - Players' layouts, styles and profiles must keep working after every update; if a big change

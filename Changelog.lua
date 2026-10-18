@@ -181,7 +181,7 @@ ns.CHANGELOG = {
               } },
             { kind = "fixed",
               en = {
-                "The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera "
+                "The top bar stays under your interface's XP bar also when that interface or its XP bar is turned on after Tessera "
                     .. "(it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar "
                     .. "changes size.",
                 "A second row (\"Double bar\", the rows of blocks that hide when empty) dropped right against "
@@ -192,10 +192,10 @@ ns.CHANGELOG = {
                     .. "on \"n/a\": Tessera reads them again once the game is ready.",
                 "WoW Forever characters with the same first name (Ellen Kemp, Ellen Sept) no longer share their "
                     .. "gold line and their profile: Tessera recognizes each one by its full name and its ruleset, and "
-                    .. "the FlareUI styles find FlareUI's font for it again.",
+                    .. "the FlareUI styles find their font for it again.",
               },
               fr = {
-                "La barre du haut suit la barre d'XP de FlareUI aussi quand FlareUI ou sa barre d'XP est activé "
+                "La barre du haut reste sous la barre d'XP de ton interface aussi quand cette interface ou sa barre d'XP est activée "
                     .. "après Tessera (elle restait en haut de l'écran, sous la barre d'XP), et garde sa largeur "
                     .. "quand la barre d'XP change de taille.",
                 "Une deuxième rangée (« Double barre », les rangées de blocs qui se masquent quand ils sont vides) "
@@ -206,7 +206,7 @@ ns.CHANGELOG = {
                     .. "plus sur « n/d » : Tessera les relit une fois le jeu prêt.",
                 "Les personnages de WoW Forever qui ont le même prénom (Ellen Kemp, Ellen Sept) ne partagent plus "
                     .. "leur ligne d'or ni leur profil : Tessera reconnaît chacun par son nom complet et son jeu de règles, "
-                    .. "et les styles FlareUI retrouvent sa police FlareUI.",
+                    .. "et les styles FlareUI retrouvent leur police pour lui.",
               } },
         },
     },
@@ -327,15 +327,12 @@ ns.CHANGELOG = {
                 .. "new tab, and the placement banner and the tooltip of unlocked blocks now mention what the quick menu "
                 .. "offers (add a spacer, replace with..., group look).",
             "Round minimap button: click for the options, right-click to lock or unlock the blocks, drag it around "
-                .. "the minimap. With FlareUI, Tessera stays in FlareUI's addon bag instead (no duplicate). "
-                .. "/tessera minimap still hides or shows it.",
+                .. "the minimap. /tessera minimap still hides or shows it.",
             "Blizzard's Edit Mode: when a Tessera bar stuck to the top or bottom covers Blizzard frames (action bars, "
                 .. "menu, minimap...), Tessera offers a copy of your Edit Mode layout, \"My layout (Tessera 1)\", where "
                 .. "only those frames move, and activates it. Your layout is never changed. \"Back to my layout\" and "
                 .. "\"Delete the copies\" (only Tessera's unchanged copies, never a layout of yours) are in the Look tab. "
-                .. "Tested on Blizzard's interface (Modern, Classic) and FlareUI unchanged; with FlareUI, its own frames "
-                .. "go back to their default place in the copy (Tessera warns before). With another interface, results "
-                .. "may be unexpected.",
+                .. "Tested on Blizzard's interface (Modern, Classic); with another interface, results may be unexpected.",
             "New blocks and ready-made layouts are drawn above Blizzard's action bars (layer \"High\"), so a bar "
                 .. "along the bottom passes in front of the gryphons; the layer can still be changed (Blocks tab, Display). "
                 .. "Existing blocks keep their layer.",
@@ -397,16 +394,15 @@ ns.CHANGELOG = {
                 .. "indiquent maintenant ce que propose le menu rapide (ajouter un espace, remplacer par..., apparence du "
                 .. "groupe).",
             "Bouton rond sur la minicarte : clic pour les options, clic droit pour verrouiller ou déverrouiller les "
-                .. "blocs, glisser pour le déplacer autour de la minicarte. Avec FlareUI, Tessera reste dans le sac à "
-                .. "boutons de FlareUI à la place (pas de doublon). /tessera minimap le masque ou l'affiche toujours.",
+                .. "blocs, glisser pour le déplacer autour de la minicarte. /tessera minimap le masque "
+                .. "ou l'affiche toujours.",
             "Mode Édition de Blizzard : quand une barre de Tessera collée en haut ou en bas recouvre des cadres de "
                 .. "Blizzard (barres d'action, menu, minicarte...), Tessera propose une copie de ta disposition du mode "
                 .. "Édition, « Ma dispo (Tessera 1) », où seuls ces cadres bougent, et l'active. Ta disposition n'est "
                 .. "jamais modifiée. « Revenir à ma disposition » et « Supprimer les copies » (seulement les copies de "
                 .. "Tessera non modifiées, jamais une disposition à toi) sont dans l'onglet Apparence. Testé sur "
-                .. "l'interface de Blizzard (Moderne, Classique) et FlareUI non modifié ; avec FlareUI, ses propres "
-                .. "cadres reviennent à leur place par défaut dans la copie (Tessera prévient avant). Avec une autre "
-                .. "interface, des résultats inattendus peuvent survenir.",
+                .. "l'interface de Blizzard (Moderne, Classique) ; avec une autre interface, des résultats inattendus "
+                .. "peuvent survenir.",
             "Les nouveaux blocs et les dispositions toutes prêtes s'affichent au-dessus des barres d'action de "
                 .. "Blizzard (plan « Haut ») : une barre en bas passe devant les gryphons ; le plan se change toujours "
                 .. "(onglet Blocs, Affichage). Les blocs existants gardent leur plan.",

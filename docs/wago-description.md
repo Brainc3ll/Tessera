@@ -6,7 +6,7 @@ Tessera gives you small blocks with the information you want (gold, bags, durabi
 
 English and French.
 
-> **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its new systems (Legacy, camping, Comprehension, PvP) have no official addon documentation yet, so a game update can break a block until Tessera catches up. Tell me when something looks wrong.
+> **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its new systems (Legacy, camping, Comprehension, PvP) are still young and may change, so a game update can break a block until Tessera catches up. Tell me when something looks wrong.
 
 ## Blocks made for WoW Forever
 
@@ -96,7 +96,7 @@ Tessera te donne de petits blocs avec les informations que tu veux (or, sacs, du
 
 En anglais et en français.
 
-> **Fait pour WoW Forever.** Je développe et teste Tessera sur WoW Forever. Ses nouveaux systèmes (héritage, camping, Compréhension, JcJ) n'ont pas encore de documentation officielle pour les addons : une mise à jour du jeu peut casser un bloc jusqu'à ce que Tessera suive. Dis-moi quand quelque chose te paraît bizarre.
+> **Fait pour WoW Forever.** Je développe et teste Tessera sur WoW Forever. Ses nouveaux systèmes (héritage, camping, Compréhension, JcJ) sont encore jeunes et peuvent changer : une mise à jour du jeu peut casser un bloc jusqu'à ce que Tessera suive. Dis-moi quand quelque chose te paraît bizarre.
 
 ## Des blocs pensés pour WoW Forever
 

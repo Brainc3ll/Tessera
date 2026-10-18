@@ -968,7 +968,7 @@ L.HELP_FOREVER_4 = "- Camping : « Buffs 52m » = temps restant de tes buffs de 
 L.HELP_FOREVER_5 = "- Honneur : tes points d'honneur. Les rangs JcJ seront ajoutés dans une prochaine version."
 L.HELP_FOREVER_6 = "- Compétences d'armes : lues dans la liste de compétences de Forever ; l'infobulle liste toutes les compétences."
 L.HELP_FOREVER_7 = "- Les blocs métiers, talents et héritage ouvrent les fenêtres propres à Forever."
-L.HELP_FOREVER_8 = "Les systèmes propres à WoW Forever n'ont pas encore de documentation officielle pour les addons : ils peuvent changer, et un bloc peut alors demander une mise à jour de Tessera."
+L.HELP_FOREVER_8 = "Les systèmes propres à WoW Forever sont nouveaux et peuvent encore changer : un bloc peut alors demander une mise à jour de Tessera."
 L.HELP_T_PROFILES = "Onglet Profils"
 L.HELP_PROFILES_1 = "- Un profil pour tous les personnages ou un par personnage ; créer, dupliquer, supprimer."
 L.HELP_PROFILES_2 = "- Exporter et importer en texte : un profil entier (le style ou la disposition seuls se partagent depuis l'onglet Apparence). L'import liste d'abord ce qui manque sur cet ordinateur."

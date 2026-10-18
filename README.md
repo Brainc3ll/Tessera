@@ -14,8 +14,8 @@ when another addon provides it, to offer that addon's fonts, backgrounds and bor
 LibDataBroker to exchange data with DataBroker addons.
 
 > **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its own systems
-> (Legacy, camping, Comprehension, PvP) have no official addon documentation yet, so a game update
-> can break a block until Tessera catches up.
+> (Legacy, camping, Comprehension, PvP) are still young and may change, so a game update can break
+> a block until Tessera catches up.
 
 ## Screenshots
 

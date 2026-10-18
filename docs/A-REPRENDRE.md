@@ -34,7 +34,7 @@ Bugs vus dans les vidéos de Braincell1980 (17/10, rc6), corrigés :
 - 56 Mo pour Tessera : chaque changement de texte (FPS, latence, coordonnées toutes les 0,25 s, heure) relançait toute la mise en page (≈ 50 Ko de déchets à chaque fois). Maintenant seulement si la taille du texte change. Test17 : 3-4 Mo au repos (validé), mais 43 Mo vite atteints en mode placement. Test18 : plus de tables créées à chaque image pendant un glisser (lignes d'alignement, environ 10 Ko par image avant), ni dans `GetRoot` / `GetSubtree` / `GetVisualRoot` / `UpdateFades` (appelés pour chaque bloc plusieurs fois par seconde). Validé (« moins gourmand »). En plus, à la demande de Braincell1980 : un nettoyage de la mémoire (`collectgarbage`) une seconde après le verrouillage des blocs, jamais en combat (validé en jeu le 17/10).
 
 ## Textes sur CurseForge
-- 18/10 : relecture avec le skill « stop-slop » (voix active, moins de remplissage) : descriptions CurseForge / Wago, README, post Reddit, changelog, et 9 lignes d'aide en anglais (`HELP_FOREVER_1`, `HELP_LOOK_6`, `HELP_BMODE_BROKER_3`, `HELP_HELPABOUT_3`, `HELP_REPLACE_3`, `HELP_REPLACE_5`, `HELP_SHORT_3`, `HELP_USE_8`, `HELP_BMODE_USE_5`), envoyées à CurseForge à la prochaine publication. Descriptions à recoller sur CurseForge et Wago.
+- 18/10 : relecture avec le skill « stop-slop » (voix active, moins de remplissage) : descriptions CurseForge / Wago, README, post Reddit, changelog, et 10 lignes d'aide (`HELP_FOREVER_8` aussi, voir plus bas) en anglais (`HELP_FOREVER_1`, `HELP_LOOK_6`, `HELP_BMODE_BROKER_3`, `HELP_HELPABOUT_3`, `HELP_REPLACE_3`, `HELP_REPLACE_5`, `HELP_SHORT_3`, `HELP_USE_8`, `HELP_BMODE_USE_5`), envoyées à CurseForge à la prochaine publication. Descriptions à recoller sur CurseForge et Wago.
 - 16/10 : import anglais par Braincell1980 avec suppression des phrases absentes (43 textes retirés), puis import français. Méthode à garder pour les gros ménages.
 - 17/10 : `TIP_COLORBLIND` supprimé à la main ; la rc6 a envoyé les nouveaux textes (couleurs des seuils, `HELP_LOOK_11`) et 5 textes corrigés à la relecture (`HELP_PLACE_12`, `TUTORIAL_5`, `SECTION_EDGES`, `HELP_GENERAL_3`, `HELP_BLOCKS_4` en français).
 
@@ -45,6 +45,12 @@ Bugs vus dans les vidéos de Braincell1980 (17/10, rc6), corrigés :
 
 ## Build de WoW Forever du 16/10
 Nouveau build (en-tête de la minicarte et cadres d'unité revus, nouveau tutoriel) : FlareUI cassé quelques heures puis corrigé par Malkkav (FlareUI 2.1.1, étudié le 17/10 : rien de cassé pour Tessera). Tessera testé avec et sans FlareUI : tout OK.
+
+## Documentation de l'API de WoW Forever (trouvée le 18/10)
+Il en existe une, contrairement à ce que disaient nos textes (corrigés : « systèmes encore jeunes qui peuvent changer ») :
+- la documentation générée par Blizzard dans le client, recopiée par Ketho : dépôt GitHub `Ketho/wow-ui-source-forever`, dossier `Interface/AddOns/Blizzard_APIDocumentationGenerated` (641 fichiers ; build 1.60.1). On y trouve `C_SkillInfo`, `LegacyConsts` (faction 2802, la même que notre bloc Héritage ; monnaie 4225 ; arbres 1187-1189), `C_GameRules` (`GetForeverExperiencePreset` : Classic / Modern). Le même dépôt contient le code de l'interface de Blizzard (fenêtres Héritage, etc.) ;
+- warcraft.wiki.gg : pages « Patch 1.60.1/API changes » et catégorie « Exclusive API/forever ». Les restrictions de Midnight (valeurs secrètes) s'appliquent aussi à Forever ; `GetInspectHonorData` donne l'honneur et le seuil du niveau suivant (utile pour les rangs JcJ en 1.1).
+- À faire après la 1.0.0 : relire nos blocs WoW Forever avec cette documentation (Compréhension, Camping, Honneur), et voir si l'audit de l'API (annotations de Ketho) couvre aussi les fonctions propres à Forever.
 
 ## Visibilité
 - Tessera est sur CurseForge et Wago (projet ANz7wj64, description = `docs/wago-description.md`).

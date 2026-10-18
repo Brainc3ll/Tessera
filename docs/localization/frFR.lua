@@ -774,7 +774,7 @@ L["HELP_FOREVER_4"] = "- Camping : « Buffs 52m » = temps restant de tes buffs 
 L["HELP_FOREVER_5"] = "- Honneur : tes points d'honneur. Les rangs JcJ seront ajoutés dans une prochaine version."
 L["HELP_FOREVER_6"] = "- Compétences d'armes : lues dans la liste de compétences de Forever ; l'infobulle liste toutes les compétences."
 L["HELP_FOREVER_7"] = "- Les blocs métiers, talents et héritage ouvrent les fenêtres propres à Forever."
-L["HELP_FOREVER_8"] = "Les systèmes propres à WoW Forever n'ont pas encore de documentation officielle pour les addons : ils peuvent changer, et un bloc peut alors demander une mise à jour de Tessera."
+L["HELP_FOREVER_8"] = "Les systèmes propres à WoW Forever sont nouveaux et peuvent encore changer : un bloc peut alors demander une mise à jour de Tessera."
 L["HELP_GENERAL_1"] = "- Placement : verrouillage, aimantation aux blocs et aux cadres de Blizzard, grille, « Déverrouiller avec le mode Édition », « Ramener les blocs à l'écran »."
 L["HELP_GENERAL_2"] = "- Infobulles : aide des clics, infobulles en combat, seulement en tenant Alt, taille des infobulles."
 L["HELP_GENERAL_3"] = "- Combat : blocs figés en combat."

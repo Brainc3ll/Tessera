@@ -284,7 +284,10 @@ function ns:ShowEditModeLayerButton(show)
         end)
         emButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
     end
-    emButton:SetFrameStrata(em.GetFrameStrata and em:GetFrameStrata() or "DIALOG")
+    -- (Forever can return a secret strata for some frames: then a fixed one)
+    local strata = em.GetFrameStrata and em:GetFrameStrata()
+    if not strata or (issecretvalue and issecretvalue(strata)) then strata = "DIALOG" end
+    emButton:SetFrameStrata(strata)
     emButton:SetFrameLevel((em.GetFrameLevel and em:GetFrameLevel() or 1) + 5)
     emButton:ClearAllPoints()
     if ((em.GetBottom and em:GetBottom()) or 100) > 40 then

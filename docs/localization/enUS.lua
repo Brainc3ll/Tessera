@@ -774,7 +774,7 @@ L["HELP_FOREVER_4"] = "- Camping: \"Buffs 52m\" = time left on your camp buffs; 
 L["HELP_FOREVER_5"] = "- Honor: your honor points. PvP ranks will be added in a later version."
 L["HELP_FOREVER_6"] = "- Weapon skills: read from Forever's skill list; the tooltip lists every skill."
 L["HELP_FOREVER_7"] = "- Professions, talents and Legacy blocks open Forever's own windows."
-L["HELP_FOREVER_8"] = "WoW Forever's own systems have no official documentation for addons yet: they may change, and a block may then need a Tessera update."
+L["HELP_FOREVER_8"] = "WoW Forever's own systems are new and may still change: a block may then need a Tessera update."
 L["HELP_GENERAL_1"] = "- Placement: lock, snapping to blocks and to Blizzard frames, grid, \"Unlock with Edit Mode\", \"Bring blocks back on screen\"."
 L["HELP_GENERAL_2"] = "- Tooltips: click help, tooltips in combat, only while holding Alt, tooltip size."
 L["HELP_GENERAL_3"] = "- Combat: blocks frozen in combat."

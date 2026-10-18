@@ -2080,7 +2080,8 @@ end
 ---------------------------------------------------------------------------
 -- The Legacy reward track is a renown track (Blizzard's major factions system): the
 -- points are its renown level, its rewards are renown rewards. Found with the
--- /tessera debug legacy probe (Placement.lua); no official documentation yet.
+-- /tessera debug legacy probe; the faction ID matches LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID in
+-- Blizzard's generated API documentation (Blizzard_APIDocumentationGenerated, Forever client).
 local LEGACY_FACTION = 2802
 local LEGACY_ICON = 4279397 -- icon of the Legacy micro button
 

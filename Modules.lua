@@ -208,9 +208,10 @@ local function FPSCap(useVar, valueVar)
 end
 
 -- r, g, b of a class ("WARRIOR"...). Modern C_ClassColor API, else the classic RAID_CLASS_COLORS table; white if unknown
+-- (soft or bright with the rest of the colors: ns:ClassColorRGB, Core.lua)
 local function ClassColor(class)
-    local c = class and ((C_ClassColor and C_ClassColor.GetClassColor(class)) or (RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]))
-    if c then return c.r, c.g, c.b end
+    local r, g, b = ns:ClassColorRGB(class)
+    if r then return r, g, b end
     return 1, 1, 1
 end
 

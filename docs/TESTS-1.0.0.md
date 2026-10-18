@@ -29,6 +29,13 @@ Tout ce qui précède est dans la 1.0.0-rc6 (GitHub, CurseForge, Wago).
 
 Publiée en 1.0.0-rc6-hotfix le 17/10 (avec en plus le nettoyage de la mémoire au verrouillage).
 
+## Test19 (5 min)
+
+- [ ] Onglet Blocs, « Tous les blocs », Cadre : cocher « Fond couleur de classe », « Cadre de l'icône couleur de classe » (avec un cadre d'icône carré ou rond) et « Lignes couleur de classe » (avec les séparateurs) : tout prend la couleur de ta classe, le fond garde son opacité.
+- [ ] Un bloc espace en mode ligne (Comportement) : « Ligne couleur de classe ».
+- [ ] Onglet Général, « Couleurs : vives ou adoucies » : Adoucies assombrit un peu les couleurs de classe (blocs et noms dans l'infobulle de l'Or), Vives les remet, Pour daltoniens les laisse vives.
+- [ ] Un autre personnage d'une autre classe sur le même profil : ses blocs prennent sa couleur.
+
 ## Reste à faire
 
 - [ ] Instance : profil donjon, masquer en instance, clics sur les blocs en combat ; aucune erreur Lua.

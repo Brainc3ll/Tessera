@@ -338,13 +338,27 @@ function ns:ApplyLevelPalette()
         key = (theme == "flareui2" or theme == "flareui") and "soft" or "bright"
     end
     for i, hex in ipairs(PALETTES[key] or PALETTES.bright) do ns.LEVEL_COLORS[i] = hex end
+    -- "soft" also tones the class colors down (the colorblind palette leaves them as they are)
+    ns.softColors = (key == "soft") or nil
 end
 
--- Color of the player's class (for the "class color" options)
-function ns:GetClassColor()
-    local _, class = UnitClass("player")
+-- r, g, b of a class ("WARRIOR"...): the game's class colors, as FlareUI uses them.
+-- With the soft colors (General tab) they are 15% darker, the way they look on FlareUI's
+-- textured bars. nil for an unknown class.
+local SOFT_CLASS = 0.85
+function ns:ClassColorRGB(class)
     local c = class and ((C_ClassColor and C_ClassColor.GetClassColor(class)) or (RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]))
-    if c then return { r = c.r, g = c.g, b = c.b, a = 1 } end
+    if not c then return nil end
+    if ns.softColors then return c.r * SOFT_CLASS, c.g * SOFT_CLASS, c.b * SOFT_CLASS end
+    return c.r, c.g, c.b
+end
+
+-- Color of the player's class (for the "class color" options). alpha: the opacity to keep
+-- (e.g. the background's own opacity), 1 by default.
+function ns:GetClassColor(alpha)
+    local _, class = UnitClass("player")
+    local r, g, b = self:ClassColorRGB(class)
+    if r then return { r = r, g = g, b = b, a = alpha or 1 } end
 end
 
 -- Sets a texture from an icon spec: a file path / file ID, or a table
@@ -395,6 +409,7 @@ function ns:StyleIcon(f, cfg)
     border:SetPoint("TOPLEFT", tex, "TOPLEFT", -edge, edge)
     border:SetPoint("BOTTOMRIGHT", tex, "BOTTOMRIGHT", edge, -edge)
     local c = cfg.iconBorderColor or {}
+    if cfg.classColorIcon then c = self:GetClassColor(c.a) or c end
     border:SetVertexColor(c.r or 0, c.g or 0, c.b or 0, c.a or 1)
     border:SetShown(shape ~= "none" and tex:IsShown())
     -- round: a circle mask on both the icon and its frame
@@ -500,6 +515,9 @@ local BLOCK_DEFAULTS = {
     hideWhenResting = false, -- in an inn or a capital city
     classColorText = false,
     classColorBorder = false,
+    classColorBg = false,        -- background in the class color (keeps its own opacity)
+    classColorIcon = false,      -- icon frame in the class color
+    classColorSeparator = false, -- lines between merged blocks in the class color
     iconSize = 0,             -- icon size in pixels, 0 = follows the block's height
     iconShape = "none",       -- icon frame: none (as is), square, round
     iconBorderColor = { r = 0, g = 0, b = 0, a = 1 },
@@ -536,7 +554,8 @@ local BLOCK_DEFAULTS = {
 -- Appearance settings copied by "Copy this style to all blocks"
 local STYLE_KEYS = {
     "height", "justify", "strata", "font", "fontSize", "outline", "textColor",
-    "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "alpha",
+    "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "classColorBg", "classColorIcon",
+    "classColorSeparator", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
     "barTexture", "hideIcons", "monochrome", "textTint", "inkColors",
 }
@@ -1367,7 +1386,7 @@ function ns:SkinBlockFrame(f, cfg)
     -- colors after the class-color and high-contrast options
     local sv = self.sv or {}
     local borderColor = (cfg.classColorBorder and self:GetClassColor()) or cfg.borderColor
-    local bgColor = cfg.bgColor
+    local bgColor = (cfg.classColorBg and self:GetClassColor(cfg.bgColor and cfg.bgColor.a)) or cfg.bgColor
     if sv.highContrast then
         bgColor = { r = bgColor.r, g = bgColor.g, b = bgColor.b, a = math.max(bgColor.a or 1, 0.9) }
     end
@@ -1480,6 +1499,7 @@ function ns:ApplyStyle(key)
     if ns.IsSpacerKey(key) and cfg.spacerMode == "line" then
         f.sep = f.sep or f:CreateTexture(nil, "ARTWORK")
         local c = cfg.spacerColor or {}
+        if cfg.spacerClassColor then c = self:GetClassColor(c.a or 0.6) or c end
         f.sep:SetColorTexture(c.r or 1, c.g or 0.82, c.b or 0, c.a or 0.6)
         f.sep:ClearAllPoints()
         -- whole screen pixels: a line thinner than a pixel can vanish when it moves

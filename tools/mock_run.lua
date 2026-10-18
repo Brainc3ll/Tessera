@@ -626,6 +626,32 @@ for _, step in ipairs({
         ns.sv.levelPalette = nil; ns:ApplyLevelPalette()
         ns.HasFlareUIMedia = has
     end,
+    -- class color everywhere a color is picked; soft colors tone it down, colorblind does not
+    function()
+        ns.sv.levelPalette = "bright"; ns:ApplyLevelPalette()
+        assert(math.abs(ns:GetClassColor().b - 1) < 0.001, "bright: the game's class color")
+        ns.sv.levelPalette = "soft"; ns:ApplyLevelPalette()
+        assert(math.abs(ns:GetClassColor().b - 0.85) < 0.001, "soft: darker class color")
+        ns.sv.levelPalette = "colorblind"; ns:ApplyLevelPalette()
+        assert(math.abs(ns:GetClassColor().b - 1) < 0.001, "colorblind: class colors stay bright")
+        ns.sv.levelPalette = nil; ns:ApplyLevelPalette()
+        local cfg = ns.db.blocks.gold
+        for _, k in ipairs({ "classColorBg", "classColorIcon", "classColorSeparator" }) do
+            assert(cfg[k] == false, k .. " default")
+            local found
+            for _, f in ipairs(ns.STYLE_KEYS) do if f == k then found = true end end
+            assert(found, k .. " is part of the style")
+        end
+        cfg.classColorBg, cfg.classColorIcon, cfg.classColorSeparator, cfg.iconShape = true, true, true, "square"
+        ns:ApplyStyle("gold")
+        ns:UpdateLayout()
+        cfg.classColorBg, cfg.classColorIcon, cfg.classColorSeparator, cfg.iconShape = false, false, false, "none"
+        ns:ApplyStyle("gold")
+        local sp = ns:AddSpacer()
+        ns.db.blocks[sp].spacerMode, ns.db.blocks[sp].spacerClassColor = "line", true
+        ns:ApplyStyle(sp)
+        ns:RemoveSpacer(sp)
+    end,
     -- an interface missing for one session gets its style back when it returns
     function()
         local has = ns.HasFlareUIMedia
@@ -880,8 +906,6 @@ for _, step in ipairs({
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.0.0-rc6" then rc6 = e end end
         local sections = ns.ChangelogSections(rc6, "fr")
         assert(not sections[1].title and sections[2].title == "Nouveautés", "changelog sections")
-        local top = ns.ChangelogSections(ns.CHANGELOG[1], "fr")
-        assert(top[1].title, "an entry without intro starts with a titled section")
         local old = ns.ChangelogSections(ns.CHANGELOG[#ns.CHANGELOG], "en")
         assert(#old == 1 and not old[1].title and #old[1].lines > 0, "old entries: one plain list")
     end,

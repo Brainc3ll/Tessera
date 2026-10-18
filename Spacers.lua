@@ -22,6 +22,7 @@ ns.spacerModule = {
         spacerOrientation = "vertical",
         spacerThickness = 2,
         spacerColor = { r = 1, g = 0.82, b = 0, a = 0.6 },
+        spacerClassColor = false, -- the line in the class color
     },
     update = function(cfg)
         if cfg.spacerMode == "text" then return cfg.spacerText or "" end
@@ -39,6 +40,8 @@ ns.spacerModule = {
         { kind = "slider", field = "spacerThickness", label = "SPACER_THICKNESS", tip = "TIP_SPACER_THICKNESS",
           min = 1, max = 8, step = 1, default = 2, shown = function(cfg) return cfg.spacerMode == "line" end },
         { kind = "color", field = "spacerColor", label = "SPACER_COLOR", tip = "TIP_SPACER_COLOR",
+          shown = function(cfg) return cfg.spacerMode == "line" end },
+        { kind = "check", field = "spacerClassColor", label = "CLASS_COLOR_SPACER", tip = "TIP_CLASS_COLOR_SPACER",
           shown = function(cfg) return cfg.spacerMode == "line" end },
     },
 }

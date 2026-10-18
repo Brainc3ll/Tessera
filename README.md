@@ -122,7 +122,8 @@ Help tab inside the game explains everything.
   imitation), Square styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
   Parchment; Arcane) and styles made of the game's own frames (Royal Seal, Ironforge, Runeblade, Ember, Sylvan).
 - Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options
-  (threshold colors: bright, soft or colorblind; high contrast; minimum text size).
+  (bright or soft colors for values and class colors, or colorblind values; high contrast;
+  minimum text size). Class color on the text, background, border, icon frame and lines.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
 - Tooltips your way: bigger or smaller, or only while holding Alt (General tab).

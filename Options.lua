@@ -958,6 +958,7 @@ local function BuildBlockPage(page)
         P.Place(CreateHeader(sub, L.BACKGROUND), 1)
         P.Place(Dropdown(sub, L.BACKGROUND, function() return ns:GetMediaList("background") end, "bg", L.TIP_BACKGROUND), 1)
         P.Place(Color(sub, L.BG_COLOR, true, "bgColor", L.TIP_BG_COLOR), 1)
+        P.Place(Check(sub, L.CLASS_COLOR_BG, "classColorBg", L.TIP_CLASS_COLOR_BG), 1)
 
         -- the icon: same size, frame and colors for every block (e.g. with "All blocks")
         P.Gap(1, 8)
@@ -969,6 +970,7 @@ local function BuildBlockPage(page)
             { key = "round", name = L.ICON_SHAPE_ROUND },
         }, "iconShape", L.TIP_ICON_SHAPE), 1)
         P.Place(Color(sub, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR), 1)
+        P.Place(Check(sub, L.CLASS_COLOR_ICON, "classColorIcon", L.TIP_CLASS_COLOR_ICON), 1)
         P.Place(Check(sub, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), 1)
 
         P.Place(CreateHeader(sub, L.BORDER), 2)
@@ -1031,6 +1033,7 @@ local function BuildBlockPage(page)
         P.Place(CreateHeader(sub, L.SECTION_SEPARATORS), 2)
         P.Place(Check(sub, L.SEPARATORS, "separators", L.TIP_SEPARATORS), 2)
         P.Place(Color(sub, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), 2)
+        P.Place(Check(sub, L.CLASS_COLOR_SEPARATOR, "classColorSeparator", L.TIP_CLASS_COLOR_SEPARATOR), 2)
     end
 
     -- 4. Behaviour: settings specific to the selected block (left), visibility and
@@ -1229,6 +1232,7 @@ local function BuildGeneralPage(page)
         function(v)
             ns.sv.levelPalette = v ~= "auto" and v or nil
             ns:ApplyLevelPalette()
+            ns:RefreshAllBlocks() -- the class colors of frames and lines too
             ns:UpdateAll()
         end, nil, nil, L.TIP_LEVEL_PALETTE), 2)
     Place(CreateCheck(page, L.HIGH_CONTRAST,

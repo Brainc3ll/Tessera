@@ -27,6 +27,11 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - **1.0.0** (4 novembre) : la rc6-hotfix plus les corrections éventuelles. Au moment de la publier : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, avant le commit « Prepare 1.0.0-rc6 »), version dans le .toc.
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche plus bas.
 
+## 1.0.0 en préparation (18/10, zip test19, pas publiée)
+- Couleur de classe partout où l'on choisit une couleur : fond (garde son opacité), cadre de l'icône, lignes entre blocs fusionnés, ligne des blocs espace, en plus du texte et de la bordure (`classColorBg`, `classColorIcon`, `classColorSeparator`, `spacerClassColor`).
+- « Couleurs : vives ou adoucies » (ancien « Couleurs des seuils », clé `LEVEL_PALETTE` gardée) agit aussi sur les couleurs de classe : adoucies = 15 % plus sombres, comme sur les barres texturées de FlareUI (FlareUI 2.1.1 et 2.2.0 gardent les couleurs exactes du jeu, vérifié le 18/10). Pour daltoniens : couleurs de classe vives. Les noms des personnages dans les infobulles (Or, Amis, Guilde) suivent aussi. Choix de Braincell1980 : fond uni partout, pas la texture de FlareUI (tout le monde n'a pas FlareUI).
+- Entrée 1.0.0 du changelog ouverte, avec l'intro « Première version stable » ; version 1.0.0 dans le .toc.
+
 ## 1.0.0-rc6-hotfix (publiée le 17/10 ; test17 et test18 validées en jeu)
 Bugs vus dans les vidéos de Braincell1980 (17/10, rc6), corrigés :
 - un bloc resté seul dans la deuxième rangée (Cuisine) ne s'étire plus sur toute la barre : la rangée ne prend la largeur de la barre que si ses blocs doublent au plus leur largeur (`Fill`, `atMostDouble`, Merge.lua) ;

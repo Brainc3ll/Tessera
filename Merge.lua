@@ -973,6 +973,7 @@ function ns:DrawSeparators(f, cov)
     local used = 0
     if cfg and cfg.separators and not ns.IsSpacerKey(f.key) then
         local c = cfg.separatorColor or { r = 1, g = 1, b = 1, a = 0.4 }
+        if cfg.classColorSeparator then c = self:GetClassColor(c.a) or c end
         local thick = self:PixelSize(1, f)
         local function Line(side, a, b)
             local len = b - a

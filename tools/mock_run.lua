@@ -647,6 +647,14 @@ for _, step in ipairs({
         ns:UpdateLayout()
         cfg.classColorBg, cfg.classColorIcon, cfg.classColorSeparator, cfg.iconShape = false, false, false, "none"
         ns:ApplyStyle("gold")
+        -- a new style starts without the class color options; the list is alphabetical
+        cfg.classColorText, cfg.classColorBg = true, true
+        ns:ApplyTheme("flat")
+        assert(not cfg.classColorText and not cfg.classColorBg, "a new style unchecks the class colors")
+        local themes = ns:GetAvailableThemes()
+        for i = 2, #themes do
+            assert(themes[i - 1].name:lower() <= themes[i].name:lower(), "styles in alphabetical order")
+        end
         local sp = ns:AddSpacer()
         ns.db.blocks[sp].spacerMode, ns.db.blocks[sp].spacerClassColor = "line", true
         ns:ApplyStyle(sp)

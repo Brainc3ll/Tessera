@@ -593,6 +593,8 @@ function ns:GetAvailableThemes()
             table.insert(list, { key = t.key, name = name })
         end
     end
+    -- alphabetical order, in the game's language
+    table.sort(list, function(a, b) return a.name:lower() < b.name:lower() end)
     return list
 end
 
@@ -616,6 +618,10 @@ function ns:ApplyThemeToCfg(cfg, key)
     cfg.iconShape, cfg.iconSize = "none", 0
     cfg.iconBorderColor = { r = 0, g = 0, b = 0, a = 1 }
     cfg.separators = false -- only some styles draw lines between merged blocks
+    -- the class color options belong to a look: a new style starts without them
+    cfg.classColorText, cfg.classColorBorder, cfg.classColorBg = false, false, false
+    cfg.classColorIcon, cfg.classColorSeparator = false, false
+    if cfg.spacerClassColor then cfg.spacerClassColor = false end
     cfg.barTexture = false -- only some styles give the progress bars a texture
     -- text only, black and white, the style's text color: only some styles
     cfg.hideIcons, cfg.monochrome, cfg.inkColors = false, false, false
@@ -628,7 +634,8 @@ end
 local function RestyleProfile(self, key, restyle)
     for _, field in ipairs({ "bg", "bgColor", "border", "borderSize", "borderColor", "font", "outline",
                              "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor",
-                             "barTexture", "hideIcons", "monochrome", "textTint", "inkColors" }) do
+                             "barTexture", "classColorText", "classColorBorder", "classColorBg",
+                             "classColorIcon", "classColorSeparator", "hideIcons", "monochrome", "textTint", "inkColors" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end

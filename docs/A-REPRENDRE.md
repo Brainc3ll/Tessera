@@ -30,6 +30,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 ## 1.0.0 en préparation (18/10, zip test19, pas publiée)
 - Couleur de classe partout où l'on choisit une couleur : fond (garde son opacité), cadre de l'icône, lignes entre blocs fusionnés, ligne des blocs espace, en plus du texte et de la bordure (`classColorBg`, `classColorIcon`, `classColorSeparator`, `spacerClassColor`).
 - « Couleurs : vives ou adoucies » (ancien « Couleurs des seuils », clé `LEVEL_PALETTE` gardée) agit aussi sur les couleurs de classe : adoucies = 15 % plus sombres, comme sur les barres texturées de FlareUI (FlareUI 2.1.1 et 2.2.0 gardent les couleurs exactes du jeu, vérifié le 18/10). Pour daltoniens : couleurs de classe vives. Les noms des personnages dans les infobulles (Or, Amis, Guilde) suivent aussi. Choix de Braincell1980 : fond uni partout, pas la texture de FlareUI (tout le monde n'a pas FlareUI).
+- Choisir un style décoche les options de couleur de classe (demande de Braincell1980 : sinon tous les styles prenaient la couleur de classe) ; liste des styles par ordre alphabétique (aussi dans le mode démo).
 - Entrée 1.0.0 du changelog ouverte, avec l'intro « Première version stable » ; version 1.0.0 dans le .toc.
 
 ## 1.0.0-rc6-hotfix (publiée le 17/10 ; test17 et test18 validées en jeu)

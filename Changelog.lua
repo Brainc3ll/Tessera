@@ -76,10 +76,14 @@ ns.CHANGELOG = {
               en = {
                 "\"Colors: bright or soft\" (General tab, was \"Threshold colors\") also acts on the class colors: "
                     .. "soft makes them a little darker. The colorblind palette leaves them bright.",
+                "Picking a style unchecks the class color options (each style starts with its own look), and the "
+                    .. "list of styles is in alphabetical order.",
               },
               fr = {
                 "« Couleurs : vives ou adoucies » (onglet Général, avant « Couleurs des seuils ») agit aussi sur les "
                     .. "couleurs de classe : adoucies les assombrit un peu. La palette pour daltoniens les laisse vives.",
+                "Choisir un style décoche les options de couleur de classe (chaque style part de sa propre allure), "
+                    .. "et la liste des styles est rangée par ordre alphabétique.",
               } },
         },
     },

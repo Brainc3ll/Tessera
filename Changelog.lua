@@ -48,7 +48,7 @@ ns.CHANGELOG = {
                     .. "row moves down below it.",
                 "Much less memory shown for Tessera: values that change every second (FPS, latency, coordinates, "
                     .. "clock) no longer rebuild every bar each time, moving blocks in placement mode no longer piles "
-                    .. "up work at every frame, and what placing the blocks used is freed when you lock them.",
+                    .. "up work at every frame, and Tessera frees what placing the blocks used when you lock them.",
               },
               fr = {
                 "Un bloc resté seul dans la deuxième rangée (les autres masqués parce que vides) garde sa propre "
@@ -57,8 +57,8 @@ ns.CHANGELOG = {
                     .. "rangée : elle descend en dessous.",
                 "Beaucoup moins de mémoire affichée pour Tessera : les valeurs qui changent chaque seconde (FPS, "
                     .. "latence, coordonnées, heure) ne reconstruisent plus toutes les barres à chaque fois, déplacer des "
-                    .. "blocs en mode placement n'accumule plus de travail à chaque image, et ce que le placement a utilisé est "
-                    .. "libéré quand tu verrouilles les blocs.",
+                    .. "blocs en mode placement n'accumule plus de travail à chaque image, et Tessera libère ce que le placement a "
+                    .. "utilisé quand tu verrouilles les blocs.",
               } },
         },
     },
@@ -84,8 +84,8 @@ ns.CHANGELOG = {
                     .. "the clock.",
                 "Demo mode: after the styles, the switcher shows \"Mixed styles\", each column in its own style, "
                     .. "to compare them side by side.",
-                "Gold block: a character you deleted or renamed can be removed from the tooltip (Alt + right-click "
-                    .. "on the block, \"Forget a character\").",
+                "Gold block: remove a character you deleted or renamed from the tooltip (Alt + right-click on the "
+                    .. "block, \"Forget a character\").",
                 "Ready-made layout \"Rampart Walk\": a bar stuck to the top of the screen over its whole width, "
                     .. "the WoW Forever blocks in the center and system information (FPS, latency, clock, date) on "
                     .. "the right.",
@@ -100,7 +100,7 @@ ns.CHANGELOG = {
                     .. "l'affiche à côté de l'horloge.",
                 "Mode démo : après les styles, le sélecteur montre les « Styles mélangés », chaque colonne dans son "
                     .. "propre style, pour les comparer côte à côte.",
-                "Bloc Or : un personnage supprimé ou renommé peut être retiré de l'infobulle (Alt + clic droit sur le "
+                "Bloc Or : retire de l'infobulle un personnage supprimé ou renommé (Alt + clic droit sur le "
                     .. "bloc, « Oublier un personnage »).",
                 "Disposition toute prête « Chemin de ronde » : une barre collée en haut de l'écran sur toute sa "
                     .. "largeur, les blocs WoW Forever au centre et les infos système (FPS, latence, heure, date) à "
@@ -142,9 +142,9 @@ ns.CHANGELOG = {
                     .. "cut short.",
                 "Applying a ready-made layout keeps your style (it went back to the automatic one).",
                 "After a loading screen (boat, portal, instance), the durability and other blocks no longer stay "
-                    .. "on \"n/a\": they are read again once the game is ready.",
+                    .. "on \"n/a\": Tessera reads them again once the game is ready.",
                 "WoW Forever characters with the same first name (Ellen Kemp, Ellen Sept) no longer share their "
-                    .. "gold line and their profile: each one is recognized by its full name and its ruleset, and "
+                    .. "gold line and their profile: Tessera recognizes each one by its full name and its ruleset, and "
                     .. "the FlareUI styles find FlareUI's font for it again.",
               },
               fr = {
@@ -156,9 +156,9 @@ ns.CHANGELOG = {
                     .. "barre et rétrécissait, ses noms coupés.",
                 "Appliquer une disposition toute prête garde ton style (il revenait au style automatique).",
                 "Après un écran de chargement (bateau, portail, instance), la durabilité et les autres blocs ne restent "
-                    .. "plus sur « n/d » : ils sont relus une fois le jeu prêt.",
+                    .. "plus sur « n/d » : Tessera les relit une fois le jeu prêt.",
                 "Les personnages de WoW Forever qui ont le même prénom (Ellen Kemp, Ellen Sept) ne partagent plus "
-                    .. "leur ligne d'or ni leur profil : chacun est reconnu par son nom complet et son jeu de règles, "
+                    .. "leur ligne d'or ni leur profil : Tessera reconnaît chacun par son nom complet et son jeu de règles, "
                     .. "et les styles FlareUI retrouvent sa police FlareUI.",
               } },
         },

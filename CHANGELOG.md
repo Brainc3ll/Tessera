@@ -9,7 +9,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - A block left alone in the second row (the others hidden because they are empty) keeps its own width instead of stretching over the whole bar.
 - A group of several rows merged into a bar that has a second row no longer covers that row: the row moves down below it.
-- Much less memory shown for Tessera: values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar each time, moving blocks in placement mode no longer piles up work at every frame, and what placing the blocks used is freed when you lock them.
+- Much less memory shown for Tessera: values that change every second (FPS, latency, coordinates, clock) no longer rebuild every bar each time, moving blocks in placement mode no longer piles up work at every frame, and Tessera frees what placing the blocks used when you lock them.
 
 ## 1.0.0-rc6 — 2026-10-17
 
@@ -19,7 +19,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Date block (hidden by default, add it from the Blocks tab): short or long, numbers in several orders, local or server date; click: calendar. The Rampart Walk layout shows it next to the clock.
 - Demo mode: after the styles, the switcher shows "Mixed styles", each column in its own style, to compare them side by side.
-- Gold block: a character you deleted or renamed can be removed from the tooltip (Alt + right-click on the block, "Forget a character").
+- Gold block: remove a character you deleted or renamed from the tooltip (Alt + right-click on the block, "Forget a character").
 - Ready-made layout "Rampart Walk": a bar stuck to the top of the screen over its whole width, the WoW Forever blocks in the center and system information (FPS, latency, clock, date) on the right.
 - Blocks over Blizzard's frames (action bars, minimap, buffs): you choose whether they stay in front or behind. In placement mode (and in Blizzard's Edit Mode, under its window, where it glows until you hover it) a button switches every block for a while to see what is underneath; when you are done, Tessera asks which to keep. Look tab: all blocks in front or behind.
 
@@ -35,8 +35,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - The top bar follows FlareUI's XP bar also when FlareUI or its XP bar is turned on after Tessera (it stayed at the top of the screen, under the XP bar), and keeps its width when the XP bar changes size.
 - A second row ("Double bar", the rows of blocks that hide when empty) dropped right against its bar keeps its place and its full width: it merged into the bar and shrank, its names cut short.
 - Applying a ready-made layout keeps your style (it went back to the automatic one).
-- After a loading screen (boat, portal, instance), the durability and other blocks no longer stay on "n/a": they are read again once the game is ready.
-- WoW Forever characters with the same first name (Ellen Kemp, Ellen Sept) no longer share their gold line and their profile: each one is recognized by its full name and its ruleset, and the FlareUI styles find FlareUI's font for it again.
+- After a loading screen (boat, portal, instance), the durability and other blocks no longer stay on "n/a": Tessera reads them again once the game is ready.
+- WoW Forever characters with the same first name (Ellen Kemp, Ellen Sept) no longer share their gold line and their profile: Tessera recognizes each one by its full name and its ruleset, and the FlareUI styles find FlareUI's font for it again.
 
 ## 1.0.0-rc5 — 2026-10-15
 

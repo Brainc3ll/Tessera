@@ -13,9 +13,9 @@ It only uses data provided by the game itself, and embeds no library. LibSharedM
 when another addon provides it, to offer that addon's fonts, backgrounds and borders, and
 LibDataBroker to exchange data with DataBroker addons.
 
-> **Made for WoW Forever.** Tessera was developed and tested on WoW Forever. Its own systems
-> (Legacy, camping, Comprehension, PvP) have no official addon documentation yet and may change;
-> a block may then need an update.
+> **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its own systems
+> (Legacy, camping, Comprehension, PvP) have no official addon documentation yet, so a game update
+> can break a block until Tessera catches up.
 
 ## Screenshots
 
@@ -43,14 +43,14 @@ styles are an imitation):
 
 Tessera is a collaboration between me, a player, and an AI.
 
-**Me (Braincell1980).** I don't write code. Life never gave me the chance to learn programming, and AI finally lets me give free rein to my addon ideas. It is not "one prompt and the AI does everything": I also use the AI to learn quickly how things work and why (GitHub, CurseForge, WoW's Lua and its interface, what a clean release looks like) so I can make the decisions myself and understand what is done. What I do:
-- I had the idea of Tessera and I decide what it does: every feature, block, option and layout comes from my requests or was approved by me.
+**Me (Braincell1980).** I don't write code. Life never gave me the chance to learn programming, and AI now lets me give free rein to my addon ideas. I also use the AI to learn how things work and why (GitHub, CurseForge, WoW's Lua and its interface, what a clean release looks like), so I make the decisions myself and understand what goes into each version. What I do:
+- I had the idea of Tessera and I decide what it does: every feature, block, option and layout comes from my requests or got my approval.
 - I choose the look: styles, colors, layouts, names, what goes in the menus.
 - I test a lot, on WoW Forever: every version, with strange experiments, unusual placements and odd setups, to find the problems before you do.
 - I try to think ahead, for every kind of player: other interfaces, other screens, other languages, other habits.
-- I run the in-game checks (debug versions) used to find out how WoW Forever works, and I report bugs with screenshots.
+- I run the in-game checks (debug versions) that show how WoW Forever works, and I report bugs with screenshots.
 - I review the texts, the French translation and the help.
-- I decide when a version is published, and I manage the CurseForge and GitHub pages.
+- I decide when a version goes out, and I manage the CurseForge and GitHub pages.
 
 **Claude (an AI by Anthropic)** writes everything else, from my instructions:
 - all the code of the addon (Lua), and the automatic tests that run it outside the game;
@@ -58,7 +58,7 @@ Tessera is a collaboration between me, a player, and an AI.
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
 - the banner images.
 
-**What this means for you.** The code is checked by automatic tests and by my many tests in game, but it has not been reviewed line by line by a human programmer. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
+**What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
 
 ## At a glance
 
@@ -77,9 +77,9 @@ Help tab inside the game explains everything.
 
 **Highlights**
 
-- **Mosaic placement:** blocks are placed anywhere and merge in every direction when dropped
-  against each other: a bar, a column, a corner, an L shape... Bars can be stuck to a screen edge
-  and stretched like a taskbar, and ready-made layouts give a starting point (among them "Double
+- **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every
+  direction: a bar, a column, a corner, an L shape... Stick a bar to a screen edge and stretch it
+  over the whole width, or start from a ready-made layout (among them "Double
   bar": the top bar and a second bar always shown with the WoW Forever blocks).
 - **Demo mode:** every block at once, sorted by category, with sample values; a banner switches
   the styles (or shows them side by side, one per column: "Mixed styles") and hides the game's

@@ -75,13 +75,11 @@ ns.CHANGELOG = {
             { kind = "improved",
               en = {
                 "\"Colors: bright or soft\" (General tab, was \"Threshold colors\") also acts on the class colors: "
-                    .. "soft makes them a little darker, the way they look on FlareUI's bars. The colorblind palette "
-                    .. "leaves them bright.",
+                    .. "soft makes them a little darker. The colorblind palette leaves them bright.",
               },
               fr = {
                 "« Couleurs : vives ou adoucies » (onglet Général, avant « Couleurs des seuils ») agit aussi sur les "
-                    .. "couleurs de classe : adoucies les assombrit un peu, comme sur les barres de FlareUI. La palette "
-                    .. "pour daltoniens les laisse vives.",
+                    .. "couleurs de classe : adoucies les assombrit un peu. La palette pour daltoniens les laisse vives.",
               } },
         },
     },

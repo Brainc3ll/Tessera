@@ -15,7 +15,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
-- "Colors: bright or soft" (General tab, was "Threshold colors") also acts on the class colors: soft makes them a little darker, the way they look on FlareUI's bars. The colorblind palette leaves them bright.
+- "Colors: bright or soft" (General tab, was "Threshold colors") also acts on the class colors: soft makes them a little darker. The colorblind palette leaves them bright.
 
 ## 1.0.0-rc6-hotfix — 2026-10-17
 

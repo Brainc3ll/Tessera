@@ -113,3 +113,24 @@ Pistes pour après la 1.0.0 :
 - [Fait, rc6] Style FlareUI : lignes bronze éteint (#9C7A4A) entre les blocs collés, barres de progression à la texture « FlareUI Forever », couleurs des seuils adoucies (palette « FlareUI » de ses cadres d'unité).
 - Recherche dans les options, avec sous chaque résultat l'endroit du réglage (« Blocs › Tous les blocs › Cadre »), comme la fenêtre de réglages de FlareUI. Plutôt en 1.1.
 - Style « Forever » fait de l'anneau bronze et de la plaque des cadres d'unité du jeu (atlas `UI-HUD-UnitFrame-*-PortraitOn`), avec les icônes en médaillon. FlareUI découpe déjà une image en rond sur Forever (masque) : la question des masques (voir « Formes de blocs ») a sa réponse. Avec la version « look ».
+
+## Se démarquer : accessibilité et manette (18 octobre 2026)
+
+Idée de Braincell1980 : que Tessera se démarque en pensant aux joueurs avec un handicap, et à la manette (plutôt pour une 2.0).
+
+### Accessibilité (par petits morceaux, dès une 1.1 ou 1.2)
+Déjà là : couleurs pour daltoniens, contraste renforcé, taille de texte minimale.
+- Lecture à voix haute : un raccourci ou un clic fait lire les valeurs par la synthèse vocale du jeu (« Durabilité 34 %, sacs 3 places libres »). Aucune barre d'infos connue ne le fait.
+- Alertes sonores : un son distinct pour la durabilité au rouge, les sacs pleins, un courrier.
+- Moins de mouvement : une option qui coupe clignotements, fondus et animations.
+- Police adaptée à la dyslexie, sous licence libre, livrée avec Tessera.
+- Mode simplifié : moins de réglages visibles, blocs plus grands, clics plus tolérants.
+- Tout au clavier : chaque action d'un bloc atteignable par un raccourci, pour jouer d'une main.
+- Avant de construire : demander l'avis de joueurs concernés (Reddit, Discord) après la 1.0.0.
+
+### Manette (2.0, après le nettoyage du code de la 1.1)
+Le jeu gère les manettes ; FlareUI a déjà un mode manette et un menu radial.
+- Naviguer entre les blocs avec la croix directionnelle : un bouton pour cliquer, un autre pour l'infobulle.
+- Menu radial : maintenir un bouton ouvre une roue avec ses blocs (sacs, carte, métiers, pierre de foyer), le stick choisit.
+- Fenêtre d'options navigable à la manette, avec de grosses cibles (le plus gros du travail).
+- Dispositions pensées pour la manette : moins de blocs, plus grands, lisibles de loin.

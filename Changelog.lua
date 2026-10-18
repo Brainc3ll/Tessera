@@ -85,6 +85,15 @@ ns.CHANGELOG = {
                 "Choisir un style décoche les options de couleur de classe (chaque style part de sa propre allure), "
                     .. "et la liste des styles est rangée par ordre alphabétique.",
               } },
+            { kind = "fixed",
+              en = {
+                "Switching styles several times no longer leaves pieces of the previous border (with its colors) "
+                    .. "where merged blocks meet.",
+              },
+              fr = {
+                "Changer plusieurs fois de style ne laisse plus de morceaux de l'ancienne bordure (avec ses "
+                    .. "couleurs) là où les blocs fusionnés se rejoignent.",
+              } },
         },
     },
     {

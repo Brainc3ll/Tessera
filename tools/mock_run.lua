@@ -647,6 +647,10 @@ for _, step in ipairs({
         ns:UpdateLayout()
         cfg.classColorBg, cfg.classColorIcon, cfg.classColorSeparator, cfg.iconShape = false, false, false, "none"
         ns:ApplyStyle("gold")
+        -- a new skin rebuilds the border pieces of the joins (no piece of the old style left)
+        ns.frames.gold.seamKey = "old"
+        ns:ApplyStyle("gold")
+        assert(ns.frames.gold.seamKey ~= "old", "border joins rebuilt after a new skin")
         -- a new style starts without the class color options; the list is alphabetical
         cfg.classColorText, cfg.classColorBg = true, true
         ns:ApplyTheme("flat")

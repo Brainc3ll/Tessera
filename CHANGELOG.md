@@ -18,6 +18,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - "Colors: bright or soft" (General tab, was "Threshold colors") also acts on the class colors: soft makes them a little darker. The colorblind palette leaves them bright.
 - Picking a style unchecks the class color options (each style starts with its own look), and the list of styles is in alphabetical order.
 
+### Fixes
+
+- Switching styles several times no longer leaves pieces of the previous border (with its colors) where merged blocks meet.
+
 ## 1.0.0-rc6-hotfix — 2026-10-17
 
 ### Fixes

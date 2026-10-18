@@ -1381,6 +1381,10 @@ end
 -- style previews of Options.lua). f needs a .text FontString. Returns the inset: the
 -- space the border takes inside the frame.
 function ns:SkinBlockFrame(f, cfg)
+    -- the border pieces copied at the joins of merged blocks (Merge.lua, ApplySeams) carry
+    -- the previous look: a new skin always rebuilds them (switching styles left pieces of
+    -- the old border, with its colors, at the joins)
+    f.seamKey = nil
     local bg = self:FindMedia("background", cfg.bg)
     local border = self:FindMedia("border", cfg.border)
     -- colors after the class-color and high-contrast options

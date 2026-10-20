@@ -45,6 +45,8 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
 - Debug builds are never pushed to git.
 - Players' layouts, styles and profiles must keep working after every update; if a big change
   ever has to break them, show a message and convert them.
+- A rework never takes anything away: every option a 1.0.0 player has stays, so nobody thinks
+  "this is not the addon I downloaded".
 - English and French only in the repository; other languages come from CurseForge's tool.
 - Released versions have no command a player does not need. Test and development commands
   (`/tessera test`, debug report, probes) live only in `TesseraDev.lua`, outside this

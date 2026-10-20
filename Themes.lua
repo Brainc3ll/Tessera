@@ -594,7 +594,7 @@ function ns:GetAvailableThemes()
         end
     end
     -- alphabetical order, in the game's language
-    table.sort(list, function(a, b) return a.name:lower() < b.name:lower() end)
+    table.sort(list, function(a, b) return ns.SortKey(a.name) < ns.SortKey(b.name) end)
     return list
 end
 

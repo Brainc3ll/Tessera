@@ -300,6 +300,16 @@ function ns.IsForwardingKey(key)
     return ns.IsLauncherKey(key) or ns.IsBrokerKey(key)
 end
 
+-- Sort key of a displayed name: lower case, accents removed ("Épuré" next to "Epic")
+local ACCENTS = { ["à"] = "a", ["â"] = "a", ["ä"] = "a", ["é"] = "e", ["è"] = "e", ["ê"] = "e", ["ë"] = "e",
+    ["î"] = "i", ["ï"] = "i", ["ô"] = "o", ["ö"] = "o", ["ù"] = "u", ["û"] = "u", ["ü"] = "u", ["ç"] = "c",
+    ["É"] = "e", ["È"] = "e", ["Ê"] = "e", ["À"] = "a", ["Ç"] = "c", ["Ô"] = "o", ["Î"] = "i" }
+function ns.SortKey(name)
+    local key = tostring(name)
+    for accented, plain in pairs(ACCENTS) do key = key:gsub(accented, plain) end
+    return key:lower()
+end
+
 -- A group can hang below (second row) or above (bottom bar) another block:
 -- cfg.anchor.below / cfg.anchor.above = that block's key. Returns that key.
 function ns.HangTarget(anchor)

@@ -542,25 +542,26 @@ function ns:GetReplacementChoices(key)
             table.insert(list, { key = other, name = self:GetBlockName(other), shown = cfg.enabled and true or false })
         end
     end
-    table.sort(list, function(a, b) return a.name < b.name end)
+    table.sort(list, function(a, b) return ns.SortKey(a.name) < ns.SortKey(b.name) end)
     return list
 end
 
--- The "Replace with..." list, in two parts: the hidden blocks (one takes this
--- place, this block is hidden), then the shown ones (the two swap places)
+-- The "Replace with..." list: one alphabetical list, each block marked by a color
+-- and an icon. Green "+": a hidden block, it takes this place (this block is hidden);
+-- gold arrows: a shown block, the two swap places. The legend comes first.
+local ICON_SHOW = "|TInterface\\Buttons\\UI-PlusButton-Up:14:14|t "
+local ICON_SWAP = "|TInterface\\Buttons\\UI-RefreshButton:14:14|t "
+local COLOR_SHOW, COLOR_SWAP = "|cff4dff4d", "|cffffd100"
 function ns:FillReplaceMenu(root, key)
-    local hidden, shown = {}, {}
-    for _, other in ipairs(self:GetReplacementChoices(key)) do
-        table.insert(other.shown and shown or hidden, other)
-    end
-    for i, part in ipairs({ { L.REPLACE_HIDDEN, hidden }, { L.REPLACE_SHOWN, shown } }) do
-        if #part[2] > 0 then
-            if i == 2 and #hidden > 0 and root.CreateDivider then root:CreateDivider() end
-            root:CreateTitle(part[1])
-            for _, other in ipairs(part[2]) do
-                root:CreateButton(other.name, function() self:AskReplaceBlock(key, other.key) end)
-            end
-        end
+    local list = self:GetReplacementChoices(key)
+    if #list == 0 then return end
+    root:CreateTitle(ICON_SHOW .. COLOR_SHOW .. L.REPLACE_HIDDEN .. "|r")
+    root:CreateTitle(ICON_SWAP .. COLOR_SWAP .. L.REPLACE_SHOWN .. "|r")
+    if root.CreateDivider then root:CreateDivider() end
+    for _, other in ipairs(list) do
+        local label = other.shown and (ICON_SWAP .. COLOR_SWAP .. other.name .. "|r")
+            or (ICON_SHOW .. COLOR_SHOW .. other.name .. "|r")
+        root:CreateButton(label, function() self:AskReplaceBlock(key, other.key) end)
     end
 end
 

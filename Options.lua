@@ -632,14 +632,7 @@ end
 ---------------------------------------------------------------------------
 -- Entries of the selection dropdown: groups first, then data blocks, then launchers
 -- Sort key for names: lower case without accents, so "Écran" sorts with the E's
-local ACCENTS = { ["à"] = "a", ["â"] = "a", ["ä"] = "a", ["é"] = "e", ["è"] = "e", ["ê"] = "e", ["ë"] = "e",
-    ["î"] = "i", ["ï"] = "i", ["ô"] = "o", ["ö"] = "o", ["ù"] = "u", ["û"] = "u", ["ü"] = "u", ["ç"] = "c",
-    ["É"] = "e", ["È"] = "e", ["Ê"] = "e", ["À"] = "a", ["Ç"] = "c", ["Ô"] = "o", ["Î"] = "i" }
-local function SortKey(name)
-    local key = tostring(name)
-    for accented, plain in pairs(ACCENTS) do key = key:gsub(accented, plain) end
-    return key:lower()
-end
+local SortKey = ns.SortKey
 
 local function SelectionOptions()
     local list = { { key = ALL, name = L.ALL_BLOCKS } }

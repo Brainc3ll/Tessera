@@ -657,7 +657,7 @@ for _, step in ipairs({
         assert(not cfg.classColorText and not cfg.classColorBg, "a new style unchecks the class colors")
         local themes = ns:GetAvailableThemes()
         for i = 2, #themes do
-            assert(themes[i - 1].name:lower() <= themes[i].name:lower(), "styles in alphabetical order")
+            assert(ns.SortKey(themes[i - 1].name) <= ns.SortKey(themes[i].name), "styles in alphabetical order (accents ignored)")
         end
         local sp = ns:AddSpacer()
         ns.db.blocks[sp].spacerMode, ns.db.blocks[sp].spacerClassColor = "line", true

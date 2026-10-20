@@ -59,6 +59,10 @@ Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains e
 | /tessera bug | Report to copy into a bug report |
 | /tessera help | The list of commands in the chat |
 
+## Known issues
+- Placing blocks is being reworked. Moving blocks inside the second row of a bar, or inside a grid, can shift them: use the Replace arrows, or Ctrl + Z in placement mode.
+- The new placement, in rows, keeps every option you have today. Your layouts will be converted on their own, and a copy of the old one is kept.
+
 ## Bugs and ideas
 
 Type **/tessera bug**, copy the report and post it on the [GitHub issue tracker](https://github.com/Brainc3ll/Tessera/issues) (or in the comments on CurseForge). Ideas are welcome too, especially about WoW Forever systems Tessera could show.
@@ -148,6 +152,10 @@ Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** expli
 | /tessera recover | Ramener les blocs qui dépassent de l'écran |
 | /tessera bug | Rapport à copier dans un signalement de bug |
 | /tessera help | La liste des commandes dans la discussion |
+
+## Problèmes connus
+- Le placement des blocs est en chantier. Déplacer des blocs à l'intérieur de la deuxième rangée d'une barre, ou d'une grille, peut les décaler : utilise les flèches Remplacer, ou Ctrl + Z en mode placement.
+- Le nouveau placement, en rangées, garde toutes les options d'aujourd'hui. Tes dispositions seront converties toutes seules, avec une copie de l'ancienne.
 
 ## Bugs et idées
 

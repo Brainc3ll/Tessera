@@ -76,14 +76,22 @@ ns.CHANGELOG = {
               en = {
                 "\"Colors: bright or soft\" (General tab, was \"Threshold colors\") also acts on the class colors: "
                     .. "soft makes them a little darker. The colorblind palette leaves them bright.",
-                "Picking a style unchecks the class color options (each style starts with its own look), and the "
-                    .. "list of styles is in alphabetical order.",
+                "Picking a style unchecks the class color options (each style starts with its own look). The "
+                    .. "list of styles is in alphabetical order, accents ignored, and every name is written the same "
+                    .. "way (\"Blizzard modern square\").",
+                "\"Replace with...\" shows one alphabetical list: a green + marks a hidden block (it takes the "
+                    .. "place), gold arrows a shown block (the two swap). In the Blocks tab, a green dot marks the "
+                    .. "blocks shown in the game.",
               },
               fr = {
                 "« Couleurs : vives ou adoucies » (onglet Général, avant « Couleurs des seuils ») agit aussi sur les "
                     .. "couleurs de classe : adoucies les assombrit un peu. La palette pour daltoniens les laisse vives.",
-                "Choisir un style décoche les options de couleur de classe (chaque style part de sa propre allure), "
-                    .. "et la liste des styles est rangée par ordre alphabétique.",
+                "Choisir un style décoche les options de couleur de classe (chaque style part de sa propre allure). "
+                    .. "La liste des styles est rangée par ordre alphabétique, sans tenir compte des accents, et "
+                    .. "tous les noms s'écrivent de la même façon (« Blizzard moderne carré »).",
+                "« Remplacer par... » montre une seule liste alphabétique : un + vert marque un bloc masqué (il "
+                    .. "prend la place), des flèches dorées un bloc affiché (les deux s'échangent). Dans l'onglet "
+                    .. "Blocs, un point vert marque les blocs affichés dans le jeu.",
               } },
             { kind = "fixed",
               en = {

@@ -29,7 +29,7 @@ Tout ce qui précède est dans la 1.0.0-rc6 (GitHub, CurseForge, Wago).
 
 Publiée en 1.0.0-rc6-hotfix le 17/10 (avec en plus le nettoyage de la mémoire au verrouillage).
 
-## Test19 à test23 (5 min)
+## Test19 à test24 (10 min)
 
 - [ ] Onglet Blocs, « Tous les blocs », Cadre : cocher « Fond couleur de classe », « Cadre de l'icône couleur de classe » (avec un cadre d'icône carré ou rond) et « Lignes couleur de classe » (avec les séparateurs) : tout prend la couleur de ta classe, le fond garde son opacité.
 - [ ] Un bloc espace en mode ligne (Comportement) : « Ligne couleur de classe ».
@@ -40,6 +40,12 @@ Publiée en 1.0.0-rc6-hotfix le 17/10 (avec en plus le nettoyage de la mémoire 
 - [ ] (test21) Barre avec une deuxième rangée courte (un seul bloc), dans plusieurs styles dont Blizzard moderne : la bordure sous la barre est continue, sans petits traits verticaux.
 - [ ] (test20) Changer plusieurs fois de style (Braise, Carré, FlareUI, Pierre runique...) : aucune trace de l'ancienne bordure entre les blocs fusionnés ; les cases couleur de classe se décochent ; la liste est par ordre alphabétique.
 - [ ] Un autre personnage d'une autre classe sur le même profil : ses blocs prennent sa couleur.
+- [ ] (test24) Liste des styles (onglet Apparence) : noms écrits pareil (« Blizzard moderne carré »), ordre alphabétique, « Épuré » à sa place.
+- [ ] (test24) « Remplacer par... » (flèches d'un bloc en mode placement) : une seule liste, + vert = bloc masqué qui prend la place, flèches dorées = bloc affiché, les deux s'échangent.
+- [ ] (test24) Onglet Blocs, liste des blocs : point vert devant les blocs affichés, les autres en gris.
+- [ ] (test24) Mémoire : après un passage en mode placement puis le verrouillage, Tessera redescend à 3-4 Mo.
+
+Si tout est bon : 1.0.0-rc7 (à ton « on publie »), avant la fin de la bêta le 22/10.
 
 ## Reste à faire
 

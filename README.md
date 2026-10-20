@@ -29,11 +29,11 @@ styles are an imitation):
 
 **Square, Clean and Transparent styles**
 
-![FlareUI Square, Blizzard Modern Square, Blizzard Classic Square, Clean and Transparent styles](docs/media/styles-clean.gif)
+![FlareUI square, Blizzard modern square, Blizzard classic square, Clean and Transparent styles](docs/media/styles-clean.gif)
 
 **Fantasy styles and styles made from the game's frames**
 
-![Runestone, Grimoire, Parchment, Arcane, Royal Seal, Ironforge, Runeblade, Ember and Sylvan styles](docs/media/styles-fantasy.gif)
+![Runestone, Grimoire, Parchment, Arcane, Royal seal, Ironforge, Runeblade, Ember and Sylvan styles](docs/media/styles-fantasy.gif)
 
 **English and French built in**
 
@@ -120,7 +120,7 @@ Help tab inside the game explains everything.
   with FlareUI, Tessera is in FlareUI's addon bag instead.
 - 19 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
   imitation), Square styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
-  Parchment; Arcane) and styles made of the game's own frames (Royal Seal, Ironforge, Runeblade, Ember, Sylvan).
+  Parchment; Arcane) and styles made of the game's own frames (Royal seal, Ironforge, Runeblade, Ember, Sylvan).
 - Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options
   (bright or soft colors for values and class colors, or colorblind values; high contrast;
   minimum text size). Class color on the text, background, border, icon frame and lines.

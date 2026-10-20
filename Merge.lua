@@ -97,7 +97,6 @@ local ADDON, ns = ...
 -- ========================================================================
 
 local OPPOSITE = { LEFT = "RIGHT", RIGHT = "LEFT", TOP = "BOTTOM", BOTTOM = "TOP" }
-local HORIZONTAL = { LEFT = true, RIGHT = true }
 local DOCK_DISTANCE = 10
 
 -- Corners of a block: { horizontal side, vertical side }
@@ -223,19 +222,6 @@ function ns:GetDragSet(key)
     return set
 end
 
--- Is side "side" of the target already taken by another block? This is true
--- either if a block is docked there, or if the target itself is docked through
--- that side. Blocks in "ignore" do not count.
-local function SideOccupied(self, targetKey, side, ignore)
-    for k, cfg in pairs(self.db.blocks) do
-        if not ignore[k] and cfg.dock and cfg.dock.to == targetKey and cfg.dock.side == side then
-            return true
-        end
-    end
-    local to, toSide = self:GetDockTarget(targetKey)
-    return to ~= nil and not ignore[to] and OPPOSITE[toSide] == side
-end
-
 ---------------------------------------------------------------------------
 -- Anchoring, detaching
 ---------------------------------------------------------------------------
@@ -317,59 +303,29 @@ local function DependsOn(a, b)
 end
 
 function ns:AnchorDocked(f, cfg)
-    local target, side = self:GetDockTarget(f.key)
-    if not target then return false end
-
-    -- safety: never create an anchor loop
-    local seen, cur = {}, target
-    while cur and not seen[cur] do
-        if cur == f.key then
-            cfg.dock = nil
-            return false
-        end
-        seen[cur] = true
-        cur = self:GetDockTarget(cur)
-    end
-
-    target = self:GetEffectiveDock(f.key)
-    f.anchoredTo = target
-    local t = self.frames[target]
-    local g = self:JointGap(f.key)
+    if not self:GetDockTarget(f.key) then return false end
+    -- every block of a group is placed relative to the group's head (rows, see
+    -- Rows.lua); UpdateLayout computes the offsets
+    local head = ns.RawRoot(self.db.blocks, f.key)
+    local t = self.frames[head]
     f:ClearAllPoints() -- (the callers do it too: a safety, never an old point left)
-    -- the block it would hang from is (still) anchored to it: that happened while the
-    -- demo or a profile rebuilt every group, when a hidden block made two blocks point
-    -- at each other. The caller then uses the saved free position; the next layout
-    -- pass anchors it properly.
     if not t or t == f or DependsOn(t, f) then
         f.anchoredTo = nil
         return false
     end
-    if side == "LEFT" then
-        f:SetPoint("TOPRIGHT", t, "TOPLEFT", -g, 0)
-    elseif side == "RIGHT" then
-        f:SetPoint("TOPLEFT", t, "TOPRIGHT", g, 0)
-    elseif side == "TOP" then
-        f:SetPoint("BOTTOMLEFT", t, "TOPLEFT", 0, g)
-    else
-        f:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -g)
-    end
+    if f.anchoredTo ~= head then f.rowX, f.rowY = nil, nil end
+    f.anchoredTo = head
+    f:SetPoint("TOPLEFT", t, "TOPLEFT", f.rowX or 0, f.rowY or 0)
+    self:RequestLayout()
     return true
 end
 
--- Detaches a block while keeping its on-screen position
--- (saved as TOPLEFT relative to UIParent's BOTTOMLEFT)
+-- Takes a block out of its group while keeping its on-screen position
 function ns:Detach(key)
     local f, cfg = self.frames[key], self.db.blocks[key]
-    if not cfg or not cfg.dock then return end
-    local l, b, r, t
-    if f then l, b, r, t = self:GetRectUI(f) end
-    -- the block keeps the scale of the group it leaves (scale is stored on roots)
-    local groupScale = self.db.blocks[self:GetRoot(key)].scale
-    cfg.dock = nil
-    cfg.scale = groupScale
-    if l then
-        cfg.point = self:MakeRelativePoint(l, b, r, t, f:GetEffectiveScale() / UIParent:GetEffectiveScale())
-    end
+    if not cfg or not (cfg.dock or self:HasDependents(key)) then return end
+    self:RemoveFromGroup(key)
+    self:ReanchorAll()
     if f and cfg.point then
         f:ClearAllPoints()
         f:SetPoint(cfg.point[1], UIParent, cfg.point[2], cfg.point[3], cfg.point[4])
@@ -377,11 +333,9 @@ function ns:Detach(key)
     self:RequestLayout()
 end
 
--- Detaches every block docked directly to this one
+-- A block about to be deleted: taken out of its group, the others stay together
 function ns:DetachChildren(key)
-    for k, cfg in pairs(self.db.blocks) do
-        if cfg.dock and cfg.dock.to == key then self:Detach(k) end
-    end
+    if self.db.blocks[key] then self:RemoveFromGroup(key) end
 end
 
 ---------------------------------------------------------------------------
@@ -420,60 +374,29 @@ end
 -- left, top, w, h: position of the dropped block after snapping; exclude: its group.
 -- A side is a candidate only if the blocks overlap by more than a third of the
 -- smaller one along that side. Returns the closest { to, side } and its distance.
--- The block docked on that side of targetKey (a block of its own group), or nil
-local function DockedOn(self, targetKey, side, ignore)
-    for k, cfg in pairs(self.db.blocks) do
-        if not ignore[k] and cfg.dock and cfg.dock.to == targetKey and cfg.dock.side == side then return k end
-    end
-end
-
--- allowInsert: the moved block is alone (no group): it may be slipped between two merged
--- blocks (dropped against a side already taken, it takes that place and the block that was
--- there docks to it). Returns { to, side, insert = key of the block pushed along } or nil.
-function ns:FindDock(left, top, w, h, exclude, allowInsert)
+-- With rows, every side is open: LEFT / RIGHT inserts into the target's row at that
+-- place (the next blocks move along), TOP / BOTTOM makes a new row (Rows.lua).
+function ns:FindDock(left, top, w, h, exclude)
     -- all coordinates in UIParent units (blocks can have different scales)
     local right, bottom = left + w, top - h
     local best, bestDist = nil, DOCK_DISTANCE + 1
-    -- a group with a second row hanging below (above) it: that row lives along its bottom
-    -- (top) side, so nothing may dock there (it would sit on the row and mix both groups)
-    local hangSide = {}
-    for k, cfg in pairs(self.db.blocks) do
-        local target = not exclude[k] and cfg.anchor and ns.HangTarget(cfg.anchor)
-        if target and self.db.blocks[target] then
-            hangSide[self:GetRoot(target)] = cfg.anchor.below and "BOTTOM" or "TOP"
-        end
-    end
     for key, other in pairs(self.frames) do
         if not exclude[key] and self.db.blocks[key] and other:IsShown() and other:GetLeft()
             and not self:IsFrozen(key) then -- a frozen group accepts no new block
             local ol, ob, or_, ot = self:GetRectUI(other)
             local vOverlap = math.min(top, ot) - math.max(bottom, ob)
             local hOverlap = math.min(right, or_) - math.max(left, ol)
-            local candidates = {}
-            -- a row hanging below (above) another group: its top (bottom) side faces that
-            -- group, and the row moves when its blocks hide, so nothing may dock there
-            local hang = self.db.blocks[self:GetRoot(key)].anchor
-            local blockedSide = hang and (hang.below and "TOP" or (hang.above and "BOTTOM"))
             if vOverlap > math.min(h, ot - ob) / 3 then
-                candidates.RIGHT = math.abs(left - or_)
-                candidates.LEFT = math.abs(right - ol)
+                local d = math.abs(left - or_)
+                if d < bestDist then best, bestDist = { to = key, side = "RIGHT" }, d end
+                d = math.abs(right - ol)
+                if d < bestDist then best, bestDist = { to = key, side = "LEFT" }, d end
             end
             if hOverlap > math.min(w, or_ - ol) / 3 then
-                candidates.TOP = math.abs(bottom - ot)
-                candidates.BOTTOM = math.abs(top - ob)
-            end
-            if blockedSide then candidates[blockedSide] = nil end
-            local hung = hangSide[self:GetRoot(key)]
-            if hung then candidates[hung] = nil end
-            for side, dist in pairs(candidates) do
-                if dist < bestDist then
-                    if not SideOccupied(self, key, side, exclude) then
-                        best, bestDist = { to = key, side = side }, dist
-                    elseif allowInsert then
-                        local pushed = DockedOn(self, key, side, exclude)
-                        if pushed then best, bestDist = { to = key, side = side, insert = pushed }, dist end
-                    end
-                end
+                local d = math.abs(bottom - ot)
+                if d < bestDist then best, bestDist = { to = key, side = "TOP" }, d end
+                d = math.abs(top - ob)
+                if d < bestDist then best, bestDist = { to = key, side = "BOTTOM" }, d end
             end
         end
     end
@@ -536,166 +459,51 @@ local function NeededSize(f, cfg)
     return math.max(cfg.width, w), math.max(cfg.height, h)
 end
 
--- Union-find lookup: representative of k's set (no path compression)
-local function Find(parent, k)
-    while parent[k] ~= k do k = parent[k] end
-    return k
-end
+local LOOSE_GAP = 2 -- space around a short row of a fused group
 
--- Full layout pass (see the header for the step order)
+-- Full layout pass, group by group: each group is a stack of rows (Rows.lua).
+--   * hidden blocks leave their row (nothing to skip), an empty row disappears;
+--   * every block of a row takes the row's height (the tallest block; a spacer
+--     never makes a row taller);
+--   * the group is as wide as its widest row (or the screen for a stretched bar,
+--     or the reference frame for a bar that fills it). The other rows share that
+--     width when their blocks at most double their width; otherwise they keep
+--     their sizes and use their alignment ("fused": such a short row stands apart,
+--     LOOSE_GAP off the others, so no border is ever partly shared);
+--   * rows that all have the same number of blocks form a grid: columns line up;
+--   * positions are computed from the group's top-left corner and every block is
+--     anchored to the head at its offset (no chain, no loop).
+-- Results per head in ns.groupLayout: W, H (group size), hx, hy (head's offset from
+-- the group's top-left corner, hy downward).
 function ns:UpdateLayout()
     if not self.db then return end
+    -- an older or edited layout is put back into canonical rows first
+    if self:NormalizeLayout() then self:ReanchorAll() end
+    local blocks = self.db.blocks
     local need = {}
     for _, key in ipairs(self:GetBlockKeys()) do
-        local f, cfg = self.frames[key], self.db.blocks[key]
+        local f, cfg = self.frames[key], blocks[key]
         if f and cfg and f:IsShown() then need[key] = { NeededSize(f, cfg) } end
     end
 
-    -- a block whose target was hidden or shown again re-docks in the right place
-    for key in pairs(need) do
-        local f = self.frames[key]
-        if self:GetDockTarget(key) and f.anchoredTo ~= self:GetEffectiveDock(key) then
-            f:ClearAllPoints()
-            local cfg = self.db.blocks[key]
-            -- AnchorDocked refuses (and clears the dock) if it would create an anchor loop:
-            -- fall back to the saved free position so the block is never left unanchored
-            if not self:AnchorDocked(f, cfg) and cfg.point then
-                f:SetPoint(cfg.point[1], UIParent, cfg.point[2], cfg.point[3], cfg.point[4])
-            end
-        end
-    end
-
-    -- Hidden blocks that others depend on (a hidden group head, or a head hidden
-    -- because empty) shrink to no width, so their visible neighbours close the gap
-    for key, cfg in pairs(self.db.blocks) do
+    -- hidden heads shrink to nothing (they keep the group's position)
+    for key, cfg in pairs(blocks) do
         local f = self.frames[key]
         if f and not need[key] and (cfg.anchor or self:HasDependents(key)) then
-            -- width only: a second row hangs below this block, so its height must stay
-            if f:GetWidth() > 0.02 then f:SetWidth(0.01) end
+            if f:GetWidth() > 0.02 or f:GetHeight() > 0.02 then f:SetSize(0.01, 0.01) end
         end
     end
 
-    -- Groups that share a width ("fill"): the base bar shares the width of
-    -- FlareUI's XP bar, the second row shares the base bar's width. Extra width is
-    -- spread over the visible blocks (rounding remainder to the first one). Done in
-    -- two passes because the second row needs the base bar's final widths.
-    local function GroupMembers(rootKey)
-        local members, horizontal = {}, true
-        for k in pairs(need) do
-            if self:GetRoot(k) == rootKey then
-                local _, side = self:GetDockTarget(k)
-                if side and not HORIZONTAL[side] then horizontal = false end
-                table.insert(members, k)
-            end
-        end
-        table.sort(members)
-        return members, horizontal
+    local heads = {}
+    for key in pairs(need) do heads[ns.RawRoot(blocks, key)] = true end
+    local layouts = {}
+    for head in pairs(heads) do
+        layouts[head] = self:LayoutGroup(head, need)
     end
-    -- spacersOnly: in a bar stretched over the screen width, only its spacers take
-    -- the extra room (the blocks keep their size); without spacers, all share it
-    -- atMostDouble: a second row only shares the base bar's width when its blocks at
-    -- most double their width; otherwise (one or two blocks left, the others hidden
-    -- because empty) it keeps their own sizes, centered under the bar
-    local function Fill(rootKey, total, spacersOnly, atMostDouble)
-        local members, horizontal = GroupMembers(rootKey)
-        if not horizontal or #members == 0 then return end
-        local sum = 0
-        for _, k in ipairs(members) do sum = sum + need[k][1] end
-        sum = sum + self:JointGap(rootKey) * (#members - 1) -- the joints between tiles take their share
-        local extra = math.floor(total - sum)
-        if extra <= 0 then return end
-        if atMostDouble and extra > sum then return end
-        local takers = members
-        if spacersOnly then
-            local spacers = {}
-            for _, k in ipairs(members) do
-                if ns.IsSpacerKey(k) then table.insert(spacers, k) end
-            end
-            if #spacers > 0 then takers = spacers end
-        end
-        local each = math.floor(extra / #takers)
-        for _, k in ipairs(takers) do need[k][1] = need[k][1] + each end
-        local first = (need[rootKey] and not spacersOnly) and rootKey or takers[1]
-        need[first][1] = need[first][1] + extra - each * #takers
-    end
-    -- bars stuck to the top or bottom edge and stretched over the screen width
-    for key, cfg in pairs(self.db.blocks) do
-        local f = self.frames[key]
-        if cfg.stretch and f and not self:GetDockTarget(key) then
-            Fill(key, UIParent:GetWidth() * UIParent:GetEffectiveScale() / f:GetEffectiveScale(), true)
-        end
-    end
-    for _, pass in ipairs({ "frame", "below" }) do
-        for key, cfg in pairs(self.db.blocks) do
-            local a, f = cfg.anchor, self.frames[key]
-            if a and a.fill and f and not self:GetDockTarget(key) then
-                local name = ns.AnchorFrameName(a)
-                if pass == "frame" and name and _G[name] and _G[name].GetWidth then
-                    -- the frame's width, converted to this block's own units
-                    local frame = _G[name]
-                    Fill(key, frame:GetWidth() * frame:GetEffectiveScale() / f:GetEffectiveScale())
-                elseif pass == "below" and ns.HangTarget(a) and self.db.blocks[ns.HangTarget(a)] then
-                    local baseMembers = GroupMembers(self:GetRoot(ns.HangTarget(a)))
-                    local total = 0
-                    for _, k in ipairs(baseMembers) do total = total + need[k][1] end
-                    -- the joints between the bar's tiles are part of its width
-                    total = total + self:JointGap(self:GetRoot(ns.HangTarget(a))) * math.max(0, #baseMembers - 1)
-                    Fill(key, total, false, true)
-                end
-            end
-        end
-    end
+    self.groupLayout = layouts
 
-    -- sets of equal height (horizontal merge) and equal width (vertical merge),
-    -- built with union-find over the effective dock links between visible blocks
-    local parentW, parentH = {}, {}
-    for key in pairs(need) do parentW[key], parentH[key] = key, key end
-    for key in pairs(need) do
-        local target, side = self:GetEffectiveDock(key)
-        if target and need[target] then
-            local parent = HORIZONTAL[side] and parentH or parentW
-            local a, b = Find(parent, key), Find(parent, target)
-            if a ~= b then parent[a] = b end
-        end
-    end
-
-    -- each set takes the size of its largest member
-    -- A spacer adapts to the blocks it is merged with but never stretches them:
-    -- e.g. a long separator line docked under a block takes that block's width
-    -- instead of widening it. (A set made only of spacers keeps their own sizes.)
-    local realW, realH = {}, {}
-    for key in pairs(need) do
-        if not ns.IsSpacerKey(key) then
-            realW[Find(parentW, key)] = true
-            realH[Find(parentH, key)] = true
-        end
-    end
-    local maxW, maxH = {}, {}
-    for key, n in pairs(need) do
-        local rw, rh = Find(parentW, key), Find(parentH, key)
-        local spacer = ns.IsSpacerKey(key)
-        maxW[rw] = math.max(maxW[rw] or 0, (spacer and realW[rw]) and 0 or n[1])
-        maxH[rh] = math.max(maxH[rh] or 0, (spacer and realH[rh]) and 0 or n[2])
-    end
-    local width = {}
-    for key in pairs(need) do
-        local f = self.frames[key]
-        local w, h = maxW[Find(parentW, key)], maxH[Find(parentH, key)]
-        -- sizes rounded to whole screen pixels, so thin borders stay sharp
-        local pw, ph = self:PixelSize(w, f), self:PixelSize(h, f)
-        width[key] = pw
-        if math.abs(f:GetWidth() - pw) > 0.01 or math.abs(f:GetHeight() - ph) > 0.01 then
-            f:SetSize(pw, ph)
-            self:ResizeBar(f)
-        end
-    end
-
-    -- hidden group heads count as zero-width blocks when centering their group
-    for key, cfg in pairs(self.db.blocks) do
-        if cfg.anchor and not width[key] and self.frames[key] then width[key] = 0 end
-    end
-    self:CenterAnchoredGroups(width)
-    self:PlaceStretchedGroups(width)
+    self:CenterAnchoredGroups(layouts)
+    self:PlaceStretchedGroups(layouts)
     self:UpdateSeams(need)
     -- second pass a little later, once all positions have settled
     -- (avoids a border that is not redrawn in an unusual arrangement)
@@ -710,6 +518,175 @@ function ns:UpdateLayout()
         end)
     end
     self:RequestOverlaySync()
+end
+
+-- Lays out one group (see UpdateLayout). need: minimum size of each visible block.
+function ns:LayoutGroup(head, need)
+    local blocks = self.db.blocks
+    local hf, hcfg = self.frames[head], blocks[head]
+    if not hf or not hcfg then return nil end
+    local rows, aligns, _, hr = self:GetRows(head)
+    local look = self:GetGroupLook(head)
+    local g = self:JointGap(head)
+    local fused = look == "fused"
+
+    local w, h = {}, {}
+    local vis, rowH, nat = {}, {}, {}
+    for r, row in ipairs(rows) do
+        local list = {}
+        for _, k in ipairs(row) do
+            if need[k] then
+                local f = self.frames[k]
+                w[k], h[k] = self:PixelSize(need[k][1], f), self:PixelSize(need[k][2], f)
+                table.insert(list, k)
+            end
+        end
+        vis[r] = list
+        local real, any = 0, 0
+        for _, k in ipairs(list) do
+            any = math.max(any, h[k])
+            if not ns.IsSpacerKey(k) then real = math.max(real, h[k]) end
+        end
+        rowH[r] = real > 0 and real or any
+    end
+
+    -- grid: every shown row has the same number of blocks (2 rows or more)
+    local count, shownRows = nil, 0
+    local grid = true
+    for r = 1, #rows do
+        local n = #vis[r]
+        if n > 0 then
+            shownRows = shownRows + 1
+            if count and n ~= count then grid = false end
+            count = count or n
+        end
+    end
+    if grid and shownRows >= 2 and count >= 2 then
+        for c = 1, count do
+            local cw = 0
+            for r = 1, #rows do
+                local k = vis[r][c]
+                if k then cw = math.max(cw, w[k]) end
+            end
+            for r = 1, #rows do
+                local k = vis[r][c]
+                if k then w[k] = cw end
+            end
+        end
+    end
+
+    local maxNat = 0
+    for r = 1, #rows do
+        local sum = 0
+        for _, k in ipairs(vis[r]) do sum = sum + w[k] end
+        nat[r] = sum + g * math.max(0, #vis[r] - 1)
+        maxNat = math.max(maxNat, nat[r])
+    end
+
+    -- width of the group
+    local W, spacersOnly, fillRow = maxNat, false, nil
+    if hcfg.stretch then
+        W = math.max(maxNat, UIParent:GetWidth() * UIParent:GetEffectiveScale() / hf:GetEffectiveScale())
+        spacersOnly = true
+    elseif hcfg.anchor and hcfg.anchor.fill then
+        local name = ns.AnchorFrameName(hcfg.anchor)
+        local frame = name and _G[name]
+        if frame and frame.GetWidth and frame:GetWidth() > 0 then
+            W = math.max(maxNat, frame:GetWidth() * frame:GetEffectiveScale() / hf:GetEffectiveScale())
+            fillRow = hr
+        end
+    end
+    W = self:PixelSize(W, hf)
+
+    -- x of each block in its row, y of each row
+    local x, y = {}, {}
+    local hx, hy
+    local top, prevLoose = 0, false
+    for r, row in ipairs(rows) do
+        local list = vis[r]
+        local extra = W - nat[r]
+        local offset = 0
+        local loose = false
+        if #list > 0 and extra > 0.01 then
+            local justify = hcfg.stretch or r == fillRow or extra <= nat[r]
+            -- fused: a row less than half as wide stands apart, just off the others,
+            -- with its own frame (no partly shared border)
+            loose = fused and not justify
+            if justify then
+                local takers = list
+                if spacersOnly then
+                    local spacers = {}
+                    for _, k in ipairs(list) do
+                        if ns.IsSpacerKey(k) then table.insert(spacers, k) end
+                    end
+                    if #spacers > 0 then takers = spacers end
+                end
+                local each = self:PixelSize(extra / #takers, hf)
+                for n, k in ipairs(takers) do
+                    if n < #takers then
+                        w[k] = w[k] + each
+                        extra = extra - each
+                    else
+                        w[k] = w[k] + extra
+                    end
+                end
+            else
+                local a = aligns[r]
+                if a == "CENTER" then offset = self:PixelSize(extra / 2, hf)
+                elseif a == "RIGHT" then offset = extra end
+            end
+        end
+        if #list > 0 then
+            if top > 0 and g == 0 and (loose or prevLoose) then top = top + LOOSE_GAP end
+            prevLoose = loose
+        end
+        local cx = offset
+        for _, k in ipairs(row) do
+            if need[k] then
+                x[k], y[k] = cx, top
+                cx = cx + w[k] + g
+            end
+        end
+        if #list > 0 then top = top + rowH[r] + g end
+    end
+    local H = math.max(0, top - g)
+    if need[head] then
+        hx, hy = x[head], y[head]
+    else
+        -- a hidden head (no width, no height) stays on the side of the group its
+        -- saved point uses: a group in a right corner keeps its right edge there
+        local p = (hcfg.anchor and (hcfg.anchor.bottom and "BOTTOMLEFT" or "TOPLEFT"))
+            or (hcfg.stretch and (hcfg.stretch == "BOTTOM" and "BOTTOMLEFT" or "TOPLEFT"))
+            or (type(hcfg.point) == "table" and hcfg.point[1]) or "TOPLEFT"
+        hx = p:find("RIGHT") and W or (p:find("LEFT") and 0 or self:PixelSize(W / 2, hf))
+        hy = p:find("BOTTOM") and H or (p:find("TOP") and 0 or self:PixelSize(H / 2, hf))
+    end
+
+    -- sizes and positions
+    for r, row in ipairs(rows) do
+        for _, k in ipairs(row) do
+            local f = self.frames[k]
+            if need[k] and f then
+                local ph = rowH[r]
+                if math.abs(f:GetWidth() - w[k]) > 0.01 or math.abs(f:GetHeight() - ph) > 0.01 then
+                    f:SetSize(w[k], ph)
+                    self:ResizeBar(f)
+                end
+                if k ~= head then
+                    local s = hf:GetEffectiveScale() / f:GetEffectiveScale()
+                    local ox, oy = (x[k] - hx) * s, -(y[k] - hy) * s
+                    if f.anchoredTo ~= head or f.rowX ~= ox or f.rowY ~= oy or f:GetNumPoints() ~= 1 then
+                        f:ClearAllPoints()
+                        if hf ~= f and not DependsOn(hf, f) then
+                            f:SetPoint("TOPLEFT", hf, "TOPLEFT", ox, oy)
+                            f.anchoredTo, f.rowX, f.rowY = head, ox, oy
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return { W = W, H = H, hx = hx, hy = hy, rows = #rows }
 end
 
 ---------------------------------------------------------------------------
@@ -1249,125 +1226,32 @@ end
 ---------------------------------------------------------------------------
 -- Centering anchored groups (base bar) on their reference frame
 ---------------------------------------------------------------------------
--- Horizontal position of each block of a group, with the head at x = 0
--- (propagated along effective dock links until nothing changes; vertical docks
--- share their target's x because they are left-aligned).
--- Returns the group's total width and the head's x offset from the group's left edge.
-local function GroupExtent(self, head, width)
-    local x = { [head] = 0 }
-    local g = self:JointGap(head)
-    -- a hidden block that others still hang from (e.g. a hidden block under the bar
-    -- with a block on its right) is a zero-width link: its dependents must be placed
-    -- too. Only for this computation: the width table itself is not changed.
-    local function W(key)
-        if width[key] then return width[key] end
-        local f = self.frames[key]
-        if f and not f:IsShown() then return 0 end
-    end
-    local changed = true
-    while changed do
-        changed = false
-        for key in pairs(self.db.blocks) do
-            if x[key] == nil and W(key) then
-                local target, side = self:GetEffectiveDock(key)
-                local tw = target and W(target)
-                if tw and x[target] ~= nil then
-                    if side == "RIGHT" then
-                        x[key] = x[target] + tw + g
-                    elseif side == "LEFT" then
-                        x[key] = x[target] - W(key) - g
-                    else
-                        x[key] = x[target]
-                    end
-                    changed = true
-                end
-            end
-        end
-    end
-    -- the extent counts the visible blocks only
-    local minX, maxX = 0, 0
-    for key, left in pairs(x) do
-        if width[key] then
-            minX = math.min(minX, left)
-            maxX = math.max(maxX, left + width[key])
-        end
-    end
-    -- total width, head's offset from the group's left edge, and every block's x
-    -- relative to the head
-    return maxX - minX, -minX, x
-end
-
 -- Bars stretched over the screen width: the group's left edge on the screen's
 -- left edge, on the top or bottom edge (the head may not be the leftmost block)
-function ns:PlaceStretchedGroups(width)
-    for key in pairs(width) do
+function ns:PlaceStretchedGroups(layouts)
+    for key, lay in pairs(layouts) do
         local cfg, f = self.db.blocks[key], self.frames[key]
-        if cfg.stretch and f and not self:GetDockTarget(key) then
-            local _, headX = GroupExtent(self, key, width)
+        if cfg and cfg.stretch and f and not self:GetDockTarget(key) then
             local point = (cfg.stretch == "BOTTOM" and "BOTTOM" or "TOP") .. "LEFT"
             local p, rel, _, x, y = f:GetPoint(1)
-            if p ~= point or rel ~= UIParent or math.abs((x or 0) - headX) > 0.5 or (y or 0) ~= 0 then
+            if p ~= point or rel ~= UIParent or math.abs((x or 0) - lay.hx) > 0.5 or (y or 0) ~= 0 then
                 f:ClearAllPoints()
-                f:SetPoint(point, UIParent, point, headX, 0)
+                f:SetPoint(point, UIParent, point, lay.hx, 0)
             end
         end
     end
 end
 
--- Re-anchors each anchored group root so the whole group is centered on its
+-- Re-anchors each anchored group head so the whole group is centered on its
 -- reference (offset from GetCenterOffset in Core.lua); only when the offset changed.
--- width: final width of each visible block, from UpdateLayout.
-function ns:CenterAnchoredGroups(width)
-    -- a second row hangs below (above) its whole base group: when a block of that group
-    -- reaches lower (higher) than the block the row hangs from (a column merged into the
-    -- bar), the row moves down (up) by that much instead of covering it
-    for key in pairs(width) do
-        local cfg, f = self.db.blocks[key], self.frames[key]
-        local below = cfg and cfg.anchor and ns.HangTarget(cfg.anchor)
-        local base = below and self.frames[below]
-        if base and not self:GetDockTarget(key) then
-            local _, bb, _, bt = self:GetRectUI(base)
-            local baseRoot, depth = self:GetRoot(below), 0
-            if bb then
-                for k in pairs(width) do
-                    local o = self.frames[k]
-                    if k ~= below and o and self:GetRoot(k) == baseRoot then
-                        local _, ob, _, ot = self:GetRectUI(o)
-                        if ob and cfg.anchor.below then depth = math.max(depth, bb - ob)
-                        elseif ot then depth = math.max(depth, ot - bt) end
-                    end
-                end
-            end
-            -- UIParent units to this block's own units
-            local drop = math.floor(depth * UIParent:GetEffectiveScale() / f:GetEffectiveScale() + 0.5)
-            if drop < 1 then drop = 0 end
-            if (f.hangDrop or 0) ~= drop then
-                f.hangDrop = drop
-                f:ClearAllPoints()
-                self:AnchorToFrame(f, cfg)
-            end
-        end
-    end
-    for key in pairs(width) do
+function ns:CenterAnchoredGroups(layouts)
+    for key, lay in pairs(layouts) do
         local cfg, f = self.db.blocks[key], self.frames[key]
         -- a row aligned on one edge (cfg.anchor.align) is not centered
-        if cfg.anchor and not cfg.anchor.align and not self:GetDockTarget(key) then
-            local groupWidth, headX = GroupExtent(self, key, width)
-            local offset
-            if ns.HangTarget(cfg.anchor) then
-                -- second row: centered under the group of the block it hangs from.
-                -- The offset is relative to that block's left edge.
-                local below = ns.HangTarget(cfg.anchor)
-                local baseRoot = self:GetRoot(below)
-                if width[baseRoot] then
-                    local baseWidth, baseHeadX, xs = GroupExtent(self, baseRoot, width)
-                    local belowLeft = baseHeadX + (xs[below] or 0)
-                    offset = math.floor((baseWidth - groupWidth) / 2 + headX - belowLeft + 0.5)
-                end
-            else
-                offset = math.floor(self:GetCenterOffset(cfg, groupWidth, headX, f) + 0.5)
-            end
-            if offset and f.centerOffset ~= offset then
+        if cfg and f and cfg.anchor and not cfg.anchor.align and not ns.HangTarget(cfg.anchor)
+            and not self:GetDockTarget(key) then
+            local offset = math.floor(self:GetCenterOffset(cfg, lay.W, lay.hx, f) + 0.5)
+            if f.centerOffset ~= offset then
                 f.centerOffset = offset
                 f:ClearAllPoints()
                 self:AnchorToFrame(f, cfg)

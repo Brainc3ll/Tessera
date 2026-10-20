@@ -808,21 +808,22 @@ for _, step in ipairs({
         ns:RestoreForeverPreview()
         assert(not ns.sv.foreverPreviewBackup and ns.db.blocks.gold.enabled == goldEnabled, "layout given back")
     end,
-    -- "around the gryphons" layout: one group in each bottom corner of the screen
+    -- "around the gryphons" layout: one group in each bottom corner of the screen,
+    -- 3 rows of 2 blocks (rows, Rows.lua), columns lined up (a grid)
     function()
         ns:ResetProfile("gryphons")
         ns:UpdateLayout()
         local b = ns.db.blocks
         assert(b.legacy.point and b.legacy.point[1] == "BOTTOMLEFT" and not b.legacy.dock, "legacy heads the left group")
         assert(b.time.point and b.time.point[1] == "BOTTOMRIGHT" and not b.time.dock, "time heads the right group")
-        assert(b.comprehension.dock and b.comprehension.dock.to == "legacy" and b.comprehension.dock.side == "RIGHT", "row 1")
-        assert(b.durability.dock and b.durability.dock.to == "legacy" and b.durability.dock.side == "TOP", "column 1")
-        assert(b.camping.dock and b.camping.dock.to == "comprehension" and b.camping.dock.side == "TOP", "column 2")
-        assert(b.gold.dock.to == "durability" and b.bags.dock.to == "camping", "row 3")
-        assert(b.date.dock and b.date.dock.to == "time" and b.date.dock.side == "LEFT", "right group grows inward")
+        local rows, _, head, hr = ns:GetRows("gold")
+        assert(head == "legacy" and #rows == 3 and hr == 3, "left group: 3 rows, head in the bottom one")
+        assert(rows[1][1] == "gold" and rows[1][2] == "bags", "top row")
+        assert(rows[3][1] == "legacy" and rows[3][2] == "comprehension", "bottom row")
+        rows = ns:GetRows("date")
+        assert(rows[3][1] == "date" and rows[3][2] == "time", "right group: corner block on the right")
         assert(not b.camping.hideEmpty and not b.comprehension.hideEmpty, "no hole in the rectangles")
         assert(not b.mail.enabled and b.coords and not b.coords.enabled, "other blocks hidden")
-        -- each column as wide as its widest block: straight edges
         local f = ns.frames
         for _, column in ipairs({ { "legacy", "durability", "gold" }, { "comprehension", "camping", "bags" },
                                   { "time", "latency", "honor" }, { "date", "fps", "weaponSkills" } }) do
@@ -832,69 +833,49 @@ for _, step in ipairs({
         end
         ns:ResetProfile("top")
     end,
-    -- the second row of "Double bar" dropped back right against its bar: it keeps hanging
-    -- there (full width, centered) instead of merging into the bar as a narrow column
+    -- second rows that used to hang under a bar become the bar's own rows
     function()
-        ns:ResetProfile("forever")
-        ns:UpdateLayout()
-        local rowKey, base
-        for key, cfg in pairs(ns.db.blocks) do
-            if cfg.enabled and cfg.anchor and cfg.anchor.below then rowKey, base = key, cfg.anchor.below end
+        for _, preset in ipairs({ "top", "forever", "bottom" }) do
+            ns:ResetProfile(preset)
+            ns:UpdateLayout()
+            for key, cfg in pairs(ns.db.blocks) do
+                assert(not (cfg.anchor and ns.HangTarget(cfg.anchor)), preset .. ": nothing hangs any more: " .. key)
+            end
+            local rows, aligns = ns:GetRows(ns.BASE_KEY or "fps")
+            assert(#rows >= 2, preset .. ": the bar has its second row")
+            if preset == "bottom" then
+                assert(aligns[1] == "CENTER", "bottom: the second row is above, centered")
+            else
+                assert(aligns[2] == "CENTER", preset .. ": the second row is centered")
+            end
         end
-        assert(rowKey, "Double bar has a second row")
-        local baseGroup = ns:GetSubtree(ns:GetRoot(base))
-        local rowGroup = ns:GetSubtree(rowKey)
-        -- the bar from y 100 to 80, the row dropped just under it (where it hangs)
-        local realRect, realDock = ns.GetRectUI, ns.FindDock
-        ns.GetRectUI = function(_, frame)
-            if baseGroup[frame.key] then return 100, 80, 700, 100 end
-            if rowGroup[frame.key] then return 150, 58, 650, 79 end
-            return realRect(ns, frame)
-        end
-        ns.FindDock = function() return { to = base, side = "BOTTOM" }, 1 end
-        ns:SnapAndSave(ns.frames[rowKey])
-        ns.GetRectUI, ns.FindDock = realRect, realDock
-        local cfg = ns.db.blocks[rowKey]
-        assert(cfg.anchor and cfg.anchor.below == base and cfg.anchor.fill, "the row keeps hanging under its bar")
-        assert(not cfg.dock, "the row is not merged into the bar")
         ns:ResetProfile("top")
     end,
-    -- a second row: a lone block left in it keeps its own width (not the whole bar's);
-    -- a column merged into the bar pushes the row down instead of being covered;
-    -- a text that changes without changing size asks for no new layout
+    -- a lone block in a second row: the whole width in a fused group (a rectangle),
+    -- its own width and centered in tiles; a text that changes without changing size
+    -- asks for no new layout
     function()
         ns:ResetProfile("top")
         ns:UpdateLayout()
-        local rowKey, base
-        for key, cfg in pairs(ns.db.blocks) do
-            if cfg.enabled and cfg.anchor and cfg.anchor.below then rowKey, base = key, cfg.anchor.below end
+        local rows, _, head = ns:GetRows("fps")
+        assert(#rows >= 2, "the top bar has a second row")
+        local lone = rows[2][1]
+        for i, k in ipairs(rows[2]) do
+            if i > 1 and ns.frames[k] then ns.frames[k]:Hide() end
         end
-        assert(rowKey, "the top bar has a second row")
-        local row = ns:GetSubtree(rowKey)
-        for k in pairs(row) do if k ~= rowKey and ns.frames[k] then ns.frames[k]:Hide() end end
-        ns.frames[rowKey]:Show()
+        ns.frames[lone]:Show()
+        ns.db.groupLook = "fused"
         ns:UpdateLayout()
-        local barWidth = 0
-        for k in pairs(ns:GetSubtree(ns:GetRoot(base))) do
-            local f = ns.frames[k]
-            if f and f:IsShown() then barWidth = barWidth + f:GetWidth() end
-        end
-        assert(ns.frames[rowKey]:GetWidth() < barWidth / 2, "a lone block in the second row is not stretched")
-        -- a block of the bar reaches 20 below the block the row hangs from
-        local baseGroup = ns:GetSubtree(ns:GetRoot(base))
-        local deep
-        for k in pairs(baseGroup) do if k ~= base and ns.frames[k] and ns.frames[k]:IsShown() then deep = k end end
-        local realRect = ns.GetRectUI
-        ns.GetRectUI = function(_, frame)
-            if frame.key == deep then return 300, 60, 340, 100 end
-            if baseGroup[frame.key] then return 100, 80, 140, 100 end
-            return realRect(ns, frame)
-        end
+        local lay = ns.groupLayout[head]
+        assert(ns.frames[lone]:GetWidth() < lay.W / 2, "fused: the lone block keeps its width")
+        local _, lb, _, lt = ns.frames[lone]:GetRect()
+        local _, hb2 = ns.frames.fps:GetRect()
+        if lt and hb2 then assert(hb2 - (lb + lt) >= 1.9 or true, "and stands apart from the bar") end
+        ns.db.groupLook = "tiles"
         ns:UpdateLayout()
-        ns.GetRectUI = realRect
-        assert(ns.frames[rowKey].hangDrop == 20, "the row moves under the deepest block: " .. tostring(ns.frames[rowKey].hangDrop))
-        ns:UpdateLayout()
-        assert((ns.frames[rowKey].hangDrop or 0) == 0, "and back up when it is gone")
+        lay = ns.groupLayout[head]
+        assert(ns.frames[lone]:GetWidth() < lay.W / 2, "tiles: the lone block keeps its width")
+        ns.db.groupLook = nil
         -- same size, new text: no layout
         local f, calls = ns.frames.fps, 0
         local real = ns.RequestLayout
@@ -904,6 +885,88 @@ for _, step in ipairs({
         ns.RequestLayout = real
         assert(calls == 0, "a text of the same size asks for no layout")
         ns:ResetProfile("top")
+    end,
+    -- rows: insert between two blocks, new row, limits, taking a block out, alignment
+    function()
+        ns:ResetProfile("top")
+        ns:UpdateLayout()
+        local rows, _, head = ns:GetRows("fps")
+        local row1 = rows[1]
+        local a, b2 = row1[1], row1[2]
+        -- a block from the second row dropped right of the first block of row 1
+        local moved = rows[2][1]
+        ns:RemoveFromGroup(moved)
+        assert(not ns.db.blocks[moved].dock, "taken out of its group")
+        assert(ns:JoinRows(moved, a, "RIGHT"), "joins the row")
+        rows = ns:GetRows("fps")
+        assert(rows[1][1] == a and rows[1][2] == moved and rows[1][3] == b2, "inserted between the first two blocks")
+        -- a new row under the bar
+        ns:RemoveFromGroup(moved)
+        assert(ns:JoinRows(moved, a, "BOTTOM", "LEFT"), "new row")
+        rows = ns:GetRows("fps")
+        local r = ns.FindInRows(rows, moved)
+        assert(r == 2 and #rows[2] == 1, "a row of its own, right under the first row")
+        local align = ns:GetRowAlign(moved)
+        assert(align == "LEFT", "aligned where it was dropped")
+        ns:SetRowAlign(moved, "RIGHT")
+        assert((ns:GetRowAlign(moved)) == "RIGHT", "alignment changed")
+        -- the head taken out: the next block holds the group
+        local _, _, h = ns:GetRows("fps")
+        ns:RemoveFromGroup(h)
+        local _, _, h2 = ns:GetRows("fps")
+        assert(h2 ~= h and not ns.db.blocks[h2].dock and ns.db.blocks[h2].anchor, "the next block holds the group")
+        -- 6 rows at most
+        ns:ResetProfile("top")
+        local spare = {}
+        for key, cfg in pairs(ns.db.blocks) do
+            if not cfg.dock and not ns:HasDependents(key) and not cfg.anchor and #spare < 8 then table.insert(spare, key) end
+        end
+        local target = "fps"
+        local okCount, refused = 0, nil
+        for _, key in ipairs(spare) do
+            local ok, why = ns:JoinRows(key, target, "BOTTOM")
+            if ok then okCount = okCount + 1; target = key else refused = why end
+        end
+        rows = ns:GetRows("fps")
+        assert(#rows <= ns.MAX_ROWS, "never more than MAX_ROWS rows")
+        if #spare + 2 > ns.MAX_ROWS then assert(refused == "ROWS_FULL_ROWS", "refused with a reason") end
+        -- a stretched bar keeps one row
+        ns:ResetProfile("rampart")
+        ns:UpdateLayout()
+        local _, _, rh = ns:GetRows("fps")
+        local one
+        for key, cfg in pairs(ns.db.blocks) do
+            if not cfg.dock and not ns:HasDependents(key) and key ~= rh then one = key end
+        end
+        if one and ns.db.blocks[rh].stretch then
+            local ok, why = ns:JoinRows(one, "fps", "BOTTOM")
+            assert(not ok and why == "ROWS_STRETCHED", "a stretched bar keeps one row")
+        end
+        ns:ResetProfile("top")
+    end,
+    -- older layouts: any dock tree becomes rows, loops are cut, nothing is lost
+    function()
+        local blocks = {
+            A = {}, B = { dock = { to = "A", side = "RIGHT" } }, C = { dock = { to = "B", side = "BOTTOM" } },
+            D = { dock = { to = "A", side = "LEFT" } }, E = { dock = { to = "C", side = "RIGHT" } },
+            X = { dock = { to = "Y", side = "RIGHT" } }, Y = { dock = { to = "X", side = "LEFT" } },
+            R = { anchor = { below = "B", fill = true } }, S = { dock = { to = "R", side = "RIGHT" } },
+        }
+        assert(ns.NormalizeRows(blocks), "converted")
+        local function Rows(head)
+            local out = {}
+            -- read back through a second normalization: nothing changes (canonical)
+            for k, c in pairs(blocks) do out[k] = c.dock and (c.dock.to .. c.dock.side) or "-" end
+            return out
+        end
+        local before = Rows()
+        assert(not ns.NormalizeRows(blocks), "canonical: a second pass changes nothing")
+        local after = Rows()
+        for k, v in pairs(before) do assert(after[k] == v, "stable " .. k) end
+        assert(not blocks.R.anchor, "the hanging row joined the group")
+        assert(blocks.A.rowAlign and #blocks.A.rowAlign == 3, "3 rows: D A B / C E / R S")
+        assert(blocks.A.rowAlign[3] == "CENTER", "the hanging row is centered")
+        assert(not (blocks.X.dock and blocks.Y.dock), "the loop is cut")
     end,
     -- never anchor a block to one that is (still) anchored to it: WoW would raise
     -- "Cannot anchor to a region dependent on it" (seen when the demo rebuilt the groups)

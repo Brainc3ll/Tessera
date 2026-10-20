@@ -134,6 +134,7 @@ end
 -- Clearing all anchors first avoids WoW's "anchor to a region dependent on it"
 -- error when docking relations were changed (undo, profile change...).
 function ns:ReanchorAll()
+    self:NormalizeLayout() -- canonical rows (Rows.lua)
     for _, f in pairs(self.frames) do f:ClearAllPoints() end
     local done, queue = {}, {}
     for key in pairs(self.db.blocks) do
@@ -159,7 +160,7 @@ end
 -- Undo (placement mode)
 ---------------------------------------------------------------------------
 local UNDO_LIMIT = 30
-local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look" }
+local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look", "rowAlign", "scale" }
 
 -- Remembers the position of every block, before a move / merge / detach / hide
 function ns:PushUndo()
@@ -279,6 +280,15 @@ function ns:StartGuides(mover)
         guide:SetFrameStrata("TOOLTIP")
         guide.v = GuideLine(guide)
         guide.h = GuideLine(guide)
+        -- where the dropped block would go (rows): a thick line and a short text
+        guide.mark = guide:CreateTexture(nil, "OVERLAY", nil, 3)
+        guide.mark:SetColorTexture(1, 0.82, 0, 1)
+        guide.mark:Hide()
+        guide.text = guide:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        guide.text:SetJustifyH("CENTER")
+        local font, size = guide.text:GetFont()
+        if font then guide.text:SetFont(font, size or 12, "OUTLINE") end
+        guide.text:Hide()
     end
     local exclude = self:GetDragSet(mover.key)
     local ml, _, _, mt = self:GetRectUI(mover)
@@ -292,6 +302,8 @@ function ns:StartGuides(mover)
         end
     end
     guide.mover, guide.members, guide.rects = mover, members, self:GetSnapRects(exclude)
+    guide.exclude, guide.nextDrop = exclude, nil
+    self.dragSet = exclude
     guide:SetScript("OnUpdate", function() ns:UpdateGuides() end)
     guide:Show()
 end
@@ -325,6 +337,13 @@ function ns:UpdateGuides()
         end
     end
     local s = UIParent:GetEffectiveScale() / guide:GetEffectiveScale()
+    if self.db.merge then
+        local now = GetTime()
+        if not guide.nextDrop or now >= guide.nextDrop then
+            guide.nextDrop = now + 0.05
+            self:UpdateDropHint(ml, mt, s)
+        end
+    end
     guide.v:SetShown(gx ~= nil)
     if gx then
         guide.v:ClearAllPoints()
@@ -341,12 +360,59 @@ function ns:UpdateGuides()
     end
 end
 
+-- Insertion line and text while dragging: which row, between which blocks, or why
+-- that place is refused (Rows.lua). ml, mt: moved frame's top-left; s: scale factor.
+function ns:UpdateDropHint(ml, mt, s)
+    local best, bestDist
+    local bl, bb, br
+    for _, m in ipairs(guide.members) do
+        local l, b, r, t = ml + m[1], mt + m[2], ml + m[3], mt + m[4]
+        bl, bb, br = math.min(bl or l, l), math.min(bb or b, b), math.max(br or r, r)
+        local d, dist = self:FindDock(l, t, r - l, t - b, guide.exclude)
+        if d and (not bestDist or dist < bestDist) then best, bestDist = d, dist end
+    end
+    local refused
+    if best then
+        local rows, why = self:PlanJoin(self:GetRoot(guide.mover.key), best.to, best.side, "CENTER")
+        if not rows then refused = why end
+    end
+    local mark = guide.mark
+    mark:ClearAllPoints()
+    if best and self.frames[best.to] then
+        local ol, ob, or_, ot = self:GetRectUI(self.frames[best.to])
+        if refused then mark:SetColorTexture(1, 0.3, 0.3, 1) else mark:SetColorTexture(1, 0.82, 0, 1) end
+        if best.side == "LEFT" or best.side == "RIGHT" then
+            local x = best.side == "LEFT" and ol or or_
+            mark:SetPoint("BOTTOM", UIParent, "BOTTOMLEFT", x * s, ob * s)
+            mark:SetSize(3, (ot - ob) * s)
+        else
+            local gl, _, gr = self:GroupRectUI(self:GetRoot(best.to))
+            gl, gr = gl or ol, gr or or_
+            local y = best.side == "TOP" and ot or ob
+            mark:SetPoint("LEFT", UIParent, "BOTTOMLEFT", gl * s, y * s)
+            mark:SetSize((gr - gl) * s, 3)
+        end
+        mark:Show()
+    else
+        mark:Hide()
+    end
+    if bl then
+        guide.text:ClearAllPoints()
+        guide.text:SetPoint("TOP", UIParent, "BOTTOMLEFT", (bl + br) / 2 * s, (bb - 6) * s)
+        guide.text:SetText(self:DescribeDrop(best, refused))
+        guide.text:Show()
+    end
+end
+
 function ns:StopGuides()
     if not guide then return end
     guide:SetScript("OnUpdate", nil)
     guide.v:Hide()
     guide.h:Hide()
+    guide.mark:Hide()
+    guide.text:Hide()
     guide:Hide()
+    self.dragSet = nil
 end
 
 ---------------------------------------------------------------------------
@@ -510,6 +576,16 @@ function ns:OpenQuickMenu(key)
             for _, look in ipairs(ns.GROUP_LOOKS) do
                 sub:CreateRadio(L["GROUP_LOOK_" .. look:upper()], function() return Own() == look end,
                     function() self:PushUndo(); self:SetGroupOwnLook(key, look) end)
+            end
+        end
+        -- alignment of this block's row when it is narrower than the group (rows);
+        -- a fused group is a rectangle: every row takes its width
+        local _, rowCount = self:GetRowAlign(key)
+        if rowCount > 1 and not self:IsFrozen(key) and self:GetGroupLook(key) ~= "fused" then
+            local sub = root:CreateButton(L.MENU_ROW_ALIGN)
+            for _, a in ipairs({ "LEFT", "CENTER", "RIGHT" }) do
+                sub:CreateRadio(L["ROW_ALIGN_" .. a], function() return (self:GetRowAlign(key)) == a end,
+                    function() self:PushUndo(); self:SetRowAlign(key, a) end)
             end
         end
         -- Gold block: forget a character (deleted or renamed) from its tooltip
@@ -798,37 +874,12 @@ function ns:GroupRectUI(rootKey)
     if not head then return nil end
     local hl, hb, hr, ht = self:GetRectUI(head)
     if not hl then return nil end
-    local pos = { [rootKey] = { l = hl, t = ht, w = hr - hl, h = ht - hb } }
-    local members = self:GetSubtree(rootKey)
-    local changed = true
-    while changed do
-        changed = false
-        for key in pairs(members) do
-            local f = self.frames[key]
-            if not pos[key] and f and f:IsShown() then
-                local target, side = self:GetEffectiveDock(key)
-                local tp = target and pos[target]
-                if tp then
-                    local k = f:GetEffectiveScale() / UIParent:GetEffectiveScale()
-                    local w, h = f:GetWidth() * k, f:GetHeight() * k
-                    local l, t = tp.l, tp.t
-                    local g = self:JointGap(key) * k
-                    if side == "RIGHT" then l = tp.l + tp.w + g
-                    elseif side == "LEFT" then l = tp.l - w - g
-                    elseif side == "BOTTOM" then t = tp.t - tp.h - g
-                    else t = tp.t + h + g end
-                    pos[key] = { l = l, t = t, w = w, h = h }
-                    changed = true
-                end
-            end
-        end
-    end
-    local l, b, r, t
-    for _, p in pairs(pos) do
-        l, b = math.min(l or p.l, p.l), math.min(b or (p.t - p.h), p.t - p.h)
-        r, t = math.max(r or (p.l + p.w), p.l + p.w), math.max(t or p.t, p.t)
-    end
-    return l, b, r, t
+    local lay = self.groupLayout and self.groupLayout[rootKey]
+    if not lay then return hl, hb, hr, ht end
+    -- from the head's position and the layout (rows, Merge.lua)
+    local k = head:GetEffectiveScale() / UIParent:GetEffectiveScale()
+    local l, t = hl - lay.hx * k, ht + lay.hy * k
+    return l, t - lay.H * k, l + lay.W * k, t
 end
 
 -- Screen edges a rectangle touches (nil when none)
@@ -844,11 +895,7 @@ end
 
 -- True when the group is one row of blocks (only merged left / right)
 function ns:IsSingleRow(rootKey)
-    for key in pairs(self:GetSubtree(rootKey)) do
-        local _, side = self:GetDockTarget(key)
-        if side == "TOP" or side == "BOTTOM" then return false end
-    end
-    return true
+    return #self:GetRows(rootKey) == 1
 end
 
 -- Saved point of a stuck group's head: offsets measured from the stuck edges, so
@@ -867,15 +914,9 @@ end
 
 -- Blocks of a one-row group, from left to right
 local function RowOrder(self, rootKey)
-    local list = {}
-    for key in pairs(self:GetSubtree(rootKey)) do
-        local f = self.frames[key]
-        local l = f and self:GetRectUI(f)
-        table.insert(list, { key = key, l = l or 0 })
-    end
-    table.sort(list, function(a, b) return a.l < b.l end)
+    local rows = self:GetRows(rootKey)
     local keys = {}
-    for _, e in ipairs(list) do table.insert(keys, e.key) end
+    for _, k in ipairs(rows[1]) do table.insert(keys, k) end
     return keys
 end
 
@@ -1018,26 +1059,29 @@ function ns:InsertSpacer(key, side)
     else
         s.height = 8
     end
-    -- in between, or simply on that side
-    local neighbour
-    for k, c in pairs(blocks) do
-        if c.dock and c.dock.to == key and c.dock.side == side then neighbour = k end
-    end
-    if neighbour then
-        s.dock = { to = key, side = side }
-        blocks[neighbour].dock.to = spacer
-    elseif cfg.dock and OPPOSITE_SIDE[cfg.dock.side] == side then
-        s.dock = { to = cfg.dock.to, side = cfg.dock.side }
-        cfg.dock.to = spacer
+    -- rows (Rows.lua): left / right = in the block's row at that place, top / bottom
+    -- = a new row holding the spacer
+    local rows, aligns, head = self:GetRows(key)
+    local r, i = ns.FindInRows(rows, key)
+    if side == "LEFT" or side == "RIGHT" then
+        table.insert(rows[r], side == "LEFT" and i or i + 1, spacer)
     else
-        s.dock = { to = key, side = side }
+        local at = side == "TOP" and r or r + 1
+        table.insert(rows, at, { spacer })
+        table.insert(aligns, at, "CENTER")
     end
+    if #rows > ns.MAX_ROWS or #rows[r] > ns.MAX_PER_ROW then
+        blocks[spacer] = nil
+        self.Print(L[#rows > ns.MAX_ROWS and "ROWS_FULL_ROWS" or "ROWS_FULL_BLOCKS"])
+        return false
+    end
+    self:WriteRows(head, rows, aligns)
     self:RefreshAllBlocks()
     self:UpdateLayout()
     -- a stretched bar must still fit on the screen
     if stretched then
-        local l, _, r = self:GroupRectUI(root)
-        if l and (r - l) > UIParent:GetWidth() + 1 then
+        local l, _, gr = self:GroupRectUI(root)
+        if l and (gr - l) > UIParent:GetWidth() + 1 then
             self:Undo()
             self:RefreshAllBlocks()
             self.Print(L.SPACER_NO_ROOM)

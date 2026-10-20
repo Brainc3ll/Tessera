@@ -673,7 +673,15 @@ local function SelectionOptions()
             spacersTitle = true
             table.insert(list, { isTitle = true, name = L.SPACERS })
         end
-        table.insert(list, { key = key, name = ns:GetBlockName(key) })
+        -- shown blocks are easy to spot: a green dot; the others are greyed
+        local cfg = ns.db.blocks[key]
+        local name = ns:GetBlockName(key)
+        if cfg and cfg.enabled then
+            name = "|TInterface\\COMMON\\Indicator-Green:14:14|t " .. name
+        else
+            name = "|cff8c8c8c" .. name .. "|r"
+        end
+        table.insert(list, { key = key, name = name })
     end
     return list
 end

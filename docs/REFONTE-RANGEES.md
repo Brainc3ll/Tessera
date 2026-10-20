@@ -31,13 +31,14 @@ Aujourd'hui chaque bloc s'accroche à un seul voisin (chaîne `cfg.dock`), et un
 - **La deuxième rangée de la barre par défaut** devient la rangée 2 du groupe.
 
 ## Les contraintes (dites au joueur pendant le placement)
-1. **Fusionné = rectangle** : dans l'aspect « Fusionné », toutes les rangées prennent la largeur
-   du groupe (une seule bordure autour du groupe, des lignes entre les blocs). Les formes libres
-   (rangées de longueurs différentes) existent en « Tuiles » et « Séparés », où chaque bloc a son
-   cadre. Plus aucun morceau de bordure à recoller.
+1. **Fusionné sans bordure partagée en partie** : une rangée prend la largeur du groupe si ses
+   blocs au plus doublent leur largeur ; sinon (une rangée de 1 ou 2 blocs) elle garde sa taille,
+   son alignement, et se tient 2 px à l'écart des autres avec son propre cadre. Aucun morceau de
+   bordure à recoller.
 2. **Une seule bordure par groupe fusionné** : celle du bloc de tête. Le texte, les icônes et les
    couleurs restent propres à chaque bloc.
-3. **6 rangées au plus par groupe, 24 blocs au plus par rangée.**
+3. **24 rangées au plus par groupe, 24 blocs au plus par rangée** (la disposition « colonne »
+   a plus de 6 rangées : la limite de 6 a été relevée).
 4. **Une barre collée au bord et étirée sur toute la largeur reste sur une rangée** (déjà le cas).
 
 Pendant un glisser, le cadre sous le bandeau dit où le bloc va aller et pourquoi un endroit est
@@ -84,3 +85,17 @@ la largeur du groupe », « 6 rangées au plus », etc. Un trait doré montre l'
 5. Bords de l'écran, barres étirées, deuxième rangée, mode démo, DataBroker, export / import.
    → **beta2**.
 6. Aide, infobulles, changelog, descriptions ; nettoyage de l'ancien code de `Merge.lua`.
+
+## État (20/10/2026, beta1)
+- Fait : `Rows.lua` (lecture / écriture des rangées sur `cfg.dock` canonique + `cfg.rowAlign` sur la
+  tête, conversion de toute ancienne disposition, rangées pendantes intégrées), moteur de
+  disposition par rangées dans `Merge.lua` (`LayoutGroup` : hauteurs par rangée, grilles,
+  justification ou alignement, blocs ancrés à la tête), dépôt par rangées (`JoinRows`), trait
+  d'insertion et texte pendant le glisser, alignement de rangée dans le menu rapide, espaces
+  insérés par rangées, sortie d'un bloc (Maj) sans emporter ses voisins.
+- Le stockage reste lisible par la 1.0.0 (docks valides) ; à la première conversion d'un profil,
+  une copie « <nom> (1.0) » est gardée.
+- `tools/geometry_check.lua` : 404 dispositions (toutes prêtes × aspects × blocs masqués,
+  déplacements au hasard, vieux arbres au hasard), 0 problème.
+- Reste : aide, infobulles, changelog, descriptions ; nettoyage du code mort de `Merge.lua`
+  (`GetEffectiveDock`, `Reroot`, `GetVisualRoot`, chemins `HangTarget`).

@@ -947,9 +947,10 @@ function ns:SnapAndSave(f)
     local members = {}
     for key in pairs(group) do
         local m = self.frames[key]
-        if m and m:IsShown() then
+        -- (the head is kept even when hidden: it holds the group's position)
+        if m and (m:IsShown() or key == f.key) then
             local l, b, r, t = self:GetRectUI(m)
-            if l then members[key] = { left = l, top = t, w = r - l, h = t - b } end
+            if l then members[key] = { left = l, top = t, w = r - l, h = t - b, shown = m:IsShown() } end
         end
     end
     if not members[f.key] then return end
@@ -962,11 +963,11 @@ function ns:SnapAndSave(f)
         for _, o in ipairs(self:GetSnapRects(exclude)) do
             local ol, ob, or_, ot = o[1], o[2], o[3], o[4]
             for _, m in pairs(members) do
-                for _, x in ipairs({ ol, or_, ol - m.w, or_ - m.w }) do
+                for _, x in ipairs(m.shown and { ol, or_, ol - m.w, or_ - m.w } or {}) do
                     local d = math.abs(m.left - x)
                     if d < bestX then bestX, dx = d, x - m.left end
                 end
-                for _, y in ipairs({ ot, ob, ot + m.h, ob + m.h }) do
+                for _, y in ipairs(m.shown and { ot, ob, ot + m.h, ob + m.h } or {}) do
                     local d = math.abs(m.top - y)
                     if d < bestY then bestY, dy = d, y - m.top end
                 end
@@ -985,54 +986,15 @@ function ns:SnapAndSave(f)
         if not snappedY then dy = math.floor(root.top / grid + 0.5) * grid - root.top end
     end
 
-    -- Merging: the group's block closest to another block becomes the group head
-    local headKey, dock = f.key, nil
+    -- Merging (rows, Rows.lua): against the left / right side of a block, the moved
+    -- blocks enter its row there; against its top / bottom, they make a new row
+    local dock
     if self.db.merge then
         local bestDist
-        -- a single block may be slipped between two merged blocks (FindDock)
-        local alone = next(group) ~= nil and next(group, next(group)) == nil
-        for key, m in pairs(members) do
-            local d, dist = self:FindDock(m.left + dx, m.top + dy, m.w, m.h, exclude, alone)
-            if d and (not bestDist or dist < bestDist) then headKey, dock, bestDist = key, d, dist end
-        end
-    end
-
-    -- A second row (hanging below or above another group) dropped back against that
-    -- group, roughly where it hangs: it keeps hanging there (centered, full width), as if
-    -- it had not moved. Otherwise it would become an ordinary group and lose its place.
-    -- This also applies when the drop would merge it into that group (dropped right
-    -- against it): merging would make it a narrow column of the bar.
-    do
-        local rowRoot = self:GetRoot(f.key)
-        local rowCfg = self.db.blocks[rowRoot]
-        local base = rowCfg and rowCfg.anchor and ns.HangTarget(rowCfg.anchor)
-        local baseGroup = base and self.db.blocks[base] and self:GetSubtree(self:GetRoot(base))
-        if baseGroup and not group[base] and (not dock or baseGroup[dock.to]) then
-            local gl, gb, gr, gt
-            for _, m in pairs(members) do
-                local l, t = m.left + dx, m.top + dy
-                gl, gr = math.min(gl or l, l), math.max(gr or l + m.w, l + m.w)
-                gt, gb = math.max(gt or t, t), math.min(gb or t - m.h, t - m.h)
-            end
-            local bl, bb, br, bt
-            for k in pairs(self:GetSubtree(self:GetRoot(base))) do
-                local o = self.frames[k]
-                local l, b, r, t
-                if o and o:IsShown() then l, b, r, t = self:GetRectUI(o) end
-                if l and b and r and t then
-                    bl, bb = math.min(bl or l, l), math.min(bb or b, b)
-                    br, bt = math.max(br or r, r), math.max(bt or t, t)
-                end
-            end
-            if gl and bl then
-                local gap = rowCfg.anchor.below and math.abs(gt - bb) or math.abs(gb - bt)
-                local overlap = math.min(gr, br) - math.max(gl, bl)
-                if gap <= 2 * SNAP_DISTANCE and overlap > (gr - gl) / 2 then
-                    self:ReanchorAll()
-                    self:RequestLayout()
-                    return
-                end
-            end
+        for _, m in pairs(members) do
+            local d, dist
+            if m.shown then d, dist = self:FindDock(m.left + dx, m.top + dy, m.w, m.h, exclude) end
+            if d and (not bestDist or dist < bestDist) then dock, bestDist = d, dist end
         end
     end
 
@@ -1042,51 +1004,39 @@ function ns:SnapAndSave(f)
         local c = self.db.blocks[key]
         if c then c.anchor, c.edges, c.stretch = nil, nil, nil end
     end
-    if headKey ~= f.key then self:Reroot(headKey) end
-    if dock then
-        -- merged into another group: it takes that group's scale (stored on its root)
-        for key in pairs(group) do
-            if self.db.blocks[key] then self.db.blocks[key].scale = nil end
-        end
-    end
 
+    local headKey = f.key
     local head = members[headKey]
     local cfg = self.db.blocks[headKey]
     -- saved relative to the nearest screen anchor (fallback position if docked)
     local hl, ht = head.left + dx, head.top + dy
     cfg.point = self:MakeRelativePoint(hl, ht - head.h, hl + head.w, ht,
         self.frames[headKey]:GetEffectiveScale() / UIParent:GetEffectiveScale())
-    local pushed = dock and dock.insert
-    cfg.dock = dock and { to = dock.to, side = dock.side }
-    -- slipped between two blocks: the block that was on that side now docks to this one
-    if pushed and self.db.blocks[pushed] then
-        self.db.blocks[pushed].dock = { to = headKey, side = dock.side }
+
+    if dock then
+        -- a new row: aligned on the side of the group it was dropped on
+        local align = "CENTER"
+        local gl, _, gr = self:GroupRectUI(self:GetRoot(dock.to))
+        if gl and gr > gl then
+            local cx = hl + head.w / 2
+            local third = (gr - gl) / 3
+            if cx < gl + third then align = "LEFT" elseif cx > gr - third then align = "RIGHT" end
+        end
+        local ok, why = self:JoinRows(headKey, dock.to, dock.side, align)
+        if ok then
+            -- merged into another group: it takes that group's scale (stored on its head)
+            for key in pairs(group) do
+                if self.db.blocks[key] then self.db.blocks[key].scale = nil end
+            end
+        else
+            self.Print(L[why] or why)
+            dock = nil
+        end
     end
 
-    -- Re-anchor the whole group (merges may have changed direction): first
-    -- detach everything, then anchor from the head outward (never a loop)
-    for key in pairs(group) do
-        if self.frames[key] then
-            self.frames[key]:ClearAllPoints()
-            self.frames[key]:SetScale(self:GetBlockScale(key))
-        end
-    end
-    local done, queue = {}, { headKey }
-    while #queue > 0 do
-        local key = table.remove(queue, 1)
-        if not done[key] then
-            done[key] = true
-            local m, mcfg = self.frames[key], self.db.blocks[key]
-            if m and mcfg and not self:AnchorDocked(m, mcfg) then
-                local pt = mcfg.point or cfg.point
-                m:SetPoint(pt[1], UIParent, pt[2], pt[3], pt[4])
-            end
-            for k in pairs(group) do
-                if not done[k] and self:GetDockTarget(k) == key then table.insert(queue, k) end
-            end
-        end
-    end
-    if pushed then self:ReanchorAll() end
+    -- Re-anchor every block (rows changed): heads first, then the blocks placed
+    -- relative to them (never a loop)
+    self:ReanchorAll()
     self:RequestLayout()
     -- dropped against a screen edge: offer to stick it there (once the layout settled)
     if not dock then
@@ -1936,7 +1886,7 @@ end
 -- Puts a block's settings back to their defaults. Its place is kept (position,
 -- merges, visibility, group scale): otherwise the block and every block merged
 -- with it would jump to a default spot.
-local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen", "launcher", "broker", "brokerShare" }
+local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen", "launcher", "broker", "brokerShare", "rowAlign" }
 -- Puts block newKey exactly where block oldKey is, without moving anything else:
 --   * newKey takes oldKey's place (its dock, or its free position / anchor if it
 --     heads a group, with the group's scale and frozen state), and every block
@@ -1949,7 +1899,7 @@ local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen",
 -- Undoable with Ctrl + Z in placement mode. Returns true when done.
 -- The group's own settings (screen edges, stretch, group look) are carried by its
 -- first block, so they move with the place too.
-local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen", "edges", "stretch", "look" }
+local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen", "edges", "stretch", "look", "rowAlign" }
 function ns:ReplaceBlock(oldKey, newKey)
     local blocks = self.db.blocks
     local old, new = blocks[oldKey], blocks[newKey]
@@ -2460,6 +2410,26 @@ function ns:AttachNewBlock(p, key)
     end
     local baseKey = BASE_ROW[1].key
     local base = p.blocks[baseKey]
+    -- rows (Rows.lua): the end of the base group's second row, or a new row under it
+    if p.rowsVersion and base and (base.anchor or base.dock) then
+        ns.NormalizeRows(p.blocks)
+        local rows, aligns, rowHead = ns.ReadRowsOf(p.blocks, baseKey)
+        if rows and p.blocks[rowHead].anchor then
+            local bottom = p.blocks[rowHead].anchor.bottom
+            Match(base)
+            cfg.width = SECOND_ROW_WIDTH
+            cfg.dock, cfg.anchor = nil, nil
+            local r = bottom and 1 or #rows
+            if #rows >= 2 then
+                table.insert(rows[r], key)
+            else
+                table.insert(rows, bottom and 1 or 2, { key })
+                table.insert(aligns, bottom and 1 or 2, "CENTER")
+            end
+            ns.WriteRowsOf(p.blocks, rowHead, rows, aligns)
+            return
+        end
+    end
     if head then
         Match(p.blocks[head])
         cfg.dock = { to = ChainEnd(head, "RIGHT"), side = "RIGHT" }

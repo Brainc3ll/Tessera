@@ -53,6 +53,31 @@ local function Check(label)
     end
 end
 
+-- only blocks of the same group must never overlap (random moves leave groups anywhere)
+local function CheckGroups(label)
+    checks = checks + 1
+    ns:UpdateLayout()
+    ns:UpdateLayout()
+    local list, found = Visible(), {}
+    for i = 1, #list do
+        for j = i + 1, #list do
+            local x, y = list[i], list[j]
+            if ns.RawRoot(ns.db.blocks, x.key) == ns.RawRoot(ns.db.blocks, y.key) then
+                local ox = math.min(x.r, y.r) - math.max(x.l, y.l)
+                local oy = math.min(x.t, y.t) - math.max(x.b, y.b)
+                if ox > 1 and oy > 1 then
+                    found[#found + 1] = ("%s overlaps %s (%.0f x %.0f)"):format(x.key, y.key, ox, oy)
+                end
+            end
+        end
+    end
+    if #found > 0 then
+        problems = problems + #found
+        realPrint("[" .. label .. "]")
+        for k = 1, math.min(#found, 6) do realPrint("  " .. found[k]) end
+    end
+end
+
 local function HideSome(step)
     local i = 0
     for _, key in ipairs(ns:GetBlockKeys()) do
@@ -75,6 +100,83 @@ for _, preset in ipairs(ns.PRESETS) do
             Check(("%s / %s / hidden %d"):format(preset, look, step))
         end
     end
+end
+-- Random moves, as a player would make them: take a block out of its group and drop
+-- it against a random side of another block (rows), hide or show blocks, change the
+-- look; also random old dock trees (layouts of older versions) converted to rows.
+math.randomseed(1)
+local SIDES = { "LEFT", "RIGHT", "TOP", "BOTTOM" }
+for run = 1, 12 do
+    ns:ResetProfile(ns.PRESETS[(run % #ns.PRESETS) + 1])
+    ns:SetGroupLook(({ "fused", "tiles", "separate" })[(run % 3) + 1])
+    ns:UpdateLayout()
+    local keys = {}
+    for _, key in ipairs(ns:GetBlockKeys()) do
+        if ns.db.blocks[key].enabled and ns.frames[key] and ns.frames[key]:IsShown() then keys[#keys + 1] = key end
+    end
+    for step = 1, 25 do
+        local a, b = keys[math.random(#keys)], keys[math.random(#keys)]
+        if a ~= b and ns.RawRoot(ns.db.blocks, a) ~= ns.RawRoot(ns.db.blocks, b) or math.random() < 0.3 then
+            ns:RemoveFromGroup(a)
+            if ns.RawRoot(ns.db.blocks, b) ~= a then ns:JoinRows(a, b, SIDES[math.random(4)], "CENTER") end
+        end
+        if math.random() < 0.2 then
+            local f = ns.frames[keys[math.random(#keys)]]
+            if f:IsShown() then f:Hide() else f:Show() end
+        end
+        ns:ReanchorAll()
+        CheckGroups(("random %d step %d"):format(run, step))
+        local rows = ns:GetRows(a)
+        if #rows > ns.MAX_ROWS then
+            problems = problems + 1
+            realPrint("more than MAX_ROWS rows after random moves")
+        end
+    end
+end
+-- old dock trees: random trees over the shown blocks, every side, hanging rows
+for run = 1, 20 do
+    ns:ResetProfile("top")
+    ns:UpdateLayout()
+    local keys = {}
+    for _, key in ipairs(ns:GetBlockKeys()) do
+        if ns.db.blocks[key].enabled then keys[#keys + 1] = key end
+    end
+    for i = 2, #keys do
+        local cfg = ns.db.blocks[keys[i]]
+        cfg.anchor = nil
+        if math.random() < 0.85 then
+            cfg.dock = { to = keys[math.random(i - 1)], side = SIDES[math.random(4)] }
+        else
+            cfg.dock = nil
+            cfg.point = { "CENTER", "CENTER", math.random(-400, 400), math.random(-250, 250) }
+            if math.random() < 0.4 then cfg.anchor = { below = keys[math.random(i - 1)], fill = true, gap = 0 } end
+        end
+    end
+    ns:ReanchorAll()
+    ns:UpdateLayout()
+    for _, key in ipairs(keys) do
+        local cfg = ns.db.blocks[key]
+        if cfg.anchor and ns.HangTarget(cfg.anchor) then
+            problems = problems + 1
+            realPrint("old tree " .. run .. ": a row still hangs: " .. key)
+        end
+    end
+    -- nothing overlaps inside a group (groups placed at random may overlap each other)
+    local list = Visible()
+    for i = 1, #list do
+        for j = i + 1, #list do
+            local x, y = list[i], list[j]
+            if ns.RawRoot(ns.db.blocks, x.key) == ns.RawRoot(ns.db.blocks, y.key) then
+                local ox = math.min(x.r, y.r) - math.max(x.l, y.l)
+                local oy = math.min(x.t, y.t) - math.max(x.b, y.b)
+                if ox > 1 and oy > 1 then
+                    problems = problems + 1
+                    realPrint(("old tree %d: %s overlaps %s"):format(run, x.key, y.key))
+                end
+            end
+        end
+    end
+    checks = checks + 1
 end
 realPrint(("Geometry check: %d layouts, %d problem(s)"):format(checks, problems))
 os.exit(problems > 0 and 1 or 0)

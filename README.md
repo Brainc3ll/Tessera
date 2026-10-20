@@ -176,7 +176,8 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
 | `Core.lua` | Shared namespace, media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
 | `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard modern/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
-| `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, centering, second row), unlock-mode name tags, border seams and corner joins. |
+| `Rows.lua` | Groups as stacks of rows: reading and writing the rows, converting older layouts, inserting a block into a row or a new row, row alignment, placement messages. |
+| `Merge.lua` | Group layout by rows (sizes, equal heights, shared widths, grids, centering), placing blocks relative to their group's head, unlock-mode name tags, border seams. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
 | `Profiles.lua` | Profile export / import (text), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |

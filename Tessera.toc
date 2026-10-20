@@ -24,6 +24,7 @@ Locales\zhCN.lua
 Locales\zhTW.lua
 Core.lua
 Themes.lua
+Rows.lua
 Merge.lua
 Placement.lua
 Layers.lua

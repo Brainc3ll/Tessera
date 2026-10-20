@@ -214,6 +214,14 @@ local function CleanBlock(self, key, block, keys)
             clean.look = value
         elseif field == "stretch" and (value == "TOP" or value == "BOTTOM") then
             clean.stretch = value
+        elseif field == "rowAlign" and type(value) == "table" then
+            -- alignment of each row of the group (Rows.lua)
+            local list = {}
+            for i = 1, math.min(#value, 24) do
+                local a = value[i]
+                list[i] = (a == "LEFT" or a == "CENTER" or a == "RIGHT") and a or "LEFT"
+            end
+            if #list > 0 then clean.rowAlign = list end
         end
     end
     -- sizes that could hide the block or break the layout
@@ -336,7 +344,7 @@ end
 -- import window reads all three kinds. Before anything is applied, the import
 -- lists what the text needs and this computer lacks (see FindMissing).
 local LAYOUT_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look",
-    "width", "autoWidth", "height", "frozen" }
+    "width", "autoWidth", "height", "frozen", "rowAlign" }
 
 local function Pick(src, fields)
     local t = {}
@@ -516,7 +524,7 @@ function ns:ImportLayout(text)
             self.db.blocks[key] = cfg
         end
         -- position fields follow the layout (absent = not set); sizes only if given
-        for _, field in ipairs({ "point", "dock", "anchor", "edges", "stretch", "look" }) do
+        for _, field in ipairs({ "point", "dock", "anchor", "edges", "stretch", "look", "rowAlign" }) do
             cfg[field] = self.DeepCopy(src[field])
         end
         for _, field in ipairs({ "enabled", "width", "autoWidth", "height", "frozen" }) do

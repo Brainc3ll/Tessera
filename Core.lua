@@ -1585,13 +1585,21 @@ function ns:SetLocked(locked, silent)
     if not silent then Print(locked and L.CMD_LOCKED or L.CMD_UNLOCKED) end
     -- back to the game: free at once what placing the blocks left in memory (layouts,
     -- moves), instead of waiting for the game's slow cleaning; never in combat
-    if locked and not self.lockCleanPending then
-        self.lockCleanPending = true
-        C_Timer.After(1, function()
-            ns.lockCleanPending = nil
-            if ns:IsLocked() and not InCombatLockdown() then collectgarbage("collect") end
-        end)
-    end
+    if locked then self:CleanMemorySoon() end
+end
+
+-- Frees at once what the options window or placing the blocks left in memory, one
+-- second later, when the blocks are locked and the player is not in combat
+function ns:CleanMemorySoon()
+    if self.lockCleanPending then return end
+    self.lockCleanPending = true
+    C_Timer.After(1, function()
+        ns.lockCleanPending = nil
+        local panel = _G["TesseraOptions"]
+        if ns:IsLocked() and not InCombatLockdown() and not (panel and panel:IsShown()) then
+            collectgarbage("collect")
+        end
+    end)
 end
 
 -- Refreshes a block's text and icon from its module. mod.update(cfg, key)

@@ -29,17 +29,26 @@ Tout ce qui précède est dans la 1.0.0-rc6 (GitHub, CurseForge, Wago).
 
 Publiée en 1.0.0-rc6-hotfix le 17/10 (avec en plus le nettoyage de la mémoire au verrouillage).
 
-## Test19 à test23 (5 min)
+## Test19 à test25 (10 min)
 
-- [ ] Onglet Blocs, « Tous les blocs », Cadre : cocher « Fond couleur de classe », « Cadre de l'icône couleur de classe » (avec un cadre d'icône carré ou rond) et « Lignes couleur de classe » (avec les séparateurs) : tout prend la couleur de ta classe, le fond garde son opacité.
-- [ ] Un bloc espace en mode ligne (Comportement) : « Ligne couleur de classe ».
-- [ ] Onglet Général, « Couleurs : vives ou adoucies » : Adoucies assombrit un peu les couleurs de classe (blocs et noms dans l'infobulle de l'Or), Vives les remet, Pour daltoniens les laisse vives.
-- [ ] (test23) Mode démo lancé plusieurs fois, aussi après avoir changé « Masquer si vide » sur des blocs : aucune erreur Lua.
-- [ ] (test22) Mode démo (Aide, Mode démo) : tous les blocs bien placés, styles et « Styles mélangés » ; en sortant, ta disposition revient.
-- [ ] (test22) Aspect Tuiles (onglet Apparence) : la deuxième rangée de la barre du haut est aussi large que la barre.
-- [ ] (test21) Barre avec une deuxième rangée courte (un seul bloc), dans plusieurs styles dont Blizzard moderne : la bordure sous la barre est continue, sans petits traits verticaux.
-- [ ] (test20) Changer plusieurs fois de style (Braise, Carré, FlareUI, Pierre runique...) : aucune trace de l'ancienne bordure entre les blocs fusionnés ; les cases couleur de classe se décochent ; la liste est par ordre alphabétique.
-- [ ] Un autre personnage d'une autre classe sur le même profil : ses blocs prennent sa couleur.
+- [x] Onglet Blocs, « Tous les blocs », Cadre : cocher « Fond couleur de classe », « Cadre de l'icône couleur de classe » (avec un cadre d'icône carré ou rond) et « Lignes couleur de classe » (avec les séparateurs) : tout prend la couleur de ta classe, le fond garde son opacité.
+- [x] Un bloc espace en mode ligne (Comportement) : « Ligne couleur de classe ».
+- [x] Onglet Général, « Couleurs : vives ou adoucies » : Adoucies assombrit un peu les couleurs de classe (blocs et noms dans l'infobulle de l'Or), Vives les remet, Pour daltoniens les laisse vives.
+- [x] (test23) Mode démo lancé plusieurs fois, aussi après avoir changé « Masquer si vide » sur des blocs : aucune erreur Lua.
+- [x] (test22) Mode démo (Aide, Mode démo) : tous les blocs bien placés, styles et « Styles mélangés » ; en sortant, ta disposition revient.
+- [x] (test22) Aspect Tuiles (onglet Apparence) : la deuxième rangée de la barre du haut est aussi large que la barre.
+- [x] (test21) Barre avec une deuxième rangée courte (un seul bloc), dans plusieurs styles dont Blizzard moderne : la bordure sous la barre est continue, sans petits traits verticaux.
+- [x] (test20) Changer plusieurs fois de style (Braise, Carré, FlareUI, Pierre runique...) : aucune trace de l'ancienne bordure entre les blocs fusionnés ; les cases couleur de classe se décochent ; la liste est par ordre alphabétique.
+- [x] Un autre personnage d'une autre classe sur le même profil : ses blocs prennent sa couleur.
+- [x] (test24) Liste des styles (onglet Apparence) : noms écrits pareil (« Blizzard moderne carré »), ordre alphabétique, « Épuré » à sa place.
+- [x] (test24) « Remplacer par... » (flèches d'un bloc en mode placement) : une seule liste, + vert = bloc masqué qui prend la place, flèches dorées = bloc affiché, les deux s'échangent.
+- [x] (test24) Onglet Blocs, liste des blocs : point vert devant les blocs affichés, les autres en gris.
+- [x] (test24) Mémoire : après un passage en mode placement puis le verrouillage, Tessera redescend à 3-4 Mo.
+
+- [x] (test25) Un bloc espace en mode ligne, onglet Comportement : ses réglages (dont « Ligne couleur de classe ») sont dans la colonne de droite, plus rien ne passe sous les boutons du bas.
+- [x] (test25) Ouvrir les options, les parcourir, les fermer : une seconde après, la mémoire de Tessera redescend (bloc Mémoire).
+
+Validées en jeu par Braincell1980 le 20/10 (mémoire : 4-5 Mo après fermeture des options). Si tout est bon : 1.0.0-rc7 (à ton « on publie »), avant la fin de la bêta le 22/10.
 
 ## Reste à faire
 

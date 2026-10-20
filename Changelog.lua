@@ -37,31 +37,9 @@ end
 
 ns.CHANGELOG = {
     {
-        version = "1.0.0",
-        date = "", -- set when the version is published
+        version = "1.0.0-rc7",
+        date = "2026-10-20",
         sections = {
-            { kind = "intro",
-              en = {
-                "First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour "
-                    .. "shows the essentials, and the demo mode (Help tab) shows every block and every style.",
-                "In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, "
-                    .. "XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks "
-                    .. "for minimap and addon buttons, and DataBroker both ways.",
-                "Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. "
-                    .. "Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.",
-              },
-              fr = {
-                "Première version stable de Tessera, faite pour WoW Forever. Nouveau ? Tape /tessera : la visite "
-                    .. "rapide montre l'essentiel, et le mode démo (onglet Aide) montre tous les blocs et tous les "
-                    .. "styles.",
-                "En bref : plus de 40 blocs d'informations (or, sacs, durabilité, FPS, latence, horloges, date, XP, "
-                    .. "quêtes, métiers, réputation, courrier, systèmes propres à WoW Forever...), des blocs lanceurs "
-                    .. "pour les boutons de la minicarte et des addons, et DataBroker dans les deux sens.",
-                "Les blocs posés les uns contre les autres s'assemblent comme les tesselles d'une mosaïque : "
-                    .. "barres, colonnes, coins. Bords de l'écran, dispositions toutes prêtes, 19 styles, profils et "
-                    .. "partage en texte.",
-              } },
-
             { kind = "new",
               en = {
                 "Class color wherever you pick a color: besides the text and the border, the background (it keeps "
@@ -76,14 +54,24 @@ ns.CHANGELOG = {
               en = {
                 "\"Colors: bright or soft\" (General tab, was \"Threshold colors\") also acts on the class colors: "
                     .. "soft makes them a little darker. The colorblind palette leaves them bright.",
-                "Picking a style unchecks the class color options (each style starts with its own look), and the "
-                    .. "list of styles is in alphabetical order.",
+                "Picking a style unchecks the class color options (each style starts with its own look). The "
+                    .. "list of styles is in alphabetical order, accents ignored, and every name is written the same "
+                    .. "way (\"Blizzard modern square\").",
+                "\"Replace with...\" shows one alphabetical list: a green + marks a hidden block (it takes the "
+                    .. "place), gold arrows a shown block (the two swap). In the Blocks tab, a green dot marks the "
+                    .. "blocks shown in the game.",
+                "The memory the options window used is freed once you close it (never in combat).",
               },
               fr = {
                 "« Couleurs : vives ou adoucies » (onglet Général, avant « Couleurs des seuils ») agit aussi sur les "
                     .. "couleurs de classe : adoucies les assombrit un peu. La palette pour daltoniens les laisse vives.",
-                "Choisir un style décoche les options de couleur de classe (chaque style part de sa propre allure), "
-                    .. "et la liste des styles est rangée par ordre alphabétique.",
+                "Choisir un style décoche les options de couleur de classe (chaque style part de sa propre allure). "
+                    .. "La liste des styles est rangée par ordre alphabétique, sans tenir compte des accents, et "
+                    .. "tous les noms s'écrivent de la même façon (« Blizzard moderne carré »).",
+                "« Remplacer par... » montre une seule liste alphabétique : un + vert marque un bloc masqué (il "
+                    .. "prend la place), des flèches dorées un bloc affiché (les deux s'échangent). Dans l'onglet "
+                    .. "Blocs, un point vert marque les blocs affichés dans le jeu.",
+                "La mémoire utilisée par la fenêtre d'options est libérée dès que tu la fermes (jamais en combat).",
               } },
             { kind = "fixed",
               en = {

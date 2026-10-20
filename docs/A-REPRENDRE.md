@@ -1,4 +1,4 @@
-# À reprendre (état au 17 octobre 2026, après-midi)
+# À reprendre (état au 20 octobre 2026, soir)
 
 ## Calendrier jusqu'à la 1.0.0 (validé le 13/10)
 La bêta de WoW Forever ferme le **22 octobre** : après, plus aucun test en jeu avant la sortie.
@@ -13,6 +13,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 
 ## Versions
 - **1.0.0-rc4** : publiée le 13/10. **1.0.0-rc5** : publiée le 15/10.
+- **1.0.0-rc7** : publiée le 20/10 au soir (test19 à test25 validées en jeu) : couleur de classe partout, couleurs vives ou adoucies, styles triés et noms harmonisés, liste « Remplacer » en couleur, point vert dans la liste des blocs, mémoire libérée à la fermeture des options, bordures propres, Tuiles, erreur « Cannot anchor... » corrigée. Descriptions avec « Problèmes connus » (placement en chantier).
 - **1.0.0-rc6-hotfix** : publiée le 17/10 l'après-midi (3 corrections, voir plus bas).
 - **1.0.0-rc6** : publiée le 17/10 (dispatch du workflow par l'API REST de GitHub : `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`). Depuis la rc5 :
   - nouveau bloc Date ; « Oublier un personnage » dans le bloc Or ; mode démo : « Styles mélangés » ;
@@ -24,7 +25,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
   - noms de WoW Forever « Prénom Nom » : la clé d'un personnage est nom complet + jeu de règles (or, historique, profil) ; les données des anciennes clés sont déplacées ;
   - corrections : barre du haut sous la barre d'XP de FlareUI activée après coup, deuxième rangée reposée contre sa barre, style gardé en appliquant une disposition, plus de « n/d » après un écran de chargement ;
   - `/tessera preview forever` retirée (le mode démo la remplace) ; textes sans « bêta », 19 styles partout, changelog trié par catégorie.
-- **1.0.0** (4 novembre) : la rc6-hotfix plus les corrections éventuelles. Au moment de la publier : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, avant le commit « Prepare 1.0.0-rc6 »), version dans le .toc.
+- **1.0.0** (4 novembre) : la rc7 plus les corrections éventuelles. Au moment de la publier : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, juste avant le commit « Release 1.0.0-rc7 »), version dans le .toc.
 - **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche plus bas.
 
 ## 1.0.0 en préparation (18/10, zip test19, pas publiée)
@@ -35,6 +36,18 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - 20/10 : 3 corrections proposées par Gemini (après lecture de `Merge.lua`) : `GroupExtent` compte comme maillon de largeur nulle un bloc masqué qui tient encore d'autres blocs (seulement dans ce calcul, la table des largeurs ne change pas : la version faite à la main par Braincell1980 cassait le mode démo) ; joints de la barre comptés pour la largeur de la deuxième rangée (aspect Tuiles) ; `ClearAllPoints` dans `AnchorDocked` par sécurité (les appelants le faisaient déjà). Ne pas changer `hideEmpty` par défaut (essai de Braincell1980 : tout cassait).
 - Erreur Lua « Cannot anchor to a region dependent on it » (Merge.lua, `AnchorDocked`) vue par Braincell1980 au lancement du mode démo avec sa version modifiée (PDF de sa discussion avec Gemini, 20/10) : `AnchorDocked` refuse maintenant d'ancrer un bloc à un cadre qui dépend déjà de lui (`DependsOn` suit les points d'ancrage réels) ; le bloc prend sa position libre, la passe suivante le replace.
 - Entrée 1.0.0 du changelog ouverte, avec l'intro « Première version stable » ; version 1.0.0 dans le .toc.
+- 20/10 (test24) : noms de styles écrits pareil (« Blizzard moderne carré »), triés sans tenir compte des accents (`ns.SortKey`) ; « Remplacer par... » en une seule liste colorée (+ vert = bloc masqué, flèches dorées = bloc affiché) ; point vert devant les blocs affichés dans la liste de l'onglet Blocs. Repris de la branche `refonte-rangees`, sans le système de rangées.
+- 20/10 (test25, retour de la test24 : le reste OK) : les réglages d'un bloc espace passent dans la colonne de droite de l'onglet Comportement (la case « Ligne couleur de classe » passait sous « Réinitialiser » ; test du mock qui mesure la hauteur) ; la mémoire est aussi libérée une seconde après la fermeture de la fenêtre d'options (`ns:CleanMemorySoon`).
+- **rc7 publiée le 20/10** (prévue ainsi : si la test24 passe, à « on publie », avant le 22/10) : version `1.0.0-rc7`, entrée du changelog renommée « 1.0.0-rc7 » et datée, sans l'intro « Première version stable » (elle revient le 4/11 dans l'entrée « 1.0.0 ») ; section « Problèmes connus » (placement dans la deuxième rangée) dans les descriptions ; réimport des textes dans CurseForge.
+- Générateur de textes : `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 build.py` pour `main` (les textes de la branche des rangées restent dehors).
+
+## Feuille de route (proposée le 20/10)
+1. Jusqu'au 22/10 : tests en jeu (test19 à test24, donjon), beta rangées, galerie `/tes debug hd`.
+2. 23/10 - 4/11 : rc7 puis 1.0.0, corrections seulement.
+3. 1.1 « Rangées » (fin novembre) : placement par rangées, conversion validée, raccourcis clavier, menus à la place de Maj / Ctrl / Alt.
+4. 1.2 « Comme chez Blizzard » (décembre) : styles HD, fenêtre d'options avec les pièces des Réglages du jeu, Échap › Options › AddOns, bouton « ? », étiquette « Nouveau ».
+5. 1.3 « Accessibilité » (janvier) : taille du texte, contraste élevé, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
+6. 2.0 « Manette » (février-mars) : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix par les rangées, menu en cercle, vibration et barre lumineuse.
 
 ## 1.0.0-rc6-hotfix (publiée le 17/10 ; test17 et test18 validées en jeu)
 Bugs vus dans les vidéos de Braincell1980 (17/10, rc6), corrigés :

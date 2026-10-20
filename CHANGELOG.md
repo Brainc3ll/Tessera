@@ -3,11 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.0.0 — 
-
-- First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour shows the essentials, and the demo mode (Help tab) shows every block and every style.
-- In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for minimap and addon buttons, and DataBroker both ways.
-- Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.
+## 1.0.0-rc7 — 2026-10-20
 
 ### New
 
@@ -16,7 +12,9 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Improvements
 
 - "Colors: bright or soft" (General tab, was "Threshold colors") also acts on the class colors: soft makes them a little darker. The colorblind palette leaves them bright.
-- Picking a style unchecks the class color options (each style starts with its own look), and the list of styles is in alphabetical order.
+- Picking a style unchecks the class color options (each style starts with its own look). The list of styles is in alphabetical order, accents ignored, and every name is written the same way ("Blizzard modern square").
+- "Replace with..." shows one alphabetical list: a green + marks a hidden block (it takes the place), gold arrows a shown block (the two swap). In the Blocks tab, a green dot marks the blocks shown in the game.
+- The memory the options window used is freed once you close it (never in combat).
 
 ### Fixes
 

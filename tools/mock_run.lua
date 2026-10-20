@@ -413,6 +413,18 @@ for _, step in ipairs({
         end
     end,
     function() local k = ns:AddSpacer(); ns:OpenOptionsFor(k); ns:RemoveSpacer(k) end,
+    -- a spacer in line mode, Behaviour tab: its options stay above the buttons at the bottom
+    function()
+        local k = ns:AddSpacer()
+        ns.db.blocks[k].spacerMode = "line"
+        ns:OpenOptionsFor(k)
+        ns.ShowBlockSub(4)
+        ns.optionsLowestY = 0
+        ns:RefreshOptions()
+        local limit = TesseraOptions:GetHeight() - 98 - 12 - 40 -- the bottom buttons take 40 px
+        assert(-ns.optionsLowestY <= limit, "spacer options overlap the buttons: " .. -ns.optionsLowestY .. " > " .. limit)
+        ns:RemoveSpacer(k)
+    end,
     function() ns:UpdateVehicleState() end,
     -- DataBroker: add every source, update, tooltip, click, then remove one
     function()

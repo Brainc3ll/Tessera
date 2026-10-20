@@ -1052,13 +1052,14 @@ local function BuildBlockPage(page)
         local none = P.Place(CreateNote(sub, L.NO_BLOCK_OPTIONS), 1)
         P.Gap(1, -(none.layoutHeight + SPACING))
 
-        -- the selected block's own options (left column)
-        local keys = { "spacer" }
+        -- the selected block's own options (left column; a spacer's go to the right
+        -- column, in place of the clicks, alert and tooltip settings it has no use for)
+        local keys = {}
         for _, key in ipairs(ns.order) do table.insert(keys, key) end
         local hasOptions = BuildModuleOptions(sub, P, 1, keys)
         none.isShown = function()
             local key = SelectedModuleKey()
-            return not (key and hasOptions[key])
+            return not (key and (hasOptions[key] or key == "spacer"))
         end
 
         -- right column: hover fade, clicks, alerts, tooltip
@@ -1077,8 +1078,10 @@ local function BuildBlockPage(page)
         P.Place(CreateCheck(sub, L.FADE_COMBAT, getFC, setFC, fading, L.TIP_FADE_COMBAT), 2)
 
         P.Gap(2, 6)
-        P.Place(CreateHeader(sub, L.SECTION_CLICKS), 2)
-        local clickShown = function() return not ns.IsForwardingKey(selected) end
+        local notSpacer = function() return not ns.IsSpacerKey(selected) end
+        BuildModuleOptions(sub, P, 2, { "spacer" }) -- (stacked here, the clicks below are hidden for a spacer)
+        P.Place(CreateHeader(sub, L.SECTION_CLICKS), 2).isShown = notSpacer
+        local clickShown = function() return not ns.IsForwardingKey(selected) and notSpacer() end
         local getS, setS = Field("shiftClick")
         local getM, setM = Field("middleClick")
         local function Actions(withOpen)
@@ -1101,12 +1104,12 @@ local function BuildBlockPage(page)
             setM(v)
             ns:RequestOverlaySync() -- the secure button listens to middle clicks only for "open"
         end, clickShown, nil, L.TIP_MIDDLE_CLICK), 2)
-        P.Place(Check(sub, L.ALERT, "alert", L.TIP_ALERT), 2)
+        P.Place(Check(sub, L.ALERT, "alert", L.TIP_ALERT), 2).isShown = notSpacer
         P.Place(Dropdown(sub, L.TOOLTIP_ANCHOR, {
             { key = "auto", name = L.TOOLTIP_AUTO },
             { key = "top", name = L.TOOLTIP_TOP },
             { key = "bottom", name = L.TOOLTIP_BOTTOM },
-        }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR), 2)
+        }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR), 2).isShown = notSpacer
     end
 
     ShowSub(blockSub)
@@ -2146,7 +2149,10 @@ local function BuildPanel()
         FitPanelToScreen()
         ns:UpdatePlacementBanner()
     end)
-    panel:HookScript("OnHide", function() ns:UpdatePlacementBanner() end)
+    panel:HookScript("OnHide", function()
+        ns:UpdatePlacementBanner()
+        ns:CleanMemorySoon() -- the memory the window used is freed once it is closed
+    end)
 
     panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     panel.title:SetPoint("TOPLEFT", COL_X[1], -24)

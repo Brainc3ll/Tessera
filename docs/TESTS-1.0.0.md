@@ -29,7 +29,7 @@ Tout ce qui précède est dans la 1.0.0-rc6 (GitHub, CurseForge, Wago).
 
 Publiée en 1.0.0-rc6-hotfix le 17/10 (avec en plus le nettoyage de la mémoire au verrouillage).
 
-## Test19 à test24 (10 min)
+## Test19 à test25 (10 min)
 
 - [ ] Onglet Blocs, « Tous les blocs », Cadre : cocher « Fond couleur de classe », « Cadre de l'icône couleur de classe » (avec un cadre d'icône carré ou rond) et « Lignes couleur de classe » (avec les séparateurs) : tout prend la couleur de ta classe, le fond garde son opacité.
 - [ ] Un bloc espace en mode ligne (Comportement) : « Ligne couleur de classe ».
@@ -44,6 +44,9 @@ Publiée en 1.0.0-rc6-hotfix le 17/10 (avec en plus le nettoyage de la mémoire 
 - [ ] (test24) « Remplacer par... » (flèches d'un bloc en mode placement) : une seule liste, + vert = bloc masqué qui prend la place, flèches dorées = bloc affiché, les deux s'échangent.
 - [ ] (test24) Onglet Blocs, liste des blocs : point vert devant les blocs affichés, les autres en gris.
 - [ ] (test24) Mémoire : après un passage en mode placement puis le verrouillage, Tessera redescend à 3-4 Mo.
+
+- [ ] (test25) Un bloc espace en mode ligne, onglet Comportement : ses réglages (dont « Ligne couleur de classe ») sont dans la colonne de droite, plus rien ne passe sous les boutons du bas.
+- [ ] (test25) Ouvrir les options, les parcourir, les fermer : une seconde après, la mémoire de Tessera redescend (bloc Mémoire).
 
 Si tout est bon : 1.0.0-rc7 (à ton « on publie »), avant la fin de la bêta le 22/10.
 

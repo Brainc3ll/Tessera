@@ -82,6 +82,7 @@ ns.CHANGELOG = {
                 "\"Replace with...\" shows one alphabetical list: a green + marks a hidden block (it takes the "
                     .. "place), gold arrows a shown block (the two swap). In the Blocks tab, a green dot marks the "
                     .. "blocks shown in the game.",
+                "The memory the options window used is freed once you close it (never in combat).",
               },
               fr = {
                 "« Couleurs : vives ou adoucies » (onglet Général, avant « Couleurs des seuils ») agit aussi sur les "
@@ -92,6 +93,7 @@ ns.CHANGELOG = {
                 "« Remplacer par... » montre une seule liste alphabétique : un + vert marque un bloc masqué (il "
                     .. "prend la place), des flèches dorées un bloc affiché (les deux s'échangent). Dans l'onglet "
                     .. "Blocs, un point vert marque les blocs affichés dans le jeu.",
+                "La mémoire utilisée par la fenêtre d'options est libérée dès que tu la fermes (jamais en combat).",
               } },
             { kind = "fixed",
               en = {

@@ -18,6 +18,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - "Colors: bright or soft" (General tab, was "Threshold colors") also acts on the class colors: soft makes them a little darker. The colorblind palette leaves them bright.
 - Picking a style unchecks the class color options (each style starts with its own look). The list of styles is in alphabetical order, accents ignored, and every name is written the same way ("Blizzard modern square").
 - "Replace with..." shows one alphabetical list: a green + marks a hidden block (it takes the place), gold arrows a shown block (the two swap). In the Blocks tab, a green dot marks the blocks shown in the game.
+- The memory the options window used is freed once you close it (never in combat).
 
 ### Fixes
 

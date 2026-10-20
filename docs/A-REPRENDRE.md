@@ -13,6 +13,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 
 ## Versions
 - **1.0.0-rc4** : publiée le 13/10. **1.0.0-rc5** : publiée le 15/10.
+- **1.0.0 en préparation** (après la rc7) : entrée « 1.0.0 » ouverte avec son intro ; correction : le cache des raccords de bordure (`seamKey`) compte toujours la taille du bloc et est vidé par `ReanchorAll` (deux petits traits restés dans un bloc jusqu'au rechargement, vus en beta5). À tester en jeu avant le 22/10 (test26).
 - **1.0.0-rc7** : publiée le 20/10 au soir (test19 à test25 validées en jeu) : couleur de classe partout, couleurs vives ou adoucies, styles triés et noms harmonisés, liste « Remplacer » en couleur, point vert dans la liste des blocs, mémoire libérée à la fermeture des options, bordures propres, Tuiles, erreur « Cannot anchor... » corrigée. Descriptions avec « Problèmes connus » (placement en chantier).
 - **1.0.0-rc6-hotfix** : publiée le 17/10 l'après-midi (3 corrections, voir plus bas).
 - **1.0.0-rc6** : publiée le 17/10 (dispatch du workflow par l'API REST de GitHub : `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`). Depuis la rc5 :

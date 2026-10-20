@@ -1053,12 +1053,11 @@ function ns:ApplySeams(f, cov)
     cov = cov or { W = f:GetWidth(), H = f:GetHeight(), TOP = {}, BOTTOM = {}, LEFT = {}, RIGHT = {}, cornerNotch = {} }
     local W, H = cov.W, cov.H
     local LEN = { TOP = W, BOTTOM = W, LEFT = H, RIGHT = H }
-    local full, any, partial = {}, {}, false
+    local full, any = {}, {}
     for _, side in ipairs(SIDES) do
         local list = cov[side]
         any[side] = #list > 0
         full[side] = #list == 1 and list[1][1] <= 0 and list[1][2] >= LEN[side]
-        if any[side] and not full[side] then partial = true end
     end
     f.sharedSet = any
     self:PlaceTag(f, any)
@@ -1109,7 +1108,8 @@ function ns:ApplySeams(f, cov)
         table.insert(parts, s)
     end
     for _, n in ipairs(notches) do table.insert(parts, string.format("%s%.1f/%.1f", n[1], n[2], n[3])) end
-    if partial then table.insert(parts, string.format("%.1fx%.1f", W, H)) end
+    -- (the size always counts: pieces anchored to a corner drift when the block resizes)
+    table.insert(parts, string.format("%.1fx%.1f", W, H))
     local seamKey = table.concat(parts, "|")
 
     -- information for /tessera debug ("~" marks a partially shared side)

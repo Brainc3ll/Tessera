@@ -91,6 +91,8 @@ ns.CHANGELOG = {
                     .. "switching styles, and no thin vertical marks along the bottom of a bar above a short second row.",
                 "In the Tiles look, the second row is as wide as its bar again (the joints were left out), and a "
                     .. "bar stays centered when a hidden block under it still holds another block.",
+                "No more rare Lua error (\"Cannot anchor to a region dependent on it\") when the demo mode or a "
+                    .. "profile rebuilds every group.",
               },
               fr = {
                 "Les bordures entre blocs fusionnés sont de nouveau propres : plus de morceaux de l'ancien style "
@@ -99,6 +101,8 @@ ns.CHANGELOG = {
                 "Avec l'aspect Tuiles, la deuxième rangée est de nouveau aussi large que sa barre (les joints "
                     .. "étaient oubliés), et une barre reste centrée quand un bloc masqué sous elle tient encore un "
                     .. "autre bloc.",
+                "Plus d'erreur Lua rare (« Cannot anchor to a region dependent on it ») quand le mode démo ou un "
+                    .. "profil reconstruit tous les groupes.",
               } },
         },
     },

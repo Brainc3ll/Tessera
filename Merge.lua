@@ -297,6 +297,25 @@ end
 -- Anchors a docked block to its effective target. Vertical docks are
 -- left-aligned, horizontal docks are top-aligned. Returns false if the block
 -- is not docked (or its dock was dropped because it would form a loop).
+-- Is frame a anchored, directly or through other frames, to frame b? (WoW refuses
+-- an anchor from b to a then: "Cannot anchor to a region dependent on it")
+local function DependsOn(a, b)
+    local seen, queue = {}, { a }
+    while #queue > 0 do
+        local cur = table.remove(queue)
+        if cur == b then return true end
+        if not seen[cur] and cur ~= UIParent and cur.GetNumPoints then
+            seen[cur] = true
+            for i = 1, cur:GetNumPoints() or 0 do
+                local _, rel = cur:GetPoint(i)
+                if type(rel) == "string" then rel = _G[rel] end
+                if rel then queue[#queue + 1] = rel end
+            end
+        end
+    end
+    return false
+end
+
 function ns:AnchorDocked(f, cfg)
     local target, side = self:GetDockTarget(f.key)
     if not target then return false end
@@ -317,6 +336,14 @@ function ns:AnchorDocked(f, cfg)
     local t = self.frames[target]
     local g = self:JointGap(f.key)
     f:ClearAllPoints() -- (the callers do it too: a safety, never an old point left)
+    -- the block it would hang from is (still) anchored to it: that happened while the
+    -- demo or a profile rebuilt every group, when a hidden block made two blocks point
+    -- at each other. The caller then uses the saved free position; the next layout
+    -- pass anchors it properly.
+    if not t or t == f or DependsOn(t, f) then
+        f.anchoredTo = nil
+        return false
+    end
     if side == "LEFT" then
         f:SetPoint("TOPRIGHT", t, "TOPLEFT", -g, 0)
     elseif side == "RIGHT" then

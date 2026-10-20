@@ -841,6 +841,20 @@ for _, step in ipairs({
         assert(calls == 0, "a text of the same size asks for no layout")
         ns:ResetProfile("top")
     end,
+    -- never anchor a block to one that is (still) anchored to it: WoW would raise
+    -- "Cannot anchor to a region dependent on it" (seen when the demo rebuilt the groups)
+    function()
+        local a, b = ns.frames.bags, ns.frames.durability
+        local ca = ns.db.blocks.bags
+        local oldDock = ca.dock
+        ca.dock = { to = "durability", side = "RIGHT" }
+        b.GetNumPoints = function() return 1 end
+        b.GetPoint = function() return "TOPLEFT", a, "TOPRIGHT", 0, 0 end
+        assert(ns:AnchorDocked(a, ca) == false, "a loop of anchors is refused")
+        b.GetNumPoints, b.GetPoint = nil, nil
+        ca.dock = oldDock
+        ns:RefreshAllBlocks()
+    end,
     -- Gold block: forget a character (deleted or renamed) from its tooltip
     function()
         ns:RecordMoney()

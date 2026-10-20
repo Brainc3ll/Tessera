@@ -89,11 +89,16 @@ ns.CHANGELOG = {
               en = {
                 "Borders where merged blocks meet are clean again: no pieces of the previous style after "
                     .. "switching styles, and no thin vertical marks along the bottom of a bar above a short second row.",
+                "In the Tiles look, the second row is as wide as its bar again (the joints were left out), and a "
+                    .. "bar stays centered when a hidden block under it still holds another block.",
               },
               fr = {
                 "Les bordures entre blocs fusionnés sont de nouveau propres : plus de morceaux de l'ancien style "
                     .. "après un changement de style, ni de petits traits verticaux sous une barre au-dessus d'une "
                     .. "deuxième rangée courte.",
+                "Avec l'aspect Tuiles, la deuxième rangée est de nouveau aussi large que sa barre (les joints "
+                    .. "étaient oubliés), et une barre reste centrée quand un bloc masqué sous elle tient encore un "
+                    .. "autre bloc.",
               } },
         },
     },

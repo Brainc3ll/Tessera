@@ -316,6 +316,7 @@ function ns:AnchorDocked(f, cfg)
     f.anchoredTo = target
     local t = self.frames[target]
     local g = self:JointGap(f.key)
+    f:ClearAllPoints() -- (the callers do it too: a safety, never an old point left)
     if side == "LEFT" then
         f:SetPoint("TOPRIGHT", t, "TOPLEFT", -g, 0)
     elseif side == "RIGHT" then
@@ -610,6 +611,8 @@ function ns:UpdateLayout()
                     local baseMembers = GroupMembers(self:GetRoot(ns.HangTarget(a)))
                     local total = 0
                     for _, k in ipairs(baseMembers) do total = total + need[k][1] end
+                    -- the joints between the bar's tiles are part of its width
+                    total = total + self:JointGap(self:GetRoot(ns.HangTarget(a))) * math.max(0, #baseMembers - 1)
                     Fill(key, total, false, true)
                 end
             end
@@ -1226,17 +1229,26 @@ end
 local function GroupExtent(self, head, width)
     local x = { [head] = 0 }
     local g = self:JointGap(head)
+    -- a hidden block that others still hang from (e.g. a hidden block under the bar
+    -- with a block on its right) is a zero-width link: its dependents must be placed
+    -- too. Only for this computation: the width table itself is not changed.
+    local function W(key)
+        if width[key] then return width[key] end
+        local f = self.frames[key]
+        if f and not f:IsShown() then return 0 end
+    end
     local changed = true
     while changed do
         changed = false
-        for key in pairs(width) do
-            if x[key] == nil then
+        for key in pairs(self.db.blocks) do
+            if x[key] == nil and W(key) then
                 local target, side = self:GetEffectiveDock(key)
-                if target and x[target] ~= nil and width[target] then
+                local tw = target and W(target)
+                if tw and x[target] ~= nil then
                     if side == "RIGHT" then
-                        x[key] = x[target] + width[target] + g
+                        x[key] = x[target] + tw + g
                     elseif side == "LEFT" then
-                        x[key] = x[target] - width[key] - g
+                        x[key] = x[target] - W(key) - g
                     else
                         x[key] = x[target]
                     end
@@ -1245,10 +1257,13 @@ local function GroupExtent(self, head, width)
             end
         end
     end
+    -- the extent counts the visible blocks only
     local minX, maxX = 0, 0
     for key, left in pairs(x) do
-        minX = math.min(minX, left)
-        maxX = math.max(maxX, left + width[key])
+        if width[key] then
+            minX = math.min(minX, left)
+            maxX = math.max(maxX, left + width[key])
+        end
     end
     -- total width, head's offset from the group's left edge, and every block's x
     -- relative to the head

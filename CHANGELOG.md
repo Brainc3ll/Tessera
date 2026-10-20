@@ -21,6 +21,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - Borders where merged blocks meet are clean again: no pieces of the previous style after switching styles, and no thin vertical marks along the bottom of a bar above a short second row.
+- In the Tiles look, the second row is as wide as its bar again (the joints were left out), and a bar stays centered when a hidden block under it still holds another block.
 
 ## 1.0.0-rc6-hotfix — 2026-10-17
 

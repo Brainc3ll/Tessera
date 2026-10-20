@@ -662,6 +662,7 @@ function ns:LayoutGroup(head, need)
                 if math.abs(f:GetWidth() - w[k]) > 0.01 or math.abs(f:GetHeight() - ph) > 0.01 then
                     f:SetSize(w[k], ph)
                     self:ResizeBar(f)
+                    f.seamKey = nil -- a new size: the border joins are drawn again
                 end
                 if k ~= head then
                     local s = hf:GetEffectiveScale() / f:GetEffectiveScale()
@@ -672,6 +673,7 @@ function ns:LayoutGroup(head, need)
                             f:SetPoint("TOPLEFT", hf, "TOPLEFT", ox, oy)
                             f.anchoredTo, f.rowX, f.rowY = head, ox, oy
                         end
+                        f.seamKey = nil -- moved: the border joins are drawn again
                     end
                 end
             end
@@ -1021,12 +1023,11 @@ function ns:ApplySeams(f, cov)
     cov = cov or { W = f:GetWidth(), H = f:GetHeight(), TOP = {}, BOTTOM = {}, LEFT = {}, RIGHT = {}, cornerNotch = {} }
     local W, H = cov.W, cov.H
     local LEN = { TOP = W, BOTTOM = W, LEFT = H, RIGHT = H }
-    local full, any, partial = {}, {}, false
+    local full, any = {}, {}
     for _, side in ipairs(SIDES) do
         local list = cov[side]
         any[side] = #list > 0
         full[side] = #list == 1 and list[1][1] <= 0 and list[1][2] >= LEN[side]
-        if any[side] and not full[side] then partial = true end
     end
     f.sharedSet = any
     self:PlaceTag(f, any)
@@ -1077,7 +1078,8 @@ function ns:ApplySeams(f, cov)
         table.insert(parts, s)
     end
     for _, n in ipairs(notches) do table.insert(parts, string.format("%s%.1f/%.1f", n[1], n[2], n[3])) end
-    if partial then table.insert(parts, string.format("%.1fx%.1f", W, H)) end
+    -- (the size always counts: pieces anchored to a corner drift when the block resizes)
+    table.insert(parts, string.format("%.1fx%.1f", W, H))
     local seamKey = table.concat(parts, "|")
 
     -- information for /tessera debug ("~" marks a partially shared side)

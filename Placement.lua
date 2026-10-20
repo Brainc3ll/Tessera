@@ -135,7 +135,10 @@ end
 -- error when docking relations were changed (undo, profile change...).
 function ns:ReanchorAll()
     self:NormalizeLayout() -- canonical rows (Rows.lua)
-    for _, f in pairs(self.frames) do f:ClearAllPoints() end
+    for _, f in pairs(self.frames) do
+        f:ClearAllPoints()
+        f.seamKey = nil -- every border join is drawn again (no piece of an older shape left)
+    end
     local done, queue = {}, {}
     for key in pairs(self.db.blocks) do
         if not self:GetDockTarget(key) then table.insert(queue, key) end

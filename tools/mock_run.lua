@@ -24,9 +24,21 @@ local methods = {
     GetWidth = function(self) return self.__w end, GetHeight = function(self) return self.__h end,
     SetWidth = function(self, w) self.__w = w end, SetHeight = function(self, h) self.__h = h end,
     SetSize = function(self, w, h) self.__w, self.__h = w, h end,
-    GetLeft = function() return 100 end, GetRight = function(self) return 100 + self.__w end,
-    GetTop = function() return 500 end, GetBottom = function(self) return 500 - self.__h end,
-    GetCenter = function(self) return 100 + self.__w / 2, 500 - self.__h / 2 end,
+    -- positions: fixed by default; with MOCK_GEOMETRY (tools/geometry_check.lua) they come
+    -- from the anchor points, like the game (see MockRect below)
+    GetLeft = function(self) if MOCK_GEOMETRY then return (MockRect(self)) end return 100 end,
+    GetRight = function(self) if MOCK_GEOMETRY then local l, _, w = MockRect(self) return l + w end return 100 + self.__w end,
+    GetTop = function(self) if MOCK_GEOMETRY then local _, b, _, h = MockRect(self) return b + h end return 500 end,
+    GetBottom = function(self) if MOCK_GEOMETRY then local _, b = MockRect(self) return b end return 500 - self.__h end,
+    GetCenter = function(self)
+        if MOCK_GEOMETRY then local l, b, w, h = MockRect(self) return l + w / 2, b + h / 2 end
+        return 100 + self.__w / 2, 500 - self.__h / 2
+    end,
+    GetNumPoints = function(self) return #(self.__points or {}) end,
+    GetPoint = function(self, i)
+        local p = (self.__points or {})[i or 1]
+        if p then return p[1], p[2], p[3], p[4], p[5] end
+    end,
     GetEffectiveScale = function() return 1 end, GetScale = function() return 1 end,
     GetName = function(self) return self.__name end,
     CreateTexture = function() return NewObject("Texture") end,
@@ -60,8 +72,18 @@ local methods = {
     GetObjectType = function(self) return self.__kind end,
     -- anchors are tracked so a loop raises the same error as the game
     -- ("Cannot anchor to a region dependent on it")
-    ClearAllPoints = function(self) self.__anchors = nil end,
-    SetPoint = function(self, _, rel)
+    ClearAllPoints = function(self) self.__anchors = nil; self.__points = nil end,
+    SetAllPoints = function(self, rel) self.__points = nil; self:SetPoint("TOPLEFT", rel or UIParent, "TOPLEFT", 0, 0); self:SetPoint("BOTTOMRIGHT", rel or UIParent, "BOTTOMRIGHT", 0, 0) end,
+    SetPoint = function(self, point, rel, relPoint, x, y)
+        -- recorded for the geometry mode: SetPoint(point, rel, relPoint, x, y), (point, x, y), (point)
+        local r, rp, ox, oy = rel, relPoint, x, y
+        if type(rel) == "number" then r, rp, ox, oy = nil, point, rel, relPoint end
+        if type(r) == "string" then r = _G[r] end
+        if r == nil then r = UIParent end
+        rp = rp or point
+        self.__points = self.__points or {}
+        for i = #self.__points, 1, -1 do if self.__points[i][1] == point then table.remove(self.__points, i) end end
+        table.insert(self.__points, { point, r, rp, ox or 0, oy or 0 })
         if type(rel) == "table" and rel ~= self and getmetatable(rel) == FrameMT then
             local seen, queue = {}, { rel }
             while #queue > 0 do
@@ -77,6 +99,48 @@ local methods = {
         end
     end,
 }
+-- Geometry mode: rectangle of a frame (left, bottom, width, height) from its anchor
+-- points, as the game resolves them (one point: placed by its size; two points on an
+-- axis: they set both edges). Scales are 1 in the mock.
+local FRACTION = { LEFT = 0, CENTER = 0.5, RIGHT = 1, TOP = 1, BOTTOM = 0 }
+local function PointFractions(point)
+    point = point or "CENTER"
+    local v = point:match("^TOP") and 1 or (point:match("^BOTTOM") and 0 or 0.5)
+    local h = point:match("LEFT$") and 0 or (point:match("RIGHT$") and 1 or 0.5)
+    return h, v
+end
+local resolving = {}
+function MockRect(f)
+    if f == UIParent then return 0, 0, UIParent.__w, UIParent.__h end
+    local pts = f.__points
+    if not pts or #pts == 0 or resolving[f] then return 100, 500 - (f.__h or 0), f.__w or 0, f.__h or 0 end
+    resolving[f] = true
+    local hx, vy = {}, {}
+    for _, p in ipairs(pts) do
+        local rl, rb, rw, rh = MockRect(p[2] or UIParent)
+        local rfx, rfy = PointFractions(p[3])
+        local fx, fy = PointFractions(p[1])
+        local ax, ay = rl + rfx * rw + p[4], rb + rfy * rh + p[5]
+        local hsame, vsame = false, false
+        for _, c in ipairs(hx) do if c[1] == fx then hsame = true end end
+        for _, c in ipairs(vy) do if c[1] == fy then vsame = true end end
+        if not hsame then hx[#hx + 1] = { fx, ax } end
+        if not vsame then vy[#vy + 1] = { fy, ay } end
+    end
+    resolving[f] = nil
+    local w, h = f.__w or 0, f.__h or 0
+    local l, b
+    if #hx >= 2 and hx[1][1] ~= hx[2][1] then
+        local a, c = hx[1], hx[2]
+        w = (c[2] - a[2]) / (c[1] - a[1]); l = a[2] - a[1] * w
+    else l = hx[1][2] - hx[1][1] * w end
+    if #vy >= 2 and vy[1][1] ~= vy[2][1] then
+        local a, c = vy[1], vy[2]
+        h = (c[2] - a[2]) / (c[1] - a[1]); b = a[2] - a[1] * h
+    else b = vy[1][2] - vy[1][1] * h end
+    return l, b, w, h
+end
+_G.MockRect = MockRect
 local PIECES = { TopLeftCorner = 1, TopRightCorner = 1, BottomLeftCorner = 1, BottomRightCorner = 1,
     TopEdge = 1, BottomEdge = 1, LeftEdge = 1, RightEdge = 1, Center = 1, Text = 1, NineSlice = 1, Slider = 1, Back = 1, Forward = 1, ScrollBar = 1 }
 -- methods are CamelCase, fields are lowercase (template pieces excluded)

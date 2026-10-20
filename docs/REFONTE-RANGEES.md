@@ -8,7 +8,7 @@ ou pas. Prototype sur cette branche, zips « beta » ; la 1.0.0 continue sur `ma
 Aucune option de la 1.0.0 ne disparaît : un joueur de la 1.0.0 doit retrouver tout ce qu'il avait
 (« ce n'est pas l'addon que j'ai téléchargé » ne doit jamais arriver). Changements de comportement
 à surveiller dans la beta : Maj + glisser sort un seul bloc (avant : le bloc et ceux accrochés à
-lui) ; une rangée courte d'un groupe fusionné se tient 2 px à l'écart.
+lui) ; (la rangée courte à l'écart a été retirée en beta5).
 
 ## Pourquoi
 Aujourd'hui chaque bloc s'accroche à un seul voisin (chaîne `cfg.dock`), et une deuxième rangée
@@ -37,10 +37,12 @@ Aujourd'hui chaque bloc s'accroche à un seul voisin (chaîne `cfg.dock`), et un
 - **La deuxième rangée de la barre par défaut** devient la rangée 2 du groupe.
 
 ## Les contraintes (dites au joueur pendant le placement)
-1. **Fusionné sans bordure partagée en partie** : une rangée prend la largeur du groupe si ses
-   blocs au plus doublent leur largeur ; sinon (une rangée de 1 ou 2 blocs) elle garde sa taille,
-   son alignement, et se tient 2 px à l'écart des autres avec son propre cadre. Aucun morceau de
-   bordure à recoller.
+1. **Fusionné, formes en L et en T** : une rangée prend la largeur du groupe si ses blocs au plus
+   doublent leur largeur ; sinon (une rangée de 1 ou 2 blocs) elle garde sa taille et son alignement
+   (menu rapide), collée aux autres : L (gauche ou droite), T (centre). Les bordures partagées en
+   partie sont recollées par `UpdateSeams` (positions exactes). Une colonne (un bloc par rangée) a
+   toujours une seule largeur. (Essai beta1-beta4 : rangée courte 2 px à l'écart ; refusé par
+   Braincell1980 le 20/10, les blocs semblaient détachés.)
 2. **Une seule bordure par groupe fusionné** : celle du bloc de tête. Le texte, les icônes et les
    couleurs restent propres à chaque bloc.
 3. **24 rangées au plus par groupe, 24 blocs au plus par rangée** (la disposition « colonne »

@@ -459,8 +459,6 @@ local function NeededSize(f, cfg)
     return math.max(cfg.width, w), math.max(cfg.height, h)
 end
 
-local LOOSE_GAP = 2 -- space around a short row of a fused group
-
 -- Full layout pass, group by group: each group is a stack of rows (Rows.lua).
 --   * hidden blocks leave their row (nothing to skip), an empty row disappears;
 --   * every block of a row takes the row's height (the tallest block; a spacer
@@ -468,8 +466,8 @@ local LOOSE_GAP = 2 -- space around a short row of a fused group
 --   * the group is as wide as its widest row (or the screen for a stretched bar,
 --     or the reference frame for a bar that fills it). The other rows share that
 --     width when their blocks at most double their width; otherwise they keep
---     their sizes and use their alignment ("fused": such a short row stands apart,
---     LOOSE_GAP off the others, so no border is ever partly shared);
+--     their sizes and use their alignment; in a fused group such a short row
+--     touches the others and the shared borders are joined (UpdateSeams);
 --   * rows that all have the same number of blocks form a grid: columns line up;
 --     a column (one block per row) always shares one width;
 --   * positions are computed from the group's top-left corner and every block is
@@ -527,9 +525,7 @@ function ns:LayoutGroup(head, need)
     local hf, hcfg = self.frames[head], blocks[head]
     if not hf or not hcfg then return nil end
     local rows, aligns, _, hr = self:GetRows(head)
-    local look = self:GetGroupLook(head)
     local g = self:JointGap(head)
-    local fused = look == "fused"
 
     local w, h = {}, {}
     local vis, rowH, nat = {}, {}, {}
@@ -603,18 +599,14 @@ function ns:LayoutGroup(head, need)
     -- x of each block in its row, y of each row
     local x, y = {}, {}
     local hx, hy
-    local top, prevLoose = 0, false
+    local top = 0
     for r, row in ipairs(rows) do
         local list = vis[r]
         local extra = W - nat[r]
         local offset = 0
-        local loose = false
         if #list > 0 and extra > 0.01 then
             -- a column (every row holds one block) always shares one width
             local justify = column or hcfg.stretch or r == fillRow or extra <= nat[r]
-            -- fused: a row less than half as wide stands apart, just off the others,
-            -- with its own frame (no partly shared border)
-            loose = fused and not justify
             if justify then
                 local takers = list
                 if spacersOnly then
@@ -638,10 +630,6 @@ function ns:LayoutGroup(head, need)
                 if a == "CENTER" then offset = self:PixelSize(extra / 2, hf)
                 elseif a == "RIGHT" then offset = extra end
             end
-        end
-        if #list > 0 then
-            if top > 0 and g == 0 and (loose or prevLoose) then top = top + LOOSE_GAP end
-            prevLoose = loose
         end
         local cx = offset
         for _, k in ipairs(row) do

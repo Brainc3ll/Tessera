@@ -880,9 +880,6 @@ for _, step in ipairs({
         ns:UpdateLayout()
         local lay = ns.groupLayout[head]
         assert(ns.frames[lone]:GetWidth() < lay.W / 2, "fused: the lone block keeps its width")
-        local _, lb, _, lt = ns.frames[lone]:GetRect()
-        local _, hb2 = ns.frames.fps:GetRect()
-        if lt and hb2 then assert(hb2 - (lb + lt) >= 1.9 or true, "and stands apart from the bar") end
         ns.db.groupLook = "tiles"
         ns:UpdateLayout()
         lay = ns.groupLayout[head]

@@ -578,10 +578,9 @@ function ns:OpenQuickMenu(key)
                     function() self:PushUndo(); self:SetGroupOwnLook(key, look) end)
             end
         end
-        -- alignment of this block's row when it is narrower than the group (rows);
-        -- a fused group is a rectangle: every row takes its width
+        -- alignment of this block's row when it is narrower than the group (rows)
         local _, rowCount = self:GetRowAlign(key)
-        if rowCount > 1 and not self:IsFrozen(key) and self:GetGroupLook(key) ~= "fused" then
+        if rowCount > 1 and not self:IsFrozen(key) then
             local sub = root:CreateButton(L.MENU_ROW_ALIGN)
             for _, a in ipairs({ "LEFT", "CENTER", "RIGHT" }) do
                 sub:CreateRadio(L["ROW_ALIGN_" .. a], function() return (self:GetRowAlign(key)) == a end,

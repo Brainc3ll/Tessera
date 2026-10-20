@@ -4,6 +4,12 @@ Décidé le 20/10/2026 avec Braincell1980 : simplifier le système de fusion tou
 liberté, avec quelques contraintes, viser « zéro bug », et dire au joueur ce qui est possible
 ou pas. Prototype sur cette branche, zips « beta » ; la 1.0.0 continue sur `main` sans être touchée.
 
+## Règle (Braincell1980, 20/10)
+Aucune option de la 1.0.0 ne disparaît : un joueur de la 1.0.0 doit retrouver tout ce qu'il avait
+(« ce n'est pas l'addon que j'ai téléchargé » ne doit jamais arriver). Changements de comportement
+à surveiller dans la beta : Maj + glisser sort un seul bloc (avant : le bloc et ceux accrochés à
+lui) ; une rangée courte d'un groupe fusionné se tient 2 px à l'écart.
+
 ## Pourquoi
 Aujourd'hui chaque bloc s'accroche à un seul voisin (chaîne `cfg.dock`), et une deuxième rangée
 « pend » sous une autre (`cfg.anchor.below`). Tessera ne connaît pas les rangées. D'où :

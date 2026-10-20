@@ -471,6 +471,7 @@ local LOOSE_GAP = 2 -- space around a short row of a fused group
 --     their sizes and use their alignment ("fused": such a short row stands apart,
 --     LOOSE_GAP off the others, so no border is ever partly shared);
 --   * rows that all have the same number of blocks form a grid: columns line up;
+--     a column (one block per row) always shares one width;
 --   * positions are computed from the group's top-left corner and every block is
 --     anchored to the head at its offset (no chain, no loop).
 -- Results per head in ns.groupLayout: W, H (group size), hx, hy (head's offset from
@@ -561,6 +562,7 @@ function ns:LayoutGroup(head, need)
             count = count or n
         end
     end
+    local column = grid and shownRows >= 2 and count == 1
     if grid and shownRows >= 2 and count >= 2 then
         for c = 1, count do
             local cw = 0
@@ -608,7 +610,8 @@ function ns:LayoutGroup(head, need)
         local offset = 0
         local loose = false
         if #list > 0 and extra > 0.01 then
-            local justify = hcfg.stretch or r == fillRow or extra <= nat[r]
+            -- a column (every row holds one block) always shares one width
+            local justify = column or hcfg.stretch or r == fillRow or extra <= nat[r]
             -- fused: a row less than half as wide stands apart, just off the others,
             -- with its own frame (no partly shared border)
             loose = fused and not justify

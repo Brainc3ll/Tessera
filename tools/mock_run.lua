@@ -944,6 +944,25 @@ for _, step in ipairs({
         end
         ns:ResetProfile("top")
     end,
+    -- a column of two blocks of very different widths shares one width (fused too)
+    function()
+        ns:ResetProfile("top")
+        ns.db.groupLook = "fused"
+        ns:UpdateLayout()
+        ns:RemoveFromGroup("time")
+        ns:RemoveFromGroup("weaponSkills")
+        ns.db.blocks.weaponSkills.enabled = true
+        ns:RefreshAllBlocks()
+        assert(ns:JoinRows("weaponSkills", "time", "TOP", "LEFT"), "column made")
+        ns:ReanchorAll()
+        ns:UpdateLayout()
+        local a, b = ns.frames.time, ns.frames.weaponSkills
+        if a:IsShown() and b:IsShown() then
+            assert(math.abs(a:GetWidth() - b:GetWidth()) < 0.6, "the column shares one width")
+        end
+        ns.db.groupLook = nil
+        ns:ResetProfile("top")
+    end,
     -- older layouts: any dock tree becomes rows, loops are cut, nothing is lost
     function()
         local blocks = {

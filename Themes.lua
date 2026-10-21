@@ -640,11 +640,11 @@ local function RestyleProfile(self, key, restyle)
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end
     for _, blockKey in ipairs(self:GetBlockKeys()) do
-        if self.db.blocks[blockKey] then
-            self:ApplyThemeToCfg(self.db.blocks[blockKey], key)
-            if restyle then self:ApplyStyle(blockKey) end
-        end
+        if self.db.blocks[blockKey] then self:ApplyThemeToCfg(self.db.blocks[blockKey], key) end
     end
+    -- every block drawn again, heads first after clearing every anchor: applying the
+    -- blocks one by one could anchor a block to one still anchored to it from before
+    if restyle then self:ReanchorAll() end
 end
 
 -- Switches the profile to a theme: clears style overrides from the group and launcher

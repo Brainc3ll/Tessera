@@ -65,8 +65,8 @@ Tessera is a collaboration between me, a player, and an AI.
 - Interface: `16001` (WoW Forever)
 - Languages: English, French (other languages can be added through CurseForge's localization tool)
 - Saved variables: `TesseraDB`
-- Optional addons it adapts to: FlareUI (default look and placement under its XP bar),
-  EllesmereUI, ElvUI, LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
+- Optional addons it adapts to: FlareUI, EllesmereUI and ElvUI (a matching style is
+  offered), LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
   display addons (Titan Panel, ChocolateBar, Bazooka...)
 
 ## For players

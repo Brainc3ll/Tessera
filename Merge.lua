@@ -139,12 +139,19 @@ end
 -- Actual target of a docked block: if its target is hidden (empty block, disabled...),
 -- it docks to whatever precedes that target in the same direction, leaving no gap.
 -- Stops walking when the chain changes direction or ends.
+-- A block that is turned on keeps its place even while hidden (empty, in combat...):
+-- the blocks around it do not move (only a block turned off leaves the group's shape)
+function ns:HasPlace(key)
+    local cfg = self.db.blocks[key]
+    return cfg ~= nil and cfg.enabled == true and self.frames[key] ~= nil
+end
+
 function ns:GetEffectiveDock(key)
     local target, side = self:GetDockTarget(key)
     local seen = { [key] = true }
     while target and not seen[target] do
         local t = self.frames[target]
-        if not t or t:IsShown() then break end
+        if not t or t:IsShown() or self:HasPlace(target) then break end
         seen[target] = true
         local nextTarget, nextSide = self:GetDockTarget(target)
         if not nextTarget or nextSide ~= side then break end
@@ -548,7 +555,17 @@ function ns:UpdateLayout()
     local need = {}
     for _, key in ipairs(self:GetBlockKeys()) do
         local f, cfg = self.frames[key], self.db.blocks[key]
-        if f and cfg and f:IsShown() then need[key] = { NeededSize(f, cfg) } end
+        -- hidden but turned on: it keeps its place, at the size it had when shown
+        -- (cfg.slotW, saved: the same place after a reload)
+        if f and cfg and (f:IsShown() or self:HasPlace(key)) then
+            local w, h = NeededSize(f, cfg)
+            if f:IsShown() then
+                if not cfg.slotW or math.abs(cfg.slotW - w) > 0.5 then cfg.slotW = w end
+            else
+                w = math.max(w, cfg.slotW or 0)
+            end
+            need[key] = { w, h }
+        end
     end
 
     -- a block whose target was hidden or shown again re-docks in the right place
@@ -565,8 +582,8 @@ function ns:UpdateLayout()
         end
     end
 
-    -- Hidden blocks that others depend on (a hidden group head, or a head hidden
-    -- because empty) shrink to no width, so their visible neighbours close the gap
+    -- Blocks turned off that others still depend on shrink to no width, so their
+    -- neighbours close the gap (a hidden block that is turned on keeps its place)
     for key, cfg in pairs(self.db.blocks) do
         local f = self.frames[key]
         if f and not need[key] and (cfg.anchor or self:HasDependents(key)) then

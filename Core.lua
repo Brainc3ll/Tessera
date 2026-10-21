@@ -849,6 +849,7 @@ function ns:LoadProfile()
     if self.built then
         self:RefreshAllBlocks()
         C_Timer.After(1, function() ns:MigratePositions() end)
+        C_Timer.After(1.5, function() ns:FreezeAnchoredGroups() end) -- (a ready-made layout)
     end
     if self.SkinOptions then self:SkinOptions() end
     -- each profile chooses which blocks are shared with DataBroker addons
@@ -2155,6 +2156,29 @@ function ns:AnchorToFrame(f, cfg)
     return true
 end
 
+-- A group placed relative to a frame or the screen center (the ready-made bars:
+-- centered at the top or the bottom, under FlareUI's XP bar) is placed once, then
+-- keeps a fixed position like any group dropped by the player: no recentering when
+-- blocks hide or grow, nothing follows another addon's frame. Second rows hanging
+-- under a bar (anchor.below / above) stay hanging. Not in combat.
+function ns:FreezeAnchoredGroups()
+    if not self.db or InCombatLockdown() then return end
+    for key, cfg in pairs(self.db.blocks) do
+        local f, a = self.frames[key], cfg.anchor
+        if f and type(a) == "table" and not ns.HangTarget(a) and not self:GetDockTarget(key) then
+            local l, b, r, t = self:GetRectUI(f)
+            if l then
+                cfg.point = self:MakeRelativePoint(l, b, r, t, f:GetEffectiveScale() / UIParent:GetEffectiveScale())
+                cfg.anchor = nil
+                f.centerOffset = nil
+                f:ClearAllPoints()
+                f:SetPoint(cfg.point[1], UIParent, cfg.point[2], cfg.point[3], cfg.point[4])
+            end
+        end
+    end
+    self:RequestLayout()
+end
+
 -- Horizontal offset that centers the group (width groupWidth, head at headX
 -- from the group's left edge) on its anchor's reference
 function ns:GetCenterOffset(cfg, groupWidth, headX, f)
@@ -2365,6 +2389,7 @@ function ns:ApplyBaseLayout(p, preset)
             cfg.showIcon = true
             cfg.showLabel = false
             cfg.anchor, cfg.point, cfg.dock = nil, nil, nil
+            cfg.hideEmpty = false -- the bar only holds blocks that are always shown
             if previous then
                 cfg.dock = { to = previous, side = vertical and "BOTTOM" or "RIGHT" }
             elseif preset == "left" then
@@ -2376,7 +2401,9 @@ function ns:ApplyBaseLayout(p, preset)
                 cfg.point = { "TOPLEFT", "TOP", math.floor(x + 0.5), BASE_TOP }
                 -- under FlareUI's XP bar whenever it exists, also when FlareUI or its XP bar
                 -- is turned on later (without it, at the top of the screen)
-                cfg.anchor = { top = BASE_TOP, frame = FLAREUI_XPBAR, gap = BASE_GAP, fill = not compact }
+                -- placed once (FreezeAnchoredGroups): centered at the top, under FlareUI's XP
+                -- bar if it is shown; then it stays where it is, like any group
+                cfg.anchor = { top = BASE_TOP, frame = FLAREUI_XPBAR, gap = BASE_GAP }
             end
             previous = item.key
         end
@@ -2735,6 +2762,8 @@ eventFrame:SetScript("OnEvent", function(_, event)
             if not ns.reanchored then
                 ns.reanchored = true
                 C_Timer.After(1, function() ns:RefreshAllBlocks() end)
+                -- groups placed relative to the screen or another frame get a fixed place
+                C_Timer.After(3, function() ns:FreezeAnchoredGroups() end)
             end
             ns:UpdateAll()
             -- after every loading screen (boat, portal, instance...), some game data is

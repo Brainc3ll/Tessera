@@ -62,6 +62,24 @@ ns.CHANGELOG = {
                     .. "partage en texte.",
               } },
 
+            { kind = "improved",
+              en = {
+                "A block hidden because it has nothing to show (or in combat, in an instance...) keeps its "
+                    .. "place: the blocks around it no longer move, close up or overlap.",
+                "A ready-made bar is placed once at the top (or the bottom) of the screen, then stays where it "
+                    .. "is, like any group: it no longer recenters itself or follows another addon's bar.",
+                "The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends "
+                    .. "no longer hide there).",
+              },
+              fr = {
+                "Un bloc masqué parce qu'il n'a rien à montrer (ou en combat, en instance...) garde sa place : "
+                    .. "les blocs autour ne bougent plus, ne se resserrent plus et ne se chevauchent plus.",
+                "Une barre toute prête est placée une fois en haut (ou en bas) de l'écran, puis reste où elle "
+                    .. "est, comme n'importe quel groupe : elle ne se recentre plus toute seule et ne suit plus la "
+                    .. "barre d'un autre addon.",
+                "Les barres des dispositions toutes prêtes ne contiennent que des blocs toujours affichés "
+                    .. "(Guilde et Amis ne s'y masquent plus).",
+              } },
             { kind = "fixed",
               en = {
                 "Merged blocks no longer keep small pieces of border from an earlier shape after they move or "

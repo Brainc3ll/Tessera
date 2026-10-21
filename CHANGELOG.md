@@ -9,6 +9,12 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for minimap and addon buttons, and DataBroker both ways.
 - Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.
 
+### Improvements
+
+- A block hidden because it has nothing to show (or in combat, in an instance...) keeps its place: the blocks around it no longer move, close up or overlap.
+- A ready-made bar is placed once at the top (or the bottom) of the screen, then stays where it is, like any group: it no longer recenters itself or follows another addon's bar.
+- The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends no longer hide there).
+
 ### Fixes
 
 - Merged blocks no longer keep small pieces of border from an earlier shape after they move or resize (a reload used to clear them).

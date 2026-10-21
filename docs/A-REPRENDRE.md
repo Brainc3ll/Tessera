@@ -12,7 +12,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - Après la 1.0.0 : bulle d'aide et boutons qui « respirent » (vers une 1.0.5), puis 1.1 (nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour tous, zones, bloc voyage, recharges de métiers, or filtré, fondu des barres, version multi-versions).
 
 ## Versions
-- **1.0.0-rc8 en préparation** (branche `rc8-places`, test28 à test31, décidée le 21/10) : placement simplifié, le joueur décide au pixel près.
+- **1.0.0-rc8 prête** (test28 à test36 validées en jeu le 21/10 ; fusionnée dans `main`, en attente de « on publie ») : placement simplifié, le joueur décide au pixel près. Aussi : Double barre en trois rangées de même largeur, Chemin de ronde sans bloc qui se masque, boutons de la visite rapide plus grisés, devant / derrière pour toute une barre avec ses rangées.
   - un bloc activé mais masqué garde sa place (`ns:HasPlace`, largeur `cfg.slotW`) ; plus de resserrement ni de chevauchement ;
   - barres toutes prêtes placées une fois (`FreezeAnchoredGroups`, 3 s après le premier chargement) : plus de recentrage ni de suivi de la barre d'XP de FlareUI ; la première barre ne contient que des blocs toujours affichés ;
   - deuxième rangée figée (`anchor.fixed`, `anchor.offset`), toujours accrochée sous sa barre ; bord à bord avec elle quand elles sont alignées aux deux bouts (8 px de marge) ; on peut fusionner des blocs au-dessus ;

@@ -2,7 +2,7 @@
 
 ## Où on en est
 - **1.0.0-rc8 publiée le 21/10** (GitHub, CurseForge, Wago ; test28 à test36 validées en jeu ; descriptions recollées). Le détail de chaque version est dans `CHANGELOG.md`.
-- La bêta de WoW Forever ferme le **21/10 à 19 h (heure belge)**. Ensuite, plus de test en jeu jusqu'à la sortie de Forever.
+- La bêta de WoW Forever ferme le **jeudi 23/10 à 19 h (heure belge ; 10 h PDT)**. Ensuite, plus de test en jeu jusqu'à la sortie de Forever.
 - Branches : `main` (la rc8) et `refonte-rangees` (bêta du placement par rangées, rangée le 21/10 : l'ancien moteur suffit depuis que le recentrage est retiré ; à rouvrir seulement si les joueurs en ont besoin). `multi-versions` et `rc8-places` sont à supprimer sur GitHub par Braincell1980.
 
 ## Calendrier jusqu'à la 1.0.0

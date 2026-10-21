@@ -107,14 +107,14 @@ end
 -- The frames covered by shown blocks: sorted labels, the covering groups (root keys)
 -- and a signature of the situation (to ask only once for the same one)
 function ns:GetCoveredFrames()
-    local groups = {}
-    for key, f in pairs(self.frames) do
-        if f:IsShown() and self.db.blocks[key] then groups[self:GetRoot(key)] = true end
-    end
+    -- every shown block, with its visual group: a bar and the rows hanging under it
+    -- count as one, so they go in front or behind together (also their blocks hidden now)
     local rects = {}
-    for root in pairs(groups) do
-        local l, b, r, t = self:GroupRectUI(root)
-        if l then rects[root] = { l, b, r, t } end
+    for key, f in pairs(self.frames) do
+        if f:IsShown() and self.db.blocks[key] then
+            local l, b, r, t = self:GetRectUI(f)
+            if l then table.insert(rects, { l, b, r, t, root = self:GetVisualRoot(key) }) end
+        end
     end
     local labels, seen, covering = {}, {}, {}
     for _, entry in ipairs(BlizzardFrames()) do
@@ -123,10 +123,10 @@ function ns:GetCoveredFrames()
         local l, b, r, t
         if shown then l, b, r, t = self:GetRectUI(f) end
         if l and r - l > 1 and t - b > 1 then
-            for root, g in pairs(rects) do
+            for _, g in ipairs(rects) do
                 -- a real overlap, not just touching edges
                 if math.min(r, g[3]) - math.max(l, g[1]) > 2 and math.min(t, g[4]) - math.max(b, g[2]) > 2 then
-                    covering[root] = true
+                    covering[g.root] = true
                     local label = entry.label
                     if label and not seen[label] then
                         seen[label] = true
@@ -173,12 +173,13 @@ function ns:ToggleTempLayer()
     if self.UpdatePlacementBanner then self:UpdatePlacementBanner() end
 end
 
--- Saves a layer for some groups (roots = set of root keys) or for every block
+-- Saves a layer for some groups (roots = set of visual root keys: a bar with its rows)
+-- or for every block
 function ns:SetLayer(layer, roots)
     local strata = STRATA[layer]
     if not strata then return end
     for key, cfg in pairs(self.db.blocks) do
-        if not roots or roots[self:GetRoot(key)] then cfg.strata = strata end
+        if not roots or roots[self:GetVisualRoot(key)] then cfg.strata = strata end
     end
     if not roots then
         self.db.groupDefaults = self.db.groupDefaults or {}

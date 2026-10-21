@@ -21,6 +21,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Merged blocks no longer keep small pieces of border from an earlier shape after they move or resize (a reload used to clear them).
 - The quick tour's buttons (Unlock blocks, Open the Look tab...) are no longer greyed out after the ready-made layouts step.
+- "In front" or "Behind" now applies to a whole bar with its rows, including the blocks hidden at that moment: a row no longer comes back in front in Edit Mode.
 
 ## 1.0.0-rc7 — 2026-10-20
 

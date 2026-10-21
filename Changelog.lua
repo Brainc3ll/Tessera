@@ -100,12 +100,16 @@ ns.CHANGELOG = {
                     .. "resize (a reload used to clear them).",
                 "The quick tour's buttons (Unlock blocks, Open the Look tab...) are no longer greyed out after "
                     .. "the ready-made layouts step.",
+                "\"In front\" or \"Behind\" now applies to a whole bar with its rows, including the blocks hidden "
+                    .. "at that moment: a row no longer comes back in front in Edit Mode.",
               },
               fr = {
                 "Les blocs fusionnés ne gardent plus de petits morceaux de bordure d'une forme précédente après "
                     .. "un déplacement ou un changement de taille (il fallait recharger l'interface).",
                 "Les boutons de la visite rapide (Déverrouiller les blocs, Ouvrir l'onglet Apparence...) ne sont "
                     .. "plus grisés après l'étape des dispositions toutes prêtes.",
+                "« Devant » ou « Derrière » s'applique maintenant à toute la barre avec ses rangées, blocs masqués "
+                    .. "compris : une rangée ne repasse plus devant en mode Édition.",
               } },
         },
     },

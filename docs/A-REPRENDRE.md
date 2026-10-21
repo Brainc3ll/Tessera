@@ -1,101 +1,53 @@
-# À reprendre (état au 21 octobre 2026, matin)
+# À reprendre (état au 21 octobre 2026)
 
-## Calendrier jusqu'à la 1.0.0 (validé le 13/10)
-La bêta de WoW Forever ferme le **21 octobre à 19 h (heure belge)** : après, plus aucun test en jeu avant la sortie.
-Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
-- **15/10 :** rc5 publiée (GitHub, CurseForge, Wago).
-- **15-17/10 :** zips de test 1.0.0-test1 à test16, tous validés en jeu par Braincell1980.
-- **17/10 :** rc6 publiée (GitHub, CurseForge, Wago), la dernière version candidate, puis la rc6-hotfix l'après-midi.
-- **Avant le 22, en jeu :** le test en instance (seul test restant) ; retours éventuels des joueurs de la rc6.
-- **22/10 - 3/11 : hors jeu seulement** : entrée 1.0.0 du changelog, images dans les galeries de CurseForge et Wago, post Reddit, messages Discord.
-- **4/11 :** publication de la 1.0.0 (après « on publie ») et promotion ; garder de la marge pour une 1.0.1 rapide si la sortie change des identifiants.
-- Après la 1.0.0 : bulle d'aide et boutons qui « respirent » (vers une 1.0.5), puis 1.1 (nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour tous, zones, bloc voyage, recharges de métiers, or filtré, fondu des barres, version multi-versions).
+## Où on en est
+- **1.0.0-rc8 publiée le 21/10** (GitHub, CurseForge, Wago ; test28 à test36 validées en jeu ; descriptions recollées). Le détail de chaque version est dans `CHANGELOG.md`.
+- La bêta de WoW Forever ferme le **21/10 à 19 h (heure belge)**. Ensuite, plus de test en jeu sur Forever : les tests passent par Retail (Braincell1980 a un abonnement).
+- Branches : `main` (la rc8) et `refonte-rangees` (bêta du placement par rangées, rangée le 21/10 : l'ancien moteur suffit depuis que le recentrage est retiré ; à rouvrir seulement si les joueurs en ont besoin). `multi-versions` et `rc8-places` sont à supprimer sur GitHub par Braincell1980.
 
-## Versions
-- **1.0.0-rc8 publiée le 21/10 à 10 h 35** (test28 à test36 validées en jeu ; textes envoyés à CurseForge ; descriptions à recoller à la main ; branches `multi-versions` et `rc8-places` à supprimer par Braincell1980) : placement simplifié, le joueur décide au pixel près. Aussi : Double barre en trois rangées de même largeur, Chemin de ronde sans bloc qui se masque, boutons de la visite rapide plus grisés, devant / derrière pour toute une barre avec ses rangées.
-  - un bloc activé mais masqué garde sa place (`ns:HasPlace`, largeur `cfg.slotW`) ; plus de resserrement ni de chevauchement ;
-  - barres toutes prêtes placées une fois (`FreezeAnchoredGroups`, 3 s après le premier chargement) : plus de recentrage ni de suivi de la barre d'XP de FlareUI ; la première barre ne contient que des blocs toujours affichés ;
-  - deuxième rangée figée (`anchor.fixed`, `anchor.offset`), toujours accrochée sous sa barre ; bord à bord avec elle quand elles sont alignées aux deux bouts (8 px de marge) ; on peut fusionner des blocs au-dessus ;
-  - un groupe déplacé s'aligne par ses bords extérieurs seulement ;
-  - FlareUI traité comme les autres interfaces : seulement le nom de son style dans les textes ; ses cadres (barre d'XP pour l'aimantation, cadres pour les chevauchements) dans `ns.KNOWN_UI_FRAMES` (Core.lua), où ajouter ElvUI, EllesmereUI... après test en jeu ;
-  - « Problèmes connus » : un bloc masqué ne fait plus resserrer ses voisins, option à l'étude.
-  - Branche `refonte-rangees` (bêta des rangées) rangée le 21/10 : l'ancien moteur suffit une fois le recentrage retiré. À rouvrir seulement si les joueurs en ont besoin.
-- **1.0.0-rc4** : publiée le 13/10. **1.0.0-rc5** : publiée le 15/10.
-- **1.0.0 en préparation** (après la rc7) : entrée « 1.0.0 » ouverte avec son intro ; correction : le cache des raccords de bordure (`seamKey`) compte toujours la taille du bloc et est vidé par `ReanchorAll` (deux petits traits restés dans un bloc jusqu'au rechargement, vus en beta5). À tester en jeu avant le 22/10 (test26).
-- **1.0.0-rc7** : publiée le 20/10 au soir (test19 à test25 validées en jeu) : couleur de classe partout, couleurs vives ou adoucies, styles triés et noms harmonisés, liste « Remplacer » en couleur, point vert dans la liste des blocs, mémoire libérée à la fermeture des options, bordures propres, Tuiles, erreur « Cannot anchor... » corrigée. Descriptions avec « Problèmes connus » (placement en chantier).
-- **1.0.0-rc6-hotfix** : publiée le 17/10 l'après-midi (3 corrections, voir plus bas).
-- **1.0.0-rc6** : publiée le 17/10 (dispatch du workflow par l'API REST de GitHub : `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`). Depuis la rc5 :
-  - nouveau bloc Date ; « Oublier un personnage » dans le bloc Or ; mode démo : « Styles mélangés » ;
-  - Tessera ne déplace plus les cadres de Blizzard : blocs devant ou derrière (bouton du bandeau et bouton qui respire sous la fenêtre du mode Édition ; question seulement après avoir utilisé le bouton ; onglet Apparence ; question aussi en appliquant une disposition qui recouvre des cadres). Ne plus mentionner l'ancien système aux joueurs (demande de Braincell1980) ; un joueur encore sur une ancienne copie se voit proposer de revenir à sa disposition ;
-  - « Chemin de ronde » remplace les 4 dispositions façon système ; « Autour des gryphons » en deux rectangles nets ;
-  - onglet Apparence : raccourcis « Cadre / Texte de tous les blocs » ;
-  - style FlareUI aux looks de FlareUI 2.1.1 : lignes bronze entre les blocs collés, barre de progression à la texture « FlareUI Forever » (avec FlareUI installé) ;
-  - couleurs des seuils au choix (onglet Général) : automatiques, vives, adoucies, pour daltoniens (l'ancienne case est convertie). Les textes ne citent FlareUI que comme nom de style (demande de Braincell1980) ;
-  - noms de WoW Forever « Prénom Nom » : la clé d'un personnage est nom complet + jeu de règles (or, historique, profil) ; les données des anciennes clés sont déplacées ;
-  - corrections : barre du haut sous la barre d'XP de FlareUI activée après coup, deuxième rangée reposée contre sa barre, style gardé en appliquant une disposition, plus de « n/d » après un écran de chargement ;
-  - `/tessera preview forever` retirée (le mode démo la remplace) ; textes sans « bêta », 19 styles partout, changelog trié par catégorie.
-- **1.0.0** (4 novembre) : la rc7 plus les corrections éventuelles. Au moment de la publier : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, juste avant le commit « Release 1.0.0-rc7 »), version dans le .toc.
-- **1.1.0-alpha1** (autres versions du jeu) : ancienne branche `multi-versions`, abandonnée au profit de l'approche plus bas.
+## Calendrier jusqu'à la 1.0.0
+- **22/10 - 3/11 : hors jeu** (ou sur Retail) : images dans les galeries de CurseForge et Wago, post Reddit, messages Discord ; corrections seulement.
+- **4/11 : publication de la 1.0.0** (après « on publie ») : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, juste avant le commit « Release 1.0.0-rc8 »), version dans le .toc. Garder de la marge pour une 1.0.1 rapide.
 
-## 1.0.0 en préparation (18/10, zip test19, pas publiée)
-- Couleur de classe partout où l'on choisit une couleur : fond (garde son opacité), cadre de l'icône, lignes entre blocs fusionnés, ligne des blocs espace, en plus du texte et de la bordure (`classColorBg`, `classColorIcon`, `classColorSeparator`, `spacerClassColor`).
-- « Couleurs : vives ou adoucies » (ancien « Couleurs des seuils », clé `LEVEL_PALETTE` gardée) agit aussi sur les couleurs de classe : adoucies = 15 % plus sombres, comme sur les barres texturées de FlareUI (FlareUI 2.1.1 et 2.2.0 gardent les couleurs exactes du jeu, vérifié le 18/10). Pour daltoniens : couleurs de classe vives. Les noms des personnages dans les infobulles (Or, Amis, Guilde) suivent aussi. Choix de Braincell1980 : fond uni partout, pas la texture de FlareUI (tout le monde n'a pas FlareUI).
-- Choisir un style décoche les options de couleur de classe (demande de Braincell1980 : sinon tous les styles prenaient la couleur de classe) ; liste des styles par ordre alphabétique (aussi dans le mode démo).
-- Correction : en changeant plusieurs fois de style, des morceaux de l'ancienne bordure restaient aux jointures des blocs fusionnés (cache `seamKey` de `ApplySeams` gardé d'un style à l'autre) ; `SkinBlockFrame` le vide maintenant. Test20 : encore des petits traits verticaux sous la barre au-dessus d'une deuxième rangée courte (bordure découpée en morceaux sur un côté partiellement partagé). Test21 : `CopyPiece` copie les bords d'atlas (styles Blizzard moderne) comme le NineSlice de Blizzard (miroir et répétition avant l'atlas), et compte les répétitions des bordures classiques en pixels d'écran comme Backdrop.lua.
-- 20/10 : 3 corrections proposées par Gemini (après lecture de `Merge.lua`) : `GroupExtent` compte comme maillon de largeur nulle un bloc masqué qui tient encore d'autres blocs (seulement dans ce calcul, la table des largeurs ne change pas : la version faite à la main par Braincell1980 cassait le mode démo) ; joints de la barre comptés pour la largeur de la deuxième rangée (aspect Tuiles) ; `ClearAllPoints` dans `AnchorDocked` par sécurité (les appelants le faisaient déjà). Ne pas changer `hideEmpty` par défaut (essai de Braincell1980 : tout cassait).
-- Erreur Lua « Cannot anchor to a region dependent on it » (Merge.lua, `AnchorDocked`) vue par Braincell1980 au lancement du mode démo avec sa version modifiée (PDF de sa discussion avec Gemini, 20/10) : `AnchorDocked` refuse maintenant d'ancrer un bloc à un cadre qui dépend déjà de lui (`DependsOn` suit les points d'ancrage réels) ; le bloc prend sa position libre, la passe suivante le replace.
-- Entrée 1.0.0 du changelog ouverte, avec l'intro « Première version stable » ; version 1.0.0 dans le .toc.
-- 20/10 (test24) : noms de styles écrits pareil (« Blizzard moderne carré »), triés sans tenir compte des accents (`ns.SortKey`) ; « Remplacer par... » en une seule liste colorée (+ vert = bloc masqué, flèches dorées = bloc affiché) ; point vert devant les blocs affichés dans la liste de l'onglet Blocs. Repris de la branche `refonte-rangees`, sans le système de rangées.
-- 20/10 (test25, retour de la test24 : le reste OK) : les réglages d'un bloc espace passent dans la colonne de droite de l'onglet Comportement (la case « Ligne couleur de classe » passait sous « Réinitialiser » ; test du mock qui mesure la hauteur) ; la mémoire est aussi libérée une seconde après la fermeture de la fenêtre d'options (`ns:CleanMemorySoon`).
-- **rc7 publiée le 20/10** (prévue ainsi : si la test24 passe, à « on publie », avant le 22/10) : version `1.0.0-rc7`, entrée du changelog renommée « 1.0.0-rc7 » et datée, sans l'intro « Première version stable » (elle revient le 4/11 dans l'entrée « 1.0.0 ») ; section « Problèmes connus » (placement dans la deuxième rangée) dans les descriptions ; réimport des textes dans CurseForge.
-- Générateur de textes : `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 build.py` pour `main` (les textes de la branche des rangées restent dehors).
+## Le placement depuis la rc8 (décidé le 21/10)
+Le joueur décide au pixel près ; Tessera ne recentre plus rien.
+- Un bloc activé mais masqué garde sa place (`ns:HasPlace`, largeur `cfg.slotW`).
+- Barres toutes prêtes : la barre est placée une fois (`FreezeAnchoredGroups`, après le premier chargement) ; ses rangées sont accrochées sous le bord gauche de la barre (`anchor.fixed`, `anchor.offset = 0`) et prennent sa largeur (`fill`, deux passes pour une rangée sous une rangée) ; bord à bord quand elles sont alignées aux deux bouts (8 px de marge). La première barre ne contient que des blocs toujours affichés.
+- Un groupe déplacé s'aligne par ses bords extérieurs seulement. On peut fusionner des blocs sur une rangée figée.
+- Devant / derrière s'applique à une barre avec ses rangées (`GetVisualRoot`), blocs masqués compris.
+- FlareUI est traité comme les autres interfaces : seul le nom de son style apparaît dans les textes du jeu. Ses cadres (barre d'XP pour l'aimantation, cadres pour les chevauchements) sont dans `ns.KNOWN_UI_FRAMES` (Core.lua), où ajouter d'autres interfaces après un test en jeu.
+- « Problèmes connus » (descriptions) : un bloc masqué ne fait plus resserrer ses voisins ; option à l'étude.
 
-## Feuille de route (proposée le 20/10)
-1. Jusqu'au 22/10 : tests en jeu (test19 à test24, donjon), beta rangées, galerie `/tes debug hd`.
-2. 23/10 - 4/11 : rc7 puis 1.0.0, corrections seulement.
-3. 1.1 (fin novembre) : déplacer un bloc au pixel (flèches du clavier et flèches à l'écran), l'agrandir ou le rétrécir ; option « laisser les voisins se resserrer » à l'étude ; raccourcis clavier, menus à la place de Maj / Ctrl / Alt ; version Forever + Retail (même API, à tester sur Retail). Le placement par rangées (branche `refonte-rangees`) est rangé.
-4. 1.2 « Comme chez Blizzard » (décembre) : styles HD, fenêtre d'options avec les pièces des Réglages du jeu, Échap › Options › AddOns, bouton « ? », étiquette « Nouveau ».
-5. 1.3 « Accessibilité » (janvier) : taille du texte, contraste élevé, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
-6. 2.0 « Manette » (février-mars) : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix par les rangées, menu en cercle, vibration et barre lumineuse.
+## Feuille de route
+1. 1.0.0 le 4/11 : la rc8 plus les corrections éventuelles.
+2. 1.1 (fin novembre) : déplacer un bloc au pixel (flèches du clavier et à l'écran), l'agrandir ou le rétrécir ; option « laisser les voisins se resserrer » à l'étude ; version Forever + Retail ; cadres d'autres interfaces ; nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour d'autres interfaces.
+3. 1.2 « Comme chez Blizzard » : styles HD (galerie `/tes debug hd` dans les zips de test), fenêtre d'options avec les pièces des Réglages du jeu, bouton « ? », étiquette « Nouveau ».
+4. 1.3 « Accessibilité » : taille du texte, contraste élevé, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
+5. 2.0 « Manette » : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix, menu en cercle, vibration et barre lumineuse.
+Maquettes des options (deux volets, mosaïque, accessibilité, manette) : artefact « Tessera – idées d'interface des options » (20/10).
 
-## 1.0.0-rc6-hotfix (publiée le 17/10 ; test17 et test18 validées en jeu)
-Bugs vus dans les vidéos de Braincell1980 (17/10, rc6), corrigés :
-- un bloc resté seul dans la deuxième rangée (Cuisine) ne s'étire plus sur toute la barre : la rangée ne prend la largeur de la barre que si ses blocs doublent au plus leur largeur (`Fill`, `atMostDouble`, Merge.lua) ;
-- un groupe de plusieurs rangées collé à la barre (BugSack + Mémoire des addons) ne recouvre plus la deuxième rangée : elle descend sous le bloc le plus bas du groupe (`hangDrop`, `CenterAnchoredGroups`) ;
-- 56 Mo pour Tessera : chaque changement de texte (FPS, latence, coordonnées toutes les 0,25 s, heure) relançait toute la mise en page (≈ 50 Ko de déchets à chaque fois). Maintenant seulement si la taille du texte change. Test17 : 3-4 Mo au repos (validé), mais 43 Mo vite atteints en mode placement. Test18 : plus de tables créées à chaque image pendant un glisser (lignes d'alignement, environ 10 Ko par image avant), ni dans `GetRoot` / `GetSubtree` / `GetVisualRoot` / `UpdateFades` (appelés pour chaque bloc plusieurs fois par seconde). Validé (« moins gourmand »). En plus, à la demande de Braincell1980 : un nettoyage de la mémoire (`collectgarbage`) une seconde après le verrouillage des blocs, jamais en combat (validé en jeu le 17/10).
+## Version Forever + Retail (1.1)
+- Retail 12.1.5 (interface 120105) et le PTR 12.1.7 ont la même API (Midnight) que Forever.
+- Les modules propres à Forever ne s'enregistrent que si leurs fonctions existent ; les fonctions propres à Forever passent par `_G["Nom"]`.
+- Zips de test Retail : TOC `## Interface: 16001, 120105, 120107`. La 1.0.0 n'annonce Retail que si ces tests passent.
+- Repartir de `main`, pas de l'ancienne branche `multi-versions`.
 
 ## Textes sur CurseForge
-- 18/10 : relecture avec le skill « stop-slop » (voix active, moins de remplissage) : descriptions CurseForge / Wago, README, post Reddit, changelog, et 10 lignes d'aide (`HELP_FOREVER_8` aussi, voir plus bas) en anglais (`HELP_FOREVER_1`, `HELP_LOOK_6`, `HELP_BMODE_BROKER_3`, `HELP_HELPABOUT_3`, `HELP_REPLACE_3`, `HELP_REPLACE_5`, `HELP_SHORT_3`, `HELP_USE_8`, `HELP_BMODE_USE_5`), envoyées à CurseForge à la prochaine publication. Descriptions à recoller sur CurseForge et Wago.
-- 16/10 : import anglais par Braincell1980 avec suppression des phrases absentes (43 textes retirés), puis import français. Méthode à garder pour les gros ménages.
-- 17/10 : `TIP_COLORBLIND` supprimé à la main ; la rc6 a envoyé les nouveaux textes (couleurs des seuils, `HELP_LOOK_11`) et 5 textes corrigés à la relecture (`HELP_PLACE_12`, `TUTORIAL_5`, `SECTION_EDGES`, `HELP_GENERAL_3`, `HELP_BLOCKS_4` en français).
-
-## En attente de Braincell1980
-- Recoller `docs/curseforge-description.md` sur CurseForge et `docs/wago-description.md` sur Wago (ligne Accessibilité changée) ; annoncer la rc6 sur Discord.
-- Test en instance (profil donjon, masquer en instance, clics en combat) : le seul test restant de la 1.0.0.
-- (Facultatif) une capture du mode démo en français avec la version actuelle pour refaire `docs/media/english-french.jpg`, dont la moitié française vient d'une version plus ancienne.
-
-## Build de WoW Forever du 16/10
-Nouveau build (en-tête de la minicarte et cadres d'unité revus, nouveau tutoriel) : FlareUI cassé quelques heures puis corrigé par Malkkav (FlareUI 2.1.1, étudié le 17/10 : rien de cassé pour Tessera). Tessera testé avec et sans FlareUI : tout OK.
+- Le workflow de publication envoie l'anglais et le français à CurseForge (`missing-phrase-handling: DoNothing` : une clé supprimée y reste). Pour un gros ménage : import anglais à la main avec suppression des phrases absentes, puis import français (fait le 16/10).
+- Descriptions : à recoller à la main sur CurseForge et Wago quand elles changent.
 
 ## Documentation de l'API de WoW Forever (trouvée le 18/10)
-Il en existe une, contrairement à ce que disaient nos textes (corrigés : « systèmes encore jeunes qui peuvent changer ») :
-- la documentation générée par Blizzard dans le client, recopiée par Ketho : dépôt GitHub `Ketho/wow-ui-source-forever`, dossier `Interface/AddOns/Blizzard_APIDocumentationGenerated` (641 fichiers ; build 1.60.1). On y trouve `C_SkillInfo`, `LegacyConsts` (faction 2802, la même que notre bloc Héritage ; monnaie 4225 ; arbres 1187-1189), `C_GameRules` (`GetForeverExperiencePreset` : Classic / Modern). Le même dépôt contient le code de l'interface de Blizzard (fenêtres Héritage, etc.) ;
-- warcraft.wiki.gg : pages « Patch 1.60.1/API changes » et catégorie « Exclusive API/forever ». Les restrictions de Midnight (valeurs secrètes) s'appliquent aussi à Forever ; `GetInspectHonorData` donne l'honneur et le seuil du niveau suivant (utile pour les rangs JcJ en 1.1).
-- À faire après la 1.0.0 : relire nos blocs WoW Forever avec cette documentation (Compréhension, Camping, Honneur), et voir si l'audit de l'API (annotations de Ketho) couvre aussi les fonctions propres à Forever.
+- Documentation générée par Blizzard, recopiée par Ketho : dépôt `Ketho/wow-ui-source-forever`, dossier `Interface/AddOns/Blizzard_APIDocumentationGenerated` (`C_SkillInfo`, `LegacyConsts`, `C_GameRules`...), avec le code de l'interface de Blizzard.
+- warcraft.wiki.gg : « Patch 1.60.1/API changes » et la catégorie « Exclusive API/forever ». `GetInspectHonorData` donne l'honneur et le seuil du niveau suivant (rangs JcJ en 1.1).
+- À faire après la 1.0.0 : relire les blocs WoW Forever (Compréhension, Camping, Honneur) avec cette documentation.
 
 ## Visibilité
-- Tessera est sur CurseForge et Wago (projet ANz7wj64, description = `docs/wago-description.md`).
-- Pistes : Reddit (r/WoWUI avec le paragraphe « AI Disclaimer », subreddit Forever), Discords Forever (publicité autorisée par Malkkav), WoWInterface (catégorie la plus proche en précisant « WoW Forever »), pic de promotion vers le 4 novembre.
-- Images faites le 15/10 (`docs/media`, affichées dans le README) : bannière animée (Blizzard moderne puis FlareUI), trois GIF des styles du mode démo (moins de 2 Mo chacun), image anglais / français. Pour CurseForge et Wago : à envoyer dans leur galerie d'images.
-
-## Version multi-versions (après la 1.0.0, en 1.1) : approche validée le 14/10
-- Repartir de `main` (propre, audit Ketho à 0), pas de l'ancienne branche `multi-versions`.
-- Tous les secours pour Classic Era / BC / MoP dans un seul fichier de compatibilité (`Compat.lua`) : fonction moderne si elle existe, sinon l'ancienne, avec un commentaire par version du jeu ; le reste du code n'appelle que ces fonctions.
-- Tester chaque client (faux client `TESSERA_FLAVOR` + tests en jeu) avant toute publication.
-- Si un jour elle est publiée : retirer le suffixe « -forever » du nom du zip.
+- CurseForge et Wago (projet ANz7wj64). Pistes : Reddit (r/WoWUI avec le paragraphe « AI Disclaimer », subreddit Forever), Discords Forever (publicité autorisée par Malkkav), WoWInterface, pic de promotion vers le 4/11.
+- Images (`docs/media`, dans le README) : bannière animée, trois GIF des styles, image anglais / français (sa moitié française vient d'une version plus ancienne : une capture récente du mode démo en français permettrait de la refaire). À envoyer dans les galeries de CurseForge et Wago.
 
 ## Outils de la session (hors dépôt)
-- `TesseraDev.lua` (commandes de test et de développement) et `make_test_zip.sh` : `/home/claude/tessera-dev/`, ajoutés seulement aux zips de test. Chaque nouveau zip de test prend un nouveau numéro (prochain : test17).
-- Générateur des textes (`help_struct.py`, `help_texts.py`...) : `/home/claude/tessera-tools/gen`, `python3 build.py`. Le fichier français utilise des espaces normales (pas d'espaces insécables).
+- `TesseraDev.lua` (commandes de test : `/tes test`, rapport de debug, galerie `/tes debug hd`...) et `make_test_zip.sh` : `/home/claude/tessera-dev/`, ajoutés seulement aux zips de test (prochain : test37).
+- Générateur des textes : `/home/claude/tessera-tools/gen`, `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 build.py` pour `main` (les textes de la branche des rangées restent dehors). Le fichier français utilise des espaces normales.
+- Simulateur avec vraies positions : `MOCK_GEOMETRY = true` dans un script qui charge `tools/mock_run.lua` (voir le test des dispositions toutes prêtes).
 
-Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`. Les plans terminés (mode Édition, onglet Apparence) sont gardés comme archive dans `docs/archive/`.
+Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`. Les plans et listes de tests terminés sont dans `docs/archive/`.

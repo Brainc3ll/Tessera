@@ -18,7 +18,7 @@ Pistes possibles :
 Points à étudier le moment venu :
 
 - **Images** : les cadres doivent être des textures libres de droits, ou créées pour Tessera (pas d'images reprises d'autres jeux ou addons). LibSharedMedia pourrait servir pour les textures fournies par d'autres addons.
-- **Comportement** : le cadre suit le groupe (déplacement, blocs masqués qui le font rétrécir), ne bloque pas les clics, et reste sous le plan d'affichage des blocs.
+- **Comportement** : le cadre suit le groupe (déplacement, blocs ajoutés ou retirés), ne bloque pas les clics, et reste sous le plan d'affichage des blocs.
 - **Groupes collés aux bords** : pas de cadre du côté de l'écran, comme pour la bordure.
 - **Réglages** : choix du cadre, de sa couleur, de sa taille, des éléments décoratifs, par groupe (dans l'onglet Apparence).
 - **Performance** : rester léger (quelques textures par groupe, pas d'animation coûteuse).
@@ -43,6 +43,7 @@ Souhait de Braincell1980 : un Tessera beaucoup plus HD, même sur Forever (il fa
 3. Une police moderne libre de droits (licence OFL) livrée avec Tessera.
 4. Icônes : Masque, taille plafonnée à ce qui reste net (voir « Icônes nettes » plus haut).
 5. Petites animations : fondu, valeur qui glisse, survol qui s'allume.
+Le 20/10 : le jeu contient 37 cadres HD tout faits (`NineSliceLayouts`), visibles dans la galerie `/tes debug hd` des zips de test ; pas encore testée en jeu.
 Méthode proposée : d'abord un nouveau style « HD » (points 1 à 3) à côté des autres, puis étendre ses images aux autres styles s'il plaît. Plutôt en 1.1. Avant de coder : une maquette (même barre, style actuel et style HD côte à côte).
 
 ## Idées tirées des autres addons de barres (13 octobre 2026)

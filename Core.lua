@@ -2474,9 +2474,10 @@ function ns:ApplyBaseLayout(p, preset)
             elseif previous then
                 cfg.dock = { to = previous, side = "RIGHT" }
             elseif preset == "bottom" then
-                cfg.anchor = { above = BASE_ROW[1].key, fill = true, gap = 0 }
+                -- placed once (fixed), lined up with the bar's left edge: it never recenters
+                cfg.anchor = { above = BASE_ROW[1].key, fill = true, gap = 0, fixed = true, offset = 0 }
             else
-                cfg.anchor = { below = BASE_ROW[1].key, fill = not compact, gap = 0 }
+                cfg.anchor = { below = BASE_ROW[1].key, fill = not compact, gap = 0, fixed = true, offset = 0 }
             end
             previous = key
         end

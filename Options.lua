@@ -2636,6 +2636,9 @@ local function ShowTutorialStep(index)
     tutorial.back:SetEnabled(index > 1)
     tutorial.next:SetText(index < #TUTORIAL_STEPS and L.TUTORIAL_NEXT or L.TUTORIAL_DONE)
     tutorial.action:SetShown(step.action ~= nil)
+    -- the button is shared by the steps: the layouts step greys it out until a layout is
+    -- tried, the other steps always use it
+    tutorial.action:SetEnabled(true)
     if step.action then
         -- the button fits its text (translations can be long), on its own row
         tutorial.action:SetText(L[step.action])
@@ -2656,7 +2659,8 @@ function ns:StartTutorial()
     if not tutorial then
         tutorial = CreateFrame("Frame", "TesseraTutorial", UIParent, "BackdropTemplate")
         tutorial:SetSize(380, 160)
-        tutorial:SetPoint("TOP", UIParent, "TOP", 0, -160)
+        -- below the placement banner (and its panel), which step 3 shows
+        tutorial:SetPoint("TOP", UIParent, "TOP", 0, -340)
         tutorial:SetFrameStrata("FULLSCREEN_DIALOG")
         tutorial:SetClampedToScreen(true)
         tutorial:SetMovable(true)

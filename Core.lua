@@ -115,12 +115,28 @@ ns.KNOWN_UI_FRAMES = {
         QTBackground = { label = "EM_OBJECTIVES" }, MicroMenu = { label = "EM_MENU" },
     } },
     { prefix = "ERB_", frames = { CastBarFrame = { label = "EM_CAST_BAR" } } },
+    -- ElvUI 16 (names read in its code). Some names carry no prefix: only with ElvUI loaded
+    { addon = "ElvUI", prefix = "", frames = {
+        ElvUF_Player = { label = "EM_UNIT_FRAMES" }, ElvUF_Target = { label = "EM_UNIT_FRAMES" },
+        ElvUF_TargetTarget = { label = "EM_UNIT_FRAMES" }, ElvUF_Focus = { label = "EM_UNIT_FRAMES" },
+        ElvUF_Pet = { label = "EM_UNIT_FRAMES" },
+        ElvUIPlayerBuffs = { label = "EM_BUFFS" }, ElvUIPlayerDebuffs = { label = "EM_BUFFS" },
+        ElvUI_ExperienceBar = { label = "EM_XP_BAR", snap = true }, ElvUI_ReputationBar = { label = "EM_XP_BAR" },
+        ElvUI_MinimapHolder = { label = "EM_MINIMAP" }, ObjectiveFrameHolder = { label = "EM_OBJECTIVES" },
+        LeftChatPanel = { label = "EM_CHAT" }, RightChatPanel = { label = "EM_CHAT" },
+        ElvUI_MicroBar = { label = "EM_MENU" }, ElvUI_StanceBar = { label = "EM_ACTION_BARS" },
+        ElvUI_BarPet = { label = "EM_ACTION_BARS" },
+    } },
 }
+-- ElvUI's action bars: ElvUI_Bar1 to ElvUI_Bar15
+for i = 1, 15 do ns.KNOWN_UI_FRAMES[#ns.KNOWN_UI_FRAMES].frames["ElvUI_Bar" .. i] = { label = "EM_ACTION_BARS" } end
 
 -- Calls fn(frame, info) for every existing frame of ns.KNOWN_UI_FRAMES
 function ns:ForEachKnownUIFrame(fn)
+    local loaded = C_AddOns and C_AddOns.IsAddOnLoaded
     for _, ui in ipairs(self.KNOWN_UI_FRAMES) do
-        for short, info in pairs(ui.frames) do
+        local skip = ui.addon and not (loaded and loaded(ui.addon))
+        for short, info in pairs(skip and {} or ui.frames) do
             local f = _G[ui.prefix .. short]
             if type(f) == "table" and f.GetRect and not (f.IsForbidden and f:IsForbidden()) then fn(f, info) end
         end

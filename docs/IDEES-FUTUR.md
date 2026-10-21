@@ -156,3 +156,10 @@ Licence « tous droits réservés » : idées seulement, aucun code ni donnée r
 - Une seule version pour Retail et Forever : un .toc avec `## Interface: 120000, ..., 120105, 16001`, et un module propre à Forever livré seulement avec un .toc `_Camelot` (le suffixe que seul le client de WoW Forever lit). Utile si la version Retail revient un jour.
 - Ses barres de données (concurrentes de Tessera) : blocs Voyage (pierres de foyer, téléportations), Micro-menu, Fournitures (composants et munitions par classe), Grande Chambre forte, Écus, et un bloc LDB (il affiche les objets DataBroker, donc aussi les blocs partagés par Tessera). Mise en page : un bloc « remplissage » qui prend la place restante et un bloc « toujours centré » (rejoint l'idée des zones gauche / centre / droite).
 - Idées de blocs Forever vues dans ses « Forever Essentials » : temps de vol restant, niveaux de la zone, compétence de cueillette, menace.
+
+## ElvUI 16.00 et Tukui 20.463 (21 octobre 2026)
+- [Fait, 1.0.0, pas testé en jeu] Cadres d'ElvUI dans `ns.KNOWN_UI_FRAMES` (seulement quand ElvUI est chargé) : `ElvUF_Player`, `_Target`, `_TargetTarget`, `_Focus`, `_Pet`, `ElvUIPlayerBuffs` / `Debuffs`, `ElvUI_ExperienceBar` (aimantation), `ElvUI_ReputationBar`, `ElvUI_MinimapHolder`, `ObjectiveFrameHolder`, `LeftChatPanel` / `RightChatPanel`, `ElvUI_MicroBar`, `ElvUI_StanceBar`, `ElvUI_BarPet`, `ElvUI_Bar1` à `15`.
+- Notre style ElvUI lit toujours les bons réglages (`E.media.backdropfadecolor`, `bordercolor`, `E.db.general.valuecolor`, police) ; mêmes valeurs par défaut.
+- Les textes de données d'ElvUI affichent les objets DataBroker : les blocs partagés par Tessera peuvent y apparaître.
+- ElvUI charge sur Forever grâce aux directives du .toc (`[AllowLoadGameType camelot]` dans le titre ; « camelot » = WoW Forever).
+- Tukui 20.463 n'a pas de .toc pour Forever (Classic, Mists, Retail seulement) : rien à faire ; un style Tukui reste possible plus tard.

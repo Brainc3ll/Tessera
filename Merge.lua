@@ -458,9 +458,10 @@ function ns:FindDock(left, top, w, h, exclude, allowInsert)
             local hOverlap = math.min(right, or_) - math.max(left, ol)
             local candidates = {}
             -- a row hanging below (above) another group: its top (bottom) side faces that
-            -- group, and the row moves when its blocks hide, so nothing may dock there
+            -- group, and the row moves when its blocks hide, so nothing may dock there.
+            -- A row placed once (anchor.fixed) no longer moves: blocks may dock on it.
             local hang = self.db.blocks[self:GetRoot(key)].anchor
-            local blockedSide = hang and (hang.below and "TOP" or (hang.above and "BOTTOM"))
+            local blockedSide = hang and not hang.fixed and (hang.below and "TOP" or (hang.above and "BOTTOM"))
             if vOverlap > math.min(h, ot - ob) / 3 then
                 candidates.RIGHT = math.abs(left - or_)
                 candidates.LEFT = math.abs(right - ol)
@@ -659,6 +660,34 @@ function ns:UpdateLayout()
                     total = total + self:JointGap(self:GetRoot(ns.HangTarget(a))) * math.max(0, #baseMembers - 1)
                     Fill(key, total, false, true)
                 end
+            end
+        end
+    end
+    -- A second row placed once (anchor.fixed) that lines up with its bar at both ends
+    -- stays flush with it: when a text changes width by a few pixels, the narrower of
+    -- the two widens to the other's width. A row that does not line up keeps its size.
+    local FLUSH = 8
+    local function RowSpan(rootKey)
+        local members, horizontal = GroupMembers(rootKey)
+        if not horizontal or #members == 0 then return nil end
+        local total, left = self:JointGap(rootKey) * (#members - 1), nil
+        for _, k in ipairs(members) do
+            total = total + need[k][1]
+            local l = self:GetRectUI(self.frames[k])
+            if l and (not left or l < left) then left = l end
+        end
+        return total, left
+    end
+    for key, cfg in pairs(self.db.blocks) do
+        local a, f = cfg.anchor, self.frames[key]
+        local base = a and a.fixed and ns.HangTarget(a)
+        if base and f and need[key] and self.db.blocks[base] and not self:GetDockTarget(key) then
+            local baseRoot = self:GetRoot(base)
+            local rowW, rowL = RowSpan(key)
+            local barW, barL = RowSpan(baseRoot)
+            if rowW and barW and rowL and barL and math.abs(rowL - barL) <= 3
+                and math.abs(rowW - barW) <= FLUSH then
+                if rowW < barW then Fill(key, barW) elseif barW < rowW then Fill(baseRoot, rowW) end
             end
         end
     end

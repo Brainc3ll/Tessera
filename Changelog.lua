@@ -68,7 +68,8 @@ ns.CHANGELOG = {
                     .. "place: the blocks around it no longer move, close up or overlap.",
                 "A ready-made bar and its second row are placed once at the top (or the bottom) of the screen, "
                     .. "then stay where they are, like any group: no recentering when a block moves away or hides, "
-                    .. "and the bar no longer follows another addon's bar.",
+                    .. "and the bar no longer follows another addon's bar. A second row that lines up with its bar "
+                    .. "stays flush with it, and you can now merge blocks on top of it.",
                 "The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends "
                     .. "no longer hide there).",
                 "A dragged group lines up by its outer edges only (snapping and gold guides), never by a block "
@@ -79,7 +80,9 @@ ns.CHANGELOG = {
                     .. "les blocs autour ne bougent plus, ne se resserrent plus et ne se chevauchent plus.",
                 "Une barre toute prête et sa deuxième rangée sont placées une fois en haut (ou en bas) de "
                     .. "l'écran, puis restent où elles sont, comme n'importe quel groupe : plus de recentrage quand "
-                    .. "un bloc s'en va ou se masque, et la barre ne suit plus celle d'un autre addon.",
+                    .. "un bloc s'en va ou se masque, et la barre ne suit plus celle d'un autre addon. Une deuxième "
+                    .. "rangée alignée sur sa barre reste bord à bord avec elle, et on peut maintenant fusionner "
+                    .. "des blocs au-dessus.",
                 "Les barres des dispositions toutes prêtes ne contiennent que des blocs toujours affichés "
                     .. "(Guilde et Amis ne s'y masquent plus).",
                 "Un groupe déplacé s'aligne seulement par ses bords extérieurs (aimantation et lignes dorées), "

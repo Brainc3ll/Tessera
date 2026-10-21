@@ -2919,9 +2919,17 @@ local function CreateMinimapButton()
     return b
 end
 
+-- An interface that gathers the minimap buttons in its own place already shows
+-- Tessera's (compartment): the round button would be there twice
+local IsAddOnLoadedFn = C_AddOns and C_AddOns.IsAddOnLoaded
+local function ButtonsGathered()
+    return IsAddOnLoadedFn and IsAddOnLoadedFn("FlareUI") and true or false
+end
+
 -- Shows or hides the round button as the setting wants
 local function UpdateRoundButton(wanted)
     if not Minimap then return end
+    wanted = wanted and not ButtonsGathered()
     if wanted and not minimapButton then minimapButton = CreateMinimapButton() end
     if minimapButton then
         if wanted then PlaceMinimapButton() end

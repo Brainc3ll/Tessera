@@ -965,22 +965,32 @@ function ns:SnapAndSave(f)
     end
     if not members[f.key] then return end
 
-    -- Snapping: the shortest offset, whichever block of the group gets aligned,
-    -- against other blocks (and Blizzard frames if that option is on)
+    -- Snapping: the whole group counts as one rectangle (its outer edges), against
+    -- other blocks (and Blizzard frames if that option is on); never an inner block
     local dx, dy, snappedX, snappedY = 0, 0, false, false
     if self.db.snap or self.db.merge then
         local bestX, bestY = SNAP_DISTANCE + 1, SNAP_DISTANCE + 1
-        for _, o in ipairs(self:GetSnapRects(exclude)) do
+        local box
+        for _, m in pairs(members) do
+            if m.shown then
+                if not box then
+                    box = { left = m.left, top = m.top, right = m.left + m.w, bottom = m.top - m.h }
+                else
+                    box.left, box.top = math.min(box.left, m.left), math.max(box.top, m.top)
+                    box.right, box.bottom = math.max(box.right, m.left + m.w), math.min(box.bottom, m.top - m.h)
+                end
+            end
+        end
+        for _, o in ipairs(box and self:GetSnapRects(exclude) or {}) do
             local ol, ob, or_, ot = o[1], o[2], o[3], o[4]
-            for _, m in pairs(members) do
-                for _, x in ipairs(m.shown and { ol, or_, ol - m.w, or_ - m.w } or {}) do
-                    local d = math.abs(m.left - x)
-                    if d < bestX then bestX, dx = d, x - m.left end
-                end
-                for _, y in ipairs(m.shown and { ot, ob, ot + m.h, ob + m.h } or {}) do
-                    local d = math.abs(m.top - y)
-                    if d < bestY then bestY, dy = d, y - m.top end
-                end
+            local bw, bh = box.right - box.left, box.top - box.bottom
+            for _, x in ipairs({ ol, or_, ol - bw, or_ - bw }) do
+                local d = math.abs(box.left - x)
+                if d < bestX then bestX, dx = d, x - box.left end
+            end
+            for _, y in ipairs({ ot, ob, ot + bh, ob + bh }) do
+                local d = math.abs(box.top - y)
+                if d < bestY then bestY, dy = d, y - box.top end
             end
         end
         snappedX, snappedY = bestX <= SNAP_DISTANCE, bestY <= SNAP_DISTANCE
@@ -1904,7 +1914,7 @@ end
 -- Puts a block's settings back to their defaults. Its place is kept (position,
 -- merges, visibility, group scale): otherwise the block and every block merged
 -- with it would jump to a default spot.
-local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen", "launcher", "broker", "brokerShare", "rowAlign" }
+local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen", "launcher", "broker", "brokerShare", "rowAlign", "rowAlignKeys" }
 -- Puts block newKey exactly where block oldKey is, without moving anything else:
 --   * newKey takes oldKey's place (its dock, or its free position / anchor if it
 --     heads a group, with the group's scale and frozen state), and every block
@@ -1917,7 +1927,7 @@ local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen",
 -- Undoable with Ctrl + Z in placement mode. Returns true when done.
 -- The group's own settings (screen edges, stretch, group look) are carried by its
 -- first block, so they move with the place too.
-local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen", "edges", "stretch", "look", "rowAlign" }
+local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen", "edges", "stretch", "look", "rowAlign", "rowAlignKeys" }
 function ns:ReplaceBlock(oldKey, newKey)
     local blocks = self.db.blocks
     local old, new = blocks[oldKey], blocks[newKey]
@@ -1933,6 +1943,9 @@ function ns:ReplaceBlock(oldKey, newKey)
     end
     for _, cfg in pairs(blocks) do
         if cfg.dock then cfg.dock.to = Relabel(cfg.dock.to) end
+        if type(cfg.rowAlignKeys) == "table" then
+            for i, k in ipairs(cfg.rowAlignKeys) do cfg.rowAlignKeys[i] = Relabel(k) end
+        end
         if cfg.anchor then
             if cfg.anchor.below then cfg.anchor.below = Relabel(cfg.anchor.below) end
             if cfg.anchor.above then cfg.anchor.above = Relabel(cfg.anchor.above) end

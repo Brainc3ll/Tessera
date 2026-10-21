@@ -163,7 +163,7 @@ end
 -- Undo (placement mode)
 ---------------------------------------------------------------------------
 local UNDO_LIMIT = 30
-local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look", "rowAlign", "scale" }
+local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look", "rowAlign", "rowAlignKeys", "scale" }
 
 -- Remembers the position of every block, before a move / merge / detach / hide
 function ns:PushUndo()
@@ -304,6 +304,15 @@ function ns:StartGuides(mover)
             if l then table.insert(members, { l - ml, b - mt, r - ml, t - mt }) end
         end
     end
+    -- the group's outer rectangle: the only thing that lines up (as when dropping)
+    local box
+    for _, m in ipairs(members) do
+        if not box then box = { m[1], m[2], m[3], m[4] } else
+            box[1], box[2] = math.min(box[1], m[1]), math.min(box[2], m[2])
+            box[3], box[4] = math.max(box[3], m[3]), math.max(box[4], m[4])
+        end
+    end
+    guide.box = box and { box } or {}
     guide.mover, guide.members, guide.rects = mover, members, self:GetSnapRects(exclude)
     guide.exclude, guide.nextDrop = exclude, nil
     self.dragSet = exclude
@@ -319,7 +328,7 @@ function ns:UpdateGuides()
     if not ml then return end
     local SNAP = 10
     local bestX, bestY, gx, gy = SNAP + 1, SNAP + 1, nil, nil
-    for _, m in ipairs(guide.members) do
+    for _, m in ipairs(guide.box) do
         local l, b, r, t = ml + m[1], mt + m[2], ml + m[3], mt + m[4]
         -- (every frame while dragging: no table built here, only comparisons)
         for _, o in ipairs(guide.rects) do

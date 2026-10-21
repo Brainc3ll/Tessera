@@ -178,5 +178,42 @@ for run = 1, 20 do
     end
     checks = checks + 1
 end
+-- a group whose head hides when empty, in its last row with rows above (a player's
+-- layout, 21/10): the blocks that stay shown keep their rows (same height) and the
+-- first one keeps its place (the others may close up: the row stops sharing a width)
+do
+    ns:ResetProfile("top")
+    ns:UpdateLayout()
+    local b = ns.db.blocks
+    local all = { "latency", "time", "durability", "currency", "reagents", "ammo", "instances", "fps", "reputation" }
+    for _, k in ipairs(all) do
+        b[k].enabled, b[k].dock, b[k].anchor, b[k].rowAlign, b[k].rowAlignKeys = true, nil, nil, nil, nil
+    end
+    b.reputation.point = { "TOP", "TOP", -68, -83 }
+    b.currency.dock = { to = "reputation", side = "TOP" }
+    b.latency.dock = { to = "currency", side = "TOP" }
+    b.time.dock = { to = "latency", side = "RIGHT" }
+    b.durability.dock = { to = "time", side = "RIGHT" }
+    b.reagents.dock = { to = "currency", side = "RIGHT" }
+    b.ammo.dock = { to = "reagents", side = "RIGHT" }
+    b.instances.dock = { to = "ammo", side = "RIGHT" }
+    b.fps.dock = { to = "instances", side = "RIGHT" }
+    ns:RefreshAllBlocks()
+    ns:ReanchorAll()
+    for _, k in ipairs(all) do ns.frames[k]:Show() end
+    ns:UpdateLayout(); ns:UpdateLayout()
+    local before = {}
+    for _, k in ipairs({ "latency", "time", "durability" }) do before[k] = { ns.frames[k]:GetLeft(), ns.frames[k]:GetTop() } end
+    for _, k in ipairs({ "reputation", "currency", "reagents", "ammo", "instances" }) do ns.frames[k]:Hide() end
+    ns:UpdateLayout(); ns:UpdateLayout()
+    checks = checks + 1
+    for _, k in ipairs({ "latency", "time", "durability" }) do
+        local l, t = ns.frames[k]:GetLeft(), ns.frames[k]:GetTop()
+        if (k == "latency" and math.abs(l - before[k][1]) > 0.6) or math.abs(t - before[k][2]) > 0.6 then
+            problems = problems + 1
+            realPrint(("hidden head: %s moved from %.0f,%.0f to %.0f,%.0f"):format(k, before[k][1], before[k][2], l, t))
+        end
+    end
+end
 realPrint(("Geometry check: %d layouts, %d problem(s)"):format(checks, problems))
 os.exit(problems > 0 and 1 or 0)

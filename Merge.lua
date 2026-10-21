@@ -485,11 +485,14 @@ function ns:UpdateLayout()
         if f and cfg and f:IsShown() then need[key] = { NeededSize(f, cfg) } end
     end
 
-    -- hidden heads shrink to nothing (they keep the group's position)
+    -- a hidden head keeps the size it had when shown: its saved point (top center,
+    -- right corner...) then still marks the same spot, and the group stays put
     for key, cfg in pairs(blocks) do
         local f = self.frames[key]
-        if f and not need[key] and (cfg.anchor or self:HasDependents(key)) then
-            if f:GetWidth() > 0.02 or f:GetHeight() > 0.02 then f:SetSize(0.01, 0.01) end
+        if f and not need[key] and f.lastW and (cfg.anchor or self:HasDependents(key)) then
+            if math.abs(f:GetWidth() - f.lastW) > 0.01 or math.abs(f:GetHeight() - f.lastH) > 0.01 then
+                f:SetSize(f.lastW, f.lastH)
+            end
         end
     end
 
@@ -636,22 +639,17 @@ function ns:LayoutGroup(head, need)
             if need[k] then
                 x[k], y[k] = cx, top
                 cx = cx + w[k] + g
+            elseif k == head then
+                -- a hidden head takes no room; its top-left corner stays where its
+                -- slot is (the next block starts there), so nothing visible moves
+                hx, hy = cx, top
             end
         end
         if #list > 0 then top = top + rowH[r] + g end
     end
     local H = math.max(0, top - g)
-    if need[head] then
-        hx, hy = x[head], y[head]
-    else
-        -- a hidden head (no width, no height) stays on the side of the group its
-        -- saved point uses: a group in a right corner keeps its right edge there
-        local p = (hcfg.anchor and (hcfg.anchor.bottom and "BOTTOMLEFT" or "TOPLEFT"))
-            or (hcfg.stretch and (hcfg.stretch == "BOTTOM" and "BOTTOMLEFT" or "TOPLEFT"))
-            or (type(hcfg.point) == "table" and hcfg.point[1]) or "TOPLEFT"
-        hx = p:find("RIGHT") and W or (p:find("LEFT") and 0 or self:PixelSize(W / 2, hf))
-        hy = p:find("BOTTOM") and H or (p:find("TOP") and 0 or self:PixelSize(H / 2, hf))
-    end
+    if need[head] then hx, hy = x[head], y[head] end
+    hx, hy = hx or 0, hy or 0
 
     -- sizes and positions
     for r, row in ipairs(rows) do
@@ -659,6 +657,7 @@ function ns:LayoutGroup(head, need)
             local f = self.frames[k]
             if need[k] and f then
                 local ph = rowH[r]
+                f.lastW, f.lastH = w[k], ph -- (kept by a head that hides later)
                 if math.abs(f:GetWidth() - w[k]) > 0.01 or math.abs(f:GetHeight() - ph) > 0.01 then
                     f:SetSize(w[k], ph)
                     self:ResizeBar(f)

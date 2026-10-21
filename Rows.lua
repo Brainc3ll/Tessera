@@ -32,7 +32,7 @@ ns.MAX_ROWS, ns.MAX_PER_ROW = 24, 24
 local STEP = { RIGHT = { 0, 1 }, LEFT = { 0, -1 }, BOTTOM = { 1, 0 }, TOP = { -1, 0 } }
 local ALIGNS = { LEFT = true, CENTER = true, RIGHT = true }
 -- settings that belong to a group, saved on its head
-local GROUP_FIELDS = { "point", "anchor", "edges", "stretch", "look", "scale", "frozen", "rowAlign" }
+local GROUP_FIELDS = { "point", "anchor", "edges", "stretch", "look", "scale", "frozen", "rowAlign", "rowAlignKeys" }
 
 -- valid dock target of key in a blocks table (no frame needed)
 local function Target(blocks, key)
@@ -122,10 +122,12 @@ local function ReadRows(blocks, head, children)
         gmax = math.max(gmax or pos[k][2], pos[k][2])
     end
     -- alignment: saved on the head, or guessed from the columns (older layouts)
-    local saved = blocks[head].rowAlign
+    -- (an alignment is kept only for the row it was set on: rowAlignKeys holds the
+    -- first block of each row; a layout changed by an older version is guessed again)
+    local saved, savedKeys = blocks[head].rowAlign, blocks[head].rowAlignKeys
     local aligns = {}
     for i = 1, #rows do
-        local a = type(saved) == "table" and saved[i]
+        local a = type(saved) == "table" and type(savedKeys) == "table" and savedKeys[i] == rows[i][1] and saved[i]
         if not ALIGNS[a] then
             local c = cols[i]
             if c[1] == gmin then a = "LEFT"
@@ -161,7 +163,7 @@ local function WriteRows(blocks, head, rows, aligns)
                 if not (c.dock and c.dock.to == to and c.dock.side == side) then
                     c.dock = { to = to, side = side }
                 end
-                c.rowAlign, c.anchor = nil, nil
+                c.rowAlign, c.rowAlignKeys, c.anchor = nil, nil, nil
             end
         end
     end
@@ -169,10 +171,14 @@ local function WriteRows(blocks, head, rows, aligns)
     h.dock = nil
     if #rows > 1 then
         local list = {}
-        for i = 1, #rows do list[i] = ALIGNS[aligns[i]] and aligns[i] or "LEFT" end
-        h.rowAlign = list
+        local keys = {}
+        for i = 1, #rows do
+            list[i] = ALIGNS[aligns[i]] and aligns[i] or "LEFT"
+            keys[i] = rows[i][1]
+        end
+        h.rowAlign, h.rowAlignKeys = list, keys
     else
-        h.rowAlign = nil
+        h.rowAlign, h.rowAlignKeys = nil, nil
     end
 end
 
@@ -183,7 +189,8 @@ local function Snapshot(blocks)
         local a = c.anchor
         table.insert(parts, tostring(key) .. ":" .. (d and (tostring(d.to) .. tostring(d.side)) or "")
             .. ":" .. (a and tostring(a.below or a.above or "") or "")
-            .. ":" .. (type(c.rowAlign) == "table" and table.concat(c.rowAlign, ",") or ""))
+            .. ":" .. (type(c.rowAlign) == "table" and table.concat(c.rowAlign, ",") or "")
+            .. ":" .. (type(c.rowAlignKeys) == "table" and table.concat(c.rowAlignKeys, ",") or ""))
     end
     table.sort(parts)
     return table.concat(parts, "|")
@@ -341,7 +348,7 @@ function ns:RemoveFromGroup(key)
         cfg.scale = blocks[head].scale -- keeps the scale of the group it leaves
     end
     WriteRows(blocks, head, rows, aligns)
-    cfg.dock, cfg.rowAlign = nil, nil
+    cfg.dock, cfg.rowAlign, cfg.rowAlignKeys = nil, nil, nil
     cfg.point = myPoint or cfg.point
 end
 

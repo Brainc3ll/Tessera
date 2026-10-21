@@ -9,6 +9,7 @@
 
 ## Calendrier jusqu'à la 1.0.0
 - **22/10 - 3/11 : hors jeu** : images dans les galeries de CurseForge et Wago, post Reddit, messages Discord ; corrections seulement.
+- **Sortie de WoW Forever : 4/11 à 15 h PST = 5/11 à minuit, heure belge.** Publier la 1.0.0 le 4/11 dans la journée (vérification de CurseForge comprise), pour qu'elle soit en ligne à l'ouverture.
 - **4/11 : publication de la 1.0.0** (après « on publie ») : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, juste avant le commit « Release 1.0.0-rc8 »), version dans le .toc. Garder de la marge pour une 1.0.1 rapide.
 
 ## Le placement depuis la rc8 (décidé le 21/10)

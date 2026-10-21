@@ -18,7 +18,7 @@ jobs:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
     steps:
       - name: Get the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Send the English and French strings to CurseForge
         run: |

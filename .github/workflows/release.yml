@@ -43,7 +43,7 @@ jobs:
       GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Get the code (with history, for the changelog)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 

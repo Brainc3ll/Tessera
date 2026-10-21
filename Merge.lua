@@ -643,7 +643,9 @@ function ns:UpdateLayout()
             Fill(key, UIParent:GetWidth() * UIParent:GetEffectiveScale() / f:GetEffectiveScale(), true)
         end
     end
-    for _, pass in ipairs({ "frame", "below" }) do
+    -- "below" twice: a row can hang under another second row ("Double bar"), which must
+    -- have its final widths first
+    for _, pass in ipairs({ "frame", "below", "below" }) do
         for key, cfg in pairs(self.db.blocks) do
             local a, f = cfg.anchor, self.frames[key]
             if a and a.fill and f and not self:GetDockTarget(key) then

@@ -72,6 +72,8 @@ ns.CHANGELOG = {
                     .. "left edge and stays flush with it; you can now merge blocks on top of it.",
                 "The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends, "
                     .. "and on Rampart Walk Mail, Camping and Comprehension, no longer hide there).",
+                "Double bar has three rows of the same width: the top bar, the WoW Forever bar, then the row "
+                    .. "where mail, whispers, reputation... appear when they have something to show.",
                 "A dragged group lines up by its outer edges only (snapping and gold guides), never by a block "
                     .. "inside it: it lands where you drop it.",
               },
@@ -86,6 +88,9 @@ ns.CHANGELOG = {
                 "Les barres des dispositions toutes prêtes ne contiennent que des blocs toujours affichés "
                     .. "(Guilde et Amis, et sur le Chemin de ronde Courrier, Camping et Compréhension, ne s'y "
                     .. "masquent plus).",
+                "La Double barre a trois rangées de la même largeur : la barre du haut, la barre WoW Forever, "
+                    .. "puis la rangée où courrier, chuchotements, réputation... apparaissent quand ils ont quelque "
+                    .. "chose à montrer.",
                 "Un groupe déplacé s'aligne seulement par ses bords extérieurs (aimantation et lignes dorées), "
                     .. "jamais par un bloc à l'intérieur : il se pose là où tu le lâches.",
               } },

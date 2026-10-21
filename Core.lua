@@ -2103,13 +2103,9 @@ local BASE_ROW = {
 -- and its visible blocks share the base bar's width.
 local SECOND_ROW = { "mail", "whispers", "reputation", "currency", "reagents", "ammo", "instances" }
 local SECOND_ROW_WIDTH = 60
--- "Double bar" layout: the same top bar, and a second bar always shown with WoW
--- Forever's own blocks (the blocks of the usual second row join it when they have
--- something to show)
-local FOREVER_ROW = { "legacy", "comprehension", "camping", "honor", "weaponSkills",
-    "mail", "whispers", "reputation", "currency", "reagents", "ammo", "instances" }
-local FOREVER_ROW_HIDE_EMPTY = { mail = true, whispers = true, reputation = true, currency = true,
-    reagents = true, ammo = true, instances = true }
+-- "Double bar" layout: the same top bar, a second bar always shown with WoW Forever's
+-- own blocks, and under it the usual row of blocks that hide when empty
+local FOREVER_ROW = { "legacy", "comprehension", "camping", "honor", "weaponSkills" }
 local IN_SECOND_ROW = {}
 for _, key in ipairs(SECOND_ROW) do IN_SECOND_ROW[key] = true end
 local BASE_TOP, BASE_HEIGHT = -6, 24
@@ -2458,28 +2454,35 @@ function ns:ApplyBaseLayout(p, preset)
     -- Second row (blocks that hide when empty): below the bar, above it for a
     -- bottom bar, or simply further down the column
     local last = previous
-    previous = nil
-    local forever = preset == "forever"
-    for _, key in ipairs(forever and FOREVER_ROW or SECOND_ROW) do
-        local cfg = p.blocks[key]
-        if cfg then
-            cfg.enabled = true
-            if forever then cfg.hideEmpty = FOREVER_ROW_HIDE_EMPTY[key] or false end
-            cfg.width = compact and 16 or SECOND_ROW_WIDTH
-            cfg.height = height
-            if compact then cfg.fontSize = 11 end
-            cfg.point, cfg.anchor, cfg.dock = nil, nil, nil
-            if vertical then
-                cfg.dock = { to = previous or last, side = "BOTTOM" }
-            elseif previous then
-                cfg.dock = { to = previous, side = "RIGHT" }
-            elseif preset == "bottom" then
-                -- placed once (fixed), lined up with the bar's left edge: it never recenters
-                cfg.anchor = { above = BASE_ROW[1].key, fill = true, gap = 0, fixed = true, offset = 0 }
-            else
-                cfg.anchor = { below = BASE_ROW[1].key, fill = not compact, gap = 0, fixed = true, offset = 0 }
+    -- "Double bar": a second bar always shown (WoW Forever's blocks), then the usual row
+    -- of blocks that hide when empty, under that second bar
+    local rows = preset == "forever" and { { FOREVER_ROW, BASE_ROW[1].key }, { SECOND_ROW, FOREVER_ROW[1] } }
+        or { { SECOND_ROW, BASE_ROW[1].key } }
+    for _, row in ipairs(rows) do
+        local keys, hangFrom = row[1], row[2]
+        previous = nil
+        for _, key in ipairs(keys) do
+            local cfg = p.blocks[key]
+            if cfg then
+                cfg.enabled = true
+                if preset == "forever" then cfg.hideEmpty = IN_SECOND_ROW[key] or false end
+                cfg.width = compact and 16 or SECOND_ROW_WIDTH
+                cfg.height = height
+                if compact then cfg.fontSize = 11 end
+                cfg.point, cfg.anchor, cfg.dock = nil, nil, nil
+                if vertical then
+                    cfg.dock = { to = previous or last, side = "BOTTOM" }
+                    last = key
+                elseif previous then
+                    cfg.dock = { to = previous, side = "RIGHT" }
+                elseif preset == "bottom" then
+                    -- placed once (fixed), lined up with the bar's left edge: it never recenters
+                    cfg.anchor = { above = hangFrom, fill = true, gap = 0, fixed = true, offset = 0 }
+                else
+                    cfg.anchor = { below = hangFrom, fill = true, gap = 0, fixed = true, offset = 0 }
+                end
+                previous = key
             end
-            previous = key
         end
     end
 

@@ -2,11 +2,11 @@
 
 ## Où on en est
 - **1.0.0-rc8 publiée le 21/10** (GitHub, CurseForge, Wago ; test28 à test36 validées en jeu ; descriptions recollées). Le détail de chaque version est dans `CHANGELOG.md`.
-- La bêta de WoW Forever ferme le **21/10 à 19 h (heure belge)**. Ensuite, plus de test en jeu sur Forever : les tests passent par Retail (Braincell1980 a un abonnement).
+- La bêta de WoW Forever ferme le **21/10 à 19 h (heure belge)**. Ensuite, plus de test en jeu jusqu'à la sortie de Forever.
 - Branches : `main` (la rc8) et `refonte-rangees` (bêta du placement par rangées, rangée le 21/10 : l'ancien moteur suffit depuis que le recentrage est retiré ; à rouvrir seulement si les joueurs en ont besoin). `multi-versions` et `rc8-places` sont à supprimer sur GitHub par Braincell1980.
 
 ## Calendrier jusqu'à la 1.0.0
-- **22/10 - 3/11 : hors jeu** (ou sur Retail) : images dans les galeries de CurseForge et Wago, post Reddit, messages Discord ; corrections seulement.
+- **22/10 - 3/11 : hors jeu** : images dans les galeries de CurseForge et Wago, post Reddit, messages Discord ; corrections seulement.
 - **4/11 : publication de la 1.0.0** (après « on publie ») : nouvelle entrée « 1.0.0 » en haut du changelog avec l'intro « Première version stable » (dans l'historique git de `Changelog.lua`, juste avant le commit « Release 1.0.0-rc8 »), version dans le .toc. Garder de la marge pour une 1.0.1 rapide.
 
 ## Le placement depuis la rc8 (décidé le 21/10)
@@ -20,16 +20,16 @@ Le joueur décide au pixel près ; Tessera ne recentre plus rien.
 
 ## Feuille de route
 1. 1.0.0 le 4/11 : la rc8 plus les corrections éventuelles.
-2. 1.1 (fin novembre) : déplacer un bloc au pixel (flèches du clavier et à l'écran), l'agrandir ou le rétrécir ; option « laisser les voisins se resserrer » à l'étude ; version Forever + Retail ; cadres d'autres interfaces ; nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour d'autres interfaces.
+2. 1.1 (fin novembre) : déplacer un bloc au pixel (flèches du clavier et à l'écran), l'agrandir ou le rétrécir ; option « laisser les voisins se resserrer » à l'étude ; cadres d'autres interfaces ; nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour d'autres interfaces.
 3. 1.2 « Comme chez Blizzard » : styles HD (galerie `/tes debug hd` dans les zips de test), fenêtre d'options avec les pièces des Réglages du jeu, bouton « ? », étiquette « Nouveau ».
 4. 1.3 « Accessibilité » : taille du texte, contraste élevé, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
 5. 2.0 « Manette » : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix, menu en cercle, vibration et barre lumineuse.
 Maquettes des options (deux volets, mosaïque, accessibilité, manette) : artefact « Tessera – idées d'interface des options » (20/10).
 
-## Version Forever + Retail (1.1)
+## Version Forever + Retail (pas une priorité, décidé le 21/10)
 - Retail 12.1.5 (interface 120105) et le PTR 12.1.7 ont la même API (Midnight) que Forever.
 - Les modules propres à Forever ne s'enregistrent que si leurs fonctions existent ; les fonctions propres à Forever passent par `_G["Nom"]`.
-- Zips de test Retail : TOC `## Interface: 16001, 120105, 120107`. La 1.0.0 n'annonce Retail que si ces tests passent.
+- Zips de test Retail : TOC `## Interface: 16001, 120105, 120107`.
 - Repartir de `main`, pas de l'ancienne branche `multi-versions`.
 
 ## Textes sur CurseForge

@@ -144,7 +144,7 @@ Le jeu gère les manettes ; FlareUI a déjà un mode manette et un menu radial.
 - Version Forever + Retail : même API (Midnight), modules propres à Forever chargés seulement s'ils existent ; zips de test avec `## Interface: 16001, 120105, 120107`.
 - Fait : la bêta des rangées (branche `refonte-rangees`) est rangée ; ses idées (colonnes de même largeur, alignement par rangée) restent possibles plus tard.
 
-## Blocs pour la version Retail (21 octobre 2026)
+## Blocs pour une version Retail (21 octobre 2026, pas une priorité)
 - À masquer sur Retail : Points d'héritage, Compréhension, Camping, Compétences d'armes, Honneur (version Forever), Munitions, Composants de classe, Secourisme ; Points de talent à refaire (configurations). Un bloc déclare où il existe (Forever, Retail, les deux) ; ailleurs il disparaît des listes, options, « Remplacer par... » et du mode démo, et garde ses réglages.
 - Idées de blocs Retail : spécialisation et spé de butin, configuration de talents, or du bataillon, bloc voyage (téléportations, jouets pierre de foyer) : testables sans Midnight. Grande Chambre forte, clé et cote M+, écus de saison, renom, gouffres, concentration de métier : dépendent de la saison, peut-être pas testables sans Midnight.
 - Logement (housing) : maison, décorations, quartier. Avoir une maison demande Midnight (Braincell1980 ne l'a pas) : seulement en « expérimental » avec des testeurs, pas une priorité.

@@ -66,8 +66,8 @@ Tessera is a collaboration between me, a player, and an AI.
 - Languages: English, French (other languages can be added through CurseForge's localization tool)
 - Saved variables: `TesseraDB`
 - Optional addons it adapts to: FlareUI, EllesmereUI and ElvUI (a matching style is
-  offered; blocks snap to the XP bar of FlareUI and ElvUI, and Tessera warns when they cover
-  frames of FlareUI, EllesmereUI or ElvUI), LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
+  offered; blocks snap to the XP bar of FlareUI, ElvUI and GW2 UI, and Tessera warns when they
+  cover frames of FlareUI, EllesmereUI, ElvUI or GW2 UI), LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
   display addons (Titan Panel, ChocolateBar, Bazooka...)
 
 ## For players

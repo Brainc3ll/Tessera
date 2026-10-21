@@ -163,3 +163,9 @@ Licence « tous droits réservés » : idées seulement, aucun code ni donnée r
 - Les textes de données d'ElvUI affichent les objets DataBroker : les blocs partagés par Tessera peuvent y apparaître.
 - ElvUI charge sur Forever grâce aux directives du .toc (`[AllowLoadGameType camelot]` dans le titre ; « camelot » = WoW Forever).
 - Tukui 20.463 n'a pas de .toc pour Forever (Classic, Mists, Retail seulement) : rien à faire ; un style Tukui reste possible plus tard.
+
+## GW2 UI 12.0.0 (21 octobre 2026)
+- Charge sur Forever (même .toc multi-versions qu'ElvUI, `[AllowLoadGameType camelot]`).
+- [Fait, 1.0.0, pas testé en jeu] Cadres dans `ns.KNOWN_UI_FRAMES` (seulement quand GW2_UI est chargé) : `GwPlayerUnitFrame`, `GwTargetUnitFrame`, `GwFocusUnitFrame`, `GwPlayerPetFrame`, `GwPlayerPowerBar`, `GwPlayerClassPower`, `GwQuestTracker`, `GwExperienceFrame` (aimantation), `Gw2MicroBarFrame`, `GwStanceBar`, `GwTotemBar`.
+- Style GW2 UI possible (1.1) : avec l'addon, son fond d'infobulle (LSM « GW2_UI_2 ») et sa bordure (`textures/uistuff/ui-tooltip-border.png`, pas dans LSM : à enregistrer par Tessera), sa police Menomonia (LSM « GW2_UI »), texte crème (#FFEDBA) ; sans l'addon, une imitation (gris foncé, fine bordure claire, police du jeu).
+- Style Tukui possible aussi (fond gris 0.11, bordure noire, police « Tukui »), mais Tukui ne tourne pas sur Forever : intérêt faible, plutôt pour une version Retail.

@@ -130,6 +130,15 @@ ns.KNOWN_UI_FRAMES = {
 }
 -- ElvUI's action bars: ElvUI_Bar1 to ElvUI_Bar15
 for i = 1, 15 do ns.KNOWN_UI_FRAMES[#ns.KNOWN_UI_FRAMES].frames["ElvUI_Bar" .. i] = { label = "EM_ACTION_BARS" } end
+-- GW2 UI 12.0 (names read in its code)
+table.insert(ns.KNOWN_UI_FRAMES, { addon = "GW2_UI", prefix = "", frames = {
+    GwPlayerUnitFrame = { label = "EM_UNIT_FRAMES" }, GwTargetUnitFrame = { label = "EM_UNIT_FRAMES" },
+    GwFocusUnitFrame = { label = "EM_UNIT_FRAMES" }, GwPlayerPetFrame = { label = "EM_UNIT_FRAMES" },
+    GwPlayerPowerBar = { label = "EM_UNIT_FRAMES" }, GwPlayerClassPower = { label = "EM_UNIT_FRAMES" },
+    GwQuestTracker = { label = "EM_OBJECTIVES" }, GwExperienceFrame = { label = "EM_XP_BAR", snap = true },
+    Gw2MicroBarFrame = { label = "EM_MENU" }, GwStanceBar = { label = "EM_ACTION_BARS" },
+    GwTotemBar = { label = "EM_TOTEMS" },
+} })
 
 -- Calls fn(frame, info) for every existing frame of ns.KNOWN_UI_FRAMES
 function ns:ForEachKnownUIFrame(fn)

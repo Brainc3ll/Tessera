@@ -11,7 +11,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
-- With EllesmereUI or ElvUI, Tessera also asks "in front or behind" when blocks cover their unit frames, buffs, quest tracker, action bars, chat or menu. Blocks snap to ElvUI's XP bar.
+- With EllesmereUI, ElvUI or GW2 UI, Tessera also asks "in front or behind" when blocks cover their unit frames, buffs, quest tracker, action bars, chat or menu. Blocks snap to the XP bar of ElvUI and GW2 UI.
 - The FlareUI and FlareUI square styles have a 50% background, like FlareUI's quest tracker. Blocks already in one of these styles keep theirs: pick the style again to get it.
 
 ### Fixes

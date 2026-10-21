@@ -70,8 +70,8 @@ ns.CHANGELOG = {
                     .. "then stay where they are, like any group: no recentering when a block moves away or hides, "
                     .. "and the bar no longer follows another addon's bar. The second row starts under the bar's "
                     .. "left edge and stays flush with it; you can now merge blocks on top of it.",
-                "The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends "
-                    .. "no longer hide there).",
+                "The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends, "
+                    .. "and on Rampart Walk Mail, Camping and Comprehension, no longer hide there).",
                 "A dragged group lines up by its outer edges only (snapping and gold guides), never by a block "
                     .. "inside it: it lands where you drop it.",
               },
@@ -84,7 +84,8 @@ ns.CHANGELOG = {
                     .. "rangée commence sous le bord gauche de la barre et reste bord à bord avec elle ; on peut "
                     .. "maintenant fusionner des blocs au-dessus.",
                 "Les barres des dispositions toutes prêtes ne contiennent que des blocs toujours affichés "
-                    .. "(Guilde et Amis ne s'y masquent plus).",
+                    .. "(Guilde et Amis, et sur le Chemin de ronde Courrier, Camping et Compréhension, ne s'y "
+                    .. "masquent plus).",
                 "Un groupe déplacé s'aligne seulement par ses bords extérieurs (aimantation et lignes dorées), "
                     .. "jamais par un bloc à l'intérieur : il se pose là où tu le lâches.",
               } },

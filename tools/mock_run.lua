@@ -820,6 +820,27 @@ for _, step in ipairs({
         ns:RestoreForeverPreview()
         assert(not ns.sv.foreverPreviewBackup and ns.db.blocks.gold.enabled == goldEnabled, "layout given back")
     end,
+    -- ready-made layouts: second rows placed once under the bar's left edge; bars stuck
+    -- to an edge only hold blocks that are always shown (no hole in the bar)
+    function()
+        for _, preset in ipairs({ "top", "forever", "bottom" }) do
+            ns:ResetProfile(preset)
+            local found = false
+            for _, cfg in pairs(ns.db.blocks) do
+                local a = cfg.enabled and cfg.anchor
+                if a and (a.below or a.above) then
+                    found = true
+                    assert(a.fixed and a.offset == 0, preset .. ": second row placed once at the bar's left edge")
+                end
+            end
+            assert(found, preset .. " has a second row")
+        end
+        ns:ResetProfile("rampart")
+        for key, cfg in pairs(ns.db.blocks) do
+            if cfg.enabled and not ns.IsSpacerKey(key) then assert(not cfg.hideEmpty, "rampart: " .. key .. " always shown") end
+        end
+        ns:ResetProfile("top")
+    end,
     -- "around the gryphons" layout: one group in each bottom corner of the screen
     function()
         ns:ResetProfile("gryphons")

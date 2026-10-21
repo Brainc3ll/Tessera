@@ -2342,7 +2342,6 @@ local EDGE_LAYOUTS = {
             "mail", "fps", "latency", "time", "date" } },
     },
 }
-local EDGE_HIDE_EMPTY = { comprehension = true, camping = true, mail = true, whispers = true }
 local EDGE_WIDTH = 56
 
 function ns:ApplyEdgeLayout(p, preset)
@@ -2371,7 +2370,8 @@ function ns:ApplyEdgeLayout(p, preset)
             cfg.height = BASE_HEIGHT
             if not self.IsSpacerKey(key) then cfg.width = EDGE_WIDTH end
             cfg.anchor, cfg.point, cfg.dock, cfg.edges, cfg.stretch = nil, nil, nil, nil, nil
-            if EDGE_HIDE_EMPTY[key] then cfg.hideEmpty = true end
+            -- one bar: every block always shown (a hidden one would leave a hole in it)
+            if not self.IsSpacerKey(key) then cfg.hideEmpty = false end
             used[key] = true
             if i > 1 then
                 cfg.dock = { to = keys[i - 1], side = column and "BOTTOM" or "RIGHT" }

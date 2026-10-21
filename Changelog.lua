@@ -66,8 +66,9 @@ ns.CHANGELOG = {
               en = {
                 "A block hidden because it has nothing to show (or in combat, in an instance...) keeps its "
                     .. "place: the blocks around it no longer move, close up or overlap.",
-                "A ready-made bar is placed once at the top (or the bottom) of the screen, then stays where it "
-                    .. "is, like any group: it no longer recenters itself or follows another addon's bar.",
+                "A ready-made bar and its second row are placed once at the top (or the bottom) of the screen, "
+                    .. "then stay where they are, like any group: no recentering when a block moves away or hides, "
+                    .. "and the bar no longer follows another addon's bar.",
                 "The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends "
                     .. "no longer hide there).",
                 "A dragged group lines up by its outer edges only (snapping and gold guides), never by a block "
@@ -76,9 +77,9 @@ ns.CHANGELOG = {
               fr = {
                 "Un bloc masqué parce qu'il n'a rien à montrer (ou en combat, en instance...) garde sa place : "
                     .. "les blocs autour ne bougent plus, ne se resserrent plus et ne se chevauchent plus.",
-                "Une barre toute prête est placée une fois en haut (ou en bas) de l'écran, puis reste où elle "
-                    .. "est, comme n'importe quel groupe : elle ne se recentre plus toute seule et ne suit plus la "
-                    .. "barre d'un autre addon.",
+                "Une barre toute prête et sa deuxième rangée sont placées une fois en haut (ou en bas) de "
+                    .. "l'écran, puis restent où elles sont, comme n'importe quel groupe : plus de recentrage quand "
+                    .. "un bloc s'en va ou se masque, et la barre ne suit plus celle d'un autre addon.",
                 "Les barres des dispositions toutes prêtes ne contiennent que des blocs toujours affichés "
                     .. "(Guilde et Amis ne s'y masquent plus).",
                 "Un groupe déplacé s'aligne seulement par ses bords extérieurs (aimantation et lignes dorées), "

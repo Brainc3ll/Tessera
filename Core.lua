@@ -2173,6 +2173,17 @@ function ns:FreezeAnchoredGroups()
     if not self.db or InCombatLockdown() then return end
     for key, cfg in pairs(self.db.blocks) do
         local f, a = self.frames[key], cfg.anchor
+        -- a second row keeps hanging under its bar (their borders stay joined), at the
+        -- offset it has now, its blocks at the width they have now: breaking the bar
+        -- or hiding a block no longer moves it
+        if f and type(a) == "table" and ns.HangTarget(a) and not a.fixed and not self:GetDockTarget(key)
+            and f.centerOffset then
+            a.offset, a.fixed, a.fill = f.centerOffset, true, nil
+            for member in pairs(self:GetSubtree(key)) do
+                local m, mcfg = self.frames[member], self.db.blocks[member]
+                if m and mcfg and m:GetWidth() > 1 then mcfg.width = math.floor(m:GetWidth() + 0.5) end
+            end
+        end
         if f and type(a) == "table" and not ns.HangTarget(a) and not self:GetDockTarget(key) then
             local l, b, r, t = self:GetRectUI(f)
             if l then

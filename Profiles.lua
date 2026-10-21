@@ -184,6 +184,7 @@ local function CleanBlock(self, key, block, keys)
             if type(value.frame) == "string" then a.frame = value.frame end
             if type(value.fill) == "boolean" then a.fill = value.fill end
             if value.align == "LEFT" or value.align == "RIGHT" then a.align = value.align end
+            if value.fixed == true and IsNumber(value.offset) then a.fixed, a.offset = true, value.offset end
             for _, k in ipairs({ "below", "above" }) do
                 if type(value[k]) == "string" and keys[value[k]] and value[k] ~= key then a[k] = value[k] end
             end

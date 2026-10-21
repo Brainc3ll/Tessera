@@ -1371,7 +1371,10 @@ function ns:CenterAnchoredGroups(width)
         if cfg.anchor and not cfg.anchor.align and not self:GetDockTarget(key) then
             local groupWidth, headX = GroupExtent(self, key, width)
             local offset
-            if ns.HangTarget(cfg.anchor) then
+            if ns.HangTarget(cfg.anchor) and cfg.anchor.fixed then
+                -- placed once (FreezeAnchoredGroups): it stays where it is, to the pixel
+                offset = cfg.anchor.offset or 0
+            elseif ns.HangTarget(cfg.anchor) then
                 -- second row: centered under the group of the block it hangs from.
                 -- The offset is relative to that block's left edge.
                 local below = ns.HangTarget(cfg.anchor)

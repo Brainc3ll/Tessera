@@ -11,6 +11,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
+- With EllesmereUI, Tessera also asks "in front or behind" when blocks cover its unit frames, buffs, quest tracker, cast bar or menu.
 - The FlareUI and FlareUI square styles have a 50% background, like FlareUI's quest tracker. Blocks already in one of these styles keep theirs: pick the style again to get it.
 
 ### Fixes

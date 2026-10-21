@@ -96,7 +96,7 @@ ns.fonts = {
 -- warns when a block covers one (Layers) and blocks snap to the ones marked snap.
 -- One entry per addon: the prefix of its global frame names, and for each frame
 -- (name without the prefix) the plain-name key used in the overlap question.
--- More interfaces can be added here once tested in game.
+-- Only names read in the interface's own code (never guessed); a missing frame is skipped.
 ns.KNOWN_UI_FRAMES = {
     { prefix = "FlareUI_", frames = {
         XPBar = { label = "EM_XP_BAR", snap = true }, Buffs = { label = "EM_BUFFS" },
@@ -106,6 +106,15 @@ ns.KNOWN_UI_FRAMES = {
         UF_PlayerCastBar = { label = "EM_CAST_BAR" }, Totems = { label = "EM_TOTEMS" },
         Toasts = { label = "EM_TOASTS" }, LootRolls = { label = "EM_LOOT_ROLLS" },
     } },
+    -- EllesmereUI 9.6 (names read in its code; a module turned off has no frame)
+    { prefix = "EllesmereUI", frames = {
+        UnitFrames_Player = { label = "EM_UNIT_FRAMES" }, UnitFrames_Target = { label = "EM_UNIT_FRAMES" },
+        UnitFrames_Focus = { label = "EM_UNIT_FRAMES" }, UnitFrames_Pet = { label = "EM_UNIT_FRAMES" },
+        UnitFrames_TargetTarget = { label = "EM_UNIT_FRAMES" }, UnitFrames_FocusTarget = { label = "EM_UNIT_FRAMES" },
+        PlayerAuraBars_Buffs = { label = "EM_BUFFS" }, PlayerAuraBars_Debuffs = { label = "EM_BUFFS" },
+        QTBackground = { label = "EM_OBJECTIVES" }, MicroMenu = { label = "EM_MENU" },
+    } },
+    { prefix = "ERB_", frames = { CastBarFrame = { label = "EM_CAST_BAR" } } },
 }
 
 -- Calls fn(frame, info) for every existing frame of ns.KNOWN_UI_FRAMES

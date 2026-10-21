@@ -5,7 +5,7 @@
 - La bêta de WoW Forever ferme le **jeudi 23/10 à 19 h (heure belge ; 10 h PDT)**. Ensuite, plus de test en jeu jusqu'à la sortie de Forever.
 - Branches : `main` (la rc8) et `refonte-rangees` (bêta du placement par rangées, rangée le 21/10 : l'ancien moteur suffit depuis que le recentrage est retiré ; à rouvrir seulement si les joueurs en ont besoin). `multi-versions` et `rc8-places` sont à supprimer sur GitHub par Braincell1980.
 
-- **1.0.0 en préparation** : entrée « 1.0.0 » ouverte avec son intro, version 1.0.0 dans le .toc. Correction : quitter le mode démo ne déplace plus un bloc de la deuxième rangée (un bloc masqué garde la largeur qu'il avait affiché, `cfg.slotW` ; la démo efface ses valeurs d'exemple ; `/tessera preview` ne change plus `slotW`).
+- **1.0.0 en préparation** : entrée « 1.0.0 » ouverte avec son intro, version 1.0.0 dans le .toc. Correction : quitter le mode démo ne déplace plus un bloc de la deuxième rangée (un bloc masqué garde la largeur qu'il avait affiché, `cfg.slotW` ; la démo efface ses valeurs d'exemple ; `/tessera preview` ne change plus `slotW`). Styles FlareUI et FlareUI carré à 50 % de fond (comme FlareUI 2.4.1, vérifié). Cadres d'EllesmereUI 9.6.1 ajoutés à `ns.KNOWN_UI_FRAMES` (noms lus dans son code, pas testés en jeu : Braincell1980 n'a pas le temps).
 
 ## Calendrier jusqu'à la 1.0.0
 - **22/10 - 3/11 : hors jeu** : images dans les galeries de CurseForge et Wago, post Reddit, messages Discord ; corrections seulement.

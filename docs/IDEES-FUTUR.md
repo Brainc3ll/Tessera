@@ -34,6 +34,7 @@ Pistes, par ordre d'intérêt :
 - **Ne pas agrandir au-delà du net** : option « icône nette » qui limite la taille de l'icône à ce qui reste propre, et calage sur la grille de pixels de l'écran.
 - **Jeu d'icônes HD propre à Tessera** (dessins originaux, 256 px), pour les blocs de Tessera seulement : échantillon fait le 11 octobre 2026 (`Tessera-apercu-HD.png`, icônes or, sacs, horloge, latence, Compréhension, camping, héritage et cadre « Mosaïque »). Les lanceurs et les blocs DataBroker gardent l'icône de leur addon.
 - Format des images à vérifier sur Forever (TGA sûr, PNG à tester).
+- 21/10 : le pack non officiel « forever-icons » (github.com/hastecraft/forever-icons) agrandit toutes les icônes du jeu en 256 px ; s'il marche, les icônes des blocs deviennent nettes sans rien changer à Tessera. Pas livrable ni utilisable comme dépendance (icônes de Blizzard) : au mieux une astuce dans la doc, après un test en jeu.
 
 ## Look « HD » (15 octobre 2026, à l'étude)
 

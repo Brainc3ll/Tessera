@@ -1,7 +1,7 @@
-# À reprendre (état au 20 octobre 2026, soir)
+# À reprendre (état au 21 octobre 2026, matin)
 
 ## Calendrier jusqu'à la 1.0.0 (validé le 13/10)
-La bêta de WoW Forever ferme le **22 octobre** : après, plus aucun test en jeu avant la sortie.
+La bêta de WoW Forever ferme le **21 octobre à 19 h (heure belge)** : après, plus aucun test en jeu avant la sortie.
 Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - **15/10 :** rc5 publiée (GitHub, CurseForge, Wago).
 - **15-17/10 :** zips de test 1.0.0-test1 à test16, tous validés en jeu par Braincell1980.
@@ -12,6 +12,14 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 - Après la 1.0.0 : bulle d'aide et boutons qui « respirent » (vers une 1.0.5), puis 1.1 (nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour tous, zones, bloc voyage, recharges de métiers, or filtré, fondu des barres, version multi-versions).
 
 ## Versions
+- **1.0.0-rc8 en préparation** (branche `rc8-places`, test28 à test31, décidée le 21/10) : placement simplifié, le joueur décide au pixel près.
+  - un bloc activé mais masqué garde sa place (`ns:HasPlace`, largeur `cfg.slotW`) ; plus de resserrement ni de chevauchement ;
+  - barres toutes prêtes placées une fois (`FreezeAnchoredGroups`, 3 s après le premier chargement) : plus de recentrage ni de suivi de la barre d'XP de FlareUI ; la première barre ne contient que des blocs toujours affichés ;
+  - deuxième rangée figée (`anchor.fixed`, `anchor.offset`), toujours accrochée sous sa barre ; bord à bord avec elle quand elles sont alignées aux deux bouts (8 px de marge) ; on peut fusionner des blocs au-dessus ;
+  - un groupe déplacé s'aligne par ses bords extérieurs seulement ;
+  - FlareUI traité comme les autres interfaces : seulement le nom de son style dans les textes ; ses cadres (barre d'XP pour l'aimantation, cadres pour les chevauchements) dans `ns.KNOWN_UI_FRAMES` (Core.lua), où ajouter ElvUI, EllesmereUI... après test en jeu ;
+  - « Problèmes connus » : un bloc masqué ne fait plus resserrer ses voisins, option à l'étude.
+  - Branche `refonte-rangees` (bêta des rangées) rangée le 21/10 : l'ancien moteur suffit une fois le recentrage retiré. À rouvrir seulement si les joueurs en ont besoin.
 - **1.0.0-rc4** : publiée le 13/10. **1.0.0-rc5** : publiée le 15/10.
 - **1.0.0 en préparation** (après la rc7) : entrée « 1.0.0 » ouverte avec son intro ; correction : le cache des raccords de bordure (`seamKey`) compte toujours la taille du bloc et est vidé par `ReanchorAll` (deux petits traits restés dans un bloc jusqu'au rechargement, vus en beta5). À tester en jeu avant le 22/10 (test26).
 - **1.0.0-rc7** : publiée le 20/10 au soir (test19 à test25 validées en jeu) : couleur de classe partout, couleurs vives ou adoucies, styles triés et noms harmonisés, liste « Remplacer » en couleur, point vert dans la liste des blocs, mémoire libérée à la fermeture des options, bordures propres, Tuiles, erreur « Cannot anchor... » corrigée. Descriptions avec « Problèmes connus » (placement en chantier).
@@ -45,7 +53,7 @@ Tout ce qui part le 4 novembre doit avoir été testé en jeu avant le 22.
 ## Feuille de route (proposée le 20/10)
 1. Jusqu'au 22/10 : tests en jeu (test19 à test24, donjon), beta rangées, galerie `/tes debug hd`.
 2. 23/10 - 4/11 : rc7 puis 1.0.0, corrections seulement.
-3. 1.1 « Rangées » (fin novembre) : placement par rangées, conversion validée, raccourcis clavier, menus à la place de Maj / Ctrl / Alt.
+3. 1.1 (fin novembre) : déplacer un bloc au pixel (flèches du clavier et flèches à l'écran), l'agrandir ou le rétrécir ; option « laisser les voisins se resserrer » à l'étude ; raccourcis clavier, menus à la place de Maj / Ctrl / Alt ; version Forever + Retail (même API, à tester sur Retail). Le placement par rangées (branche `refonte-rangees`) est rangé.
 4. 1.2 « Comme chez Blizzard » (décembre) : styles HD, fenêtre d'options avec les pièces des Réglages du jeu, Échap › Options › AddOns, bouton « ? », étiquette « Nouveau ».
 5. 1.3 « Accessibilité » (janvier) : taille du texte, contraste élevé, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
 6. 2.0 « Manette » (février-mars) : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix par les rangées, menu en cercle, vibration et barre lumineuse.

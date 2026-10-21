@@ -60,8 +60,8 @@ Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains e
 | /tessera help | The list of commands in the chat |
 
 ## Known issues
-- Placing blocks is being reworked. Moving blocks inside the second row of a bar, or inside a grid, can shift them: use the Replace arrows, or Ctrl + Z in placement mode.
-- The new placement, in rows, keeps every option you have today. Your layouts will be converted on their own, and a copy of the old one is kept.
+- A hidden block keeps its place: the blocks around it no longer close up. An option to let them close up again is being studied, carefully: that behaviour caused most of the placement bugs.
+- Moving a block inside the second row of a bar can shift its neighbours: use the Replace arrows, or Ctrl + Z in placement mode.
 
 ## Bugs and ideas
 
@@ -154,8 +154,8 @@ Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** expli
 | /tessera help | La liste des commandes dans la discussion |
 
 ## Problèmes connus
-- Le placement des blocs est en chantier. Déplacer des blocs à l'intérieur de la deuxième rangée d'une barre, ou d'une grille, peut les décaler : utilise les flèches Remplacer, ou Ctrl + Z en mode placement.
-- Le nouveau placement, en rangées, garde toutes les options d'aujourd'hui. Tes dispositions seront converties toutes seules, avec une copie de l'ancienne.
+- Un bloc masqué garde sa place : les blocs autour ne se resserrent plus. Une option pour qu'ils se resserrent à nouveau est à l'étude, avec prudence : ce fonctionnement causait la plupart des bugs de placement.
+- Déplacer un bloc à l'intérieur de la deuxième rangée d'une barre peut décaler ses voisins : utilise les flèches Remplacer, ou Ctrl + Z en mode placement.
 
 ## Bugs et idées
 

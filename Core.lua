@@ -92,6 +92,32 @@ ns.fonts = {
 }
 
 ---------------------------------------------------------------------------
+-- Frames of known interface addons, treated like Blizzard's own frames: Tessera
+-- warns when a block covers one (Layers) and blocks snap to the ones marked snap.
+-- One entry per addon: the prefix of its global frame names, and for each frame
+-- (name without the prefix) the plain-name key used in the overlap question.
+-- More interfaces can be added here once tested in game.
+ns.KNOWN_UI_FRAMES = {
+    { prefix = "FlareUI_", frames = {
+        XPBar = { label = "EM_XP_BAR", snap = true }, Buffs = { label = "EM_BUFFS" },
+        Debuffs = { label = "EM_BUFFS" }, ObjectiveTracker = { label = "EM_OBJECTIVES" },
+        UF_Player = { label = "EM_UNIT_FRAMES" }, UF_Target = { label = "EM_UNIT_FRAMES" },
+        UF_Focus = { label = "EM_UNIT_FRAMES" }, UF_Pet = { label = "EM_UNIT_FRAMES" },
+        UF_PlayerCastBar = { label = "EM_CAST_BAR" }, Totems = { label = "EM_TOTEMS" },
+        Toasts = { label = "EM_TOASTS" }, LootRolls = { label = "EM_LOOT_ROLLS" },
+    } },
+}
+
+-- Calls fn(frame, info) for every existing frame of ns.KNOWN_UI_FRAMES
+function ns:ForEachKnownUIFrame(fn)
+    for _, ui in ipairs(self.KNOWN_UI_FRAMES) do
+        for short, info in pairs(ui.frames) do
+            local f = _G[ui.prefix .. short]
+            if type(f) == "table" and f.GetRect and not (f.IsForbidden and f:IsForbidden()) then fn(f, info) end
+        end
+    end
+end
+
 -- Media from other addons (FlareUI, etc.) via LibSharedMedia, if present
 ---------------------------------------------------------------------------
 local BUILTIN = { background = ns.backgrounds, border = ns.borders, font = ns.fonts }

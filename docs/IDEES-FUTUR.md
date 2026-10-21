@@ -134,3 +134,11 @@ Le jeu gère les manettes ; FlareUI a déjà un mode manette et un menu radial.
 - Menu radial : maintenir un bouton ouvre une roue avec ses blocs (sacs, carte, métiers, pierre de foyer), le stick choisit.
 - Fenêtre d'options navigable à la manette, avec de grosses cibles (le plus gros du travail).
 - Dispositions pensées pour la manette : moins de blocs, plus grands, lisibles de loin.
+
+## Placement simplifié (21 octobre 2026)
+- Décidé : le joueur est libre au pixel près ; plus de recentrage automatique ; un bloc masqué garde sa place (rc8).
+- 1.1 : déplacer le bloc choisi pixel par pixel (flèches du clavier, flèches à l'écran) et l'agrandir ou le rétrécir.
+- À l'étude : option par bloc « quand il se masque : garder sa place / laisser les voisins se resserrer ». Prudence : le resserrement causait la plupart des bugs de placement.
+- Cadres d'autres interfaces dans `ns.KNOWN_UI_FRAMES` (ElvUI, EllesmereUI, puis TukUI, GW2 UI...) : aimantation et avertissement de chevauchement, à ajouter seulement après test en jeu.
+- Version Forever + Retail : même API (Midnight), modules propres à Forever chargés seulement s'ils existent ; zips de test avec `## Interface: 16001, 120105, 120107`.
+- Fait : la bêta des rangées (branche `refonte-rangees`) est rangée ; ses idées (colonnes de même largeur, alignement par rangée) restent possibles plus tard.

@@ -225,21 +225,30 @@ local BLIZZARD_FRAMES = {
     "PlayerFrame", "TargetFrame",
 }
 
--- Rectangles (UIParent units) a moved group can snap to; `exclude` = the moved group
--- Rectangles (UIParent units) of the visible Blizzard frames of BLIZZARD_FRAMES
--- (action bars, minimap, chat...), whatever the snapping option
+-- Visible frames blocks snap to: BLIZZARD_FRAMES plus the frames of known
+-- interface addons marked snap (ns.KNOWN_UI_FRAMES)
+function ns:SnapFrames()
+    local list = {}
+    local function Add(frame)
+        if frame and frame.IsVisible and frame:IsVisible() and frame.GetLeft then table.insert(list, frame) end
+    end
+    for _, name in ipairs(BLIZZARD_FRAMES) do Add(_G[name]) end
+    self:ForEachKnownUIFrame(function(f, info) if info.snap then Add(f) end end)
+    return list
+end
+
+-- Rectangles (UIParent units) of the frames of SnapFrames (action bars, minimap,
+-- chat...), whatever the snapping option
 function ns:GetBlizzardRects()
     local rects = {}
-    for _, name in ipairs(BLIZZARD_FRAMES) do
-        local frame = _G[name]
-        if frame and frame.IsVisible and frame:IsVisible() and frame.GetLeft then
-            local l, b, r, t = self:GetRectUI(frame)
-            if l and r - l > 1 and t - b > 1 then table.insert(rects, { l, b, r, t }) end
-        end
+    for _, frame in ipairs(self:SnapFrames()) do
+        local l, b, r, t = self:GetRectUI(frame)
+        if l and r - l > 1 and t - b > 1 then table.insert(rects, { l, b, r, t }) end
     end
     return rects
 end
 
+-- Rectangles (UIParent units) a moved group can snap to; `exclude` = the moved group
 function ns:GetSnapRects(exclude)
     local rects = {}
     for key, other in pairs(self.frames) do
@@ -249,12 +258,9 @@ function ns:GetSnapRects(exclude)
         end
     end
     if self.db.snapBlizzard then
-        for _, name in ipairs(BLIZZARD_FRAMES) do
-            local frame = _G[name]
-            if frame and frame.IsVisible and frame:IsVisible() and frame.GetLeft then
-                local l, b, r, t = self:GetRectUI(frame)
-                if l and r - l > 1 and t - b > 1 then table.insert(rects, { l, b, r, t, blizzard = true }) end
-            end
+        for _, frame in ipairs(self:SnapFrames()) do
+            local l, b, r, t = self:GetRectUI(frame)
+            if l and r - l > 1 and t - b > 1 then table.insert(rects, { l, b, r, t, blizzard = true }) end
         end
     end
     return rects

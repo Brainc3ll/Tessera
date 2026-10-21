@@ -78,7 +78,8 @@ local function SystemLabel(f, sys)
     return name
 end
 
--- Blizzard frames to check: { frame, label } (Edit Mode systems, else a fixed list)
+-- Frames to check: { frame, label } (Edit Mode systems, else a fixed list; plus
+-- the frames of known interface addons)
 local FALLBACK = { MainActionBar = "EM_ACTION_BARS", MainMenuBar = "EM_ACTION_BARS",
     MultiBarBottomLeft = "EM_ACTION_BARS", MultiBarBottomRight = "EM_ACTION_BARS", MultiBarRight = "EM_ACTION_BARS",
     MultiBarLeft = "EM_ACTION_BARS", MinimapCluster = "EM_MINIMAP", BuffFrame = "EM_BUFFS",
@@ -98,6 +99,8 @@ local function BlizzardFrames()
             if type(f) == "table" and f.GetRect then table.insert(list, { frame = f, label = L[label] }) end
         end
     end
+    -- frames of known interface addons (ns.KNOWN_UI_FRAMES)
+    ns:ForEachKnownUIFrame(function(f, info) table.insert(list, { frame = f, label = L[info.label] }) end)
     return list
 end
 

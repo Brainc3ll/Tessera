@@ -66,7 +66,8 @@ Tessera is a collaboration between me, a player, and an AI.
 - Languages: English, French (other languages can be added through CurseForge's localization tool)
 - Saved variables: `TesseraDB`
 - Optional addons it adapts to: FlareUI, EllesmereUI and ElvUI (a matching style is
-  offered), LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
+  offered; blocks snap to FlareUI's XP bar and Tessera warns when they cover its frames,
+  more interfaces to come), LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
   display addons (Titan Panel, ChocolateBar, Bazooka...)
 
 ## For players
@@ -101,7 +102,8 @@ Help tab inside the game explains everything.
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
   reagents, ammo, item level, speed, volume, addon memory, instances, played time, goal, mana
   regeneration, character stats (the stat of your choice), group loot (click: /roll)...
-- Blocks that have nothing to show hide themselves (in a second row under the main bar).
+- Blocks that have nothing to show hide themselves and keep their place (in the ready-made bars,
+  they sit in the second row). A group stays exactly where you drop it: no automatic recentering.
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks; groups
   fused, as tiles with joints, or separate.
 - Replace a block in place: the arrows on a hovered block (placement mode) put another block
@@ -174,9 +176,9 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 |---|---|
 | `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
-| `Core.lua` | Shared namespace, media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
+| `Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
 | `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard modern/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
-| `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, centering, second row), unlock-mode name tags, border seams and corner joins. |
+| `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
 | `Profiles.lua` | Profile export / import (text), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
@@ -213,7 +215,7 @@ do. All of them run on every push (`.github/workflows/checks.yml`).
    (1 good, 2 warning, 3 bad). Core colors it, adds the label and icon if enabled, and asks
    for a layout pass when the text size changes.
 5. The layout pass (`ns:UpdateLayout` in `Merge.lua`) sizes every block to its text, equalizes
-   merged groups, centers anchored groups and redraws the borders where blocks touch.
+   merged groups, keeps second rows flush with their bar and redraws the borders where blocks touch.
 
 ### Adding a data block
 

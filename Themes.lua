@@ -128,7 +128,8 @@ ns.themes = {
         missingNote = "THEME_NOTE_FLAREUI",
         block = function(cfg)
             cfg.bg = "solid"
-            cfg.bgColor = { r = 0, g = 0, b = 0, a = 0.8 }
+            -- 50% opacity, like the background of FlareUI's quest tracker
+            cfg.bgColor = { r = 0, g = 0, b = 0, a = 0.5 }
             -- without FlareUI, its thin border is imitated by a plain one
             local thin = ns:HasFlareUIMedia()
             cfg.border = thin and "lsm:FlareUI Thin" or "solid"
@@ -290,7 +291,7 @@ ns.themes = {
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
-            cfg.bgColor = { r = 0.04, g = 0.035, b = 0.03, a = 0.92 }
+            cfg.bgColor = { r = 0.04, g = 0.035, b = 0.03, a = 0.5 } -- 50%, like the FlareUI style
             cfg.border = "solid"
             cfg.borderSize = 2
             cfg.borderColor = { r = 0.48, g = 0.35, b = 0.19, a = 1 } -- dark bronze

@@ -9,6 +9,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for minimap and addon buttons, and DataBroker both ways.
 - Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.
 
+### Improvements
+
+- The FlareUI and FlareUI square styles have a 50% background, like FlareUI's quest tracker. Blocks already in one of these styles keep theirs: pick the style again to get it.
+
 ### Fixes
 
 - Leaving the demo mode no longer moves a block of a second row: its hidden neighbours no longer keep the width of the demo's sample values.

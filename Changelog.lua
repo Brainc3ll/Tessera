@@ -61,6 +61,15 @@ ns.CHANGELOG = {
                     .. "barres, colonnes, coins. Bords de l'écran, dispositions toutes prêtes, 19 styles, profils et "
                     .. "partage en texte.",
               } },
+            { kind = "improved",
+              en = {
+                "The FlareUI and FlareUI square styles have a 50% background, like FlareUI's quest tracker. "
+                    .. "Blocks already in one of these styles keep theirs: pick the style again to get it.",
+              },
+              fr = {
+                "Les styles FlareUI et FlareUI carré ont un fond à 50 %, comme le suivi des quêtes de FlareUI. "
+                    .. "Les blocs déjà dans un de ces styles gardent le leur : choisis à nouveau le style pour l'avoir.",
+              } },
             { kind = "fixed",
               en = {
                 "Leaving the demo mode no longer moves a block of a second row: its hidden neighbours no longer "

@@ -300,6 +300,10 @@ function ns:StopDemo()
     end
     self.previewMode = nil
     if self.demoBanner then self.demoBanner:Hide() end
+    -- the sample values go: a block that stays hidden must not keep a sample's width
+    for _, f in pairs(self.frames) do
+        if f.text then f.text:SetText("") end
+    end
     self:LoadProfile()
     self:ReanchorAll()
     self:UpdateAllVisibility()

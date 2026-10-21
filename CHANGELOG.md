@@ -3,6 +3,16 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0 — 
+
+- First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour shows the essentials, and the demo mode (Help tab) shows every block and every style.
+- In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for minimap and addon buttons, and DataBroker both ways.
+- Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.
+
+### Fixes
+
+- Leaving the demo mode no longer moves a block of a second row: its hidden neighbours no longer keep the width of the demo's sample values.
+
 ## 1.0.0-rc8 — 2026-10-21
 
 ### Improvements

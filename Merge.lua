@@ -561,9 +561,12 @@ function ns:UpdateLayout()
         if f and cfg and (f:IsShown() or self:HasPlace(key)) then
             local w, h = NeededSize(f, cfg)
             if f:IsShown() then
-                if not cfg.slotW or math.abs(cfg.slotW - w) > 0.5 then cfg.slotW = w end
-            else
-                w = math.max(w, cfg.slotW or 0)
+                -- (not the sample values of /tessera preview: they are wider than real ones)
+                if not self.previewMode and (not cfg.slotW or math.abs(cfg.slotW - w) > 0.5) then cfg.slotW = w end
+            elseif cfg.slotW then
+                -- its text may be an old one (e.g. a sample of the demo mode): the width
+                -- it had when last shown decides
+                w = cfg.slotW
             end
             need[key] = { w, h }
         end

@@ -10,6 +10,10 @@ local function NewObject(kind)
     local o = { __kind = kind, __scripts = {}, __shown = true, __w = 100, __h = 20, __events = {}, __attrs = {} }
     return setmetatable(o, FrameMT)
 end
+function MockTextWidth(text)
+    local n = #((text or ""):gsub("|T.-|t", "##"):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""))
+    return n > 40 and 6 * n or 40
+end
 local methods = {
     SetScript = function(self, name, fn) self.__scripts[name] = fn end,
     GetScript = function(self, name) return self.__scripts[name] end,
@@ -46,7 +50,10 @@ local methods = {
     CreateFontString = function() return NewObject("FontString") end,
     CreateAnimationGroup = function() return NewObject("AnimGroup") end,
     CreateAnimation = function() return NewObject("Anim") end,
-    GetStringWidth = function() return 40 end, GetUnboundedStringWidth = function() return 40 end,
+    -- text width: 40, except very long texts (over 40 letters, icons and colour codes
+    -- left out: 6 per letter)
+    GetStringWidth = function(self) return MockTextWidth(self.__text) end,
+    GetUnboundedStringWidth = function(self) return MockTextWidth(self.__text) end,
     -- rough wrapped height (about 5.6 px per character, 13 px per line), so the
     -- options pages can be checked against the window height
     GetStringHeight = function(self)
@@ -835,6 +842,19 @@ for _, step in ipairs({
             end
             assert(found, preset .. " has a second row")
         end
+        -- a hidden block keeps the width it had when shown, whatever its old text says
+        -- (the demo mode's samples used to widen it and push its neighbours away)
+        ns:ResetProfile("top")
+        ns:UpdateLayout()
+        local mail = ns.frames.mail
+        mail:Hide()
+        ns.db.blocks.mail.slotW = 60
+        ns:UpdateLayout()
+        local before = mail:GetWidth()
+        mail.text:SetText("A very long sample text from the demo mode, much wider than the block")
+        ns:UpdateLayout()
+        assert(math.abs(mail:GetWidth() - before) < 1, "hidden block keeps its last shown width")
+        mail.text:SetText("")
         ns:ResetProfile("rampart")
         for key, cfg in pairs(ns.db.blocks) do
             if cfg.enabled and not ns.IsSpacerKey(key) then assert(not cfg.hideEmpty, "rampart: " .. key .. " always shown") end

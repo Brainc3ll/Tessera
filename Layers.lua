@@ -63,9 +63,6 @@ local FRIENDLY = { ActionBar = "EM_ACTION_BARS", MicroMenu = "EM_MENU", Bags = "
     AuraFrame = "EM_BUFFS", StatusTrackingBar = "EM_XP_BAR", DamageMeter = "EM_DAMAGE_METER",
     ChatFrame = "EM_CHAT", ObjectiveTracker = "EM_OBJECTIVES", UnitFrame = "EM_UNIT_FRAMES",
     CastBar = "EM_CAST_BAR", TotemActionBar = "EM_ACTION_BARS" }
-local FLARE_FRIENDLY = { XPBar = "EM_XP_BAR", Buffs = "EM_BUFFS", Debuffs = "EM_BUFFS", ObjectiveTracker = "EM_OBJECTIVES",
-    UF_Player = "EM_UNIT_FRAMES", UF_Target = "EM_UNIT_FRAMES", UF_Focus = "EM_UNIT_FRAMES", UF_Pet = "EM_UNIT_FRAMES",
-    UF_PlayerCastBar = "EM_CAST_BAR", Totems = "EM_TOTEMS", Toasts = "EM_TOASTS", LootRolls = "EM_LOOT_ROLLS" }
 -- The gryphons (end caps) are decoration: blocks over them are no problem
 local DECORATION = { [26] = true } -- Enum.EditModeSystem.MainActionBarEndCap
 
@@ -81,8 +78,7 @@ local function SystemLabel(f, sys)
     return name
 end
 
--- Blizzard frames to check: { frame, label } (Edit Mode systems, else a fixed list;
--- FlareUI's own frames too)
+-- Blizzard frames to check: { frame, label } (Edit Mode systems, else a fixed list)
 local FALLBACK = { MainActionBar = "EM_ACTION_BARS", MainMenuBar = "EM_ACTION_BARS",
     MultiBarBottomLeft = "EM_ACTION_BARS", MultiBarBottomRight = "EM_ACTION_BARS", MultiBarRight = "EM_ACTION_BARS",
     MultiBarLeft = "EM_ACTION_BARS", MinimapCluster = "EM_MINIMAP", BuffFrame = "EM_BUFFS",
@@ -100,13 +96,6 @@ local function BlizzardFrames()
         for name, label in pairs(FALLBACK) do
             local f = _G[name]
             if type(f) == "table" and f.GetRect then table.insert(list, { frame = f, label = L[label] }) end
-        end
-    end
-    for name, f in pairs(_G) do
-        if type(name) == "string" and name:find("^FlareUI_") and type(f) == "table" and f.GetRect
-            and not (f.IsForbidden and f:IsForbidden()) then
-            local short = name:gsub("^FlareUI_", "")
-            if FLARE_FRIENDLY[short] then table.insert(list, { frame = f, label = L[FLARE_FRIENDLY[short]] }) end
         end
     end
     return list

@@ -70,6 +70,8 @@ ns.CHANGELOG = {
                     .. "is, like any group: it no longer recenters itself or follows another addon's bar.",
                 "The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends "
                     .. "no longer hide there).",
+                "A dragged group lines up by its outer edges only (snapping and gold guides), never by a block "
+                    .. "inside it: it lands where you drop it.",
               },
               fr = {
                 "Un bloc masqué parce qu'il n'a rien à montrer (ou en combat, en instance...) garde sa place : "
@@ -79,6 +81,8 @@ ns.CHANGELOG = {
                     .. "barre d'un autre addon.",
                 "Les barres des dispositions toutes prêtes ne contiennent que des blocs toujours affichés "
                     .. "(Guilde et Amis ne s'y masquent plus).",
+                "Un groupe déplacé s'aligne seulement par ses bords extérieurs (aimantation et lignes dorées), "
+                    .. "jamais par un bloc à l'intérieur : il se pose là où tu le lâches.",
               } },
             { kind = "fixed",
               en = {

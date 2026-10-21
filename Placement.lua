@@ -222,7 +222,7 @@ end
 local BLIZZARD_FRAMES = {
     "Minimap", "MinimapCluster", "ChatFrame1", "MainMenuBar", "MainActionBar",
     "MultiBarBottomLeft", "MultiBarBottomRight", "MultiBarRight", "MultiBarLeft",
-    "PlayerFrame", "TargetFrame", "FlareUI_XPBar",
+    "PlayerFrame", "TargetFrame",
 }
 
 -- Rectangles (UIParent units) a moved group can snap to; `exclude` = the moved group
@@ -294,6 +294,15 @@ function ns:StartGuides(mover)
             if l then table.insert(members, { l - ml, b - mt, r - ml, t - mt }) end
         end
     end
+    -- the group's outer rectangle: the only thing that lines up (as when dropping)
+    local box
+    for _, m in ipairs(members) do
+        if not box then box = { m[1], m[2], m[3], m[4] } else
+            box[1], box[2] = math.min(box[1], m[1]), math.min(box[2], m[2])
+            box[3], box[4] = math.max(box[3], m[3]), math.max(box[4], m[4])
+        end
+    end
+    members = box and { box } or {}
     guide.mover, guide.members, guide.rects = mover, members, self:GetSnapRects(exclude)
     guide:SetScript("OnUpdate", function() ns:UpdateGuides() end)
     guide:Show()

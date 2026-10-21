@@ -14,6 +14,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - A block hidden because it has nothing to show (or in combat, in an instance...) keeps its place: the blocks around it no longer move, close up or overlap.
 - A ready-made bar is placed once at the top (or the bottom) of the screen, then stays where it is, like any group: it no longer recenters itself or follows another addon's bar.
 - The bars of the ready-made layouts only hold blocks that are always shown (Guild and Friends no longer hide there).
+- A dragged group lines up by its outer edges only (snapping and gold guides), never by a block inside it: it lands where you drop it.
 
 ### Fixes
 

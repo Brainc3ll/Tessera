@@ -965,22 +965,30 @@ function ns:SnapAndSave(f)
     end
     if not members[f.key] then return end
 
-    -- Snapping: the shortest offset, whichever block of the group gets aligned,
-    -- against other blocks (and Blizzard frames if that option is on)
+    -- Snapping: the whole group counts as one rectangle (its outer edges), against
+    -- other blocks (and Blizzard frames if that option is on); never an inner block
     local dx, dy, snappedX, snappedY = 0, 0, false, false
     if self.db.snap or self.db.merge then
         local bestX, bestY = SNAP_DISTANCE + 1, SNAP_DISTANCE + 1
-        for _, o in ipairs(self:GetSnapRects(exclude)) do
+        local box
+        for _, m in pairs(members) do
+            if not box then
+                box = { left = m.left, top = m.top, right = m.left + m.w, bottom = m.top - m.h }
+            else
+                box.left, box.top = math.min(box.left, m.left), math.max(box.top, m.top)
+                box.right, box.bottom = math.max(box.right, m.left + m.w), math.min(box.bottom, m.top - m.h)
+            end
+        end
+        for _, o in ipairs(box and self:GetSnapRects(exclude) or {}) do
             local ol, ob, or_, ot = o[1], o[2], o[3], o[4]
-            for _, m in pairs(members) do
-                for _, x in ipairs({ ol, or_, ol - m.w, or_ - m.w }) do
-                    local d = math.abs(m.left - x)
-                    if d < bestX then bestX, dx = d, x - m.left end
-                end
-                for _, y in ipairs({ ot, ob, ot + m.h, ob + m.h }) do
-                    local d = math.abs(m.top - y)
-                    if d < bestY then bestY, dy = d, y - m.top end
-                end
+            local bw, bh = box.right - box.left, box.top - box.bottom
+            for _, x in ipairs({ ol, or_, ol - bw, or_ - bw }) do
+                local d = math.abs(box.left - x)
+                if d < bestX then bestX, dx = d, x - box.left end
+            end
+            for _, y in ipairs({ ot, ob, ot + bh, ob + bh }) do
+                local d = math.abs(box.top - y)
+                if d < bestY then bestY, dy = d, y - box.top end
             end
         end
         snappedX, snappedY = bestX <= SNAP_DISTANCE, bestY <= SNAP_DISTANCE
@@ -2852,10 +2860,6 @@ end
 local compartmentInfo
 local minimapButton
 
-local IsAddOnLoadedFn = C_AddOns and C_AddOns.IsAddOnLoaded
-local function FlareUIBag()
-    return IsAddOnLoadedFn and IsAddOnLoadedFn("FlareUI") and true or false
-end
 
 -- Places the button on the minimap's edge at the saved angle (degrees)
 local function PlaceMinimapButton()
@@ -2915,10 +2919,9 @@ local function CreateMinimapButton()
     return b
 end
 
--- Shows or hides the round button as the setting (and FlareUI's presence) wants
+-- Shows or hides the round button as the setting wants
 local function UpdateRoundButton(wanted)
     if not Minimap then return end
-    wanted = wanted and not FlareUIBag()
     if wanted and not minimapButton then minimapButton = CreateMinimapButton() end
     if minimapButton then
         if wanted then PlaceMinimapButton() end

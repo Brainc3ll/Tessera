@@ -1303,8 +1303,12 @@ for _, step in ipairs({
         StaticPopup_Show = function(which, a, b, data) table.insert(shown, { which = which, text = a, data = data }) end
         ns:ResetProfile("rampart")
         RunTimers()
-        local rect = ns.GroupRectUI
-        ns.GroupRectUI = function() return 0, 0, 1366, 24 end -- a bar along the bottom edge
+        -- the blocks laid along the bottom edge (Blizzard's frames keep their own rectangles)
+        local rect = ns.GetRectUI
+        ns.GetRectUI = function(self, frame)
+            if frame and frame.key and ns.frames[frame.key] == frame then return 0, 0, 1366, 24 end
+            return rect(self, frame)
+        end
         local labels, covering = ns:GetCoveredFrames()
         assert(#labels >= 1 and next(covering), "the bar covers the action bars and the menu")
         ns.db.layerAsked = nil
@@ -1360,7 +1364,7 @@ for _, step in ipairs({
         ns:SetLayer("front")
         assert(ns.db.blocks[root].strata == "HIGH" and ns.db.groupDefaults.strata == "HIGH", "all blocks in front")
         StaticPopupDialogs.TESSERA_LAYER.OnAccept(nil, ask.data)
-        ns.GroupRectUI = rect
+        ns.GetRectUI = rect
         -- an Edit Mode copy left by an older test version, active: back to the player's layout
         local copy = { layoutName = "Moderne (Tessera 1)", layoutType = 1, systems = EMSystems() }
         EM.layouts = { activeLayout = 4, layouts = { copy } }

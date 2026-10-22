@@ -769,7 +769,8 @@ end
 --   chars[char]          gold and class of each character (gold tooltip)
 --   Account-wide options: borderReach[border] (corner join tuning), quiet (no chat
 --   output), hideMinimapButton, welcomed (welcome popup shown), demoBackup (the
---   player's profile while the demo mode is on, see Demo.lua).
+--   player's profile while the demo mode is on, see Demo.lua), tourBackup (the same while
+--   the quick tour tries ready-made layouts, see Options.lua).
 local function InitDB()
     TesseraDB = TesseraDB or {}
     local sv = TesseraDB
@@ -790,6 +791,8 @@ local function InitDB()
     if ns.GetSituationProfile then ns.profileOverride = ns:GetSituationProfile() end
     -- a demo left open (reload, logout): the player's profile comes back (Demo.lua)
     if ns.RestoreDemoBackup then ns:RestoreDemoBackup() end
+    -- a quick tour left while a ready-made layout was being tried: same (Options.lua)
+    if ns.RestoreTourBackup then ns:RestoreTourBackup() end
     ns:LoadProfile()
 end
 

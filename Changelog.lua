@@ -80,10 +80,19 @@ ns.CHANGELOG = {
               en = {
                 "Leaving the demo mode no longer moves a block of a second row: its hidden neighbours no longer "
                     .. "keep the width of the demo's sample values.",
+                "Quick tour: your layout comes back after a /reload, a crash or a logout while you try the "
+                    .. "ready-made layouts, and goes back to its own profile if another one became active meanwhile.",
+                "Ctrl + Z also gives a group back its scale and its frozen state (after a merge or a "
+                    .. "\"Replace with...\").",
               },
               fr = {
                 "Quitter le mode démo ne déplace plus un bloc de la deuxième rangée : ses voisins masqués ne "
                     .. "gardent plus la largeur des valeurs d'exemple de la démo.",
+                "Visite rapide : ta disposition revient après un /reload, un plantage ou une déconnexion pendant "
+                    .. "que tu essaies les dispositions toutes prêtes, et retourne dans son propre profil si un "
+                    .. "autre est devenu actif entre-temps.",
+                "Ctrl + Z rend aussi à un groupe son échelle et son état figé (après une fusion ou un "
+                    .. "« Remplacer par... »).",
               } },
         },
     },

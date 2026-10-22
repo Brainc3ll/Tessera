@@ -7,7 +7,7 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 
 ## Travailler avec Braincell1980
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
-- Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (test42 est le prochain), qu'il teste avant tout commit de publication.
+- Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (test43 est le prochain), qu'il teste avant tout commit de publication.
 - Proposer avant de coder une nouveauté ; corriger directement un bug.
 - Ne jamais publier sans « on publie » (ou un « go » clair en réponse à la question).
 - Signaler ses biais quand ils apparaissent ; ne rien inventer (lire le code ou la source, sinon le dire).
@@ -58,3 +58,4 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - 21/10 : bêta Forever fermée le 23/10 à 19 h (heure belge) ; sortie de Forever le 5/11 à minuit (heure belge), publier la 1.0.0 le 4/11 dans la journée.
 - 22/10 : titre « Info Bars That Snap Together », résumé et début des descriptions réécrits ; générateur de textes dans `tools/gen` ; outils de dev dans le dépôt privé `Tessera-dev` ; ce fichier créé.
 - 22/10 : six skills Tessera enregistrées ; prochain sujet : review du code (voir A-REPRENDRE).
+- 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42 ; le reste noté pour la 1.1 dans A-REPRENDRE.

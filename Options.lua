@@ -2577,19 +2577,44 @@ local tutorial
 -- The "ready-made layouts" step: the arrows show each layout at once on the screen.
 -- The player's profile is copied first and comes back when the step is left (or the
 -- tour closed), unless "Keep this layout" was clicked. Not during combat.
+-- The copy is kept in the saved variables with the profile's name (sv.tourBackup), like
+-- the demo's: a /reload, a crash or a logout during the step gives it back at login, and
+-- it goes back to its own profile even if another one is active by then (a dungeon's).
+local function TourBackup()
+    return ns.sv and ns.sv.tourBackup
+end
+
+-- Puts the copied profile back (nothing to do without a copy). Returns true when the
+-- active profile was the one given back.
+local function GiveBackTourProfile()
+    local backup = TourBackup()
+    if not backup then return false end
+    ns.sv.tourBackup = nil
+    if type(backup.profile) == "string" and type(backup.data) == "table" and ns.sv.profiles[backup.profile] then
+        ns.sv.profiles[backup.profile] = backup.data
+        return backup.profile == ns.profileName
+    end
+    return false
+end
+
+-- At login, before the profile is loaded (Core.lua): a tour left in the layouts step
+function ns:RestoreTourBackup()
+    GiveBackTourProfile()
+end
+
 local function UpdateLayoutRow()
     local row = tutorial.layouts
     local i = tutorial.layoutIndex
     if i then
         local preset = ns.PRESETS[i]:upper()
         row.name:SetText(("%s  |cff999999(%d/%d)|r"):format(L["PRESET_" .. preset] or preset, i, #ns.PRESETS))
-        row.desc:SetText(tutorial.snapshot and (L["TIP_PRESET_" .. preset] or "") or L.TUTORIAL_LAYOUT_KEPT)
+        row.desc:SetText(TourBackup() and (L["TIP_PRESET_" .. preset] or "") or L.TUTORIAL_LAYOUT_KEPT)
     else
         row.name:SetText(L.TUTORIAL_LAYOUT_CURRENT)
         row.desc:SetText(L.TUTORIAL_LAYOUT_ARROWS)
     end
     row:SetHeight(30 + row.desc:GetStringHeight())
-    tutorial.action:SetEnabled(i ~= nil and tutorial.snapshot ~= nil)
+    tutorial.action:SetEnabled(i ~= nil and TourBackup() ~= nil)
 end
 
 local function TryTourLayout(delta)
@@ -2597,7 +2622,16 @@ local function TryTourLayout(delta)
         ns.Print(L.REPLACE_IN_COMBAT)
         return
     end
-    if not tutorial.snapshot then tutorial.snapshot = ns.DeepCopy(ns.sv.profiles[ns.profileName]) end
+    -- the active profile changed since the copy (a dungeon's profile): the copy goes back
+    -- to its own profile first, then this one is copied
+    local backup = TourBackup()
+    if backup and backup.profile ~= ns.profileName then
+        GiveBackTourProfile()
+        tutorial.layoutIndex = nil
+    end
+    if not TourBackup() then
+        ns.sv.tourBackup = { profile = ns.profileName, data = ns.DeepCopy(ns.sv.profiles[ns.profileName]) }
+    end
     local n, i = #ns.PRESETS, tutorial.layoutIndex
     i = i and ((i - 1 + delta) % n + 1) or (delta > 0 and 1 or n)
     tutorial.layoutIndex = i
@@ -2608,19 +2642,18 @@ end
 
 -- the player's own profile comes back (after the fight if one is going on)
 local function RestoreTourLayout()
-    if not tutorial or not tutorial.snapshot then return end
+    if not tutorial or not TourBackup() then return end
     if InCombatLockdown() then
         tutorial:RegisterEvent("PLAYER_REGEN_ENABLED")
         return
     end
-    ns.sv.profiles[ns.profileName] = tutorial.snapshot
-    tutorial.snapshot, tutorial.layoutIndex = nil, nil
-    ns:LoadProfile()
+    tutorial.layoutIndex = nil
+    if GiveBackTourProfile() then ns:LoadProfile() end
 end
 
 function ns:KeepTourLayout()
-    if not (tutorial and tutorial.snapshot and tutorial.layoutIndex) then return end
-    tutorial.snapshot = nil
+    if not (tutorial and TourBackup() and tutorial.layoutIndex) then return end
+    self.sv.tourBackup = nil
     local preset = ns.PRESETS[tutorial.layoutIndex]
     self.Print(L.PRESET_APPLIED:format(L["PRESET_" .. preset:upper()] or preset))
     C_Timer.After(1.5, function() if ns.AskLayer then ns:AskLayer() end end)

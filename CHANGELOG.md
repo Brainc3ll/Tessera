@@ -17,6 +17,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - Leaving the demo mode no longer moves a block of a second row: its hidden neighbours no longer keep the width of the demo's sample values.
+- Quick tour: your layout comes back after a /reload, a crash or a logout while you try the ready-made layouts, and goes back to its own profile if another one became active meanwhile.
+- Ctrl + Z also gives a group back its scale and its frozen state (after a merge or a "Replace with...").
 
 ## 1.0.0-rc8 — 2026-10-21
 

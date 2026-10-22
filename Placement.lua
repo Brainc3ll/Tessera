@@ -162,7 +162,8 @@ end
 -- Undo (placement mode)
 ---------------------------------------------------------------------------
 local UNDO_LIMIT = 30
-local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look" }
+-- (scale and frozen live on a group's head block: merging, detaching or replacing it moves them)
+local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look", "scale", "frozen" }
 
 -- Remembers the position of every block, before a move / merge / detach / hide
 function ns:PushUndo()

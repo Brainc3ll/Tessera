@@ -1434,6 +1434,41 @@ for _, step in ipairs({
         ns:KeepTourLayout()
         TesseraTutorial:Hide()
         assert(ns.db.blocks.time.width ~= 123, "a kept layout stays")
+        -- a layout being tried is saved aside: a /reload or a crash gives the player's back at login
+        ns:ResetProfile("left")
+        ns.db.blocks.time.width = 124
+        local mine = ns.profileName
+        ns:StartTutorial()
+        TesseraTutorial.next:GetScript("OnClick")()
+        TesseraTutorial.layouts.nextLayout:GetScript("OnClick")()
+        assert(type(ns.sv.tourBackup) == "table" and ns.sv.tourBackup.profile == mine, "tried layout: backup saved")
+        ns:RestoreTourBackup() -- what the next login does
+        assert(ns.sv.profiles[mine].blocks.time.width == 124 and not ns.sv.tourBackup, "backup given back at login")
+        TesseraTutorial:Hide()
+        -- the profile changes during the step (a dungeon's profile): the backup goes back to its own profile
+        ns:CreateProfile("Mock tour other")
+        ns:SetProfile(mine)
+        ns:StartTutorial()
+        TesseraTutorial.next:GetScript("OnClick")()
+        TesseraTutorial.layouts.nextLayout:GetScript("OnClick")()
+        ns:SetProfile("Mock tour other")
+        TesseraTutorial:Hide()
+        TesseraTutorial:GetScript("OnHide")(TesseraTutorial) -- (the mock's Hide runs no script)
+        assert(ns.sv.profiles[mine].blocks.time.width == 124, "the player's layout goes back to its own profile")
+        assert(ns.sv.profiles["Mock tour other"].blocks.time.width ~= 124, "another profile is not overwritten")
+        ns:SetProfile(mine)
+        ns:DeleteProfile("Mock tour other")
+        ns:ResetProfile("top")
+    end,
+    -- Ctrl + Z gives back a group's scale and frozen state (replace, merge)
+    function()
+        ns:ResetProfile("top")
+        local root = ns:GetRoot("bags")
+        ns.db.blocks[root].frozen, ns.db.blocks[root].scale = true, 1.4
+        ns:ReplaceBlock(root, "zone")
+        ns:Undo()
+        assert(ns.db.blocks[root].frozen == true, "undo: frozen state back")
+        assert(ns.db.blocks[root].scale == 1.4, "undo: group scale back")
         ns:ResetProfile("top")
     end,
     -- group looks: fused, tiles (joint between blocks), separate; old profiles keep their choice

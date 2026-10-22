@@ -454,14 +454,15 @@ for _, step in ipairs({
     -- development and test commands: only with a test build's extra file (TESSERA_DEV)
     function()
         if not ns.DevCommand then return end
-        for _, cmd in ipairs({ "debug", "debug", "debug legacy", "debug skills",
+        for _, cmd in ipairs({ "debug", "debug", "debug forever", "debug dps", "debug dps live",
             "test", "test blocs", "test compacte", "test colonne", "test infobulles", "test infobulles",
-            "test flare", "test fin" }) do
+            "test infobulles", "test fin" }) do
             SlashCmdList.TESSERA(cmd)
             local queued = __timers; __timers = {}
             for _, fn in ipairs(queued) do pcall(fn) end
         end
         assert(not ns.sv.profiles.Test, "test profile not deleted")
+        assert(not ns.sv.devTooltips, "the player's tooltip settings given back")
     end,
     -- icon frames: round, square, black and white, fixed size, then back to normal
     function()

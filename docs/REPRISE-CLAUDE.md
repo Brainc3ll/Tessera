@@ -3,7 +3,7 @@
 But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-1.0.0-rc8 publiée le 21/10 ; la 1.0.0 sort le 4/11 (WoW Forever ouvre le 5/11 à minuit, heure belge) ; jusque-là, corrections seulement. L'entrée « 1.0.0 » du changelog est ouverte, version 1.0.0 dans le .toc.
+1.0.0-rc9 publiée le 22/10 ; la 1.0.0 sort le 4/11 (WoW Forever ouvre le 5/11 à minuit, heure belge) : la rc9 avec la version 1.0.0 et l'intro « Première version stable » du changelog (historique git de `Changelog.lua`, juste avant « Release 1.0.0-rc9 »). Jusque-là, corrections seulement.
 
 ## Travailler avec Braincell1980
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
@@ -59,3 +59,4 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - 22/10 : titre « Info Bars That Snap Together », résumé et début des descriptions réécrits ; générateur de textes dans `tools/gen` ; outils de dev dans le dépôt privé `Tessera-dev` ; ce fichier créé.
 - 22/10 : six skills Tessera enregistrées ; prochain sujet : review du code (voir A-REPRENDRE).
 - 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42, validé en jeu ; le reste noté pour la 1.1 dans A-REPRENDRE.
+- 22/10 : sondes de l'API de WoW Forever (test43, test44) : blocs DPS, Corps, Mode de jeu, Météo validés pour la 1.1 (IDEES-FUTUR) ; commandes de dev révisées ; rc9 publiée.

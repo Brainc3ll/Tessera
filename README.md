@@ -1,4 +1,4 @@
-# Tessera – Mosaic Info Bars & Data Blocks
+# Tessera – Info Bars That Snap Together
 
 ![Tessera: your info, one tile at a time](docs/media/banner.gif)
 

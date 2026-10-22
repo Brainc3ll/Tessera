@@ -1,10 +1,10 @@
-# Tessera – Mosaic Info Bars & Data Blocks
+# Tessera – Info Bars That Snap Together
 
-**Customizable information and launcher blocks that merge like mosaic tiles, made for WoW Forever.**
+**Works out of the box: a ready-made bar shows up at first launch. Rearrange it in seconds if you like.**
 
-Tessera gives you small blocks with the information you want (gold, bags, durability, FPS, latency, time, XP, professions, mail...) and turns minimap buttons into blocks too. Place them anywhere: drop blocks against each other and they merge into a single frame, like the tiles (*tesserae*) of a mosaic.
+Drag a block against another and they snap into one bar, like the tiles (*tesserae*) of a mosaic. Your gold, bags, durability, FPS, time and Legacy points sit where you put them, in the style of your UI: FlareUI, ElvUI, EllesmereUI or Blizzard.
 
-English and French.
+40+ blocks, 19 styles, and launchers for your minimap buttons. English and French.
 
 > **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its new systems (Legacy, camping, Comprehension, PvP) are still young and may change, so a game update can break a block until Tessera catches up. Tell me when something looks wrong.
 
@@ -92,13 +92,13 @@ Tessera is a collaboration between me, a player, and an AI.
 
 ---
 
-# Tessera – Barres d'infos en mosaïque (français)
+# Tessera – Barres d'infos qui s'emboîtent (français)
 
-**Des blocs d'informations et des lanceurs personnalisables qui s'assemblent comme une mosaïque, conçus pour WoW Forever.**
+**Prêt dès l'installation : une barre toute prête s'affiche au premier lancement. Réarrange-la en quelques secondes si tu veux.**
 
-Tessera te donne de petits blocs avec les informations que tu veux (or, sacs, durabilité, FPS, latence, heure, XP, métiers, courrier...) et transforme aussi les boutons de la minicarte en blocs. Place-les où tu veux : pose des blocs les uns contre les autres et ils fusionnent en un seul cadre, comme les tesselles d'une mosaïque.
+Pose un bloc contre un autre et ils s'emboîtent en une seule barre, comme les tesselles d'une mosaïque. Ton or, tes sacs, ta durabilité, tes FPS, l'heure et tes points d'héritage restent là où tu les mets, dans le style de ton interface : FlareUI, ElvUI, EllesmereUI ou Blizzard.
 
-En anglais et en français.
+Plus de 40 blocs, 19 styles, et des lanceurs pour les boutons de ta minicarte. En anglais et en français.
 
 > **Fait pour WoW Forever.** Je développe et teste Tessera sur WoW Forever. Ses nouveaux systèmes (héritage, camping, Compréhension, JcJ) sont encore jeunes et peuvent changer : une mise à jour du jeu peut casser un bloc jusqu'à ce que Tessera suive. Dis-moi quand quelque chose te paraît bizarre.
 

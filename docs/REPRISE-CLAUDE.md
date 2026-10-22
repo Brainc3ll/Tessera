@@ -58,4 +58,4 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - 21/10 : bêta Forever fermée le 23/10 à 19 h (heure belge) ; sortie de Forever le 5/11 à minuit (heure belge), publier la 1.0.0 le 4/11 dans la journée.
 - 22/10 : titre « Info Bars That Snap Together », résumé et début des descriptions réécrits ; générateur de textes dans `tools/gen` ; outils de dev dans le dépôt privé `Tessera-dev` ; ce fichier créé.
 - 22/10 : six skills Tessera enregistrées ; prochain sujet : review du code (voir A-REPRENDRE).
-- 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42 ; le reste noté pour la 1.1 dans A-REPRENDRE.
+- 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42, validé en jeu ; le reste noté pour la 1.1 dans A-REPRENDRE.

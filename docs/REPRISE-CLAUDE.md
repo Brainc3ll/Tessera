@@ -47,3 +47,10 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - Bloc masqué : sa largeur est `cfg.slotW` (la dernière fois qu'il était affiché), jamais son texte, qui peut être un vieil exemple.
 - Une barre et ses rangées comptent comme un seul ensemble (`GetVisualRoot`) pour devant / derrière.
 - Le cadre d'aide de la visite rapide partage un seul bouton d'action entre les étapes : le réactiver à chaque étape.
+- Sous Linux (Wine), après une capture d'écran, les menus déroulants du jeu ne répondent plus jusqu'à un Alt-Tab : c'est le focus de Wine, pas Tessera. Un Alt-Tab peut aussi relancer une mise en page.
+
+## Journal court (une ligne par décision ; le détail est dans CHANGELOG.md, A-REPRENDRE, IDEES-FUTUR)
+- 20/10 : rc7 publiée.
+- 21/10 : placement simplifié (rc8) ; bêta des rangées rangée ; FlareUI neutre ; cadres des interfaces connues ; dispositions toutes prêtes corrigées (Double barre en trois rangées, Chemin de ronde sans bloc masqué) ; visite rapide et devant / derrière corrigés ; rc8 publiée ; Retail pas une priorité ; galerie HD refaite (dépôt privé) ; mode démo gardé et corrigé ; fond 50 % des styles FlareUI ; cadres d'EllesmereUI, ElvUI, GW2 UI ajoutés (noms lus dans leur code) ; styles GW2 UI et Tukui notés pour la 1.1 ; pack d'icônes « forever-icons » noté.
+- 21/10 : bêta Forever fermée le 23/10 à 19 h (heure belge) ; sortie de Forever le 5/11 à minuit (heure belge), publier la 1.0.0 le 4/11 dans la journée.
+- 22/10 : titre « Info Bars That Snap Together », résumé et début des descriptions réécrits ; générateur de textes dans `tools/gen` ; outils de dev dans le dépôt privé `Tessera-dev` ; ce fichier créé.

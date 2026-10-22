@@ -170,3 +170,21 @@ Licence « tous droits réservés » : idées seulement, aucun code ni donnée r
 - [Fait, 1.0.0, pas testé en jeu] Cadres dans `ns.KNOWN_UI_FRAMES` (seulement quand GW2_UI est chargé) : `GwPlayerUnitFrame`, `GwTargetUnitFrame`, `GwFocusUnitFrame`, `GwPlayerPetFrame`, `GwPlayerPowerBar`, `GwPlayerClassPower`, `GwQuestTracker`, `GwExperienceFrame` (aimantation), `Gw2MicroBarFrame`, `GwStanceBar`, `GwTotemBar`.
 - Style GW2 UI possible (1.1) : avec l'addon, son fond d'infobulle (LSM « GW2_UI_2 ») et sa bordure (`textures/uistuff/ui-tooltip-border.png`, pas dans LSM : à enregistrer par Tessera), sa police Menomonia (LSM « GW2_UI »), texte crème (#FFEDBA) ; sans l'addon, une imitation (gris foncé, fine bordure claire, police du jeu).
 - Style Tukui possible aussi (fond gris 0.11, bordure noire, police « Tukui »), mais Tukui ne tourne pas sur Forever : intérêt faible, plutôt pour une version Retail.
+
+## Nouveaux blocs grâce à la doc de l'API de WoW Forever (22 octobre 2026, validé pour la 1.1)
+
+Source : la référence de l'API du client WoW Forever publiée par Atraeau (https://atraeau.github.io/WoW-Addons/, dépôt `Atraeau/WoW-Addons`, fichier `types/WowForeverAPI.lua`, build 70170). Elle liste ce qui existe dans le client (basé sur Midnight : housing, Gouffres, Mythique+... y sont aussi, sans rapport avec Forever) ; ce qui marche vraiment a été vérifié en jeu le 22/10 avec `/tes debug forever` et `/tes debug dps` (test43 et test44, dépôt privé).
+
+Blocs validés par Braincell1980 pour la 1.1 :
+- **DPS** (`C_DamageMeter`, actif sur Forever) : tes dégâts seulement (`GetCombatSessionSourceFromType` avec `UnitGUID("player")`). En combat les valeurs sont secrètes : le jeu laisse les afficher telles quelles (`SetText`), sans calcul ni texte collé (vu en jeu : « 475 », « 28 ») ; après le combat elles se lisent : DPS = dégâts / `GetSessionDurationSeconds` (vu : 7 DPS, 483 en 67 s). Le nom du bloc passe par l'icône ou un texte à part ; couleurs de seuil seulement hors combat. À essayer : le type `Enum.DamageMeterType.Dps` (1), peut-être affichable en direct.
+- **Corps** (`C_DeathInfo.GetCorpseMapPosition(mapID)`) : en fantôme, distance et direction du corps (vu : 0,491 ; 0,561) ; bloc caché une fois ressuscité ; clic : repère sur la carte.
+- **Mode de jeu** (`C_GameRules` : `IsHardcoreActive`, `IsSelfFoundAllowed`, `IsStandard`, `GetActiveGameMode`) : Standard vu en jeu ; à revérifier sur un royaume Hardcore.
+- **Météo** (`C_Weather.GetCurrentWeather` : type Clair, Pluie, Neige, Tempête de sable, Divers ; intensité) : gadget.
+
+Améliorations notées :
+- **Compréhension** : `C_SkillInfo.GetSkillLineInfoByID(3012)` au lieu de parcourir la liste (marche même catégorie repliée) ; sa `description` pour l'infobulle.
+- **Durabilité** : `C_Container.GetContainerItemDurability` pour les pièces rangées dans les sacs (pas encore testé : aucune pièce dans les sacs).
+- **Honneur** : `GetPVPYesterdayStats`, `C_PvP.CanDisplayHonorableKills` (présents, tout à 0 au moment du test).
+- **Audit** : ajouter `WowForeverAPI.lua` à `tools/api_audit.py` pour qu'il connaisse les fonctions propres à Forever.
+
+Pas sur Forever pour l'instant : événements du monde (`C_EventScheduler.CanShowEvents` = false), saison JcJ (0 s). Principe retenu : un bloc peut attendre dans l'addon et n'apparaître que le jour où Blizzard active sa fonction (comme les blocs qui ne s'enregistrent que si le jeu a leurs fonctions).

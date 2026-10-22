@@ -25,7 +25,7 @@ Le joueur décide au pixel près ; Tessera ne recentre plus rien.
 
 ## Feuille de route
 1. 1.0.0 le 4/11 : la rc8 plus les corrections éventuelles.
-2. 1.1 (fin novembre) : déplacer un bloc au pixel (flèches du clavier et à l'écran), l'agrandir ou le rétrécir ; option « laisser les voisins se resserrer » à l'étude ; cadres d'autres interfaces ; nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour d'autres interfaces (GW2 UI d'abord ; Tukui plus tard, il ne tourne pas sur Forever).
+2. 1.1 (fin novembre) : nouveaux blocs DPS, Corps, Mode de jeu et Météo (voir IDEES-FUTUR, testés en jeu le 22/10) ; déplacer un bloc au pixel (flèches du clavier et à l'écran), l'agrandir ou le rétrécir ; option « laisser les voisins se resserrer » à l'étude ; cadres d'autres interfaces ; nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour d'autres interfaces (GW2 UI d'abord ; Tukui plus tard, il ne tourne pas sur Forever).
 3. 1.2 « Comme chez Blizzard » : styles HD (galerie `/tes debug hd` dans les zips de test), fenêtre d'options avec les pièces des Réglages du jeu, bouton « ? », étiquette « Nouveau ».
 4. 1.3 « Accessibilité » : taille du texte, contraste élevé, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
 5. 2.0 « Manette » : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix, menu en cercle, vibration et barre lumineuse.

@@ -21,7 +21,7 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
   `luacheck .` ; `lua5.1 tools/mock_run.lua . enUS` (et `frFR`, `"frFR broker"`) en cherchant **`ERROR` dans toute la sortie** (pas seulement la dernière ligne) ; `lua5.1 tools/fuzz_blocks.lua .` ; `lua5.1 tools/check_docs.lua .` (`release` avant une publication) ; `python3 tools/api_audit.py <lua-language-server> <vscode-wow-api>`.
 - Simulateur avec les vraies positions des cadres : `MOCK_GEOMETRY = true` après avoir chargé `tools/mock_run.lua` (voir le test des dispositions toutes prêtes dans `mock_run.lua`).
 - Changelog : `Changelog.lua` puis `lua5.1 tools/changelog_md.lua > CHANGELOG.md`.
-- Zip de test : `TesseraDev.lua` (commandes de test, galerie `/tes debug hd`) et `make_test_zip.sh` ne sont pas dans `main` (règle : jamais publiés). Voir `docs/A-REPRENDRE.md` pour leur emplacement.
+- Zip de test : `TesseraDev.lua` (commandes de test, galerie `/tes debug hd`) et `make_test_zip.sh` sont dans le dépôt **privé** `Brainc3ll/Tessera-dev` (jamais dans ce dépôt public ni dans une publication). Le cloner dans `/home/claude/tessera-dev`, puis `sh /home/claude/tessera-dev/make_test_zip.sh test42 <dossier>`.
 - Publier (après « on publie ») : version dans le .toc, entrée datée en haut de `Changelog.lua`, `check_docs.lua . release`, pousser `main`, puis
   `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`
   et suivre le run par l'API REST. Le workflow envoie l'anglais et le français à CurseForge. Les descriptions (`docs/curseforge-description.md`, `docs/wago-description.md`), le titre et le résumé (`docs/summary.md`) se recollent à la main.

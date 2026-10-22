@@ -3,12 +3,11 @@
 ## Où on en est
 - **1.0.0-rc8 publiée le 21/10** (GitHub, CurseForge, Wago ; test28 à test36 validées en jeu ; descriptions recollées). Le détail de chaque version est dans `CHANGELOG.md`.
 - La bêta de WoW Forever ferme le **vendredi 23/10 à 19 h (heure belge ; 10 h PDT)**. Ensuite, plus de test en jeu jusqu'à la sortie de Forever.
-- Branches : `main` (la rc8) et `refonte-rangees` (bêta du placement par rangées, rangée le 21/10 : l'ancien moteur suffit depuis que le recentrage est retiré ; à rouvrir seulement si les joueurs en ont besoin). `rc8-places` est supprimée ; `multi-versions` reste à supprimer sur GitHub par Braincell1980.
+- Branches : `main` (la rc8) et `refonte-rangees` (bêta du placement par rangées, rangée le 21/10 : l'ancien moteur suffit depuis que le recentrage est retiré ; à rouvrir seulement si les joueurs en ont besoin). `rc8-places` et `multi-versions` sont supprimées.
 
 - **1.0.0 en préparation** : entrée « 1.0.0 » ouverte avec son intro, version 1.0.0 dans le .toc. Correction : quitter le mode démo ne déplace plus un bloc de la deuxième rangée (un bloc masqué garde la largeur qu'il avait affiché, `cfg.slotW` ; la démo efface ses valeurs d'exemple ; `/tessera preview` ne change plus `slotW`). Styles FlareUI et FlareUI carré à 50 % de fond (comme FlareUI 2.4.1, vérifié). Cadres d'EllesmereUI 9.6.1, d'ElvUI 16.00 et de GW2 UI 12.0 ajoutés à `ns.KNOWN_UI_FRAMES` (noms lus dans son code, pas testés en jeu : Braincell1980 n'a pas le temps).
 
 - **Prochain sujet (nouvelle session) : review du code**, sans rien modifier d'abord : bugs réels corrigés pour la 1.0.0 seulement s'ils peuvent être testés en jeu avant le 23/10 à 19 h ; optimisations et nettoyage notés pour la 1.1.
-- **À faire par Braincell1980** : recoller sur CurseForge le titre « Tessera – Info Bars That Snap Together », le résumé (`docs/summary.md`) et la description ; sur Wago le titre et la description ; le texte « About » de GitHub.
 
 ## Calendrier jusqu'à la 1.0.0
 - **22/10 - 3/11 : hors jeu** : images dans les galeries de CurseForge et Wago, post Reddit, messages Discord ; corrections seulement.
@@ -36,7 +35,7 @@ Maquettes des options (deux volets, mosaïque, accessibilité, manette) : artefa
 - Retail 12.1.5 (interface 120105) et le PTR 12.1.7 ont la même API (Midnight) que Forever.
 - Les modules propres à Forever ne s'enregistrent que si leurs fonctions existent ; les fonctions propres à Forever passent par `_G["Nom"]`.
 - Zips de test Retail : TOC `## Interface: 16001, 120105, 120107`.
-- Repartir de `main`, pas de l'ancienne branche `multi-versions`.
+- Repartir de `main` (l'ancienne branche `multi-versions` est supprimée).
 
 ## Textes sur CurseForge
 - Le workflow de publication envoie l'anglais et le français à CurseForge (`missing-phrase-handling: DoNothing` : une clé supprimée y reste). Pour un gros ménage : import anglais à la main avec suppression des phrases absentes, puis import français (fait le 16/10).

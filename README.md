@@ -342,6 +342,9 @@ back to English for anything missing.
   to change a line, keep its key. Never renumber, rename or reuse a key (this also goes for the
   numbered quick tour steps, `TUTORIAL_<n>`). `tools/check_docs.lua` refuses any text longer
   than 600 characters.
+- The English and French texts are written in `tools/gen/*.py`; `python3 tools/gen/build.py`
+  writes `Locales/enUS.lua` and `Locales/frFR.lua` from them (it checks that every key has its
+  French text and the same `%s` / `%d`).
 - `docs/localization/` holds the English and French strings in the format CurseForge imports
   (regenerate with `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua`, same
   for `frFR`). The release workflow sends both to CurseForge before packaging, so translators

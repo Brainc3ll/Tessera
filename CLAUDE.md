@@ -3,6 +3,9 @@
 Tessera is written by Claude from the ideas and decisions of Braincell1980, who does not code.
 Answer him in French; code, comments and commit messages in English.
 
+Quick start for a new session: `docs/REPRISE-CLAUDE.md`. Game texts are written in `tools/gen/*.py`
+(`python3 tools/gen/build.py`, see that file).
+
 ## Every change, in the same commit
 The documentation is as important as the code. With any new feature, block, option, command
 or visible fix, update:

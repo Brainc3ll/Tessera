@@ -49,8 +49,8 @@ Maquettes des options (deux volets, mosaïque, accessibilité, manette) : artefa
 - Images (`docs/media`, dans le README) : bannière animée, trois GIF des styles, image anglais / français (sa moitié française vient d'une version plus ancienne : une capture récente du mode démo en français permettrait de la refaire). À envoyer dans les galeries de CurseForge et Wago.
 
 ## Outils de la session (hors dépôt)
-- `TesseraDev.lua` (commandes de test : `/tes test`, rapport de debug, galerie `/tes debug hd`...) et `make_test_zip.sh` : `/home/claude/tessera-dev/`, ajoutés seulement aux zips de test (prochain : test37).
-- Générateur des textes : `/home/claude/tessera-tools/gen`, `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 build.py` pour `main` (les textes de la branche des rangées restent dehors). Le fichier français utilise des espaces normales.
+- `TesseraDev.lua` (commandes de test : `/tes test`, rapport de debug, galerie `/tes debug hd`...) et `make_test_zip.sh` : `/home/claude/tessera-dev/`, ajoutés seulement aux zips de test (prochain : test42).
+- Générateur des textes : dans le dépôt, `tools/gen` (anglais et français) ; `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 tools/gen/build.py` pour `main` (les textes de la branche des rangées restent dehors). Le fichier français utilise des espaces normales.
 - Simulateur avec vraies positions : `MOCK_GEOMETRY = true` dans un script qui charge `tools/mock_run.lua` (voir le test des dispositions toutes prêtes).
 
-Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`. Les plans et listes de tests terminés sont dans `docs/archive/`.
+Reprise rapide pour Claude : `docs/REPRISE-CLAUDE.md`. Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`. Les plans et listes de tests terminés sont dans `docs/archive/`.

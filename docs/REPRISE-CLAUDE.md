@@ -13,6 +13,9 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - Signaler ses biais quand ils apparaissent ; ne rien inventer (lire le code ou la source, sinon le dire).
 - Textes anglais pour les joueurs : skill `stop-slop` ; français : mêmes principes.
 
+## Skills (compte de Braincell1980)
+`tessera-checks`, `tessera-test-zip`, `tessera-release`, `tessera-bug-fix`, `tessera-ui-addon-study`, `tessera-wrap-up` : les utiliser plutôt que de relire les commandes ci-dessous. Les skills génériques « Lua » publiques (ex. Mindrally) ne conviennent pas à WoW (snake_case, `require`) : ne pas les installer.
+
 ## Outils et commandes
 - Textes du jeu : modifier `tools/gen/*.py` (une clé par ligne ; une ligne ajoutée = une nouvelle clé), puis, sur `main` :
   `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 tools/gen/build.py`
@@ -54,3 +57,4 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - 21/10 : placement simplifié (rc8) ; bêta des rangées rangée ; FlareUI neutre ; cadres des interfaces connues ; dispositions toutes prêtes corrigées (Double barre en trois rangées, Chemin de ronde sans bloc masqué) ; visite rapide et devant / derrière corrigés ; rc8 publiée ; Retail pas une priorité ; galerie HD refaite (dépôt privé) ; mode démo gardé et corrigé ; fond 50 % des styles FlareUI ; cadres d'EllesmereUI, ElvUI, GW2 UI ajoutés (noms lus dans leur code) ; styles GW2 UI et Tukui notés pour la 1.1 ; pack d'icônes « forever-icons » noté.
 - 21/10 : bêta Forever fermée le 23/10 à 19 h (heure belge) ; sortie de Forever le 5/11 à minuit (heure belge), publier la 1.0.0 le 4/11 dans la journée.
 - 22/10 : titre « Info Bars That Snap Together », résumé et début des descriptions réécrits ; générateur de textes dans `tools/gen` ; outils de dev dans le dépôt privé `Tessera-dev` ; ce fichier créé.
+- 22/10 : six skills Tessera enregistrées ; prochain sujet : review du code (voir A-REPRENDRE).

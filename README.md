@@ -181,7 +181,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
-| `Profiles.lua` | Profile export / import (text), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
+| `Profiles.lua` | Profile export / import (compact text; older texts still read), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
 | `Changelog.lua` | Version history for the in-game About tab (Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (not sent to CurseForge's translation tool) (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
 | `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
@@ -198,7 +198,8 @@ status and ideas (in French), finished plans (`docs/archive`), the logo in large
 the working rules of the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
-with a small imitation of the game API and runs every page and feature; lint with `luacheck .`;
+with a small imitation of the game API and runs every page and feature (texts exported by earlier
+versions, kept in `tools/fixtures/`, must still import); lint with `luacheck .`;
 `lua5.1 tools/fuzz_blocks.lua .` checks that the blocks built on WoW Forever's own systems survive
 missing or changed game functions; `lua5.1 tools/check_docs.lua .` checks that the documentation
 follows the code; `tools/api_audit.py` audits the code against the WoW API like addon reviewers

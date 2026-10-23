@@ -37,6 +37,22 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.0.0-rc9-hotfix",
+        date = "2026-10-23",
+        sections = {
+            { kind = "improved",
+              en = {
+                "Exported texts are about ten times shorter: a profile takes about 7 KB instead of 70 KB, a "
+                    .. "style under 2 KB. Texts exported by earlier versions still import.",
+              },
+              fr = {
+                "Les textes exportés sont environ dix fois plus courts : un profil fait environ 7 Ko au lieu de "
+                    .. "70 Ko, un style moins de 2 Ko. Les textes exportés par les versions précédentes s'importent "
+                    .. "toujours.",
+              } },
+        },
+    },
+    {
         version = "1.0.0-rc9",
         date = "2026-10-22",
         sections = {

@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0-rc9-hotfix — 2026-10-23
+
+### Improvements
+
+- Exported texts are about ten times shorter: a profile takes about 7 KB instead of 70 KB, a style under 2 KB. Texts exported by earlier versions still import.
+
 ## 1.0.0-rc9 — 2026-10-22
 
 ### Improvements

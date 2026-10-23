@@ -426,6 +426,54 @@ for _, step in ipairs({
         assert(ns:DuplicateProfile("Copy"))
         assert(not ns:DecodeProfile("garbage"))
     end,
+    -- export texts: the compact format (TESSERA2) gives back exactly the same profile, and
+    -- texts exported by earlier versions (TESSERA1, tools/fixtures/rc9-*.txt, made by the
+    -- released 1.0.0-rc9) must always import
+    function()
+        local function Same(a, b, path)
+            if type(a) ~= type(b) then error("export: " .. path .. " differs (" .. tostring(a) .. " / " .. tostring(b) .. ")") end
+            if type(a) ~= "table" then
+                if a ~= b then error("export: " .. path .. " differs (" .. tostring(a) .. " / " .. tostring(b) .. ")") end
+                return
+            end
+            for k, v in pairs(a) do Same(v, b[k], path .. "." .. tostring(k)) end
+            for k, v in pairs(b) do if a[k] == nil then Same(nil, v, path .. "." .. tostring(k)) end end
+        end
+        for _, preset in ipairs(ns.PRESETS) do
+            ns:ResetProfile(preset)
+            ns.db.blocks.gold.width, ns.db.blocks.fps.bgColor = 133, { r = 0.6, g = 0.35, b = 0.8, a = 0.45 }
+            local text = ns:ExportProfile()
+            assert(text:sub(1, 9) == "TESSERA2:", "new exports use the compact format")
+            assert(#text < 20000, "export too long for " .. preset .. ": " .. #text)
+            Same(ns:SanitizeProfile(ns.DeepCopy(ns.db)), ns:DecodeProfile(text), preset)
+            -- a layout and a style go through the same format
+            local layout, style = ns:ExportLayout(), ns:ExportStyle()
+            assert(ns:GetExportKind(layout) == "layout" and ns:GetExportKind(style) == "style")
+            assert(#style < 8000, "style export too long: " .. #style)
+        end
+        local function Fixture(name)
+            local f = assert(io.open(addonDir .. "/tools/fixtures/" .. name), "missing fixture " .. name)
+            local text = f:read("*a")
+            f:close()
+            assert(text:sub(1, 9) == "TESSERA1:", name .. " is an older text")
+            return text
+        end
+        local old = ns:DecodeProfile(Fixture("rc9-profile.txt"))
+        assert(old, "a profile exported by 1.0.0-rc9 no longer imports")
+        assert(old.theme == "grimoire" and old.groupDefaults.fontSize == 13, "rc9 profile: settings lost")
+        local b = old.blocks
+        assert(b.gold.width == 133 and b.gold.goldFormat == "short" and b.fps.bgColor.r == 0.6, "rc9 profile: block settings lost")
+        assert(b.time.frozen == true and b.time.scale == 1.25 and b.stats.point[3] == -40, "rc9 profile: placement lost")
+        assert(ns:ImportProfile(Fixture("rc9-profile.txt"), "From rc9"), "rc9 profile import refused")
+        ns:ResetProfile("top")
+        assert(ns:ImportStyle(Fixture("rc9-style.txt")), "a style exported by 1.0.0-rc9 no longer imports")
+        assert(ns.db.blocks.gold.font == "morpheus", "rc9 style not applied")
+        assert(ns:ImportLayout(Fixture("rc9-layout.txt")), "a layout exported by 1.0.0-rc9 no longer imports")
+        assert(ns.db.blocks.stats.enabled and ns.db.blocks.gold.width == 133, "rc9 layout not applied")
+        ns:SetProfile(ns.DEFAULT_PROFILE)
+        ns:DeleteProfile("From rc9")
+        ns:ResetProfile("top")
+    end,
     function()
         -- a malicious / damaged profile must be cleaned on import, never break the addon
         local saved = ns.db

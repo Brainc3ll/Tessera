@@ -7,14 +7,18 @@ local L = ns.L
 -- (The basic profile functions — load, create, delete, reset — are in Core.lua.)
 --   * Export / import: a profile becomes a single line of text the player can
 --     copy and paste (to share a layout, or move it to another account). The
---     text is "TESSERA1:" followed by the profile serialized and Base64-encoded,
+--     text is "TESSERA2:" followed by the profile serialized and Base64-encoded,
 --     so it only contains safe characters. Importing never runs code: the text
 --     is parsed by the small decoder below.
+--     TESSERA2 (1.0.0) writes every setting shared by most blocks once, then for each
+--     block only what differs (see Compact): a profile went from about 70 KB to a few
+--     KB. TESSERA1 texts (earlier versions: every block in full) are still read.
 --   * Duplicate a profile.
 --   * Automatic profile: a chosen profile is used inside dungeons and raids,
 --     and the usual profile comes back outside.
 
-local EXPORT_PREFIX = "TESSERA1:"
+local EXPORT_PREFIX = "TESSERA2:"
+local LEGACY_PREFIX = "TESSERA1:" -- texts exported before 1.0.0, still imported
 
 ---------------------------------------------------------------------------
 -- Serializer: tables, strings, numbers and booleans
@@ -23,32 +27,58 @@ local EXPORT_PREFIX = "TESSERA1:"
 --   number  "n" <digits> ";"
 --   boolean "T" / "F"
 ---------------------------------------------------------------------------
+-- Shortest text that reads back as exactly the same number ("0.6", not
+-- "0.59999999999999998"); non-finite numbers are not exported
+local function NumberText(value)
+    if value ~= value or value == math.huge or value == -math.huge then return "0" end
+    for digits = 1, 17 do
+        local text = string.format("%." .. digits .. "g", value)
+        if tonumber(text) == value then return text end
+    end
+    return string.format("%.17g", value)
+end
+
+-- Keys in a fixed order (numbers first, then names), so the same table always gives
+-- the same text (Compact compares tables through it)
+local function SortedKeys(t)
+    local keys = {}
+    for k in pairs(t) do
+        local kk = type(k)
+        if kk == "string" or kk == "number" then keys[#keys + 1] = k end
+    end
+    table.sort(keys, function(a, b)
+        if type(a) ~= type(b) then return type(a) == "number" end
+        return a < b
+    end)
+    return keys
+end
+
 local function Serialize(value, out)
     local kind = type(value)
     if kind == "table" then
         table.insert(out, "t")
-        for k, v in pairs(value) do
-            local kk = type(k)
-            local vk = type(v)
-            if (kk == "string" or kk == "number")
-                and (vk == "string" or vk == "number" or vk == "boolean" or vk == "table") then
+        for _, k in ipairs(SortedKeys(value)) do
+            local vk = type(value[k])
+            if vk == "string" or vk == "number" or vk == "boolean" or vk == "table" then
                 Serialize(k, out)
-                Serialize(v, out)
+                Serialize(value[k], out)
             end
         end
         table.insert(out, "e")
     elseif kind == "string" then
         table.insert(out, "s" .. #value .. ":" .. value)
     elseif kind == "number" then
-        -- full precision; non-finite numbers are not exported
-        if value == value and value ~= math.huge and value ~= -math.huge then
-            table.insert(out, "n" .. string.format("%.17g", value) .. ";")
-        else
-            table.insert(out, "n0;")
-        end
+        table.insert(out, "n" .. NumberText(value) .. ";")
     elseif kind == "boolean" then
         table.insert(out, value and "T" or "F")
     end
+end
+
+-- A value as text, to compare two values (tables included)
+local function ValueKey(value)
+    local out = {}
+    Serialize(value, out)
+    return table.concat(out)
 end
 
 -- Reads one value at position pos; returns value, next position (nil on error)
@@ -130,6 +160,111 @@ local function Decode64(text)
         table.insert(out, bytes:sub(1, 3 - pad))
     end
     return table.concat(out)
+end
+
+---------------------------------------------------------------------------
+-- Compact block list (TESSERA2). Blocks share most of their settings (the style, the
+-- defaults): data.blockBase holds, for each setting, the value most blocks have, and
+-- each block keeps only what differs from it, plus the list "~" of the base settings
+-- it does not have. Expand gives back exactly the same blocks: nothing depends on the
+-- defaults of the Tessera version or the addons installed on either side.
+---------------------------------------------------------------------------
+local ABSENT = "~"
+
+local function Compact(blocks)
+    -- for each setting: how many blocks have each value
+    local counts, values, owners = {}, {}, 0
+    for _, cfg in pairs(blocks) do
+        if type(cfg) == "table" then
+            owners = owners + 1
+            for field, value in pairs(cfg) do
+                if type(field) == "string" then
+                    local key = ValueKey(value)
+                    counts[field] = counts[field] or {}
+                    counts[field][key] = (counts[field][key] or 0) + 1
+                    values[key] = value
+                end
+            end
+        end
+    end
+    -- the base: the most common value of a setting, when it saves more than it costs
+    -- (blocks without that setting must then list it as absent)
+    local base, baseKey = {}, {}
+    for field, byValue in pairs(counts) do
+        local bestKey, best, holders = nil, 0, 0
+        for key, n in pairs(byValue) do
+            holders = holders + n
+            if n > best or (n == best and key < bestKey) then bestKey, best = key, n end
+        end
+        if best >= 2 and best > owners - holders then
+            base[field], baseKey[field] = values[bestKey], bestKey
+        end
+    end
+    local out = {}
+    for key, cfg in pairs(blocks) do
+        if type(cfg) == "table" then
+            local diff, absent = {}, {}
+            for field, value in pairs(cfg) do
+                if type(field) ~= "string" or baseKey[field] ~= ValueKey(value) then diff[field] = value end
+            end
+            for field in pairs(base) do
+                if cfg[field] == nil then absent[#absent + 1] = field end
+            end
+            if #absent > 0 then
+                table.sort(absent)
+                diff[ABSENT] = absent
+            end
+            out[key] = diff
+        end
+    end
+    return out, base
+end
+
+local function Expand(blocks, base)
+    if type(blocks) ~= "table" or type(base) ~= "table" then return blocks end
+    local out = {}
+    for key, diff in pairs(blocks) do
+        if type(diff) == "table" then
+            local cfg = ns.DeepCopy(base)
+            for field, value in pairs(diff) do
+                if field ~= ABSENT then cfg[field] = ns.DeepCopy(value) end
+            end
+            for _, field in ipairs(type(diff[ABSENT]) == "table" and diff[ABSENT] or {}) do
+                if type(field) == "string" then cfg[field] = nil end
+            end
+            out[key] = cfg
+        end
+    end
+    return out
+end
+
+-- Any exported data (profile, style, layout) as a line of text
+local function Encode(data)
+    local copy = {}
+    for k, v in pairs(data) do copy[k] = v end
+    if type(data.blocks) == "table" then copy.blocks, copy.blockBase = Compact(data.blocks) end
+    local out = {}
+    Serialize(copy, out)
+    return EXPORT_PREFIX .. Encode64(table.concat(out))
+end
+
+-- Reads any exported text, new or older format, without cleaning it: the raw table
+-- (blocks in full), or nil if the text is not valid
+local function DecodeRaw(text)
+    if type(text) ~= "string" then return nil end
+    text = strtrim(text)
+    local prefix = text:sub(1, #EXPORT_PREFIX)
+    if prefix ~= EXPORT_PREFIX and prefix ~= LEGACY_PREFIX then return nil end
+    local raw = Decode64(text:sub(#EXPORT_PREFIX + 1))
+    if not raw then return nil end
+    local ok, data = pcall(Deserialize, raw, 1, 0)
+    if not ok or type(data) ~= "table" or type(data.blocks) ~= "table" then return nil end
+    if prefix == EXPORT_PREFIX then
+        local okExpand, blocks = pcall(Expand, data.blocks, data.blockBase)
+        if not okExpand or type(blocks) ~= "table" then return nil end
+        data.blocks, data.blockBase = blocks, nil
+    end
+    return data
 end
 
 ---------------------------------------------------------------------------
@@ -299,20 +434,13 @@ end
 ---------------------------------------------------------------------------
 -- The active profile as a line of text
 function ns:ExportProfile()
-    local out = {}
-    Serialize(self.db, out)
-    return EXPORT_PREFIX .. Encode64(table.concat(out))
+    return Encode(self.db)
 end
 
 -- Reads an exported text; returns the profile table, or nil if the text is not valid
 function ns:DecodeProfile(text)
-    if type(text) ~= "string" then return nil end
-    text = strtrim(text)
-    if text:sub(1, #EXPORT_PREFIX) ~= EXPORT_PREFIX then return nil end
-    local raw = Decode64(text:sub(#EXPORT_PREFIX + 1))
-    if not raw then return nil end
-    local ok, profile = pcall(Deserialize, raw, 1, 0)
-    if not ok or type(profile) ~= "table" or type(profile.blocks) ~= "table" then return nil end
+    local profile = DecodeRaw(text)
+    if not profile then return nil end
     local okClean, clean = pcall(self.SanitizeProfile, self, profile)
     return okClean and clean or nil
 end
@@ -345,24 +473,6 @@ local function Pick(src, fields)
         if src[field] ~= nil then t[field] = ns.DeepCopy(src[field]) end
     end
     return t
-end
-
-local function Encode(data)
-    local out = {}
-    Serialize(data, out)
-    return EXPORT_PREFIX .. Encode64(table.concat(out))
-end
-
--- Reads any exported text without cleaning it: the raw table, or nil
-local function DecodeRaw(text)
-    if type(text) ~= "string" then return nil end
-    text = strtrim(text)
-    if text:sub(1, #EXPORT_PREFIX) ~= EXPORT_PREFIX then return nil end
-    local raw = Decode64(text:sub(#EXPORT_PREFIX + 1))
-    if not raw then return nil end
-    local ok, data = pcall(Deserialize, raw, 1, 0)
-    if not ok or type(data) ~= "table" or type(data.blocks) ~= "table" then return nil end
-    return data
 end
 
 -- "profile", "style" or "layout", or nil if the text is not valid

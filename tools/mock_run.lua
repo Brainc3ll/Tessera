@@ -442,6 +442,7 @@ for _, step in ipairs({
         for _, preset in ipairs(ns.PRESETS) do
             ns:ResetProfile(preset)
             ns.db.blocks.gold.width, ns.db.blocks.fps.bgColor = 133, { r = 0.6, g = 0.35, b = 0.8, a = 0.45 }
+            ns.db.blocks.stats.stat, ns.db.blocks.xp.barTexture = "haste", "lsm:FlareUI Forever"
             local text = ns:ExportProfile()
             assert(text:sub(1, 9) == "TESSERA2:", "new exports use the compact format")
             assert(#text < 20000, "export too long for " .. preset .. ": " .. #text)
@@ -464,10 +465,17 @@ for _, step in ipairs({
         local b = old.blocks
         assert(b.gold.width == 133 and b.gold.goldFormat == "short" and b.fps.bgColor.r == 0.6, "rc9 profile: block settings lost")
         assert(b.time.frozen == true and b.time.scale == 1.25 and b.stats.point[3] == -40, "rc9 profile: placement lost")
+        assert(b.stats.stat == "crit", "rc9 profile: the Stats block's choice lost")
+        assert(b.gold.barTexture == false and b.xp.barTexture == false, "rc9 profile: bar texture")
         assert(ns:ImportProfile(Fixture("rc9-profile.txt"), "From rc9"), "rc9 profile import refused")
         ns:ResetProfile("top")
         assert(ns:ImportStyle(Fixture("rc9-style.txt")), "a style exported by 1.0.0-rc9 no longer imports")
         assert(ns.db.blocks.gold.font == "morpheus", "rc9 style not applied")
+        -- a style keeps its bar texture
+        ns.db.blocks.xp.barTexture = "lsm:FlareUI Forever"
+        local withBar = ns:ExportStyle()
+        ns.db.blocks.xp.barTexture = false
+        assert(ns:ImportStyle(withBar) and ns.db.blocks.xp.barTexture == "lsm:FlareUI Forever", "style: bar texture lost")
         assert(ns:ImportLayout(Fixture("rc9-layout.txt")), "a layout exported by 1.0.0-rc9 no longer imports")
         assert(ns.db.blocks.stats.enabled and ns.db.blocks.gold.width == 133, "rc9 layout not applied")
         ns:SetProfile(ns.DEFAULT_PROFILE)

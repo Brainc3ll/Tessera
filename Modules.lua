@@ -1705,6 +1705,7 @@ ns:RegisterModule("stats", {
     icon = "Interface\\Icons\\Spell_Holy_GreaterBlessingofKings",
     interval = 2,
     defaultEnabled = false,
+    defaults = { stat = "auto" }, -- (a default also lets an imported profile keep the choice)
     options = {
         { kind = "dropdown", field = "stat", tab = "text", label = "STAT_SHOWN", tip = "TIP_STAT_SHOWN", values = STAT_VALUES },
     },

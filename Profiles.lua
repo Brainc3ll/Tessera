@@ -323,7 +323,12 @@ local function CleanBlock(self, key, block, keys)
     local defaults = self:GetBlockDefaults(key)
     local clean = {}
     for field, value in pairs(block) do
-        if defaults[field] ~= nil then
+        if field == "barTexture" then
+            -- false (plain color) or a LibSharedMedia status bar texture ("lsm:<name>")
+            if value == false or (type(value) == "string" and value:sub(1, #self.LSM_PREFIX) == self.LSM_PREFIX) then
+                clean.barTexture = value
+            end
+        elseif defaults[field] ~= nil then
             if SameShape(value, defaults[field]) then clean[field] = value end
         elseif field == "point" then
             clean.point = CleanPoint(value)

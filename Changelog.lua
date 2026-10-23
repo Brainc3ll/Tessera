@@ -50,6 +50,15 @@ ns.CHANGELOG = {
                     .. "70 Ko, un style ou une disposition moins de 4 Ko. Les textes exportés par les versions "
                     .. "précédentes s'importent toujours.",
               } },
+            { kind = "fixed",
+              en = {
+                "Importing a profile or a style keeps the stat shown by the Stats block and the texture of "
+                    .. "the progress bars.",
+              },
+              fr = {
+                "Importer un profil ou un style garde la statistique affichée par le bloc Statistiques et la "
+                    .. "texture des barres de progression.",
+              } },
         },
     },
     {

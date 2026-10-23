@@ -42,13 +42,13 @@ ns.CHANGELOG = {
         sections = {
             { kind = "improved",
               en = {
-                "Exported texts are about ten times shorter: a profile takes about 7 KB instead of 70 KB, a "
-                    .. "style under 2 KB. Texts exported by earlier versions still import.",
+                "Exported texts are about ten times shorter: a profile takes 5 to 7 KB instead of 70 KB, a "
+                    .. "style or a layout under 4 KB. Texts exported by earlier versions still import.",
               },
               fr = {
-                "Les textes exportés sont environ dix fois plus courts : un profil fait environ 7 Ko au lieu de "
-                    .. "70 Ko, un style moins de 2 Ko. Les textes exportés par les versions précédentes s'importent "
-                    .. "toujours.",
+                "Les textes exportés sont environ dix fois plus courts : un profil fait 5 à 7 Ko au lieu de "
+                    .. "70 Ko, un style ou une disposition moins de 4 Ko. Les textes exportés par les versions "
+                    .. "précédentes s'importent toujours.",
               } },
         },
     },

@@ -163,32 +163,34 @@ local function Decode64(text)
 end
 
 ---------------------------------------------------------------------------
--- Compact block list (TESSERA2). Blocks share most of their settings (the style, the
--- defaults): data.blockBase holds, for each setting, the value most blocks have, and
--- each block keeps only what differs from it, plus the list "~" of the base settings
--- it does not have. Expand gives back exactly the same blocks: nothing depends on the
--- defaults of the Tessera version or the addons installed on either side.
+-- Compact block list (TESSERA2). Blocks of the same family (data blocks, spacers,
+-- launchers, DataBroker blocks) share most of their settings (the style, the defaults):
+-- data.blockBase[family] holds, for each setting, the value most blocks of that family
+-- have, and each block keeps only what differs from it, plus the list "~" of the base
+-- settings it does not have. Expand gives back exactly the same blocks: nothing depends
+-- on the defaults of the Tessera version or the addons installed on either side.
 ---------------------------------------------------------------------------
 local ABSENT = "~"
 
-local function Compact(blocks)
-    -- for each setting: how many blocks have each value
-    local counts, values, owners = {}, {}, 0
-    for _, cfg in pairs(blocks) do
-        if type(cfg) == "table" then
-            owners = owners + 1
-            for field, value in pairs(cfg) do
-                if type(field) == "string" then
-                    local key = ValueKey(value)
-                    counts[field] = counts[field] or {}
-                    counts[field][key] = (counts[field][key] or 0) + 1
-                    values[key] = value
-                end
+-- "spacer" for "spacer:3", "launcher", "broker"; "block" for the data blocks
+local function Family(key)
+    return type(key) == "string" and key:match("^(%a+):") or "block"
+end
+
+-- The base of one family: for each setting, its most common value, when it saves more
+-- than it costs (blocks without that setting must then list it as absent)
+local function FamilyBase(list)
+    local counts, values = {}, {}
+    for _, cfg in ipairs(list) do
+        for field, value in pairs(cfg) do
+            if type(field) == "string" then
+                local key = ValueKey(value)
+                counts[field] = counts[field] or {}
+                counts[field][key] = (counts[field][key] or 0) + 1
+                values[key] = value
             end
         end
     end
-    -- the base: the most common value of a setting, when it saves more than it costs
-    -- (blocks without that setting must then list it as absent)
     local base, baseKey = {}, {}
     for field, byValue in pairs(counts) do
         local bestKey, best, holders = nil, 0, 0
@@ -196,13 +198,29 @@ local function Compact(blocks)
             holders = holders + n
             if n > best or (n == best and key < bestKey) then bestKey, best = key, n end
         end
-        if best >= 2 and best > owners - holders then
+        if best >= 2 and best > #list - holders then
             base[field], baseKey[field] = values[bestKey], bestKey
         end
     end
+    return base, baseKey
+end
+
+local function Compact(blocks)
+    local families = {}
+    for key, cfg in pairs(blocks) do
+        if type(cfg) == "table" then
+            local f = Family(key)
+            families[f] = families[f] or {}
+            table.insert(families[f], cfg)
+        end
+    end
+    local bases, keys = {}, {}
+    for f, list in pairs(families) do bases[f], keys[f] = FamilyBase(list) end
     local out = {}
     for key, cfg in pairs(blocks) do
         if type(cfg) == "table" then
+            local f = Family(key)
+            local base, baseKey = bases[f], keys[f]
             local diff, absent = {}, {}
             for field, value in pairs(cfg) do
                 if type(field) ~= "string" or baseKey[field] ~= ValueKey(value) then diff[field] = value end
@@ -217,15 +235,16 @@ local function Compact(blocks)
             out[key] = diff
         end
     end
-    return out, base
+    return out, bases
 end
 
-local function Expand(blocks, base)
-    if type(blocks) ~= "table" or type(base) ~= "table" then return blocks end
+local function Expand(blocks, bases)
+    if type(blocks) ~= "table" or type(bases) ~= "table" then return blocks end
     local out = {}
     for key, diff in pairs(blocks) do
         if type(diff) == "table" then
-            local cfg = ns.DeepCopy(base)
+            local base = bases[Family(key)]
+            local cfg = type(base) == "table" and ns.DeepCopy(base) or {}
             for field, value in pairs(diff) do
                 if field ~= ABSENT then cfg[field] = ns.DeepCopy(value) end
             end

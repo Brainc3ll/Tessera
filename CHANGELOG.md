@@ -7,7 +7,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
-- Exported texts are about ten times shorter: a profile takes about 7 KB instead of 70 KB, a style under 2 KB. Texts exported by earlier versions still import.
+- Exported texts are about ten times shorter: a profile takes 5 to 7 KB instead of 70 KB, a style or a layout under 4 KB. Texts exported by earlier versions still import.
 
 ## 1.0.0-rc9 — 2026-10-22
 

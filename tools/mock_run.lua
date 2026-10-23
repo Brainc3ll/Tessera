@@ -449,7 +449,7 @@ for _, step in ipairs({
             -- a layout and a style go through the same format
             local layout, style = ns:ExportLayout(), ns:ExportStyle()
             assert(ns:GetExportKind(layout) == "layout" and ns:GetExportKind(style) == "style")
-            assert(#style < 8000, "style export too long: " .. #style)
+            assert(#style < 8000 and #layout < 8000, "style or layout export too long: " .. #style .. " / " .. #layout)
         end
         local function Fixture(name)
             local f = assert(io.open(addonDir .. "/tools/fixtures/" .. name), "missing fixture " .. name)

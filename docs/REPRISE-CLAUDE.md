@@ -3,7 +3,7 @@
 But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-1.0.0-rc9 publiée le 22/10 ; la 1.0.0 sort le 4/11 (WoW Forever ouvre le 5/11 à minuit, heure belge) : la rc9 avec la version 1.0.0 et l'intro « Première version stable » du changelog (historique git de `Changelog.lua`, juste avant « Release 1.0.0-rc9 »). Jusque-là, corrections seulement.
+1.0.0-rc9-hotfix publiée le 23/10 (exports compacts) ; la 1.0.0 sort le 4/11 (WoW Forever ouvre le 5/11 à minuit, heure belge) : le hotfix avec la version 1.0.0 et l'intro « Première version stable » du changelog (historique git de `Changelog.lua`, juste avant « Release 1.0.0-rc9 »). Jusque-là, corrections seulement.
 
 ## Travailler avec Braincell1980
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
@@ -44,6 +44,7 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - Styles FlareUI et FlareUI carré : fond à 50 %, comme FlareUI 2.4.1.
 
 ## Pièges déjà rencontrés
+- Export : ne jamais casser la lecture des anciens textes (`TESSERA1:`, `TESSERA2:`) ; `tools/fixtures/` contient de vrais textes de la rc9 que le simulateur doit toujours importer.
 - Ne jamais ajouter une ligne à une entrée du changelog déjà publiée : ouvrir l'entrée suivante.
 - Les tests : lire toute la sortie (une erreur de `mock_run` s'affichait avant la dernière ligne).
 - Bordures fusionnées : le cache `seamKey` compte la taille ; `ReanchorAll` le vide.
@@ -60,3 +61,4 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - 22/10 : six skills Tessera enregistrées ; prochain sujet : review du code (voir A-REPRENDRE).
 - 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42, validé en jeu ; le reste noté pour la 1.1 dans A-REPRENDRE.
 - 22/10 : sondes de l'API de WoW Forever (test43, test44) : blocs DPS, Corps, Mode de jeu, Météo validés pour la 1.1 (IDEES-FUTUR) ; commandes de dev révisées ; rc9 publiée.
+- 23/10 : exports 10 fois plus courts (`TESSERA2:`), anciens textes toujours lus (fixtures dans `tools/fixtures`, à garder) ; statistique et texture des barres gardées à l'import ; rc9-hotfix publiée avant la fermeture de la bêta.

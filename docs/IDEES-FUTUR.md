@@ -195,3 +195,7 @@ Idée de Braincell1980, à faire **après la refonte « Accessibilité » (1.3) 
 - Sur ces machines (1280×800, ou 720p/800p sur l'Ally), la place à l'écran n'est pas le souci : WoW met son interface à l'échelle (à 800p, elle fait à peu près la taille d'un écran 1366×768). Le souci, c'est la **taille physique** : sur 7 pouces, un texte en 12 devient minuscule.
 - Une disposition toute prête : une seule barre, peu de blocs (or, sacs, durabilité, FPS, latence, heure), texte en 14-16, blocs plus hauts (faciles à viser au tactile ou au pavé), infobulles agrandies.
 - Pas de bloc Batterie : les addons tournent dans un bac à sable sans accès au système, et l'API de Forever n'a aucune fonction de batterie (vérifié le 24/10). L'overlay de Steam l'affiche déjà.
+
+## Tessera en modules optionnels (24 octobre 2026, à l'étude)
+
+Idée de Braincell1980 : une base et des modules de blocs par catégorie (Forever, Personnage, Monde, Progression, Social, Système) dans le même zip, que le joueur active dans la liste des addons. Étude complète, avec mesures, rétrocompatibilité (blocs « fantômes » qui gardent leur place et leur configuration), packaging, risques et inconnues : `docs/PLAN-modules.md`. Proposé pour la 1.1, après le nettoyage du code et avant les nouveaux blocs. Trouvé pendant l'étude : le vrai poids mémoire vient des profils (environ 200 Ko chacun, tous les réglages enregistrés), pas du code des blocs.

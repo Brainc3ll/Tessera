@@ -10,6 +10,10 @@ Règle pour les blocs (24 octobre 2026) : un nouveau bloc se justifie s'il est *
 - Forever a déjà, en natif : Mode Édition, compteur de dégâts, gestionnaire de temps de recharge, clic pour soigner.
 - Les téléchargements de CurseForge mélangent toutes les versions de WoW : un gros total ne veut pas dire « populaire sur Forever ». Les pages triées par date de création sont interdites aux robots ; Wago demande JavaScript : passer par des captures ou le navigateur intégré.
 
+## Outils
+
+- [UIForever](https://uiforever.com/) (bêta, projet de fans non officiel, Patreon, éditeur nommé seulement dans l'impressum) : simulateur d'interface Forever dans le navigateur (addons + dossier WTF, solo / donjon / raid, export). Liste de compatibilité de 195 addons testés chaque nuit ([compat](https://uiforever.com/compat), 24/10) : Titan Panel, EllesmereUI, HidingBar, MinimapButtonButton, LibDBIcon « Works » ; Tessera, ChocolateBar, Bazooka, Ultimate Panel, FlareUI absents. Baganator et Syndicator y sont « Broken » alors qu'ils ont une version Forever : le simulateur a ses propres trous, ce n'est pas le jeu. À essayer pour Tessera (zip seul, sans téléverser tout le WTF).
+
 ## Concurrent direct
 
 | Addon | Ce qu'il fait | DataBroker | Source |

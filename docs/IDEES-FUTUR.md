@@ -257,3 +257,11 @@ Idée de Braincell1980 : donner le choix de polices pensées pour l'accessibilit
 - À vérifier en jeu : WoW lit les TTF de façon sûre (prendre les versions fixes des polices variables, Lexend et Inclusive Sans) ; couverture du russe police par police ; coréen et chinois : police du jeu.
 - Zip : environ 1 à 2 Mo de plus pour les styles normal et gras des 6 polices ; aucun coût en mémoire Lua (le jeu charge une police seulement si elle sert).
 - Avec la règle de la 1.3 : la fenêtre d'options doit rester lisible avec chacune de ces polices (largeurs différentes : OpenDyslexic et Lexend sont larges).
+
+## Accessibilité : ne pas refaire ce que le jeu fait déjà (24 octobre 2026)
+
+Règle de Braincell1980 : le jeu a déjà ses options d'accessibilité (Réglages de Blizzard). Tessera ne les recode pas : il les **suit** et **indique qu'elles existent**.
+- Suivre : l'échelle de l'interface s'applique déjà aux blocs ; le mode daltonien du jeu pourrait choisir tout seul la palette « daltoniens » de Tessera ; la synthèse vocale de Tessera utiliserait la voix, la vitesse et le volume choisis dans le jeu (`C_TTSSettings`, présent dans l'API de Forever).
+- Indiquer : dans l'onglet Accessibilité de Tessera, une partie « Réglages du jeu » qui les liste et un bouton qui ouvre la page Accessibilité des Réglages de Blizzard (`C_SettingsUtil.OpenSettingsPanel`, présent dans l'API de Forever).
+- Tessera ne fait que ce que le jeu ne fait pas pour ses blocs : formes en plus des couleurs dans les valeurs, polices d'accessibilité, contraste élevé des blocs, moins d'animations dans Tessera, lecture vocale d'un bloc, navigation à la manette dans ses fenêtres.
+- À sonder en jeu avant la 1.4 : la liste exacte des options d'accessibilité de WoW Forever. Ce sont surtout des réglages (CVars, par exemple le mode daltonien), absents de la doc de l'API d'Atraeau : impossible de les lister sans le jeu.

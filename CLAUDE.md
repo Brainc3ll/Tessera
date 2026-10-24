@@ -59,4 +59,6 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
   shapes as well as colors) and gamepad navigation (focus order, visible selection, confirm / back),
   so they never have to be redone: check each design with a text twice as big, without a mouse,
   and in high contrast (see `docs/A-REPRENDRE.md`, roadmap).
+- Never recode what the game already offers (Blizzard's accessibility settings, for one): Tessera
+  follows those settings and points to them; it only adds what the game lacks for its own blocks.
 - Commit messages end with: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`

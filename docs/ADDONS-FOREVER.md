@@ -14,9 +14,9 @@ Règle pour les blocs (24 octobre 2026) : un nouveau bloc se justifie s'il est *
 
 | Addon | Ce qu'il fait | DataBroker | Source |
 |---|---|---|---|
-| The Forever Panel (Neill83, GPLv3) | Barre d'infos sur un bord : or de tous les personnages, sacs et recherche banque multi-personnages, enchères en cours par personnage, bascule Herbes / Minerais, temps de vol restant, prochain bateau ou zeppelin, métiers, coordonnées, vitesse, heure, boutons de minicarte regroupés. 212 téléchargements. | Pas mentionné | [CurseForge](https://www.curseforge.com/wow/addons/the-forever-panel), 24/10 |
+| Ultimate Panel, ex-The Forever Panel (Neill83, GPLv3 ; changement de nom sans reprise des réglages) | Barre d'infos sur un bord : or de tous les personnages, sacs et recherche banque multi-personnages, enchères en cours par personnage, bascule Herbes / Minerais, temps de vol restant, prochain bateau ou zeppelin, métiers, coordonnées, vitesse, heure, boutons de minicarte regroupés. 212 téléchargements. | Pas mentionné | [CurseForge](https://www.curseforge.com/wow/addons/the-forever-panel), 24/10 |
 
-Idées à étudier chez lui : bascule de pistage (herbes / minerais), prochain bateau ou zeppelin, temps de vol, enchères en cours.
+Repris : bloc Vol et prochain bateau ou zeppelin (1.2, à sonder), sacs de chaque personnage et or de la faction seulement dans les infobulles, couleur de faction (1.0.1). Laissé aux addons spécialisés : recherche multi-personnages (Syndicator, Baganator), enchères (Auctionator), bascule de pistage et lueur des filons (addons de récolte), regroupement des boutons de minicarte.
 
 ## Addons propres à Forever
 

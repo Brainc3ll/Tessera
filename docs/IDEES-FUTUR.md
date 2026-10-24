@@ -143,7 +143,7 @@ Le jeu gère les manettes ; FlareUI a déjà un mode manette et un menu radial.
 - À l'étude : option par bloc « quand il se masque : garder sa place / laisser les voisins se resserrer ». Prudence : le resserrement causait la plupart des bugs de placement.
 - Cadres d'autres interfaces dans `ns.KNOWN_UI_FRAMES` (ElvUI, EllesmereUI, puis TukUI, GW2 UI...) : aimantation et avertissement de chevauchement, à ajouter seulement après test en jeu.
 - Version Forever + Retail : même API (Midnight), modules propres à Forever chargés seulement s'ils existent ; zips de test avec `## Interface: 16001, 120105, 120107`.
-- Fait : la bêta des rangées (branche `refonte-rangees`) est rangée ; ses idées (colonnes de même largeur, alignement par rangée) restent possibles plus tard.
+- Fait : la bêta des rangées est rangée (branche `archive/refonte-rangees`) ; ses idées (colonnes de même largeur, alignement par rangée) restent possibles plus tard.
 
 ## Blocs pour une version Retail (21 octobre 2026, pas une priorité)
 - À masquer sur Retail : Points d'héritage, Compréhension, Camping, Compétences d'armes, Honneur (version Forever), Munitions, Composants de classe, Secourisme ; Points de talent à refaire (configurations). Un bloc déclare où il existe (Forever, Retail, les deux) ; ailleurs il disparaît des listes, options, « Remplacer par... » et du mode démo, et garde ses réglages.

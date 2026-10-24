@@ -1,4 +1,4 @@
-# Tessera – Info Bars That Snap Together
+# Tessera – Info Blocks That Snap Together for WoW Forever
 
 ![Tessera: your info, one tile at a time](docs/media/banner.gif)
 

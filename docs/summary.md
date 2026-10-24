@@ -2,15 +2,15 @@
 
 ## Title (CurseForge)
 
-Tessera – Info Bars That Snap Together
+Tessera – Info Blocks That Snap Together for WoW Forever (CurseForge and Wago, chosen by Braincell1980 on 24/10)
 
 ## CurseForge summary (one line, English)
 
-Info bars that match your UI (FlareUI, ElvUI, EllesmereUI): drag blocks together and they merge like mosaic tiles. Made for WoW Forever.
+Info blocks that match your UI (FlareUI, ElvUI, EllesmereUI): drag blocks together and they merge like mosaic tiles. Made for WoW Forever.
 
 ## GitHub "About" (repository description)
 
-Info bars that snap together, for WoW Forever: drag blocks against each other and they merge like mosaic tiles. Matches FlareUI, ElvUI, EllesmereUI. Gold, bags, FPS, Legacy, camping, minimap buttons, DataBroker.
+Info blocks that snap together, for WoW Forever: drag blocks against each other and they merge like mosaic tiles. Matches FlareUI, ElvUI, EllesmereUI. Gold, bags, FPS, Legacy, camping, minimap buttons, DataBroker.
 
 Topics: world-of-warcraft, world-of-warcraft-addon, wow-forever, wow-forever-addon, lua, databroker, info-bar, data-broker-display
 

@@ -41,7 +41,7 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - FlareUI est traité comme ElvUI, EllesmereUI, GW2 UI : dans les textes du jeu, seulement le nom de son style. Les cadres des interfaces connues (chevauchements, aimantation) sont dans `ns.KNOWN_UI_FRAMES` (Core.lua), avec des noms lus dans leur code.
 - Le mode démo reste (il ne faut pas le retirer : il existe depuis la rc5).
 - La version Retail n'est pas une priorité. La bêta des rangées est rangée (branche `archive/refonte-rangees`). L'accessibilité puis la manette se font sur la branche `accessibilite-manette`.
-- Titre CurseForge « Tessera – Info Bars That Snap Together » ; le mot « data » est évité (les joueurs le prenaient pour un enregistreur de statistiques).
+- Titre CurseForge et Wago « Tessera – Info Blocks That Snap Together for WoW Forever » (24/10, par Braincell1980 : « Forever » dans le titre pour la recherche) ; le mot « data » est évité (les joueurs le prenaient pour un enregistreur de statistiques).
 - Styles FlareUI et FlareUI carré : fond à 50 %, comme FlareUI 2.4.1.
 
 ## Pièges déjà rencontrés

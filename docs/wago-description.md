@@ -1,4 +1,4 @@
-# Tessera – Info Bars That Snap Together
+# Tessera – Info Blocks That Snap Together for WoW Forever
 
 **Works out of the box: a ready-made bar shows up at first launch. Rearrange it in seconds if you like.**
 
@@ -92,7 +92,7 @@ Tessera is a collaboration between me, a player, and an AI.
 
 ---
 
-# Tessera – Barres d'infos qui s'emboîtent (français)
+# Tessera – Des blocs d'infos qui s'emboîtent, pour WoW Forever (français)
 
 **Prêt dès l'installation : une barre toute prête s'affiche au premier lancement. Réarrange-la en quelques secondes si tu veux.**
 

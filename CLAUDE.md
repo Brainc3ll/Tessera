@@ -55,4 +55,8 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
   (`/tessera test`, debug report, probes) live only in `TesseraDev.lua`, in the private
   repository `Brainc3ll/Tessera-dev` (never in this one), added to the test zips given to Braincell1980 (never pushed, never released).
 - No trademarked operating system names in layouts.
+- From 1.3 on, every new feature prepares accessibility (bigger text, high contrast, fewer animations,
+  shapes as well as colors) and gamepad navigation (focus order, visible selection, confirm / back),
+  so they never have to be redone: check each design with a text twice as big, without a mouse,
+  and in high contrast (see `docs/A-REPRENDRE.md`, roadmap).
 - Commit messages end with: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`

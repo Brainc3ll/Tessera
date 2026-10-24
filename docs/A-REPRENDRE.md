@@ -40,6 +40,13 @@ Décidé le 24/10 : **les versions après la 1.0 servent d'abord à corriger, ne
    - audit de l'API avec la doc de Forever (`WowForeverAPI.lua` d'Atraeau).
 4. **1.2 « Nouveaux blocs »** : DPS, Corps, Mode de jeu, Météo (testés en jeu le 22/10) ; Compréhension lue par son numéro, honneur d'hier, durabilité des pièces dans les sacs ; modules par catégorie **à décider** (plan prêt : `PLAN-modules.md`) ; ensuite les idées déjà notées : déplacer un bloc au pixel, l'agrandir ou le rétrécir, option « laisser les voisins se resserrer » à l'étude, cadres et styles d'autres interfaces (GW2 UI d'abord), recherche dans les options, mode DataBroker plus simple.
 5. **1.3 « Comme chez Blizzard »** : styles HD (galerie `/tes debug hd` dans les zips de test), fenêtre d'options avec les pièces des Réglages du jeu, bouton « ? », étiquette « Nouveau ».
+   **Règle (24/10) : dès la 1.3, chaque chantier prépare l'accessibilité (1.4) et la manette (2.0), pour ne rien refaire ensuite.** Pour la 1.3, ça veut dire :
+   - la nouvelle fenêtre d'options se met en page toute seule (pas de colonnes de largeur fixe) : un texte plus gros pousse les réglages au lieu de déborder ;
+   - chaque pièce (case, curseur, liste, couleur, bouton « ? ») passe par l'usine à widgets, avec dès le départ un ordre de navigation, un état « sélectionné » bien visible (pas seulement une couleur) et une action « valider » / « retour » : la manette n'aura qu'à s'y brancher ;
+   - chaque style HD a une variante lisible en contraste élevé, et le texte reste lisible quand sa taille augmente ;
+   - toute nouvelle animation respecte un réglage « moins d'animations » (même s'il n'est montré qu'en 1.4) ;
+   - l'étiquette « Nouveau » est un mot ou une forme, pas seulement une couleur ;
+   - chaque maquette est vérifiée avec trois questions : « avec un texte deux fois plus gros ? », « sans souris, à la croix ? », « en contraste élevé ? ».
 6. **1.4 « Accessibilité »** (branche `accessibilite-manette`, remise à jour depuis `main` avant de commencer) : taille du texte, contraste élevé partout, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
 7. **2.0 « Manette »** (même branche) : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix, menu en cercle, vibration et barre lumineuse ; bloc « Batterie de la manette » à sonder (`C_GamePad.GetPowerLevel`).
 8. **Après la 2.0** : disposition « Portable » (Steam Deck, ROG Ally ; texte et blocs plus gros).

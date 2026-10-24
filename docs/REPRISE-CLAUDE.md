@@ -35,6 +35,7 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - Le réseau du terminal ne sort que vers GitHub et les dépôts de paquets ; le web passe par WebSearch / WebFetch.
 
 ## Décisions déjà prises (ne pas les reproposer)
+- Dès la 1.3, chaque chantier prépare l'accessibilité et la manette (règle dans CLAUDE.md, détail dans A-REPRENDRE) : rien ne doit être refait pour elles.
 - Placement libre au pixel (rc8) : plus de recentrage automatique ; un bloc masqué garde sa place ; les rangées des barres toutes prêtes partent du bord gauche de la barre et restent bord à bord ; un groupe s'aligne par ses bords extérieurs. Le resserrement des voisins d'un bloc masqué : option « à l'étude » (il causait la plupart des bugs).
 - Rien ne disparaît pour un joueur qui avait une option ; ses dispositions continuent de marcher.
 - FlareUI est traité comme ElvUI, EllesmereUI, GW2 UI : dans les textes du jeu, seulement le nom de son style. Les cadres des interfaces connues (chevauchements, aimantation) sont dans `ns.KNOWN_UI_FRAMES` (Core.lua), avec des noms lus dans leur code.

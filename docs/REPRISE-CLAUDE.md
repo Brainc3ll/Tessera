@@ -39,7 +39,7 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - Rien ne disparaît pour un joueur qui avait une option ; ses dispositions continuent de marcher.
 - FlareUI est traité comme ElvUI, EllesmereUI, GW2 UI : dans les textes du jeu, seulement le nom de son style. Les cadres des interfaces connues (chevauchements, aimantation) sont dans `ns.KNOWN_UI_FRAMES` (Core.lua), avec des noms lus dans leur code.
 - Le mode démo reste (il ne faut pas le retirer : il existe depuis la rc5).
-- La version Retail n'est pas une priorité. La bêta des rangées (branche `refonte-rangees`) est rangée.
+- La version Retail n'est pas une priorité. La bêta des rangées est rangée (branche `archive/refonte-rangees`). L'accessibilité puis la manette se font sur la branche `accessibilite-manette`.
 - Titre CurseForge « Tessera – Info Bars That Snap Together » ; le mot « data » est évité (les joueurs le prenaient pour un enregistreur de statistiques).
 - Styles FlareUI et FlareUI carré : fond à 50 %, comme FlareUI 2.4.1.
 
@@ -62,3 +62,4 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42, validé en jeu ; le reste noté pour la 1.1 dans A-REPRENDRE.
 - 22/10 : sondes de l'API de WoW Forever (test43, test44) : blocs DPS, Corps, Mode de jeu, Météo validés pour la 1.1 (IDEES-FUTUR) ; commandes de dev révisées ; rc9 publiée.
 - 23/10 : exports 10 fois plus courts (`TESSERA2:`), anciens textes toujours lus (fixtures dans `tools/fixtures`, à garder) ; statistique et texture des barres gardées à l'import ; rc9-hotfix publiée avant la fermeture de la bêta.
+- 24/10 : branche `accessibilite-manette` créée depuis `main` ; rangées archivées dans `archive/refonte-rangees` ; disposition « Portable » notée pour après la 2.0.

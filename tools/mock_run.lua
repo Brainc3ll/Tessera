@@ -304,6 +304,8 @@ STANDARD_TEXT_FONT = "x"
 RAID_CLASS_COLORS = { MAGE = { r = 0.4, g = 0.8, b = 1 } }
 date = os.date time = os.time
 strtrim = function(s) return (s:gsub("^%s+", ""):gsub("%s+$", "")) end
+GetCursorInfo = function() return "item", 2592 end
+ClearCursor = function() end
 wipe = function(t) for k in pairs(t) do t[k] = nil end return t end
 hooksecurefunc = noop
 StaticPopup_Show = noop RegisterStateDriver = noop UnregisterStateDriver = noop
@@ -510,12 +512,19 @@ for _, step in ipairs({
     -- development and test commands: only with a test build's extra file (TESSERA_DEV)
     function()
         if not ns.DevCommand then return end
-        for _, cmd in ipairs({ "debug", "debug", "debug forever", "debug dps", "debug dps live",
+        for _, cmd in ipairs({ "debug", "debug", "debug forever", "debug dps", "debug dps live", "debug farm",
+            "debug farm live", "debug farm live",
             "test", "test blocs", "test compacte", "test colonne", "test infobulles", "test infobulles",
             "test infobulles", "test fin" }) do
             SlashCmdList.TESSERA(cmd)
             local queued = __timers; __timers = {}
             for _, fn in ipairs(queued) do pcall(fn) end
+        end
+        -- the Farm test window: an item dropped on it, then a bag change
+        local farm = ns.farmLive
+        if farm and farm.GetScript and farm:GetScript("OnReceiveDrag") then
+            farm:GetScript("OnReceiveDrag")(farm)
+            farm:GetScript("OnEvent")(farm, "BAG_UPDATE_DELAYED")
         end
         assert(not ns.sv.profiles.Test, "test profile not deleted")
         assert(not ns.sv.devTooltips, "the player's tooltip settings given back")

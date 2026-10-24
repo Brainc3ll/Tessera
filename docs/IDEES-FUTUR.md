@@ -289,7 +289,7 @@ Que personne ne se sente oublié, au-delà de l'accessibilité. Règle ajoutée 
 ## Pour faire de Tessera la référence des blocs d'infos (24 octobre 2026)
 
 Moins de fonctions en plus, plus de confiance et moins d'effort pour l'adopter.
-- **Bloc « Farm »** : suivre un objet récolté, avec objectif, rythme et temps restant. Étude complète : `docs/PLAN-bloc-farm.md` (1.2).
+- **Bloc « Farm »** : suivre un objet récolté, avec objectif, rythme et temps restant, et un panneau épinglé en direct (à généraliser à tous les blocs). Étude complète : `docs/PLAN-bloc-farm.md` (1.2).
 - **Importer depuis un autre addon** : « Reprendre ma barre de Titan Panel / ChocolateBar / datatexts d'ElvUI » recrée les mêmes blocs aux mêmes places. Inconnu : leur format de sauvegarde ; l'addon doit être installé pour être lu. À étudier, pas à promettre.
 - **Plus de conditions d'affichage** : aujourd'hui en combat et en instance (et le profil automatique donjon / raid). En plus : en ville ou au repos, en groupe, sur une monture, au niveau maximum (masquer l'XP tout seul).
 - **Galerie de dispositions** : une page (wiki GitHub ou CurseForge) où les joueurs postent leur texte d'export avec une capture. Vérifier si Wago.io accepte les textes de Tessera.

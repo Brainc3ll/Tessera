@@ -30,6 +30,7 @@ Le joueur décide au pixel près ; Tessera ne recentre plus rien.
 3. 1.2 « Comme chez Blizzard » : styles HD (galerie `/tes debug hd` dans les zips de test), fenêtre d'options avec les pièces des Réglages du jeu, bouton « ? », étiquette « Nouveau ».
 4. 1.3 « Accessibilité » : taille du texte, contraste élevé, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
 5. 2.0 « Manette » : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix, menu en cercle, vibration et barre lumineuse.
+6. Après la 2.0 : disposition « Portable » (Steam Deck, ROG Ally : texte et blocs plus gros ; voir IDEES-FUTUR).
 Maquettes des options (deux volets, mosaïque, accessibilité, manette) : artefact « Tessera – idées d'interface des options » (20/10).
 
 ## Version Forever + Retail (pas une priorité, décidé le 21/10)

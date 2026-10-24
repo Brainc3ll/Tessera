@@ -188,3 +188,10 @@ Améliorations notées :
 - **Audit** : ajouter `WowForeverAPI.lua` à `tools/api_audit.py` pour qu'il connaisse les fonctions propres à Forever.
 
 Pas sur Forever pour l'instant : événements du monde (`C_EventScheduler.CanShowEvents` = false), saison JcJ (0 s). Principe retenu : un bloc peut attendre dans l'addon et n'apparaître que le jour où Blizzard active sa fonction (comme les blocs qui ne s'enregistrent que si le jeu a leurs fonctions).
+
+## Disposition « Portable » : Steam Deck, ROG Ally et autres consoles portables (24 octobre 2026)
+
+Idée de Braincell1980, à faire **après la refonte « Accessibilité » (1.3) et « Manette » (2.0)**, dont elle reprend les briques.
+- Sur ces machines (1280×800, ou 720p/800p sur l'Ally), la place à l'écran n'est pas le souci : WoW met son interface à l'échelle (à 800p, elle fait à peu près la taille d'un écran 1366×768). Le souci, c'est la **taille physique** : sur 7 pouces, un texte en 12 devient minuscule.
+- Une disposition toute prête : une seule barre, peu de blocs (or, sacs, durabilité, FPS, latence, heure), texte en 14-16, blocs plus hauts (faciles à viser au tactile ou au pavé), infobulles agrandies.
+- Pas de bloc Batterie : les addons tournent dans un bac à sable sans accès au système, et l'API de Forever n'a aucune fonction de batterie (vérifié le 24/10). L'overlay de Steam l'affiche déjà.

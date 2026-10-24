@@ -154,14 +154,9 @@ Les modules pourraient être marqués `## LoadOnDemand: 1` : la base chargerait 
 
 **Total : environ 6 à 9 soirées.** Un chantier moyen, moins gros que la manette, comparable à l'accessibilité.
 
-**Moment proposé :** dans la 1.1, dans cet ordre :
-1. le nettoyage du code déjà prévu (découpage de `Core.lua` et d'`Options.lua`) ;
-2. les modules (étapes 1 à 4) ;
-3. les 4 nouveaux blocs (DPS, Corps, Mode de jeu, Météo), directement dans leur module.
+**Moment (mis à jour le 24/10, feuille de route dans A-REPRENDRE) :** la décision de faire les modules reste à prendre (« bof » pour la mémoire, utile pour le confort). Si on les fait, c'est dans la 1.2, juste avant les 4 nouveaux blocs, pour qu'ils aillent directement dans leur module. La 1.1 (nettoyage et optimisation) prépare le terrain sans engager les modules : catalogue et blocs fantômes (étape 1), pas de cadres de blocs en mode DataBroker, profils allégés faits maison.
 
 Ensuite, remettre la branche `accessibilite-manette` à jour depuis `main`, avant d'y commencer l'accessibilité. Les modules touchent surtout les blocs, les profils et les dispositions ; l'accessibilité, surtout l'affichage et les options : peu de conflits si on les fait l'un après l'autre.
-
-À faire dans la 1.1 même sans modules (petit, utile) : ne pas créer les cadres des blocs en mode DataBroker. Et à étudier à part, pour la mémoire : des profils qui n'enregistrent que ce qui diffère des valeurs par défaut.
 
 ---
 

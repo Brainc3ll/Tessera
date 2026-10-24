@@ -295,3 +295,7 @@ Moins de fonctions en plus, plus de confiance et moins d'effort pour l'adopter.
 - **Galerie de dispositions** : une page (wiki GitHub ou CurseForge) où les joueurs postent leur texte d'export avec une capture. Vérifier si Wago.io accepte les textes de Tessera.
 - La fiabilité (zéro erreur, peu de mémoire) est l'argument principal : c'est la 1.1. Publier ensuite des chiffres mesurés dans la description.
 - À éviter : courir après le nombre de blocs.
+
+## Blocs : de base ou propres à Forever, sinon DataBroker (24 octobre 2026)
+
+Décision de Braincell1980 : ne pas coder (et déboguer) des blocs spécialisés qu'un autre addon fait mieux. Un nouveau bloc est **de base** ou **propre à Forever** ; sinon on cherche un addon avec un objet DataBroker, on le teste, et on l'ajoute à la liste des addons compatibles. Blocs gelés : Instances, Chuchotements. Liste vivante et constat (aucune barre d'infos dans les recommandations Forever, concurrent The Forever Panel) : `docs/ADDONS-FOREVER.md`. À faire : `/tes debug broker` (Tessera-dev), liste « testés et compatibles » dans le README et les descriptions ; proposer un objet DataBroker aux auteurs plutôt que lire l'intérieur de leurs addons.

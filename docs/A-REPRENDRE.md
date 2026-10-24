@@ -25,12 +25,24 @@ Le joueur décide au pixel près ; Tessera ne recentre plus rien.
 - « Problèmes connus » (descriptions) : un bloc masqué ne fait plus resserrer ses voisins ; option à l'étude.
 
 ## Feuille de route
-1. 1.0.0 le 4/11 : la rc8 plus les corrections éventuelles.
-2. 1.1 (fin novembre) : nouveaux blocs DPS, Corps, Mode de jeu et Météo (voir IDEES-FUTUR, testés en jeu le 22/10) ; déplacer un bloc au pixel (flèches du clavier et à l'écran), l'agrandir ou le rétrécir ; option « laisser les voisins se resserrer » à l'étude ; cadres d'autres interfaces ; nettoyage du code, recherche dans les options, mode DataBroker plus simple, styles pour d'autres interfaces (GW2 UI d'abord ; Tukui plus tard, il ne tourne pas sur Forever).
-3. 1.2 « Comme chez Blizzard » : styles HD (galerie `/tes debug hd` dans les zips de test), fenêtre d'options avec les pièces des Réglages du jeu, bouton « ? », étiquette « Nouveau ».
-4. 1.3 « Accessibilité » : taille du texte, contraste élevé, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
-5. 2.0 « Manette » : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix, menu en cercle, vibration et barre lumineuse.
-6. Après la 2.0 : disposition « Portable » (Steam Deck, ROG Ally : texte et blocs plus gros ; voir IDEES-FUTUR).
+Décidé le 24/10 : **les versions après la 1.0 servent d'abord à corriger, nettoyer et optimiser Tessera.** Le détail (bon / bof / non) est dans IDEES-FUTUR, « Bilan du 24 octobre ».
+1. **1.0.0 le 4/11** : la 1.0.0-rc9-hotfix, avec seulement la version et l'intro « Première version stable ».
+2. **1.0.x** : corrections des bugs trouvés en jouant (un bug bloquant passe avant tout).
+3. **1.1 « Nettoyage et optimisation »** :
+   - nettoyage du code : découper `Core.lua` et `Options.lua`, retirer le code mort, commentaires à jour ;
+   - étapes de conversion des sauvegardes rangées dans la base (`sv.dbVersion`, étapes « 1 → 2 → 3 » jouées une fois au chargement) ;
+   - profils allégés faits maison : à la déconnexion, retirer les réglages égaux à leur valeur par défaut (environ 200 Ko par profil aujourd'hui) ;
+   - pas de cadres de blocs en mode DataBroker ;
+   - catalogue des blocs et blocs « fantômes » (un bloc absent garde sa place et sa configuration ; voir `PLAN-modules.md`, section 3) ;
+   - performances : filtrer `UNIT_AURA` (Camping), caches de `GetRoot` / `GetSubtree` par passe de mise en page, étiquettes non recalculées blocs verrouillés, un seul rechargement des styles pour les médias LibSharedMedia au lancement ;
+   - changelog plus léger en jeu (à partir de la 1.0.0 ; l'historique des rc reste sur GitHub) ;
+   - petits bugs de la review du 22/10 : Ctrl+Z après l'import d'une disposition, `AttachNewBlock` (ordre de `pairs()`), `FreezeAnchoredGroups` après un combat, bloc Temps de jeu qui peut laisser la discussion muette ;
+   - audit de l'API avec la doc de Forever (`WowForeverAPI.lua` d'Atraeau).
+4. **1.2 « Nouveaux blocs »** : DPS, Corps, Mode de jeu, Météo (testés en jeu le 22/10) ; Compréhension lue par son numéro, honneur d'hier, durabilité des pièces dans les sacs ; modules par catégorie **à décider** (plan prêt : `PLAN-modules.md`) ; ensuite les idées déjà notées : déplacer un bloc au pixel, l'agrandir ou le rétrécir, option « laisser les voisins se resserrer » à l'étude, cadres et styles d'autres interfaces (GW2 UI d'abord), recherche dans les options, mode DataBroker plus simple.
+5. **1.3 « Comme chez Blizzard »** : styles HD (galerie `/tes debug hd` dans les zips de test), fenêtre d'options avec les pièces des Réglages du jeu, bouton « ? », étiquette « Nouveau ».
+6. **1.4 « Accessibilité »** (branche `accessibilite-manette`, remise à jour depuis `main` avant de commencer) : taille du texte, contraste élevé partout, moins d'animations, formes en plus des couleurs, lecture vocale et alertes, assistant du premier lancement.
+7. **2.0 « Manette »** (même branche) : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix, menu en cercle, vibration et barre lumineuse ; bloc « Batterie de la manette » à sonder (`C_GamePad.GetPowerLevel`).
+8. **Après la 2.0** : disposition « Portable » (Steam Deck, ROG Ally ; texte et blocs plus gros).
 Maquettes des options (deux volets, mosaïque, accessibilité, manette) : artefact « Tessera – idées d'interface des options » (20/10).
 
 ## Version Forever + Retail (pas une priorité, décidé le 21/10)

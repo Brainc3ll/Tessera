@@ -63,3 +63,4 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - 22/10 : sondes de l'API de WoW Forever (test43, test44) : blocs DPS, Corps, Mode de jeu, Météo validés pour la 1.1 (IDEES-FUTUR) ; commandes de dev révisées ; rc9 publiée.
 - 23/10 : exports 10 fois plus courts (`TESSERA2:`), anciens textes toujours lus (fixtures dans `tools/fixtures`, à garder) ; statistique et texture des barres gardées à l'import ; rc9-hotfix publiée avant la fermeture de la bêta.
 - 24/10 : branche `accessibilite-manette` créée depuis `main` ; rangées archivées dans `archive/refonte-rangees` ; disposition « Portable » notée pour après la 2.0.
+- 24/10 : étude des modules (`PLAN-modules.md`) et des bibliothèques ; bilan bon / bof / non dans IDEES-FUTUR ; après la 1.0 : corriger, nettoyer, optimiser d'abord (1.1), nouveaux blocs ensuite (1.2).

@@ -199,3 +199,41 @@ Idée de Braincell1980, à faire **après la refonte « Accessibilité » (1.3) 
 ## Tessera en modules optionnels (24 octobre 2026, à l'étude)
 
 Idée de Braincell1980 : une base et des modules de blocs par catégorie (Forever, Personnage, Monde, Progression, Social, Système) dans le même zip, que le joueur active dans la liste des addons. Étude complète, avec mesures, rétrocompatibilité (blocs « fantômes » qui gardent leur place et leur configuration), packaging, risques et inconnues : `docs/PLAN-modules.md`. Proposé pour la 1.1, après le nettoyage du code et avant les nouveaux blocs. Trouvé pendant l'étude : le vrai poids mémoire vient des profils (environ 200 Ko chacun, tous les réglages enregistrés), pas du code des blocs.
+
+## Bilan du 24 octobre 2026 : bon, bof, non
+
+Fait avec Braincell1980 après la review du code (22/10), les sondes de l'API de Forever, l'étude des modules (`PLAN-modules.md`) et celle des bibliothèques. Décision : les versions après la 1.0 servent d'abord à corriger, nettoyer et optimiser (feuille de route dans A-REPRENDRE).
+
+**Bon**
+- Profils allégés, faits maison : à la déconnexion, retirer les réglages égaux à leur valeur par défaut ; au chargement, `PrepareProfile` les remet déjà. Environ 200 Ko par profil aujourd'hui en mémoire Lua (mesuré dans le simulateur), tous les profils chargés au lancement.
+- Étapes de conversion des sauvegardes rangées dans la base (`sv.dbVersion`), jamais dans un module à part : un joueur peut sauter plusieurs versions.
+- Pas de cadres de blocs en mode DataBroker (aujourd'hui créés puis cachés : 61 avec le Chemin de ronde).
+- Catalogue des blocs et blocs « fantômes » : utiles même sans modules (un profil Forever ouvert ailleurs).
+- Camping : filtrer `UNIT_AURA` sur le joueur.
+- Mode placement plus rapide : caches de groupes, étiquettes non recalculées verrouillé, rechargement des styles regroupé au lancement.
+- Changelog plus léger en jeu (54 Ko en mémoire, cinq fois le module Forever) : à partir de la 1.0.0, l'historique des rc sur GitHub.
+- Petits bugs de la review (voir A-REPRENDRE, 1.1).
+- Améliorations des blocs vues dans la sonde : Compréhension par numéro et sa description, honneur d'hier, durabilité dans les sacs (à sonder une fois).
+- Audit de l'API avec la doc de Forever.
+- Bloc « Batterie de la manette » (`C_GamePad.GetPowerLevel`), à sonder, pour la 2.0.
+- Les 4 nouveaux blocs (DPS, Corps, Mode de jeu, Météo) ; la disposition « Portable » après la 2.0.
+
+**Bof**
+- Modules par catégorie : environ 2 à 3 % de mémoire en moins ; vrais atouts : listes plus courtes, code rangé. À décider (plan prêt).
+- LibSerialize + LibDeflate (exports compressés, environ 1,5-2 Ko au lieu de 5-7) : seulement si les joueurs partagent beaucoup de profils sur Discord.
+- LibDBIcon : petit gain, Tessera a déjà son bouton.
+- `collectgarbage` au verrouillage : baisse le chiffre affiché mais nettoie la mémoire de tous les addons (petit à-coup possible) ; décision à reprendre.
+- Retirer le code des anciennes versions de test (copies du mode Édition, assistant de captures) : propre, presque personne concerné.
+- Version Retail : écartée le 21/10.
+
+**Non**
+- L'affichage des blocs en module séparé : gros chantier pour environ 0,1 Mo.
+- AceDB : les profils faits maison donnent l'essentiel sans toucher au système de profils.
+- AceConfig / AceGUI : perdrait la fenêtre d'options stylée et le travail prévu pour la manette et l'accessibilité.
+- LibSharedMedia embarquée : Tessera l'utilise déjà quand un autre addon la charge.
+- Bloc Batterie (de l'ordinateur) : impossible, les addons n'ont pas accès au système.
+- Événements du monde, saison JcJ : coupés sur Forever, seulement si Blizzard les active.
+- Compteur de dégâts complet (classement du groupe) : le DPS du joueur suffit.
+- Rouvrir le moteur des rangées : seulement si des joueurs le réclament (`archive/refonte-rangees`).
+
+Licences à vérifier avant d'embarquer une bibliothèque (Ace3, LibDeflate en zlib et LibSerialize en MIT semblent compatibles avec la licence MIT de Tessera, sans vérification).

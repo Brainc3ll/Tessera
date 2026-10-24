@@ -61,4 +61,7 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
   and in high contrast (see `docs/A-REPRENDRE.md`, roadmap).
 - Never recode what the game already offers (Blizzard's accessibility settings, for one): Tessera
   follows those settings and points to them; it only adds what the game lacks for its own blocks.
+- Inclusive texts: address the player directly and prefer gender-neutral French wording
+  ("Bienvenue", not "Bienvenu(e)"); no "(e)" or middle dot, screen readers read them badly.
+  A block that shows a class or race name uses the gendered name the game gives for that character.
 - Commit messages end with: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`

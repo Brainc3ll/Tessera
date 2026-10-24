@@ -273,3 +273,15 @@ Idée de Braincell1980 : WoW Forever va attirer beaucoup de joueurs de 35 ans et
 - Le bloc : le temps de la session en grand ; l'infobulle « depuis la connexion : +XP, +or, niveaux ».
 - « Où j'en étais » : une note courte écrite avant la déconnexion, montrée à la connexion suivante.
 - « Je m'arrête à 23h » : heure de fin et temps restant. L'horloge de Blizzard a une alarme sur Retail : vérifier en jeu si elle existe sur Forever avant de recoder quoi que ce soit (règle : ne pas refaire ce que le jeu fait déjà).
+
+## Inclusivité (24 octobre 2026)
+
+Que personne ne se sente oublié, au-delà de l'accessibilité. Règle ajoutée dans CLAUDE.md pour les textes et le genre du personnage.
+- Textes français : s'adresser au joueur directement, mots épicènes ; ni « (e) » ni point médian (mal lus par les lecteurs d'écran). Vérifié le 24 octobre : aucun dans `Locales/frFR.lua`.
+- Genre du personnage : aujourd'hui Tessera ne lit la classe que pour sa couleur. Un futur bloc qui affiche une classe ou une race prend le nom accordé fourni par le jeu.
+- Petites configurations (vieux PC, portables, consoles portables) : garder Tessera léger, voir la 1.1.
+- Débutants : réglages par défaut qui marchent seuls, aide sans jargon (visite guidée, bloc « Session »).
+- Habitudes régionales : heure 12 h / 24 h et formats de date déjà là ; vérifier que les réinitialisations s'affichent à l'heure locale.
+- Une main, main gauche : manette (2.0), blocs placés de chaque côté de l'écran.
+- Couleurs : rouge = perte et vert = gain ne valent pas partout ; les formes en plus des couleurs (1.4) règlent ça.
+- À éviter : options « drapeaux » ou thèmes ajoutés pour afficher une valeur. L'inclusivité la plus solide ne se voit pas.

@@ -265,3 +265,11 @@ Règle de Braincell1980 : le jeu a déjà ses options d'accessibilité (Réglage
 - Indiquer : dans l'onglet Accessibilité de Tessera, une partie « Réglages du jeu » qui les liste et un bouton qui ouvre la page Accessibilité des Réglages de Blizzard (`C_SettingsUtil.OpenSettingsPanel`, présent dans l'API de Forever).
 - Tessera ne fait que ce que le jeu ne fait pas pour ses blocs : formes en plus des couleurs dans les valeurs, polices d'accessibilité, contraste élevé des blocs, moins d'animations dans Tessera, lecture vocale d'un bloc, navigation à la manette dans ses fenêtres.
 - À sonder en jeu avant la 1.4 : la liste exacte des options d'accessibilité de WoW Forever. Ce sont surtout des réglages (CVars, par exemple le mode daltonien), absents de la doc de l'API d'Atraeau : impossible de les lister sans le jeu.
+
+## Bloc « Session » pour ceux qui jouent peu (24 octobre 2026)
+
+Idée de Braincell1980 : WoW Forever va attirer beaucoup de joueurs de 35 ans et plus, avec peu de temps de jeu. Nom neutre (« Session » ou « Soirée de jeu »), pas « gamer dad ».
+- Déjà dans Tessera, mais éparpillé : temps de la session (infobulle seulement), temps joué total, XP de repos, compteurs de réinitialisation, or et XP gagnés pendant la session.
+- Le bloc : le temps de la session en grand ; l'infobulle « depuis la connexion : +XP, +or, niveaux ».
+- « Où j'en étais » : une note courte écrite avant la déconnexion, montrée à la connexion suivante.
+- « Je m'arrête à 23h » : heure de fin et temps restant. L'horloge de Blizzard a une alarme sur Retail : vérifier en jeu si elle existe sur Forever avant de recoder quoi que ce soit (règle : ne pas refaire ce que le jeu fait déjà).

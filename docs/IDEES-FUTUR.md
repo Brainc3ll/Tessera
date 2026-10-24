@@ -237,3 +237,23 @@ Fait avec Braincell1980 après la review du code (22/10), les sondes de l'API de
 - Rouvrir le moteur des rangées : seulement si des joueurs le réclament (`archive/refonte-rangees`).
 
 Licences à vérifier avant d'embarquer une bibliothèque (Ace3, LibDeflate en zlib et LibSerialize en MIT semblent compatibles avec la licence MIT de Tessera, sans vérification).
+
+## Polices pour l'accessibilité (24 octobre 2026, pour la 1.4)
+
+Idée de Braincell1980 : donner le choix de polices pensées pour l'accessibilité, et les rendre disponibles pour les autres addons. Licences vérifiées en ligne le 24/10 ; toutes compatibles avec la licence MIT de Tessera (livrées sans modification, avec leur fichier de licence).
+
+| Police | Pour qui | Licence |
+|---|---|---|
+| OpenDyslexic | Dyslexie (lettres lestées en bas) ; études partagées sur son efficacité, mais appréciée | SIL OFL |
+| Atkinson Hyperlegible et Next (2025) | Malvoyance (I, l, 1 et O, 0 bien distincts) ; Braille Institute | SIL OFL 1.1 |
+| Luciole | Malvoyance ; projet français (Centre Technique Régional pour la Déficience Visuelle) | CC BY 4.0 (polices de texte) : citer les auteurs (onglet À propos) |
+| Lexend | Fluidité de lecture ; plusieurs largeurs (utile pour un réglage d'espacement des lettres) | SIL OFL 1.1 |
+| Andika | Lecteurs débutants ; SIL International | SIL OFL 1.1 (noms « Andika » et « SIL » réservés) |
+| Inclusive Sans | Lisibilité générale | SIL OFL 1.1 |
+
+À éviter : Dyslexie et Read Regular (payantes), Tiresias (GPL).
+
+- Partage avec les autres addons : les enregistrer dans LibSharedMedia (elles apparaissent alors dans ElvUI, Details, WeakAuras, FlareUI...). Soit Tessera les enregistre quand LibSharedMedia est présent, soit un petit addon `Tessera_Fonts` dans le même zip emporte LibSharedMedia (rejoint `PLAN-modules.md`). Licence de LibSharedMedia à vérifier avant de l'embarquer.
+- À vérifier en jeu : WoW lit les TTF de façon sûre (prendre les versions fixes des polices variables, Lexend et Inclusive Sans) ; couverture du russe police par police ; coréen et chinois : police du jeu.
+- Zip : environ 1 à 2 Mo de plus pour les styles normal et gras des 6 polices ; aucun coût en mémoire Lua (le jeu charge une police seulement si elle sert).
+- Avec la règle de la 1.3 : la fenêtre d'options doit rester lisible avec chacune de ces polices (largeurs différentes : OpenDyslexic et Lexend sont larges).

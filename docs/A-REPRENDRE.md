@@ -51,6 +51,7 @@ Décidé le 24/10 : **les versions après la 1.0 servent d'abord à corriger, ne
 7. **2.0 « Manette »** (même branche) : Tessera prend la manette seulement quand ses fenêtres sont ouvertes, navigation à la croix, menu en cercle, vibration et barre lumineuse ; bloc « Batterie de la manette » à sonder (`C_GamePad.GetPowerLevel`).
 8. **Après la 2.0** : disposition « Portable » (Steam Deck, ROG Ally ; texte et blocs plus gros).
 Maquettes des options (deux volets, mosaïque, accessibilité, manette) : artefact « Tessera – idées d'interface des options » (20/10).
+Maquette selon la règle de la 1.3 (24/10) : artefact « Tessera – options accessibles (maquette 1.3) » : fenêtre normale, texte ×2, contraste élevé, menu en cercle à la manette.
 
 ## Version Forever + Retail (pas une priorité, décidé le 21/10)
 - Retail 12.1.5 (interface 120105) et le PTR 12.1.7 ont la même API (Midnight) que Forever.

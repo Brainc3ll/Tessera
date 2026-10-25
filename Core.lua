@@ -799,8 +799,9 @@ local function InitDB()
 
     ns.sv = sv
     ns.charKey = ns.CharacterKey()
+    ns:MigrateCharacterKey(ns.RealmCharacterKey())
     ns:MigrateCharacterKey(ns.LegacyCharacterKey())
-    ns:MigrateCharacterKey(ns.TestCharacterKey())
+    ns:MigrateFullNameKeys()
     ns:ApplyLevelPalette()
     -- already in a dungeon at login / reload: start directly with its profile
     if ns.GetSituationProfile then ns.profileOverride = ns:GetSituationProfile() end
@@ -813,8 +814,10 @@ end
 
 -- The key that names this character in the saved variables (gold of each character,
 -- profile of each character). WoW Forever names characters "First name Surname",
--- unique in the whole region (no realm): the full name is the key there, as AceDB
--- does. Elsewhere: "Name-Realm". (RegionalUniqueNamesEnabled is WoW Forever's own.)
+-- unique in the whole region and across all rulesets: the full name alone is the key
+-- there, as AceDB does. GetRealmName() is not used on WoW Forever: it returns a ruleset
+-- label ("Classic Beta PvP") that may change. Elsewhere: "Name-Realm".
+-- (RegionalUniqueNamesEnabled is WoW Forever's own.)
 -- WoW Forever's full name ("Ellen Kemp", first name and surname) when the game uses
 -- regional unique names, otherwise nil
 function ns.FullCharName()
@@ -828,34 +831,69 @@ function ns.FullCharName()
     end
 end
 
--- The character's key in Tessera's saved data: "Name-Realm", with the full name on WoW
--- Forever ("Ellen Kemp-<ruleset>"): two characters never share it, even with the same
--- full name on two rulesets
+-- The character's key in Tessera's saved data: the full name on WoW Forever, else
+-- "Name-Realm"
 function ns.CharacterKey()
-    return (ns.FullCharName() or UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
+    return ns.FullCharName() or ((UnitName("player") or "?") .. "-" .. (GetRealmName() or "?"))
 end
 
--- The key earlier versions used ("Name-Realm", the first name only on WoW Forever)
+-- Keys of earlier versions, converted at login:
+-- "Name-Realm", the first name only on WoW Forever (before 1.0.0-rc)
 function ns.LegacyCharacterKey()
     return (UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
 end
 
--- The key of the 1.0.0 test versions on WoW Forever: the full name alone
-function ns.TestCharacterKey()
-    return ns.FullCharName()
+-- "Full name-Realm" (1.0.0-rc versions on WoW Forever), or nil elsewhere
+function ns.RealmCharacterKey()
+    local full = ns.FullCharName()
+    return full and (full .. "-" .. (GetRealmName() or "?"))
 end
 
--- Data saved under an earlier key moves to the new one, once (nothing is lost: the
--- character keeps its profile, its gold and its gold history)
+-- Data saved under an earlier key moves to the new one. The new key keeps its value
+-- when it already has one; the old key is removed either way, so running it again does
+-- nothing (nothing is lost: the character keeps its profile, its gold and its history)
+local KEYED_TABLES = { "charProfiles", "chars", "goldHistory" }
 function ns:MigrateCharacterKey(old)
     local new, sv = self.charKey, self.sv
     if not old or old == new or not sv then return end
-    for _, field in ipairs({ "charProfiles", "chars", "goldHistory" }) do
+    for _, field in ipairs(KEYED_TABLES) do
         local t = sv[field]
         if type(t) == "table" and t[old] ~= nil then
             if t[new] == nil then t[new] = t[old] end
             t[old] = nil
         end
+    end
+end
+
+-- On WoW Forever, data saved as "Full name-<ruleset label>" by the 1.0.0-rc versions
+-- (the label may have changed since: "Classic Beta PvE" on the beta) moves to the full
+-- name, for every character at once: full names are unique on WoW Forever and contain a
+-- space, and character names never contain "-". Keys of other characters that are not a
+-- full name (first name only, from the first test versions) stay as they are.
+function ns:MigrateFullNameKeys()
+    local sv = self.sv
+    if not self.FullCharName() or not sv then return end
+    local moves = {}
+    for _, field in ipairs(KEYED_TABLES) do
+        local t = sv[field]
+        if type(t) == "table" then
+            for key in pairs(t) do
+                local full = type(key) == "string" and key:match("^([^%-]+ [^%-]+)%-.+$")
+                if full then table.insert(moves, { field = field, old = key, new = full }) end
+            end
+        end
+    end
+    -- the same order on every login: the current label's data first, then by name
+    local label = "-" .. (GetRealmName() or "")
+    table.sort(moves, function(a, b)
+        local ca, cb = a.old:sub(-#label) == label, b.old:sub(-#label) == label
+        if ca ~= cb then return ca end
+        return a.old < b.old
+    end)
+    for _, m in ipairs(moves) do
+        local t = sv[m.field]
+        if t[m.new] == nil then t[m.new] = t[m.old] end
+        t[m.old] = nil
     end
 end
 
@@ -2689,6 +2727,7 @@ end
 
 -- A character's name without this realm's suffix ("Name-Realm" -> "Name")
 function ns.ShortCharName(name)
+    if ns.FullCharName() then return (name:match("^[^%-]+")) or name end -- WoW Forever: no realms
     local realm = "-" .. (GetRealmName() or "")
     return name:sub(-#realm) == realm and name:sub(1, -#realm - 1) or name
 end

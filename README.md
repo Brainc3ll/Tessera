@@ -28,7 +28,7 @@ LibDataBroker to exchange data with DataBroker addons.
 - **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames.
 - **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
 - **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
-- **Ready to stream.** Streamer mode hides other players' names, your other characters, your realm, your guild's name and your gold in one click.
+- **Ready to stream.** Streamer mode hides other players' names, your other characters, your guild's name and your gold in one click.
 - **DataBroker both ways.** Show your other addons' DataBroker objects as blocks, or share Tessera's blocks with Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 
 ## Why make Tessera when addons like it already exist?
@@ -150,7 +150,7 @@ Help tab inside the game explains everything.
   reagents, ammo, item level, speed, volume, addon memory, instances, played time, goal, mana
   regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode...
 - Streamer mode (General tab, a key binding or its block): for streams and videos, other players' names,
-  your other characters, your realm, your guild's name and your gold show as `***`.
+  your other characters, your guild's name and your gold show as `***`.
 - Blocks that have nothing to show hide themselves and keep their place (in the ready-made bars,
   they sit in the second row). A group stays exactly where you drop it: no automatic recentering.
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks; groups
@@ -309,8 +309,11 @@ Blizzard windows through `secureMacro` cannot do so from another addon's bar.
 
 - **Character names:** WoW Forever names characters "First name Surname", unique in the whole
   region (`RegionalUniqueNamesEnabled`, read through `_G`). Tessera keys a character's saved data
-  (gold, per-character profile) by that full name, as AceDB does (`ns.CharacterKey`), and moves
-  data saved under the older "Name-Realm" key once (`ns:MigrateCharacterKey`).
+  (gold, per-character profile) by that full name alone, as AceDB does (`ns.CharacterKey`).
+  `GetRealmName()` is not used on WoW Forever: it returns a ruleset label ("Classic Beta PvE")
+  that may change. At login, data saved under older keys ("Name-Realm", and "Full name-<label>"
+  from the 1.0.0-rc versions) moves to the full name once (`ns:MigrateCharacterKey`,
+  `ns:MigrateFullNameKeys`); `tools/fixtures/sv-rc9-forever.lua` tests it on every push.
 
 WoW Forever runs on the modern client (Midnight-era API) but has systems of its own, without
 public documentation yet. What Tessera found, with the development probes below:

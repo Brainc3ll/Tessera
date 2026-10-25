@@ -314,6 +314,21 @@ methods.IsMouseEnabled = function() return true end
 -- any other global: a function returning nil
 setmetatable(_G, { __index = function(_, k) if k:match("^[A-Z]") or k:match("^C_") then return nil end end })
 
+-- Start from a player's saved variables (old-data test), as WoW Forever would:
+--   TESSERA_SV=tools/fixtures/sv-rc9-forever.lua TESSERA_FULLNAME="Nora Quill" TESSERA_REALM="Classic PvE"
+--   lua5.1 tools/mock_run.lua . enUS
+local svFile = os.getenv("TESSERA_SV")
+if svFile and svFile ~= "" then assert(loadfile(svFile))() end
+local fullName = os.getenv("TESSERA_FULLNAME")
+if fullName and fullName ~= "" then
+    local first, last = fullName:match("^(%S+)%s+(%S+)$")
+    RegionalUniqueNamesEnabled = function() return true end
+    UnitNameUnmodified = function() return first, last end
+    UnitName = function() return first, last end
+end
+local realmLabel = os.getenv("TESSERA_REALM")
+if realmLabel and realmLabel ~= "" then GetRealmName = function() return realmLabel end end
+
 local ns = {}
 local toc = io.open(addonDir .. "/Tessera.toc"):read("*a")
 for line in toc:gmatch("[^\r\n]+") do
@@ -341,6 +356,15 @@ local function Fire(event, ...)
     end
 end
 Fire("PLAYER_LOGIN")
+if svFile and svFile ~= "" then
+    -- the character keys after the login conversion, for the old-data test
+    for _, field in ipairs({ "chars", "charProfiles", "goldHistory" }) do
+        local keys = {}
+        for k in pairs(TesseraDB[field] or {}) do table.insert(keys, k) end
+        table.sort(keys)
+        print("SV " .. field .. ": " .. table.concat(keys, " | "))
+    end
+end
 Fire("PLAYER_ENTERING_WORLD")
 for round = 1, 3 do
     local timers = __timers; __timers = {}
@@ -1070,29 +1094,56 @@ for _, step in ipairs({
         ns.UpdateAll = real
         assert(n >= 3, "blocks updated again after the loading screen: " .. n)
     end,
-    -- WoW Forever names characters "First name Surname": the full name and the realm (ruleset)
-    -- are the character's key, and data saved under the earlier keys moves to it
+    -- WoW Forever names characters "First name Surname", unique across all rulesets: the full
+    -- name alone is the character's key (GetRealmName() is a label that may change), and
+    -- data saved under the earlier keys moves to it, once
     function()
         local realRegional, realUnmod = _G.RegionalUniqueNamesEnabled, _G.UnitNameUnmodified
         _G.RegionalUniqueNamesEnabled = function() return true end
         _G.UnitNameUnmodified = function() return "Ellen", "Kemp" end
-        local realm = GetRealmName()
-        local key = "Ellen Kemp-" .. realm
-        assert(ns.CharacterKey() == key, "full name and realm as key: " .. ns.CharacterKey())
-        local old = ns.LegacyCharacterKey()
+        local key = "Ellen Kemp"
+        assert(ns.CharacterKey() == key, "full name alone as key: " .. ns.CharacterKey())
         local before = ns.charKey
-        ns.sv.charProfiles[old] = "Mine"
-        ns.sv.chars[old] = { money = 42, class = "MAGE" }
+        local legacy = ns.LegacyCharacterKey() -- "Ellen-Realm"
+        local rc = ns.RealmCharacterKey()      -- "Ellen Kemp-Realm"
+        assert(rc == "Ellen Kemp-" .. GetRealmName(), "1.0.0-rc key")
         ns.sv.goldHistory = ns.sv.goldHistory or {}
-        ns.sv.goldHistory["Ellen Kemp"] = { 1 } -- saved by a 1.0.0 test version
+        -- saved by the rc versions, under the current label and under an older label
+        ns.sv.charProfiles[rc] = "Mine"
+        ns.sv.chars[rc] = { money = 42, class = "MAGE" }
+        ns.sv.goldHistory["Ellen Kemp-Classic Beta PvP"] = { ["2026-10-20"] = 5 }
+        -- saved before the rc versions (first name only): older, must not win
+        ns.sv.charProfiles[legacy] = "Old"
+        ns.sv.chars[legacy] = { money = 1, class = "MAGE" }
+        -- other characters, saved by the rc versions under the beta label: converted too
+        ns.sv.chars["Ellen Kempton-Classic Beta PvE"] = { money = 7, class = "ROGUE" }
+        ns.sv.goldHistory["Tobin Harrow-Classic Beta PvE"] = { ["2026-10-22"] = 2 }
+        -- a first-name-only key of another character (first test versions): left as it is
+        ns.sv.chars["Bob-Classic Beta PvE"] = { money = 3, class = "WARRIOR" }
         ns.charKey = ns.CharacterKey()
-        ns:MigrateCharacterKey(old)
-        ns:MigrateCharacterKey(ns.TestCharacterKey())
-        assert(ns.sv.charProfiles[key] == "Mine" and not ns.sv.charProfiles[old], "profile moved")
-        assert(ns.sv.chars[key].money == 42 and not ns.sv.chars[old], "gold moved")
-        assert(ns.sv.goldHistory[key] and not ns.sv.goldHistory["Ellen Kemp"], "test key moved")
-        assert(ns.ShortCharName(key) == "Ellen Kemp", "same realm: full name only")
-        assert(ns.ShortCharName("Ellen Kemp-Other PvP") == "Ellen Kemp-Other PvP", "other ruleset: with its name")
+        local function Convert()
+            ns:MigrateCharacterKey(ns.RealmCharacterKey())
+            ns:MigrateCharacterKey(ns.LegacyCharacterKey())
+            ns:MigrateFullNameKeys()
+        end
+        Convert()
+        assert(ns.sv.charProfiles[key] == "Mine", "the rc profile wins: " .. tostring(ns.sv.charProfiles[key]))
+        assert(ns.sv.chars[key].money == 42, "the rc gold wins")
+        assert(ns.sv.goldHistory[key] and ns.sv.goldHistory[key]["2026-10-20"] == 5, "history under an older label moved")
+        for _, old in ipairs({ rc, legacy, "Ellen Kemp-Classic Beta PvP" }) do
+            assert(ns.sv.charProfiles[old] == nil and ns.sv.chars[old] == nil and ns.sv.goldHistory[old] == nil,
+                "old key removed: " .. old)
+        end
+        assert(ns.sv.chars["Ellen Kempton"].money == 7 and not ns.sv.chars["Ellen Kempton-Classic Beta PvE"],
+            "another character's key converted")
+        assert(ns.sv.goldHistory["Tobin Harrow"] and not ns.sv.goldHistory["Tobin Harrow-Classic Beta PvE"], "other history converted")
+        assert(ns.sv.chars["Bob-Classic Beta PvE"], "a first-name-only key stays")
+        assert(ns.ShortCharName("Bob-Classic Beta PvE") == "Bob", "no ruleset label shown")
+        -- a second run changes nothing
+        local snapshot = ns.sv.charProfiles[key] .. ns.sv.chars[key].money
+        Convert()
+        assert(ns.sv.charProfiles[key] .. ns.sv.chars[key].money == snapshot, "converting twice changes nothing")
+        assert(ns.ShortCharName(key) == "Ellen Kemp", "full name shown as is")
         -- FlareUI's font, read from its AceDB profile under AceDB's key (the full name alone)
         _G.FlareUI2_DB = { profileKeys = { ["Ellen Kemp"] = "Perso" },
             profiles = { Perso = { actionbars = { hotkeyFont = { face = "Friz Quadrata TT", flags = "NONE" } } } } }
@@ -1100,6 +1151,7 @@ for _, step in ipairs({
         assert(theme, "FlareUI style")
         _G.FlareUI2_DB = nil
         ns.sv.charProfiles[key], ns.sv.chars[key], ns.sv.goldHistory[key] = nil, nil, nil
+        ns.sv.chars["Ellen Kempton"], ns.sv.chars["Bob-Classic Beta PvE"], ns.sv.goldHistory["Tobin Harrow"] = nil, nil, nil
         ns.charKey = before
         _G.RegionalUniqueNamesEnabled, _G.UnitNameUnmodified = realRegional, realUnmod
     end,

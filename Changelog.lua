@@ -46,7 +46,7 @@ ns.CHANGELOG = {
                     .. "made them and nobody has reviewed them yet: you can correct them with CurseForge's "
                     .. "localization tool.",
                 "Streamer mode, for streams and videos: other players' names, your other characters, your "
-                    .. "realm, your guild's name and your gold show as ***. Turn it on in the General tab, with a "
+                    .. "guild's name and your gold show as ***. Turn it on in the General tab, with a "
                     .. "key binding, or with the new Streamer mode block (hidden by default).",
               },
               fr = {
@@ -54,7 +54,7 @@ ns.CHANGELOG = {
                     .. "Claude (une IA) les a faites et personne ne les a encore relues : tu peux les corriger "
                     .. "avec l'outil de traduction de CurseForge.",
                 "Mode streamer, pour les streams et les vidéos : les noms des autres joueurs, tes autres "
-                    .. "personnages, ton royaume, le nom de ta guilde et ton or s'affichent en ***. Il s'active dans "
+                    .. "personnages, le nom de ta guilde et ton or s'affichent en ***. Il s'active dans "
                     .. "l'onglet Général, avec un raccourci clavier ou avec le nouveau bloc Mode streamer (masqué au "
                     .. "départ).",
               } },
@@ -73,10 +73,17 @@ ns.CHANGELOG = {
               } },
             { kind = "fixed",
               en = {
+                "Each character's data (its own profile, its gold and gold history) is now saved under its "
+                    .. "full name, as WoW Forever has no realms: it no longer depends on the server's name, which "
+                    .. "may change. Your settings carry over on their own at your next login.",
                 "Arcana, ChocolateBar's new name, now switches Tessera to DataBroker mode like ChocolateBar "
                     .. "did, and the help names it.",
               },
               fr = {
+                "Les données de chaque personnage (son profil à lui, son or et l'historique de l'or) sont "
+                    .. "maintenant rangées sous son nom complet, car WoW Forever n'a pas de royaumes : elles ne "
+                    .. "dépendent plus du nom du serveur, qui peut changer. Tes réglages suivent tout seuls à ta "
+                    .. "prochaine connexion.",
                 "Arcana, le nouveau nom de ChocolateBar, fait de nouveau passer Tessera en mode DataBroker "
                     .. "comme le faisait ChocolateBar, et l'aide le cite.",
               } },

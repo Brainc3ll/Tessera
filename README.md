@@ -6,6 +6,8 @@
 
 [![ACR E4d](https://img.shields.io/badge/ACR-E4d-2140B5)](ACR.md) Written by an AI (Claude) from my ideas; I test every version in game; no human reads the code line by line.
 
+**TL;DR:** Gold, bags, FPS, Legacy points… in small blocks that snap together like mosaic tiles. Made by a player who can't code and an AI that can't play (yet). So I test it a lot.
+
 Tessera is a World of Warcraft addon for **WoW Forever** that shows small information blocks
 (gold, bags, durability, FPS, latency, time, XP, quests...) and launcher blocks (minimap and
 addon compartment buttons). Each block can be styled and placed on its own, and blocks placed
@@ -18,6 +20,33 @@ LibDataBroker to exchange data with DataBroker addons.
 > **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its own systems
 > (Legacy, camping, Comprehension, PvP) are still young and may change, so a game update can break
 > a block until Tessera catches up.
+
+## What makes it different?
+
+- **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
+- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills.
+- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames.
+- **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
+- **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
+- **DataBroker both ways.** Show your other addons' DataBroker objects as blocks, or share Tessera's blocks with Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
+
+## Why make Tessera when addons like it already exist?
+
+I love bars like Arcana (formerly ChocolateBar) and Bazooka. I used Broker_Everything a lot, and I spent hours building small bars with a single piece of info each, to put them in just the right spot on my interface. My favorite was StatBlock Core by Funkeh: free-floating blocks, one per piece of info, that I could put anywhere. It hasn't been updated since 2022. And tooltips didn't look the same from one broker addon to the next, French was often missing, and many of those addons were no longer maintained.
+
+When the WoW Forever beta came out, I came back to WoW and found FlareUI: an interface with a fantasy look, not a futuristic one. Seeing what players were building with AI's help, I wanted to try something: a small thing just for me, that did exactly what I asked for.
+
+That's how Tessera was born. It was never meant to be published. I wanted to learn how it works when you start a GitHub repo from scratch and release an addon. Then I put it through more testing than I gave the Forever beta itself, and the ideas kept coming. Some are in Tessera today. Others are on the way (see below).
+
+So I decided to make it available to as many players as I could. That meant watching closely what the AI does: the right WoW words in every language, and code checked with the tools real addon developers use.
+
+## Where it is going
+
+Plans, not promises:
+- **Accessibility** for players with disabilities: Tessera follows the game's own accessibility settings and only adds what its blocks need. From 1.3, every new feature is checked with text twice as big, in high contrast and without a mouse.
+- **Full gamepad support**, built on WoW Forever's own gamepad mode: something I have never seen in a panel or DataBroker addon.
+- **An interface that sizes itself from its texts**, so no translation or bigger text ever overflows a button.
+- **A language setting**, to use Tessera in another language than your game client.
 
 ## Screenshots
 
@@ -65,6 +94,16 @@ Tessera is a collaboration between me, a player, and an AI.
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
 
 In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a maintainer who does not program, 76–100% of the code written by AI, changes tested but not read by a human (details in `ACR.md`). `AI-DECLARATION.md` gives the AI's part at each stage (design, code, tests, docs, review, release).
+
+## How I look after it
+
+- I play WoW Forever and test each version in game before I release it.
+- Your layouts, styles and profiles carry over from one version to the next. If a change ever has to break them, Tessera warns you and converts them. Export texts from older versions still import.
+- On every change, GitHub runs automatic checks: static analysis, the API audit addon reviewers use, a check against WoW Forever's own function list, a full run of the addon in English and French, and a test of the Forever blocks against a changing game.
+- Compatibility with other addons goes through public standards only (DataBroker, LibDBIcon, LibSharedMedia), never through their internals, so their updates don't break Tessera.
+- WoW Forever's own systems are young and may change. If a game update breaks a block, tell me and I'll fix it.
+
+I can't promise how many years I'll keep this up. Today, this is how I run it.
 
 ## At a glance
 

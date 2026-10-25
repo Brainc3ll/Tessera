@@ -299,3 +299,14 @@ Moins de fonctions en plus, plus de confiance et moins d'effort pour l'adopter.
 ## Blocs : de base ou propres à Forever, sinon DataBroker (24 octobre 2026)
 
 Décision de Braincell1980 : ne pas coder (et déboguer) des blocs spécialisés qu'un autre addon fait mieux. Un nouveau bloc est **de base** ou **propre à Forever** ; sinon on cherche un addon avec un objet DataBroker, on le teste, et on l'ajoute à la liste des addons compatibles. Blocs gelés : Instances, Chuchotements. Liste vivante et constat (aucune barre d'infos dans les recommandations Forever, concurrent The Forever Panel) : `docs/ADDONS-FOREVER.md`. À faire : `/tes debug broker` (Tessera-dev), liste « testés et compatibles » dans le README et les descriptions ; proposer un objet DataBroker aux auteurs plutôt que lire l'intérieur de leurs addons.
+
+## Code de l'interface de Blizzard pour Forever (25 octobre 2026)
+
+Source donnée par Braincell1980 : [Gethe/wow-ui-source](https://github.com/Gethe/wow-ui-source), branche `forever` (code Lua/XML de l'interface du client, version 1.60.1 au 22/10). Dans ce code, Forever s'appelle « Camelot » (`[AllowLoadGameType camelot]`, dossiers `Camelot/`). Cloner : `git clone --depth 1 -b forever https://github.com/Gethe/wow-ui-source`. Plus fiable que la doc d'Atraeau pour savoir ce que le client charge vraiment.
+
+Réponses trouvées le 25/10 :
+- **Réglages d'accessibilité de Forever** (`Blizzard_SettingsDefinitions_Frame`, `_Shared`) : mode daltonien et filtre daltonien (CVars `colorblindMode`, `colorblindSimulator`, `colorblindWeaknessFactor`), effets d'écran alternatifs pour la photosensibilité (`overrideScreenFlash`), mal des transports et secousses de caméra / d'interface, taille du curseur, taille minimale des noms, pavé de déplacement, icônes et infobulles de ciblage doux, narrateur d'écran et synthèse vocale, alertes sonores de combat, sous-titres.
+- **Absents de Forever** (chargés seulement sur Retail) : taille du texte de l'interface et contraste du texte des quêtes. Les options « taille du texte » et « contraste élevé » de Tessera ne font donc pas doublon.
+- Tessera peut **suivre** : `colorblindMode` (palette daltoniens de Tessera automatique), `overrideScreenFlash` (pas de clignotement des blocs, alertes sans flash), secousses d'interface réduites (moins d'animations dans Tessera), la voix du narrateur pour une lecture vocale.
+- **Horloge** : l'alarme de l'horloge de Blizzard existe sur Forever (`Blizzard_TimeManager`, fichier `Camelot/`). Pour « Je m'arrête à 23h » (bloc Session) : ne pas recoder, ouvrir l'horloge de Blizzard. Idée pour la 1.0.1, à valider : un clic (droit ou Alt) sur le bloc Heure ouvre l'horloge (alarme, chronomètre) ; le clic gauche ouvre déjà le calendrier.
+- **Bateaux et zeppelins** : aucun horaire dans le code de l'interface. Il faudrait les apprendre en jeu, comme Ultimate Panel. Temps de vol : pas de durées fournies non plus.

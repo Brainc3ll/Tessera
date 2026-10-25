@@ -67,7 +67,7 @@ local FR = loadLocale("frFR")
 local readme = read("README.md")
 -- descriptions: English part, then French part after the "---" line
 local descriptions = {}
-for _, name in ipairs({ "docs/curseforge-description.md", "docs/wago-description.md" }) do
+for _, name in ipairs({ "docs/pages/curseforge-description.md", "docs/pages/wago-description.md" }) do
     local text = read(name)
     local en, fr = text:match("^(.-)\n%-%-%-\n(.*)$")
     if not en then fail(name .. ": no '---' line between the English and French parts") end

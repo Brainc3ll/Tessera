@@ -35,8 +35,8 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 | Infobulles des options | une infobulle claire pour chaque nouvelle option |
 | `Changelog.lua` / `CHANGELOG.md` | une ligne par nouveauté ou correction visible, rangée dans sa catégorie |
 | `README.md` | points forts, liste des blocs, commandes, tableau des fichiers, partie développeurs |
-| `docs/curseforge-description.md` et `docs/wago-description.md` | la page des joueurs, anglais et français (à recoller à la main sur CurseForge et Wago quand elle change) |
-| `docs/summary.md` | titre, résumé, texte « About » de GitHub, si le cœur de l'addon change |
+| `docs/pages/curseforge-description.md` et `docs/pages/wago-description.md` | la page des joueurs, anglais et français (à recoller à la main sur CurseForge et Wago quand elle change) |
+| `docs/pages/summary.md` | titre, résumé, texte « About » de GitHub, si le cœur de l'addon change |
 | `docs/A-REPRENDRE.md` | où en est le projet, ce qui reste à faire |
 | `docs/IDEES-FUTUR.md` | idées faites (marquées) ou nouvelles |
 
@@ -60,8 +60,8 @@ Ce qu'elle ne peut pas vérifier (la clarté des textes, le détail de l'aide) r
 
 ## À la main, quand ça change
 
-- **Description des pages** : CurseForge et Wago ne lisent pas le dépôt ; recoller `docs/curseforge-description.md` sur CurseForge et `docs/wago-description.md` sur Wago (onglet General ; l'import automatique de la description depuis GitHub est désactivé sur Wago).
-- **« About » du dépôt GitHub** : roue dentée sur la page du dépôt, texte et topics dans `docs/summary.md`.
+- **Description des pages** : CurseForge et Wago ne lisent pas le dépôt ; recoller `docs/pages/curseforge-description.md` sur CurseForge et `docs/pages/wago-description.md` sur Wago (onglet General ; l'import automatique de la description depuis GitHub est désactivé sur Wago).
+- **« About » du dépôt GitHub** : roue dentée sur la page du dépôt, texte et topics dans `docs/pages/summary.md`.
 - **Captures d'écran** : `/tessera preview` (valeurs d'exemple) ou le mode démo (`/tessera demo`) ; éviter les pseudos d'autres joueurs, les notifications du bureau et les boutons d'autres addons.
 
 ## Traductions (automatique)

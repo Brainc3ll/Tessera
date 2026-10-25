@@ -1,33 +1,33 @@
 # Reprise rapide (pour Claude)
 
-But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
+But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
 1.0.0-rc9-hotfix publiée le 23/10 (exports compacts) ; la 1.0.0 sort le 4/11 (WoW Forever ouvre le 5/11 à minuit, heure belge) : le hotfix avec la version 1.0.0 et l'intro « Première version stable » du changelog (historique git de `Changelog.lua`, juste avant « Release 1.0.0-rc9 »). Jusque-là, corrections seulement.
 
 ## Travailler avec Braincell1980
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
-- Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (test43 est le prochain), qu'il teste avant tout commit de publication.
+- Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (prochain numéro : voir A-REPRENDRE, « Outils »), qu'il teste avant tout commit de publication.
 - Proposer avant de coder une nouveauté ; corriger directement un bug.
 - Ne jamais publier sans « on publie » (ou un « go » clair en réponse à la question).
 - Signaler ses biais quand ils apparaissent ; ne rien inventer (lire le code ou la source, sinon le dire).
 - Textes anglais pour les joueurs : skill `stop-slop` ; français : mêmes principes.
 
 ## Skills (compte de Braincell1980)
-`tessera-checks`, `tessera-test-zip`, `tessera-release`, `tessera-bug-fix`, `tessera-ui-addon-study`, `tessera-wrap-up` : les utiliser plutôt que de relire les commandes ci-dessous. Les skills génériques « Lua » publiques (ex. Mindrally) ne conviennent pas à WoW (snake_case, `require`) : ne pas les installer.
+`tessera-checks`, `tessera-test-zip`, `tessera-release`, `tessera-bug-fix`, `tessera-ui-addon-study`, `tessera-wrap-up`, `tessera-report-triage` (retours des joueurs), `tessera-refactor` (nettoyage de la 1.1), `tessera-gate2` (changements risqués T2 : sauvegarde, profils, export) : les utiliser plutôt que de relire les commandes ci-dessous. Les skills génériques « Lua » publiques (ex. Mindrally) ne conviennent pas à WoW (snake_case, `require`) : ne pas les installer.
 
 ## Outils et commandes
 - Textes du jeu : modifier `tools/gen/*.py` (une clé par ligne ; une ligne ajoutée = une nouvelle clé), puis, sur `main` :
   `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 tools/gen/build.py`
   puis `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua` (et `frFR`).
 - Vérifications (toutes, à chaque changement) :
-  `luacheck .` ; `lua5.1 tools/mock_run.lua . enUS` (et `frFR`, `"frFR broker"`) en cherchant **`ERROR` dans toute la sortie** (pas seulement la dernière ligne) ; `lua5.1 tools/fuzz_blocks.lua .` ; `lua5.1 tools/check_docs.lua .` (`release` avant une publication) ; `python3 tools/api_audit.py <lua-language-server> <vscode-wow-api>`.
+  `luacheck .` ; `lua5.1 tools/mock_run.lua . enUS` (et `frFR`, `"frFR broker"`) en cherchant **`ERROR` dans toute la sortie** (pas seulement la dernière ligne) ; `lua5.1 tools/fuzz_blocks.lua .` ; `lua5.1 tools/check_docs.lua .` (`release` avant une publication) ; `python3 tools/api_audit.py <lua-language-server> <vscode-wow-api>` ; `python3 tools/forever_api_check.py <BlizzardInterfaceResources, branche forever>`.
 - Simulateur avec les vraies positions des cadres : `MOCK_GEOMETRY = true` après avoir chargé `tools/mock_run.lua` (voir le test des dispositions toutes prêtes dans `mock_run.lua`).
 - Changelog : `Changelog.lua` puis `lua5.1 tools/changelog_md.lua > CHANGELOG.md`.
-- Zip de test : `TesseraDev.lua` (commandes de test, galerie `/tes debug hd`) et `make_test_zip.sh` sont dans le dépôt **privé** `Brainc3ll/Tessera-dev` (jamais dans ce dépôt public ni dans une publication). Le cloner dans `/home/claude/tessera-dev`, puis `sh /home/claude/tessera-dev/make_test_zip.sh test42 <dossier>`.
+- Zip de test : `TesseraDev.lua` (commandes de test, galerie `/tes debug hd`) et `make_test_zip.sh` sont dans le dépôt **privé** `Brainc3ll/Tessera-dev` (jamais dans ce dépôt public ni dans une publication). Le cloner dans `/home/claude/tessera-dev`, puis `sh /home/claude/tessera-dev/make_test_zip.sh testNN <dossier>`.
 - Publier (après « on publie ») : version dans le .toc, entrée datée en haut de `Changelog.lua`, `check_docs.lua . release`, pousser `main`, puis
   `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`
-  et suivre le run par l'API REST. Le workflow envoie l'anglais et le français à CurseForge. Les descriptions (`docs/curseforge-description.md`, `docs/wago-description.md`), le titre et le résumé (`docs/summary.md`) se recollent à la main.
+  et suivre le run par l'API REST. Le workflow envoie l'anglais et le français à CurseForge. Les descriptions (`docs/pages/curseforge-description.md`, `docs/pages/wago-description.md`), le titre et le résumé (`docs/pages/summary.md`) se recollent à la main.
 
 ## Limites de cet environnement
 - GitHub : pas de suppression de branche, pas de réglages du dépôt (description « About »...), pas de GraphQL : Braincell1980 le fait.
@@ -42,7 +42,7 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - Le mode démo reste (il ne faut pas le retirer : il existe depuis la rc5).
 - La version Retail n'est pas une priorité. La bêta des rangées est rangée (branche `archive/refonte-rangees`). L'accessibilité puis la manette se font sur la branche `accessibilite-manette`.
 - Fonctions, CVars et événements du vrai client Forever : `Ketho/BlizzardInterfaceResources`, branche `forever` (test `tools/forever_api_check.py`).
-- Code de l'interface de Blizzard pour Forever : `Gethe/wow-ui-source`, branche `forever` (Forever = « Camelot » dans ce code) ; ce qu'on y a trouvé : IDEES-FUTUR, 25/10.
+- Code de l'interface de Blizzard pour Forever : `Gethe/wow-ui-source`, branche `forever` (Forever = « Camelot » dans ce code) ; ce qu'on y a trouvé : `docs/etudes/SOURCES.md`, 25/10.
 - Titre CurseForge et Wago « Tessera – Info Blocks That Snap Together for WoW Forever » (24/10, par Braincell1980 : « Forever » dans le titre pour la recherche) ; le mot « data » est évité (les joueurs le prenaient pour un enregistreur de statistiques).
 - Styles FlareUI et FlareUI carré : fond à 50 %, comme FlareUI 2.4.1.
 
@@ -66,4 +66,6 @@ But : reprendre le travail sans relire toute l'histoire. À lire dans cet ordre 
 - 22/10 : sondes de l'API de WoW Forever (test43, test44) : blocs DPS, Corps, Mode de jeu, Météo validés pour la 1.1 (IDEES-FUTUR) ; commandes de dev révisées ; rc9 publiée.
 - 23/10 : exports 10 fois plus courts (`TESSERA2:`), anciens textes toujours lus (fixtures dans `tools/fixtures`, à garder) ; statistique et texture des barres gardées à l'import ; rc9-hotfix publiée avant la fermeture de la bêta.
 - 24/10 : branche `accessibilite-manette` créée depuis `main` ; rangées archivées dans `archive/refonte-rangees` ; disposition « Portable » notée pour après la 2.0.
-- 24/10 : étude des modules (`PLAN-modules.md`) et des bibliothèques ; bilan bon / bof / non dans IDEES-FUTUR ; après la 1.0 : corriger, nettoyer, optimiser d'abord (1.1), nouveaux blocs ensuite (1.2).
+- 24/10 : étude des modules (`docs/etudes/PLAN-modules.md`) et des bibliothèques ; bilan bon / bof / non dans IDEES-FUTUR ; après la 1.0 : corriger, nettoyer, optimiser d'abord (1.1), nouveaux blocs ensuite (1.2).
+- 24/10 : règles ajoutées dans CLAUDE.md (dès la 1.3 : accessibilité et manette préparées ; ne pas refaire ce que le jeu offre ; textes inclusifs) ; blocs « de base ou propres à Forever », sinon un addon avec DataBroker (`docs/etudes/ADDONS-FOREVER.md`) ; petits ajustements reportés à la 1.0.1 ; titre CurseForge / Wago avec « WoW Forever ».
+- 25/10 : sources lues (code de Blizzard et liste de Ketho pour Forever, fils Reddit, forever-addon-kit) dans `docs/etudes/SOURCES.md` ; test `tools/forever_api_check.py` (aussi sur GitHub) ; accroche des descriptions ; skills report-triage, refactor, gate2 ; dossier `docs/` réorganisé (`pages/`, `etudes/`, IDEES-FUTUR par thème) ; icône : pas encore décidée.

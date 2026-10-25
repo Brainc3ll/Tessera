@@ -192,10 +192,11 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
 | `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, Blizzard Settings page. |
 
-The `docs/` folder (not shipped in the addon) holds the release guide (`docs/RELEASE.md`), the
-CurseForge and Wago descriptions, the strings sent to CurseForge's localization tool, the project
-status and ideas (in French), finished plans (`docs/archive`), the logo in large sizes (`docs/art`), and the banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds
-the working rules of the project.
+The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the release guide
+(`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions
+(`docs/pages`), studies (`docs/etudes`), finished plans (`docs/archive`), the strings sent to
+CurseForge's localization tool (`docs/localization`), the logo in large sizes (`docs/art`), and the
+banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
 with a small imitation of the game API and runs every page and feature (texts exported by earlier

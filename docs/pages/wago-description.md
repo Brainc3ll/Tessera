@@ -1,61 +1,50 @@
 # Tessera – Info Blocks That Snap Together for WoW Forever
 
-**I play WoW Forever and test each version in game before I release it. I released 11 updates in the first two weeks, and your settings carry over from one version to the next.**
+**TL;DR:** Gold, bags, FPS, Legacy points… in small blocks that snap together like mosaic tiles. Made by a player who can't code and an AI that can't play (yet). So I test it a lot.
 
-**Works out of the box: a ready-made bar shows up at first launch. Rearrange it in seconds if you like.**
+## What makes it different?
 
-Drag a block against another and they snap into one bar, like the tiles (*tesserae*) of a mosaic. Your gold, bags, durability, FPS, time and Legacy points sit where you put them, in the style of your UI: FlareUI, ElvUI, EllesmereUI or Blizzard.
+- **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
+- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills.
+- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames. 19 styles in all.
+- **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
+- **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
+- **DataBroker both ways.** Show your other addons' DataBroker objects as blocks, or share Tessera's blocks with Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 
-40+ blocks, 19 styles, and launchers for your minimap buttons. In English, French, German, Spanish and Brazilian Portuguese.
+40+ blocks in all, plus launchers for your minimap buttons. A ready-made bar shows up at first launch. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
 
-> **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its new systems (Legacy, camping, Comprehension, PvP) are still young and may change, so a game update can break a block until Tessera catches up. Tell me when something looks wrong.
+## Why make Tessera when addons like it already exist?
 
-## How I look after Tessera
+I love bars like Arcana (formerly ChocolateBar) and Bazooka. I used Broker_Everything a lot, and I spent hours building small bars with a single piece of info each, to put them in just the right spot on my interface. My favorite was StatBlock Core by Funkeh: free-floating blocks, one per piece of info, that I could put anywhere. It hasn't been updated since 2022. And tooltips didn't look the same from one broker addon to the next, French was often missing, and many of those addons were no longer maintained.
 
-- Your layouts, styles and profiles carry over to each new version. If a change ever has to break them, Tessera warns you and converts them.
-- Export texts from older versions still import.
-- GitHub runs automatic checks on each change: static analysis, the API audit that addon reviewers use, a check against WoW Forever's own function list, a full run of the addon in English and French, and a robustness test of the Forever blocks.
-- Each version has a full changelog, and the code is open (MIT) on [GitHub](https://github.com/Brainc3ll/Tessera).
+When the WoW Forever beta came out, I came back to WoW and found FlareUI: an interface with a fantasy look, not a futuristic one. Seeing what players were building with AI's help, I wanted to try something: a small thing just for me, that did exactly what I asked for.
+
+That's how Tessera was born. It was never meant to be published. I wanted to learn how it works when you start a GitHub repo from scratch and release an addon. Then I put it through more testing than I gave the Forever beta itself, and the ideas kept coming. Some are in Tessera today. Others are on the way: accessibility for players with disabilities, and full gamepad support, something I have never seen in a panel or DataBroker addon.
+
+So I decided to make it available to as many players as I could. That meant watching closely what the AI does: the right WoW words in every language, and code checked with the tools real addon developers use.
+
+## How I look after it
+
+- I play WoW Forever and test each version in game before I release it.
+- Your layouts, styles and profiles carry over from one version to the next. If a change ever has to break them, Tessera warns you and converts them.
+- On every change, GitHub runs automatic checks: static analysis, the API audit addon reviewers use, a check against WoW Forever's own function list, a full run of the addon in English and French, and a test of the Forever blocks against a changing game.
+- WoW Forever's own systems are young and may change. If a game update breaks a block, tell me and I'll fix it.
 
 I can't promise how many years I'll keep this up. Today, this is how I run it.
 
-## Blocks made for WoW Forever
+## Who writes what
 
-Tessera reads WoW Forever's own systems and gives each one a block:
+I don't write code. Claude (an AI by Anthropic) writes all of it, from my instructions, along with the tests and most texts. I decide what Tessera does and how it looks, I test it, and I review the French. No human programmer reads the code line by line ([AI Code Rating](https://aicoderating.com): E4d). The code is open (MIT) on [GitHub](https://github.com/Brainc3ll/Tessera).
 
-- **Legacy points**: your points on the Legacy track, the next reward, every reward of the track, and your Legacy challenges completed per category (Classes, Crafting, PvP, Dungeons, Raids, Adventure). A click opens the Legacy panel.
-- **Comprehension**: your skill for reading magical scrolls, and the scrolls in your bags. A click casts Scroll Comprehension.
-- **Camping**: time left on your camp buffs, or your campfire kit's cooldown; it hides itself when you have neither. A click lights a campfire with your kit.
-- **Honor**: your honor points (PvP ranks will follow in a later version).
-- **Weapon skills**: read from Forever's skill list, with every skill in the tooltip.
-- Profession, talent and Legacy blocks open Forever's own windows.
+Claude translated the German, Spanish and Brazilian Portuguese texts, and nobody has reviewed them yet. You can correct them, or add your language, with CurseForge's localization tool, and your name will appear in the addon.
 
-**Also in your DataBroker bar**: you can share the WoW Forever blocks, like every Tessera block, with **Titan Panel, Arcana (formerly ChocolateBar), Bazooka** and other DataBroker display addons. Use them on Tessera's own bars, in your favorite panel, or both.
+## Bugs and ideas
 
-## Features
+Type **/tessera bug**, copy the report and post it on [GitHub](https://github.com/Brainc3ll/Tessera/issues) or in the comments on CurseForge. Ideas are welcome, especially about WoW Forever systems Tessera could show.
 
-- **More than 40 information blocks**: gold (with a 7-day history and your characters' gold; forget a deleted character from its menu), bags (with junk value), durability, FPS and latency (with graphs), local and server time, date, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, played time, a personal goal, mana regeneration, character stats, group loot... plus the WoW Forever blocks above.
-- **Demo mode**: every block at once, sorted by category, with sample values, and a banner to switch the styles (or show them side by side, one per column) and hide the game's interface. Your layout comes back when you leave.
-- **Blocks that hide themselves** when they have nothing to show (mail, whispers, reputation, camping...), in a second row under the main bar. A hidden block keeps its place: nothing else moves.
-- **Launcher blocks** made from minimap buttons and addon compartment entries.
-- **DataBroker support**:
-  - add any DataBroker object of your other addons as a block;
-  - share Tessera's blocks with DataBroker display addons;
-  - when such an addon is installed, Tessera switches to a DataBroker mode (your display addon shows Tessera's blocks). A window explains this mode the first time, and you can turn it off at any time to use both.
-- **Merging in every direction**, with alignment guides, snapping (also to Blizzard frames), undo (Ctrl + Z), frozen groups, spacers (empty, separator line or text), global and per-group scale. You choose how groups look: fused, tiles with small joints, or separate. Stick a group to a screen edge, or stretch a bar over the whole width. Blizzard's Edit Mode can unlock the blocks too, and one click brings back blocks lost off screen.
-- **Replace a block in place**: hover it in placement mode, click its arrows, pick another block: it shows up exactly there, with the same look, and nothing else moves. A block already shown swaps places with it, and you fill the empty spacers of the ready-made layouts the same way. A cross on the block hides it.
-- **19 styles**: matching FlareUI, ElvUI, EllesmereUI and Blizzard (Modern, Classic), Square styles, Clean, Transparent, four fantasy styles (Runestone: text only, black and white; Grimoire; Parchment; Arcane) and five made of the game's own frames (Royal seal, Ironforge, Runeblade, Ember, Sylvan). When a supported interface is installed, Tessera shows its style on sample blocks and offers it; it never changes your style on its own. You can also pick the interface styles without their addon, as an imitation.
-- **Per-block settings**: text, frame, icons (same size for all, square or round frame, black and white), your class color on the text, background, border, icon frame and lines, opacity, progress bar, color thresholds, show on hover, alerts, Shift + click and middle-click actions, and how the value is shown (gold with or without coin icons, rounded; free or used bag slots; XP in percent or to go; average durability; latency home or world; seconds; decimals...).
-- **Profiles**: per account or per character, export / import as text, ready-made layouts (top bar, Double bar with a second bar of WoW Forever blocks, bottom bar, left column, compact, around the gryphons with the WoW Forever blocks, Rampart Walk: a bar stuck to the top over the whole width, system information on the right), automatic dungeon / raid profile. "Reset everything" starts again from scratch.
-- **Share a style or a layout**: export only the look or only the placement as text. On import, Tessera first lists what is missing on your computer (another addon's blocks, LibSharedMedia fonts or frames, WoW Forever blocks) and asks before applying.
-- **In front of or behind Blizzard's frames**: Tessera never moves them. When blocks cover the action bars, the minimap or the buffs, you choose whether they stay in front or behind; placement mode (and Blizzard's Edit Mode) switches every block for a while to see what is underneath.
-- **Tooltips your way**: bigger or smaller, or only while holding Alt.
-- **Help built in**: a quick tour on first launch (try the ready-made layouts on your screen), a demo mode with every block and a style switcher, a Help tab split into short topics, and a tooltip on every option.
-- **Accessibility**: bright or soft colors for the values and the class colors (or colorblind-friendly values), high contrast, minimum text size.
+## Every block and command
 
-## Getting started
-
-Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains everything. Click **Unlock blocks** to move them, **Lock** when you are done. The WoW Forever blocks are in the **Blocks** tab.
+**All the blocks**: gold (with a 7-day history and your characters' gold; forget a deleted character from its menu), bags (with junk value), durability, FPS and latency (with graphs), local and server time, date, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, played time, a personal goal, mana regeneration, character stats, group loot... plus the WoW Forever blocks above.
 
 | Command | Effect |
 |---|---|
@@ -70,99 +59,55 @@ Type **/tessera** (or **/tes**) to open the options. The **Help** tab explains e
 | /tessera bug | Report to copy into a bug report |
 | /tessera help | The list of commands in the chat |
 
-## Known issues
-- A hidden block keeps its place: the blocks around it no longer close up. An option to let them close up again is being studied, carefully: that behaviour caused most of the placement bugs.
-- Moving a block inside the second row of a bar can shift its neighbours: use the Replace arrows, or Ctrl + Z in placement mode.
-
-## Bugs and ideas
-
-Type **/tessera bug**, copy the report and post it on the [GitHub issue tracker](https://github.com/Brainc3ll/Tessera/issues) (or in the comments on CurseForge). Ideas are welcome too, especially about WoW Forever systems Tessera could show.
-
-## About this project: how Tessera is made
-
-Tessera is a collaboration between me, a player, and an AI.
-
-**Me (Braincell1980).** I don't write code. Life never gave me the chance to learn programming, and AI now lets me give free rein to my addon ideas. I also use the AI to learn how things work and why (GitHub, CurseForge, WoW's Lua and its interface, what a clean release looks like), so I make the decisions myself and understand what goes into each version. What I do:
-- I had the idea of Tessera and I decide what it does: every feature, block, option and layout comes from my requests or got my approval.
-- I choose the look: styles, colors, layouts, names, what goes in the menus.
-- I test a lot, on WoW Forever: every version, with strange experiments, unusual placements and odd setups, to find the problems before you do.
-- I try to think ahead, for every kind of player: other interfaces, other screens, other languages, other habits.
-- I run the in-game checks (debug versions) that show how WoW Forever works, and I report bugs with screenshots.
-- I review the texts, the French translation and the help.
-- I decide when a version goes out, and I manage the CurseForge, Wago and GitHub pages.
-
-**Claude (an AI by Anthropic)** writes everything else, from my instructions:
-- all the code of the addon (Lua), and the automatic tests that run it outside the game;
-- the English and French texts: options, tooltips, help, changelog, this page;
-- the release tools (GitHub workflows, CurseForge upload) and the debug versions;
-- the logo (set in Outfit, a free font) and the banner images.
-
-**Thanks** to Funkeh, whose StatBlock Core (free-floating DataBroker blocks, no longer updated since 2022) was my first inspiration for Tessera.
-
-**What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, on [GitHub](https://github.com/Brainc3ll/Tessera)) and to suggest improvements.
-
-**Translations**: I check the English and French myself. Claude translated the German, Spanish (Spain and Mexico) and Brazilian Portuguese texts, and nobody has reviewed them yet: the addon says so in its About tab. You can correct them, or add your language, with CurseForge's localization tool, and your name will appear in the addon.
-
 ---
 
 # Tessera – Des blocs d'infos qui s'emboîtent, pour WoW Forever (français)
 
-**Je joue à WoW Forever et je teste chaque version en jeu avant de la publier. J'ai publié 11 mises à jour en deux semaines, et tes réglages passent d'une version à l'autre.**
+**TL;DR :** Or, sacs, FPS, points d'héritage… dans de petits blocs qui s'emboîtent comme les pièces d'une mosaïque. Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour le moment). Alors je teste beaucoup.
 
-**Prêt dès l'installation : une barre toute prête s'affiche au premier lancement. Réarrange-la en quelques secondes si tu veux.**
+## Qu'est-ce qui le rend différent ?
 
-Pose un bloc contre un autre et ils s'emboîtent en une seule barre, comme les tesselles d'une mosaïque. Ton or, tes sacs, ta durabilité, tes FPS, l'heure et tes points d'héritage restent là où tu les mets, dans le style de ton interface : FlareUI, ElvUI, EllesmereUI ou Blizzard.
+- **Des blocs qui s'emboîtent.** Pose un bloc contre un autre : ils forment une seule barre. Une barre en haut, une colonne, un groupe dans un coin, ou chaque bloc tout seul.
+- **Pensé pour WoW Forever.** Points d'héritage (prochaine récompense, défis par catégorie), Compréhension (avec les parchemins de tes sacs), Camping (bonus et kit), Honneur, compétences d'armes.
+- **Une seule allure pour tout.** Tous les blocs ont les mêmes infobulles et le même style : celui de Blizzard, de FlareUI, d'ElvUI, d'EllesmereUI, ou des styles fantasy faits avec les fenêtres du jeu. 19 styles en tout.
+- **Dans ta langue.** Anglais et français depuis le premier jour, plus l'allemand, l'espagnol et le portugais du Brésil.
+- **Suivi.** Chaque version est testée en jeu, et tes dispositions passent d'une version à l'autre.
+- **DataBroker dans les deux sens.** Affiche les objets DataBroker de tes autres addons comme des blocs, ou partage les blocs de Tessera avec Titan Panel, Bazooka ou Arcana (anciennement ChocolateBar).
 
-Plus de 40 blocs, 19 styles, et des lanceurs pour les boutons de ta minicarte. En anglais, français, allemand, espagnol et portugais du Brésil.
+Plus de 40 blocs, et des lanceurs pour les boutons de ta minicarte. Une barre toute prête s'affiche au premier lancement. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.
 
-> **Fait pour WoW Forever.** Je développe et teste Tessera sur WoW Forever. Ses nouveaux systèmes (héritage, camping, Compréhension, JcJ) sont encore jeunes et peuvent changer : une mise à jour du jeu peut casser un bloc jusqu'à ce que Tessera suive. Dis-moi quand quelque chose te paraît bizarre.
+## Pourquoi Tessera, alors que des addons du genre existent déjà ?
+
+J'aime bien les barres comme Arcana (anciennement ChocolateBar) ou Bazooka. J'utilisais beaucoup Broker_Everything, et je passais de longs moments à créer de petites barres avec une seule info, pour les poser aux endroits pertinents de mon interface. Mon préféré, c'était StatBlock Core de Funkeh : des blocs libres, une info par bloc, à poser où je voulais. Il n'est plus mis à jour depuis 2022. Et les infobulles changeaient d'un addon broker à l'autre, le français manquait souvent, et beaucoup de ces addons n'étaient plus maintenus.
+
+À la sortie de la bêta de WoW Forever, j'ai repris WoW et je suis tombé sur FlareUI : une interface typée fantasy, pas futuriste. En voyant ce que des joueurs construisaient avec l'aide de l'IA, j'ai voulu tester un petit truc pour moi, qui réponde à mes demandes précises.
+
+Voilà comment Tessera est né. Il ne devait pas du tout être publié : je voulais savoir comment ça marche quand on crée un dépôt GitHub de zéro et qu'on publie un addon. Ensuite, je l'ai plus mis à l'épreuve que la bêta de Forever elle-même, et les idées sont venues. Certaines sont déjà là. D'autres arrivent : l'accessibilité pour les personnes en situation de handicap, et un support manette complet, ce que je n'ai encore jamais vu dans un addon de barre ou DataBroker.
+
+Alors j'ai voulu qu'il soit disponible pour plein de gens. Ça voulait dire surveiller de près ce que fait l'IA : le bon jargon de WoW dans chaque langue, et un code vérifié avec les outils qu'utilisent les vrais développeurs d'addons.
 
 ## Comment je suis Tessera
 
-- Tes dispositions, styles et profils passent à chaque nouvelle version. Si un changement devait un jour les casser, Tessera te prévient et les convertit.
-- Les textes d'export des anciennes versions s'importent toujours.
-- GitHub lance des contrôles automatiques à chaque changement : analyse du code, l'audit de l'API qu'utilisent les relecteurs d'addons, une vérification avec la liste des fonctions de WoW Forever, un lancement complet de l'addon en anglais et en français, et un test de robustesse des blocs Forever.
-- Chaque version a son journal des changements complet, et le code est ouvert (MIT) sur [GitHub](https://github.com/Brainc3ll/Tessera).
+- Je joue à WoW Forever et je teste chaque version en jeu avant de la publier.
+- Tes dispositions, styles et profils passent d'une version à l'autre. Si un changement doit un jour les casser, Tessera te prévient et les convertit.
+- À chaque modification, GitHub lance des vérifications automatiques : analyse du code, l'audit qu'utilisent les relecteurs d'addons, une vérification avec la liste des fonctions de WoW Forever, un lancement complet de l'addon en anglais et en français, et un test des blocs Forever face à un jeu qui change.
+- Les systèmes propres à WoW Forever sont jeunes et peuvent changer. Si une mise à jour du jeu casse un bloc, dis-le-moi et je le corrige.
 
-Je ne peux pas promettre combien d'années je tiendrai. Aujourd'hui, voilà comment je le fais tourner.
+Je ne peux pas promettre combien d'années je tiendrai ce rythme. Aujourd'hui, c'est comme ça que je m'en occupe.
 
-## Des blocs pensés pour WoW Forever
+## Qui écrit quoi
 
-Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
+Je ne code pas. Claude (une IA d'Anthropic) écrit tout le code à partir de mes consignes, ainsi que les tests et la plupart des textes. Je décide de ce que fait Tessera et de son allure, je le teste et je relis le français. Aucun programmeur humain ne relit le code ligne par ligne ([AI Code Rating](https://aicoderating.com) : E4d). Le code est ouvert (MIT) sur [GitHub](https://github.com/Brainc3ll/Tessera).
 
-- **Points d'héritage** : tes points sur le parcours Héritage, la prochaine récompense, toutes les récompenses du parcours et tes défis d'héritage accomplis par catégorie (Classes, Artisanat, JcJ, Donjons, Raids, Aventure). Un clic ouvre le panneau Héritage.
-- **Compréhension** : ta compétence pour lire les parchemins magiques, et les parchemins dans tes sacs. Un clic lance Compréhension de parchemin.
-- **Camping** : le temps restant de tes buffs de camp, ou la recharge de ton kit de feu de camp ; il se masque quand tu n'as ni l'un ni l'autre. Un clic allume un feu de camp avec ton kit.
-- **Honneur** : tes points d'honneur (les rangs JcJ suivront dans une prochaine version).
-- **Compétences d'armes** : lues dans la liste de compétences de Forever, toutes les compétences dans l'infobulle.
-- Les blocs métiers, talents et héritage ouvrent les fenêtres propres à Forever.
+Claude a traduit l'allemand, l'espagnol et le portugais du Brésil, et personne ne les a encore relus. Tu peux les corriger, ou ajouter ta langue, avec l'outil de traduction de CurseForge, et ton nom apparaîtra dans l'addon.
 
-**Aussi dans ta barre DataBroker** : comme tous les blocs de Tessera, tu peux partager les blocs WoW Forever avec **Titan Panel, Arcana (anciennement ChocolateBar), Bazooka** et les autres addons d'affichage DataBroker. Utilise-les dans les barres de Tessera, dans ton panneau préféré, ou les deux.
+## Bugs et idées
 
-## Fonctions
+Tape **/tessera bug**, copie le rapport et poste-le sur [GitHub](https://github.com/Brainc3ll/Tessera/issues) ou dans les commentaires sur CurseForge. Les idées sont les bienvenues, surtout sur les systèmes de WoW Forever que Tessera pourrait afficher.
 
-- **Plus de 40 blocs d'informations** : or (avec l'historique sur 7 jours et l'or de tes personnages ; un personnage supprimé s'oublie depuis son menu), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, date, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe... en plus des blocs WoW Forever ci-dessus.
-- **Mode démo** : tous les blocs d'un coup, rangés par catégorie, avec des valeurs d'exemple, et un bandeau pour changer de style (ou les voir côte à côte, un par colonne) et masquer l'interface du jeu. Ta disposition revient quand tu le quittes.
-- **Des blocs qui se masquent** quand ils n'ont rien à montrer (courrier, chuchotements, réputation, camping...), dans une deuxième rangée sous la barre principale. Un bloc masqué garde sa place : rien d'autre ne bouge.
-- **Des blocs lanceurs** créés à partir des boutons de la minicarte et du compartiment d'addons.
-- **Support DataBroker** :
-  - ajoute en bloc n'importe quel objet DataBroker de tes autres addons ;
-  - partage les blocs de Tessera avec les addons d'affichage DataBroker ;
-  - quand un tel addon est installé, Tessera passe en mode DataBroker (ton addon d'affichage montre les blocs de Tessera). Une fenêtre explique ce mode la première fois, et tu peux le désactiver à tout moment pour utiliser les deux.
-- **Fusion dans tous les sens**, avec guides d'alignement, aimantation (aussi aux cadres de Blizzard), annulation (Ctrl + Z), groupes figés, espaces (vide, ligne de séparation ou texte), échelle globale et par groupe. Tu choisis l'allure des groupes : fusionnés, en tuiles avec de petits joints, ou séparés. Colle un groupe à un bord de l'écran, ou étire une barre sur toute la largeur. Le mode Édition de Blizzard peut aussi déverrouiller les blocs, et un clic ramène les blocs perdus hors de l'écran.
-- **Remplacer un bloc sur place** : survole-le en mode placement, clique sur ses flèches, choisis un autre bloc : il apparaît exactement là, avec la même apparence, et rien d'autre ne bouge. Un bloc déjà affiché échange sa place avec lui, et tu remplis de la même façon les espaces vides des dispositions toutes prêtes. Une croix sur le bloc le masque.
-- **19 styles** : assortis à FlareUI, ElvUI, EllesmereUI et Blizzard (Moderne, Classique), styles Carré, Épuré, Transparent, quatre styles fantasy (Pierre runique : seulement le texte, en noir et blanc ; Grimoire ; Parchemin ; Arcanes) et cinq faits des cadres du jeu (Sceau royal, Forgefer, Lame runique, Braise, Sylvestre). Quand une interface prise en charge est installée, Tessera montre son style sur des blocs d'exemple et te le propose ; il ne change jamais ton style tout seul. Tu peux aussi choisir les styles des interfaces sans leur addon, en imitation.
-- **Réglages par bloc** : texte, cadre, icônes (même taille pour toutes, cadre carré ou rond, noir et blanc), ta couleur de classe sur le texte, le fond, la bordure, le cadre de l'icône et les lignes, opacité, barre de progression, couleurs de seuil, affichage au survol, alertes, actions du Maj + clic et du clic milieu, et la façon d'afficher la valeur (or avec ou sans icônes des pièces, arrondi ; places libres ou utilisées des sacs ; XP en pourcentage ou restante ; durabilité moyenne ; latence locale ou monde ; secondes ; décimales...).
-- **Profils** : par compte ou par personnage, export / import en texte, dispositions toutes prêtes (barre en haut, Double barre avec une deuxième barre de blocs WoW Forever, barre en bas, colonne à gauche, compacte, autour des gryphons avec les blocs WoW Forever, Chemin de ronde : une barre collée en haut sur toute la largeur, les infos système à droite), profil automatique en donjon / raid. « Tout réinitialiser » repart de zéro.
-- **Partager un style ou une disposition** : exporte seulement l'allure ou seulement le placement en texte. À l'import, Tessera liste d'abord ce qui manque sur ton ordinateur (blocs d'un autre addon, polices ou cadres LibSharedMedia, blocs WoW Forever) et demande avant d'appliquer.
-- **Devant ou derrière les cadres de Blizzard** : Tessera ne les déplace jamais. Quand des blocs recouvrent les barres d'action, la minicarte ou les buffs, tu choisis s'ils restent devant ou derrière ; le mode placement (et le mode Édition de Blizzard) bascule tous les blocs un moment pour voir ce qu'il y a dessous.
-- **Infobulles à ta façon** : plus grandes ou plus petites, ou seulement en tenant Alt.
-- **Aide intégrée** : une visite rapide au premier lancement (essaie les dispositions toutes prêtes sur ton écran), un mode démo avec tous les blocs et un sélecteur de styles, un onglet Aide découpé en sujets courts, et une infobulle sur chaque option.
-- **Accessibilité** : couleurs vives ou adoucies pour les valeurs et les couleurs de classe (ou valeurs pour daltoniens), contraste renforcé, taille de texte minimale.
+## Tous les blocs et commandes
 
-## Pour commencer
-
-Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** explique tout. Clique sur **Déverrouiller les blocs** pour les déplacer, puis sur **Verrouiller** quand tu as fini. Les blocs WoW Forever sont dans l'onglet **Blocs**.
+**Tous les blocs** : or (avec l'historique sur 7 jours et l'or de tes personnages ; un personnage supprimé s'oublie depuis son menu), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, date, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe... en plus des blocs WoW Forever ci-dessus.
 
 | Commande | Effet |
 |---|---|
@@ -176,36 +121,3 @@ Tape **/tessera** (ou **/tes**) pour ouvrir les options. L'onglet **Aide** expli
 | /tessera recover | Ramener les blocs qui dépassent de l'écran |
 | /tessera bug | Rapport à copier dans un signalement de bug |
 | /tessera help | La liste des commandes dans la discussion |
-
-## Problèmes connus
-- Un bloc masqué garde sa place : les blocs autour ne se resserrent plus. Une option pour qu'ils se resserrent à nouveau est à l'étude, avec prudence : ce fonctionnement causait la plupart des bugs de placement.
-- Déplacer un bloc à l'intérieur de la deuxième rangée d'une barre peut décaler ses voisins : utilise les flèches Remplacer, ou Ctrl + Z en mode placement.
-
-## Bugs et idées
-
-Tape **/tessera bug**, copie le rapport et poste-le sur [GitHub](https://github.com/Brainc3ll/Tessera/issues) (ou dans les commentaires sur CurseForge). Les idées sont les bienvenues aussi, surtout sur les systèmes de WoW Forever que Tessera pourrait afficher.
-
-## À propos du projet : comment Tessera est fait
-
-Tessera est une collaboration entre moi, un joueur, et une IA.
-
-**Moi (Braincell1980).** Je ne code pas. Les aléas de la vie ne m'ont pas permis d'apprendre la programmation, et l'IA me permet maintenant de laisser libre cours à mes idées d'addons. Je me sers aussi de l'IA pour apprendre comment les choses fonctionnent et pourquoi (GitHub, CurseForge, le Lua de WoW et son interface, les bonnes manières de faire une publication propre) : je prends moi-même les décisions et je comprends ce qui entre dans chaque version. Ce que je fais :
-- J'ai eu l'idée de Tessera et je décide de ce qu'il fait : chaque fonction, bloc, option et disposition vient de mes demandes ou a reçu mon accord.
-- Je choisis l'allure : styles, couleurs, dispositions, noms, contenu des menus.
-- Je teste beaucoup, sur WoW Forever : chaque version, avec des essais étranges, des placements inhabituels et des configurations improbables, pour trouver les problèmes avant toi.
-- J'essaie de voir plus loin, pour tous les joueurs : autres interfaces, autres écrans, autres langues, autres habitudes.
-- Je fais les relevés en jeu (versions debug) qui servent à comprendre le fonctionnement de WoW Forever, et je signale les bugs avec des captures.
-- Je relis les textes, la traduction française et l'aide.
-- Je décide quand une version sort, et je gère les pages CurseForge, Wago et GitHub.
-
-**Claude (une IA d'Anthropic)** écrit tout le reste, à partir de mes consignes :
-- tout le code de l'addon (Lua), et les tests automatiques qui le font tourner hors du jeu ;
-- les textes en anglais et en français : options, infobulles, aide, changelog, cette page ;
-- les outils de publication (workflows GitHub, envoi sur CurseForge) et les versions debug ;
-- le logo (en Outfit, une police libre) et les images de la bannière.
-
-**Merci** à Funkeh : son addon StatBlock Core (des blocs DataBroker libres, plus mis à jour depuis 2022) a été ma première inspiration pour Tessera.
-
-**Ce que ça veut dire pour toi.** Des tests automatiques et mes propres tests en jeu vérifient le code, mais aucun programmeur ne l'a relu ligne par ligne. Des bugs peuvent rester : signale-les avec `/tessera bug`. Les développeurs sont les bienvenus pour lire le code (licence MIT, sur [GitHub](https://github.com/Brainc3ll/Tessera)) et proposer des améliorations.
-
-**Traductions** : je vérifie moi-même l'anglais et le français. Claude a traduit l'allemand, l'espagnol (Espagne et Mexique) et le portugais du Brésil, et personne ne les a encore relus : l'addon le dit dans son onglet À propos. Tu peux les corriger, ou ajouter ta langue, avec l'outil de traduction de CurseForge, et ton nom apparaîtra dans l'addon.

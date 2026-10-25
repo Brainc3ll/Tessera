@@ -299,7 +299,7 @@ Une liste « Langue » (onglet Général) : « Comme le jeu » par défaut, puis
   - Le client reste en anglais (`GetLocale()` = enUS) : seul le sélecteur permet de choisir ces langues. Piste : quand un de ces addons est chargé, proposer une fois la langue de Tessera qui va avec.
   - L'outil de CurseForge ne connaît que les langues de WoW (deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW) : ces traductions devraient vivre ailleurs, ce qui demande une exception à la règle « anglais et français seulement dans le dépôt » (décision de Braincell1980), ou un petit addon à part par langue.
   - Polices : les polices occidentales du jeu n'ont pas l'alphabet cyrillique, et peut-être pas toutes les lettres tchèques, polonaises ou hongroises (ř, ł, ő) : à vérifier en jeu ; ces addons apportent sans doute leurs propres polices, que Tessera pourrait proposer via LibSharedMedia s'ils les y enregistrent.
-  - Contacter leurs équipes (Discord) le moment venu : ce sont les mieux placées pour traduire Tessera dans leur langue.
+  - Contacter leurs équipes (Discord, Reddit) le moment venu : ce sont les mieux placées pour traduire Tessera dans leur langue. Décision du 25/10 : attendre de voir si Tessera « prend » avant de leur poser la question.
 
 ## Code
 

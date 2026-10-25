@@ -63,7 +63,7 @@ Tessera is a collaboration between me, a player, and an AI.
 ## At a glance
 
 - Interface: `16001` (WoW Forever)
-- Languages: English, French (other languages can be added through CurseForge's localization tool)
+- Languages: English and French; German, Spanish (Spain and Mexico) and Brazilian Portuguese made by Claude, not reviewed yet; other languages through CurseForge's localization tool
 - Saved variables: `TesseraDB`
 - Optional addons it adapts to: FlareUI, EllesmereUI and ElvUI (a matching style is
   offered; blocks snap to the XP bar of FlareUI, ElvUI and GW2 UI, and Tessera warns when they
@@ -337,7 +337,7 @@ block in `blocks[key]` (see `BLOCK_DEFAULTS` in `Core.lua`).
 `Locales/enUS.lua` defines every key; every other language only overrides keys and falls
 back to English for anything missing.
 
-- English and French are written in the repository (`enUS.lua`, `frFR.lua`).
+- English and French are written in the repository (`enUS.lua`, `frFR.lua`). Other languages live in CurseForge's localization tool; Claude's German, Spanish and Brazilian Portuguese drafts were imported there by hand, checked first with `tools/check_translation.py`.
 - Every other language is translated by the community with CurseForge's localization tool.
   Its file (e.g. `Locales/deDE.lua`) only holds a `--@localization(...)@` line that the
   BigWigs packager replaces with the translated strings when it builds the release zip, so

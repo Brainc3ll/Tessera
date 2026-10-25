@@ -40,6 +40,17 @@ ns.CHANGELOG = {
         version = "1.0.0",
         date = "",
         sections = {
+            { kind = "new",
+              en = {
+                "German, Spanish (Spain and Mexico) and Brazilian Portuguese translations. Claude (an AI) "
+                    .. "made them and nobody has reviewed them yet: you can correct them with CurseForge's "
+                    .. "localization tool.",
+              },
+              fr = {
+                "Traductions en allemand, en espagnol (Espagne et Mexique) et en portugais du Brésil. "
+                    .. "Claude (une IA) les a faites et personne ne les a encore relues : tu peux les corriger "
+                    .. "avec l'outil de traduction de CurseForge.",
+              } },
             { kind = "improved",
               en = {
                 "New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the "

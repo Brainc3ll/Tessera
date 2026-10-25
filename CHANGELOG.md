@@ -5,6 +5,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.0 — 
 
+### New
+
+- German, Spanish (Spain and Mexico) and Brazilian Portuguese translations. Claude (an AI) made them and nobody has reviewed them yet: you can correct them with CurseForge's localization tool.
+
 ### Improvements
 
 - New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the minimap button.

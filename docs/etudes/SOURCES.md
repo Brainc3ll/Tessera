@@ -116,3 +116,10 @@ Guide de développement d'addons en 16 fichiers, écrit par Claude avec relectur
 - « Forever » est accepté comme alias de « Camelot » dans les suffixes de .toc.
 - Cadres du joueur, de la cible, du familier, du focus et l'en-tête de la minicarte ont été redessinés : à garder en tête pour `ns.KNOWN_UI_FRAMES` (chevauchements).
 - `SendChatMessage` en « EMOTE » demande un clic hors instance ; GUID des créatures masqués contre la détection des couches (pas de bloc « couche » possible par ce biais).
+
+## Le Discord WoWUIDev (25 octobre 2026)
+
+Serveur des créateurs d'addons (WowAce, WoWInterface) ; Braincell1980 y est. Notes épinglées par Funkeh et Stanzilla :
+- **Forever** : `.toc` en `16001` obligatoire (déjà le cas), Forever compte comme « mainline » ; `UnitName("unit")` renvoie prénom et nom ; `GetRealmName()` renvoie une étiquette de ruleset (« Classic Beta PvP ») qui peut changer, à ne pas utiliser : Tessera range maintenant les données par nom complet seul (unique sur tous les rulesets). `WOW_PROJECT_ID` = 18 (`WOW_PROJECT_CAMELOT`, nom susceptible de changer) : Tessera ne s'en sert pas. Un seul `.toc` avec plusieurs versions (`## Interface: 120100, 16001`) et `[AllowLoadGameType camelot]` pour un fichier propre à Forever, si un jour Tessera vise aussi Retail.
+- **Règles de Blizzard pour les addons** (UI Add-On Development Policy) : gratuit, aucune version payante ; code lisible (pas d'obfuscation) ; pas de nuisance pour les serveurs ou les autres joueurs (chat, disque, FPS) ; **pas de publicité dans l'addon** ; **pas de demande de dons dans le jeu** (seulement sur la page de l'addon : un lien « café » ira sur CurseForge, jamais dans l'onglet À propos) ; contenu compatible avec la classification « T ». Tessera respecte tout ça.
+- **Outils** : Warcraft Wiki (API), townlong-yak.com (FrameXML, chaînes du jeu, documentation de l'API, « Globe » qui signale les fonctions retirées), wago.tools (fichiers et identifiants du jeu), le suivi des bugs de l'interface de Blizzard (github.com/Stanzilla/WoWUIBugs) pour signaler un bug de l'API de Forever, le packager de BigWigs (déjà utilisé par `release.yml`).

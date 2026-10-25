@@ -342,3 +342,8 @@ Relevés faits sur le vrai client, page par page. Vérifié pour Tessera :
 - Les sauvegardes jamais relues (bug de la bêta de septembre) : corrigé depuis, les profils de Tessera survivent aux reconnexions dans les tests de Braincell1980.
 - Boîte à outils des valeurs secrètes plus complète que prévu (`C_Secrets`, 27 questions, `canaccesssecrets`, `scrub`…) ; la santé est secrète en combat, les montants de dégâts (`UNIT_COMBAT`) non : utile pour le bloc DPS de la 1.2.
 - Liste d'autres projets Forever à lire pour la technique (BetterBlizzFrames, forever-addon-dev, hated-wow-mcp, smore-skills pour le camping).
+
+### WoWAddonDevGuide (Amadeus-, lu le 25/10)
+Guide de développement d'addons en 16 fichiers, écrit par Claude avec relecture humaine, pour Retail jusqu'à 12.0.5 (mai 2026). Rien sur Forever. Pas de licence dans le dépôt : le lire, ne rien copier.
+- Utile pour la 1.1 : `12a_Secret_Safe_APIs.md` (toutes les fonctions des valeurs secrètes, avec exemples : passer une valeur secrète directement à `SetText`, `canaccessvalue`, `scrubsecretvalues`…) et `05_Patterns_And_Best_Practices.md` (performances). À vérifier contre la liste de Ketho pour Forever avant d'utiliser une fonction.
+- Ses commandes pour Claude Code (agent « WoWAddon-Expert », `/wow`) : pas besoin, CLAUDE.md et les skills Tessera font ce travail.

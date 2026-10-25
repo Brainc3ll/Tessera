@@ -5,6 +5,9 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 ## En une phrase
 1.0.0-rc9-hotfix publiée le 23/10 (exports compacts) ; la 1.0.0 sort le 4/11 (WoW Forever ouvre le 5/11 à minuit, heure belge) : le hotfix avec la version 1.0.0 et l'intro « Première version stable » du changelog (historique git de `Changelog.lua`, juste avant « Release 1.0.0-rc9 »). Jusque-là, corrections seulement.
 
+## Avant la publication de la 1.0.0 (4/11)
+- Rappeler à Braincell1980 le processus des traductions (A-REPRENDRE, feuille de route, point 1) : elles doivent être sur CurseForge AVANT de publier.
+
 ## Travailler avec Braincell1980
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
 - Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (prochain numéro : voir A-REPRENDRE, « Outils »), qu'il teste avant tout commit de publication.

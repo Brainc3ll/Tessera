@@ -10,6 +10,7 @@ Rangé par thème le 25 octobre 2026 (avant : par date). Dans chaque partie, la 
 - Placement et affichage
 - Styles et allure
 - Accessibilité et manette
+- Traductions
 - Code
 
 ## Règles et décisions
@@ -265,6 +266,18 @@ Idée de Braincell1980 : donner le choix de polices pensées pour l'accessibilit
 Forever a une prise en charge native de la manette (annoncée à la BlizzCon, « alpha » en septembre) : menus en cercle, barres d'action propres à la manette, modificateurs sur les gâchettes. Dans le code de Blizzard pour Forever : `Blizzard_Gamepad`, `Blizzard_GamepadActionBars` (chargés seulement sur Forever, « camelot »), `Blizzard_GamepadSmartNavigation` (curseur qui saute de bouton en bouton dans les fenêtres), `Blizzard_GamepadSharedUtility` (invites de boutons, dialogues). Le Mode Édition garde une disposition séparée pour la manette (notes de l'API 1.60.1).
 - Règle « ne pas refaire ce que le jeu fait » : la 2.0 de Tessera s'appuie sur cette navigation au lieu de recoder la sienne. ConsolePort n'est plus le modèle.
 - À étudier avant la 2.0 : une fenêtre d'addon peut-elle entrer dans la navigation de Blizzard (`SmartNavigationMixin:GetPanelInfo`, groupes de boutons) ? Les menus en cercle de Blizzard sont-ils réutilisables pour le menu rapide d'un bloc ? Les dispositions de Tessera doivent-elles suivre la disposition « manette » du Mode Édition ?
+
+## Traductions
+
+### Traduire nous-mêmes plus de langues (25 octobre 2026, à faire après la 1.0.0)
+
+Décidé avec Braincell1980 :
+- **Termes du jeu** : prendre les textes officiels de Blizzard (liste de Ketho, branche `forever`, `Resources/GlobalStrings/*.lua`, 11 langues) pour le vocabulaire : noms des blocs, mots courants. Là où un texte de Blizzard correspond exactement, Tessera peut même le lire en jeu (zéro traduction). Attention aux abréviations de Blizzard (« Репут. » en russe).
+- **Phrases** (aide, infobulles, environ 1 000 textes) : traduites par Claude avec ce vocabulaire. Allemand, espagnol, portugais, russe d'abord, puis italien ; chinois et coréen seulement avec un relecteur natif.
+- **Pas dans le dépôt** (règle de CLAUDE.md : anglais et français seulement) : Claude génère un fichier `.lua` par langue au format de `docs/localization/`, l'envoie à Braincell1980, qui l'**importe à la main** dans l'outil de traduction de CurseForge. Les traducteurs restent libres de tout corriger. Vérifier d'abord sur CurseForge qu'aucun traducteur n'a déjà commencé une langue : ne jamais écraser son travail.
+- **Rien ne dépasse des boutons** : l'allemand et le russe sont environ 30 % plus longs que l'anglais. Avant d'envoyer une langue, tester les fenêtres avec des textes allongés : une commande de dev (pseudo-langue qui rallonge chaque texte de 40 %, dans `TesseraDev.lua`) montre les débordements sans attendre les traductions ; corriger la mise en page (boutons qui s'élargissent, texte qui passe à la ligne) plutôt que raccourcir à l'excès.
+- **Avertissement** : une nouvelle clé (par exemple `ABOUT_TRANSLATION_NOTE`), vide en anglais et en français. Dans nos traductions : « Traduction générée par Claude (IA), pas encore relue. Tu peux la corriger sur CurseForge. » dans la langue concernée, affichée dans l'onglet À propos (et peut-être une fois au premier lancement). Le traducteur qui relit sa langue vide ce texte.
+- **Crédit** : la clé `ABOUT_TRANSLATORS` existe déjà (onglet À propos, ligne « Traduction ») ; le traducteur y met son nom. L'expliquer dans le texte d'appel aux traducteurs.
 
 ## Code
 

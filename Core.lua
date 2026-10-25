@@ -56,6 +56,21 @@ local function Print(msg)
 end
 ns.Print = Print
 
+-- Streamer mode (account-wide): blocks and tooltips hide other players' names, your
+-- other characters, your realm, your guild's name and your gold, for streams and videos
+ns.HIDDEN = "***"
+function ns:IsStreamer()
+    return self.sv ~= nil and self.sv.streamerMode == true
+end
+
+function ns:SetStreamerMode(on)
+    if not self.sv then return end
+    self.sv.streamerMode = on and true or nil
+    Print(on and ns.L.STREAMER_ON_MSG or ns.L.STREAMER_OFF_MSG)
+    if self.built then self:UpdateAll() end
+    if self.RefreshOptions then self:RefreshOptions() end
+end
+
 ---------------------------------------------------------------------------
 -- Media shipped with the game
 ---------------------------------------------------------------------------
@@ -768,7 +783,7 @@ end
 --   charProfiles[char]   per-character profile when useGlobal is false
 --   chars[char]          gold and class of each character (gold tooltip)
 --   Account-wide options: borderReach[border] (corner join tuning), quiet (no chat
---   output), hideMinimapButton, welcomed (welcome popup shown), demoBackup (the
+--   output), streamerMode (names, realm, guild and gold hidden), hideMinimapButton, welcomed (welcome popup shown), demoBackup (the
 --   player's profile while the demo mode is on, see Demo.lua), tourBackup (the same while
 --   the quick tour tries ready-made layouts, see Options.lua).
 local function InitDB()

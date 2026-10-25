@@ -45,11 +45,18 @@ ns.CHANGELOG = {
                 "German, Spanish (Spain and Mexico) and Brazilian Portuguese translations. Claude (an AI) "
                     .. "made them and nobody has reviewed them yet: you can correct them with CurseForge's "
                     .. "localization tool.",
+                "Streamer mode, for streams and videos: other players' names, your other characters, your "
+                    .. "realm, your guild's name and your gold show as ***. Turn it on in the General tab, with a "
+                    .. "key binding, or with the new Streamer mode block (hidden by default).",
               },
               fr = {
                 "Traductions en allemand, en espagnol (Espagne et Mexique) et en portugais du Brésil. "
                     .. "Claude (une IA) les a faites et personne ne les a encore relues : tu peux les corriger "
                     .. "avec l'outil de traduction de CurseForge.",
+                "Mode streamer, pour les streams et les vidéos : les noms des autres joueurs, tes autres "
+                    .. "personnages, ton royaume, le nom de ta guilde et ton or s'affichent en ***. Il s'active dans "
+                    .. "l'onglet Général, avec un raccourci clavier ou avec le nouveau bloc Mode streamer (masqué au "
+                    .. "départ).",
               } },
             { kind = "improved",
               en = {

@@ -28,6 +28,7 @@ LibDataBroker to exchange data with DataBroker addons.
 - **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames.
 - **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
 - **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
+- **Ready to stream.** Streamer mode hides other players' names, your other characters, your realm, your guild's name and your gold in one click.
 - **DataBroker both ways.** Show your other addons' DataBroker objects as blocks, or share Tessera's blocks with Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 
 ## Why make Tessera when addons like it already exist?
@@ -147,7 +148,9 @@ Help tab inside the game explains everything.
   zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
   reagents, ammo, item level, speed, volume, addon memory, instances, played time, goal, mana
-  regeneration, character stats (the stat of your choice), group loot (click: /roll)...
+  regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode...
+- Streamer mode (General tab, a key binding or its block): for streams and videos, other players' names,
+  your other characters, your realm, your guild's name and your gold show as `***`.
 - Blocks that have nothing to show hide themselves and keep their place (in the ready-made bars,
   they sit in the second row). A group stays exactly where you drop it: no automatic recentering.
 - Merge blocks in every direction; undo, alignment guides, frozen groups, spacer blocks; groups
@@ -195,7 +198,7 @@ Help tab inside the game explains everything.
 | `/tessera recover` | Bring back blocks that stick out of the screen |
 | `/tessera help` | The list of commands in the chat |
 
-Key bindings (show / hide all blocks, lock / unlock, options) are in the game's key bindings,
+Key bindings (show / hide all blocks, lock / unlock, options, streamer mode on / off) are in the game's key bindings,
 Tessera category.
 
 When unlocked: drag a block to move it (or its whole group), drop it against another block to

@@ -626,6 +626,12 @@ BINDING_HEADER_TESSERA = "Tessera"
 BINDING_NAME_TESSERA_TOGGLE = L.BINDING_TOGGLE
 BINDING_NAME_TESSERA_LOCK = L.BINDING_LOCK
 BINDING_NAME_TESSERA_OPTIONS = L.BINDING_OPTIONS
+BINDING_NAME_TESSERA_STREAMER = L.BINDING_STREAMER
+
+-- Streamer mode on / off
+function Tessera_ToggleStreamer()
+    ns:SetStreamerMode(not ns:IsStreamer())
+end
 
 -- Shows or hides every block at once (for this session)
 function Tessera_ToggleBlocks()

@@ -1565,6 +1565,20 @@ for _, step in ipairs({
         ns:ShowWelcomeIfNeeded()
         Tessera_ToggleBlocks(); Tessera_ToggleBlocks()
     end,
+    -- streamer mode: the gold block and its tooltip hide the amounts, the block shows the state
+    function()
+        local gold = ns.modules.gold
+        assert(gold.update({}) ~= ns.HIDDEN, "gold shown before streamer mode")
+        Tessera_ToggleStreamer()
+        assert(ns:IsStreamer(), "the key binding turns streamer mode on")
+        assert(gold.update({}) == ns.HIDDEN, "streamer mode hides the gold")
+        assert(gold.chatText() == ns.HIDDEN, "streamer mode hides the gold copied to chat")
+        assert(ns.modules.streamer.update() == ns.L.STREAMER_ON, "the streamer block shows the mode")
+        assert(not ns.modules.streamer.isEmpty(), "the streamer block is not empty while on")
+        ns.modules.streamer.onClick(nil, "LeftButton")
+        assert(not ns:IsStreamer(), "a click on the streamer block turns the mode off")
+        assert(ns.modules.streamer.isEmpty(), "the streamer block is empty while off")
+    end,
 }) do
     local ok5, err5 = pcall(step) if not ok5 then print("STEP ERROR: " .. tostring(err5)) end
 end

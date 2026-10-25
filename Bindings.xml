@@ -12,4 +12,7 @@
     <Binding name="TESSERA_OPTIONS" category="BINDING_HEADER_TESSERA">
         Tessera_ToggleOptions()
     </Binding>
+    <Binding name="TESSERA_STREAMER" category="BINDING_HEADER_TESSERA">
+        Tessera_ToggleStreamer()
+    </Binding>
 </Bindings>

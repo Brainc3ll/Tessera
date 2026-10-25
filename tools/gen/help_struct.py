@@ -96,6 +96,7 @@ HELP = [
         ('HELP_GENERAL_2', '- Tooltips: click help, tooltips in combat, only while holding Alt, tooltip size.', '- Infobulles : aide des clics, infobulles en combat, seulement en tenant Alt, taille des infobulles.'),
         ('HELP_GENERAL_3', '- Combat: blocks frozen in combat.', '- Combat : blocs figés en combat.'),
         ('HELP_GENERAL_4', '- Chat and minimap: quiet chat, minimap button.', '- Discussion et minicarte : discussion silencieuse, bouton de la minicarte.'),
+        ('HELP_GENERAL_6', '- Streamer mode: for streams and videos, hides as *** the names of other players, your other characters, your realm, your guild\'s name and your gold. Also a key binding and a Streamer mode block (hidden by default).', '- Mode streamer : pour les streams et les vidéos, remplace par *** les noms des autres joueurs, tes autres personnages, ton royaume, le nom de ta guilde et ton or. Aussi un raccourci clavier et un bloc Mode streamer (masqué au départ).'),
         ('HELP_GENERAL_5', '- Accessibility: bright or soft colors for the values and the class colors (automatic, bright, soft, or colorblind for the values), high contrast, minimum text size.', '- Accessibilité : couleurs vives ou adoucies pour les valeurs et les couleurs de classe (automatiques, vives, adoucies, ou pour daltoniens pour les valeurs), contraste renforcé, taille de texte minimale.'),
     ]),
     ('LAUNCHERS', 'Launchers tab', 'Onglet Lanceurs', [
@@ -139,7 +140,7 @@ HELP = [
         ('HELP_COMMANDS_9', '/tessera bug: report to copy into a bug report', '/tessera bug : rapport à copier dans un signalement de bug'),
         ('HELP_COMMANDS_10', '/tessera help: this list in the chat', '/tessera help : cette liste dans la discussion'),
         ("", "", ""),
-        ('HELP_COMMANDS_11', "Key bindings (game's key bindings, Tessera category): show / hide all blocks (in combat, hiding waits for the end of the fight), lock / unlock, options.", 'Raccourcis clavier (raccourcis du jeu, catégorie Tessera) : afficher / masquer tous les blocs (en combat, le masquage attend la fin du combat), verrouiller / déverrouiller, options.'),
+        ('HELP_COMMANDS_11', "Key bindings (game's key bindings, Tessera category): show / hide all blocks (in combat, hiding waits for the end of the fight), lock / unlock, options, streamer mode on / off.", 'Raccourcis clavier (raccourcis du jeu, catégorie Tessera) : afficher / masquer tous les blocs (en combat, le masquage attend la fin du combat), verrouiller / déverrouiller, options, activer / désactiver le mode streamer.'),
     ]),
 ]
 

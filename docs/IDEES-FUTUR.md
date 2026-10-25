@@ -78,6 +78,7 @@ Que personne ne se sente oublié, au-delà de l'accessibilité. Règle ajoutée 
 - Une main, main gauche : manette (2.0), blocs placés de chaque côté de l'écran.
 - Couleurs : rouge = perte et vert = gain ne valent pas partout ; les formes en plus des couleurs (1.4) règlent ça.
 - À éviter : options « drapeaux » ou thèmes ajoutés pour afficher une valeur. L'inclusivité la plus solide ne se voit pas.
+- Fait (25/10, pour la 1.0.0) : mode streamer (noms des autres, rerolls, royaume, nom de guilde et or en ***), option de l'onglet Général, raccourci clavier et bloc Mode streamer. Idées proposées le même jour, pas encore retenues : infobulles qui expliquent le jargon pour les débutants, alertes jamais seulement sonores, disposition « Grand confort », textes alternatifs sur les images des pages.
 - Règle de Braincell1980 (25/10) : Tessera reste gratuit et open source, libre d'utilisation et de modification. Jamais de version premium, de fonction réservée aux donateurs ni de contenu payant. Un lien « offre-moi un café », sans contrepartie, reste possible un jour (pas une priorité).
 
 ## Nouveaux blocs

@@ -67,6 +67,12 @@ local L = ns.L
 
 local GOOD, WARN, BAD = 1, 2, 3
 
+-- Streamer mode: a name, realm or amount that must not show on a stream
+local function Masked(text)
+    if ns:IsStreamer() then return ns.HIDDEN end
+    return text
+end
+
 -- Item info: modern C_Item API, classic global as fallback
 local GetItemInfoFn = (C_Item and C_Item.GetItemInfo) or function() end
 
@@ -339,10 +345,12 @@ ns:RegisterModule("gold", {
     icon = COIN_ICONS.gold,
     events = { "PLAYER_MONEY" },
     update = function(cfg)
+        if ns:IsStreamer() then return ns.HIDDEN end
         return FormatGold(GetMoney() or 0, cfg)
     end,
     -- Shift + click "copy to chat": plain text, without coin textures
     chatText = function()
+        if ns:IsStreamer() then return ns.HIDDEN end
         local money = GetMoney() or 0
         return L.CHAT_MONEY:format(math.floor(money / 10000), math.floor(money % 10000 / 100), money % 100)
     end,
@@ -357,6 +365,10 @@ ns:RegisterModule("gold", {
         { kind = "check", field = "goldSeparator", tab = "text", label = "GOLD_SEPARATOR", tip = "TIP_GOLD_SEPARATOR" },
     },
     tooltip = function(tt)
+        if ns:IsStreamer() then
+            tt:AddLine(L.STREAMER_TOOLTIP, 0.8, 0.8, 0.8, true)
+            return
+        end
         local money = GetMoney() or 0
         local diff = money - (ns.sessionMoney or money)
         tt:AddDoubleLine(L.TT_SESSION, SignedMoney(diff), 1, 1, 1, 1, 1, 1)
@@ -1053,7 +1065,7 @@ ns:RegisterModule("friends", {
                 shown = shown + 1
                 if shown <= MAX_LINES then
                     local r, g, b = ClassColor(info.className and info.className:upper())
-                    tt:AddDoubleLine(("%s (%d)"):format(info.name or "?", info.level or 0), info.area or "", r, g, b, 0.8, 0.8, 0.8)
+                    tt:AddDoubleLine(("%s (%d)"):format(Masked(info.name or "?"), info.level or 0), Masked(info.area or ""), r, g, b, 0.8, 0.8, 0.8)
                 end
             end
         end
@@ -1092,7 +1104,7 @@ ns:RegisterModule("guild", {
     tooltip = function(tt)
         if not IsInGuild() then return end
         local guildName = GetGuildInfo("player")
-        if guildName then tt:AddLine(guildName, 0.3, 1, 0.3) end
+        if guildName then tt:AddLine(Masked(guildName), 0.3, 1, 0.3) end
         local total = GetNumGuildMembers() or 0
         local shown = 0
         for i = 1, total do
@@ -1101,7 +1113,8 @@ ns:RegisterModule("guild", {
                 shown = shown + 1
                 if shown <= MAX_LINES then
                     local r, g, b = ClassColor(class)
-                    tt:AddDoubleLine(("%s (%d)"):format(Ambiguate and Ambiguate(name, "guild") or name, level or 0), zone or "", r, g, b, 0.8, 0.8, 0.8)
+                    local shownName = Masked(Ambiguate and Ambiguate(name, "guild") or name)
+                    tt:AddDoubleLine(("%s (%d)"):format(shownName, level or 0), Masked(zone or ""), r, g, b, 0.8, 0.8, 0.8)
                 end
             end
         end
@@ -1268,7 +1281,7 @@ ns:RegisterModule("mail", {
         if #senders == 0 then
             tt:AddLine(Try(HasNewMail) and L.MAIL_NEW or L.TT_NO_MAIL, 0.8, 0.8, 0.8)
         end
-        for _, name in ipairs(senders) do tt:AddLine(name, 1, 1, 1) end
+        for _, name in ipairs(senders) do tt:AddLine(Masked(name), 1, 1, 1) end
     end,
 })
 
@@ -1803,7 +1816,7 @@ ns:RegisterModule("loot", {
         WHITE(tt, L.TT_LOOT_METHOD, LootMethodName(method))
         local quality = QualityText(threshold)
         if quality then WHITE(tt, L.TT_LOOT_THRESHOLD, quality) end
-        if master then WHITE(tt, L.TT_LOOT_MASTER, master) end
+        if master then WHITE(tt, L.TT_LOOT_MASTER, Masked(master)) end
     end,
     clickHint = L.HINT_ROLL,
     onClick = function(_, button)
@@ -2361,7 +2374,7 @@ ns:RegisterModule("group", {
                 local _, class = Try(UnitClass, unit)
                 local r, g, b = ClassColor(class)
                 local leader = UnitIsGroupLeader and Try(UnitIsGroupLeader, unit) and " |cffffd100(" .. L.TT_LEADER .. ")|r" or ""
-                tt:AddDoubleLine(name .. leader, tostring(Try(UnitLevel, unit) or ""), r, g, b, 0.8, 0.8, 0.8)
+                tt:AddDoubleLine(Masked(name) .. leader, tostring(Try(UnitLevel, unit) or ""), r, g, b, 0.8, 0.8, 0.8)
             end
         end
         if #units > MAX_LINES then tt:AddLine(L.TT_MORE:format(#units - MAX_LINES), 0.8, 0.8, 0.8) end
@@ -2404,7 +2417,7 @@ local function GoalProgress(cfg)
         return math.min(1, progress), tostring(level), tostring(target)
     end
     local gold = (GetMoney() or 0) / 10000
-    return math.min(1, target > 0 and gold / target or 1), FormatGold(GetMoney() or 0, { goldFormat = "gold" }),
+    return math.min(1, target > 0 and gold / target or 1), Masked(FormatGold(GetMoney() or 0, { goldFormat = "gold" })),
         FormatGold(target * 10000, { goldFormat = "gold" })
 end
 
@@ -2555,7 +2568,7 @@ ns:RegisterModule("whispers", {
         if #whispers == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
         for i = #whispers, 1, -1 do
             local w = whispers[i]
-            tt:AddDoubleLine(("%s (%d)"):format(w.name, w.count),
+            tt:AddDoubleLine(("%s (%d)"):format(Masked(w.name), w.count),
                 L.TT_AGO:format(ShortDuration(GetTime() - w.at)), 1, 1, 1, 0.7, 0.7, 0.7)
         end
     end,
@@ -2813,6 +2826,29 @@ ns:RegisterModule("honor", {
 end
 
 ---------------------------------------------------------------------------
+-- Streamer mode: shows whether it is on, a click turns it on or off
+---------------------------------------------------------------------------
+ns:RegisterModule("streamer", {
+    label = "STREAMER",
+    icon = "Interface\\Icons\\Ability_Stealth",
+    defaultEnabled = false,
+    -- "Hide when empty": the block only shows while the mode is on
+    isEmpty = function() return not ns:IsStreamer() end,
+    update = function()
+        if ns:IsStreamer() then return L.STREAMER_ON, WARN end
+        return L.STREAMER_OFF
+    end,
+    tooltip = function(tt)
+        tt:AddLine(ns:IsStreamer() and L.TT_STREAMER_ON or L.TT_STREAMER_OFF, 1, 1, 1, true)
+    end,
+    clickHint = L.HINT_STREAMER,
+    onClick = function(_, button)
+        if button ~= "LeftButton" then return end
+        ns:SetStreamerMode(not ns:IsStreamer())
+    end,
+})
+
+---------------------------------------------------------------------------
 -- Sample values for the preview mode (/tessera preview): used for screenshots,
 -- they show what each block looks like with typical values. Blocks without a
 -- sample keep showing their real value.
@@ -2871,6 +2907,7 @@ local MORE_SAMPLES = {
     comprehension = function() return "42/65", WARN end,
     camping      = function() return L.CAMP_BUFFS_LEFT:format("52m"), GOOD end,
     honor        = function() return "3 250" end,
+    streamer     = function() return L.STREAMER_ON, WARN end,
 }
 for key, sample in pairs(MORE_SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

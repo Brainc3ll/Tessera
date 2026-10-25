@@ -74,7 +74,7 @@ In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a mai
 - Optional addons it adapts to: FlareUI, EllesmereUI and ElvUI (a matching style is
   offered; blocks snap to the XP bar of FlareUI, ElvUI and GW2 UI, and Tessera warns when they
   cover frames of FlareUI, EllesmereUI, ElvUI or GW2 UI), LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
-  display addons (Titan Panel, ChocolateBar, Bazooka...)
+  display addons (Titan Panel, Arcana (formerly ChocolateBar), Bazooka...)
 
 ## For players
 
@@ -92,7 +92,7 @@ Help tab inside the game explains everything.
   the styles (or shows them side by side, one per column: "Mixed styles") and hides the game's
   interface, for screenshots. Your layout comes back afterwards.
 - **Blocks made for WoW Forever's own systems**, which can also be shared with DataBroker
-  display addons (Titan Panel, ChocolateBar, Bazooka...):
+  display addons (Titan Panel, Arcana (formerly ChocolateBar), Bazooka...):
   - Legacy points: your points, the next reward, every reward of the track and your Legacy
     challenges completed per category; a click opens the Legacy panel;
   - Comprehension: your scroll-reading skill and the scrolls in your bags; a click casts Scroll
@@ -119,7 +119,7 @@ Help tab inside the game explains everything.
   progress bar, thresholds, show on hover, alerts, click actions, and how the value is shown
   (gold format, coin icons, rounding; bag slots; XP; durability; latency; seconds; decimals...).
 - DataBroker tab: other addons' DataBroker objects as blocks ("Plugins as blocks"); Tessera's
-  blocks shared with Titan Panel, ChocolateBar, Bazooka... ("Sharing and mode"); a DataBroker mode,
+  blocks shared with Titan Panel, Arcana (formerly ChocolateBar), Bazooka... ("Sharing and mode"); a DataBroker mode,
   on automatically when such an addon is installed (Tessera then shows nothing itself), that can
   be turned off to use both.
 - Look tab: styles, how groups look, screen edges, ready-made layouts, blocks in front of or behind

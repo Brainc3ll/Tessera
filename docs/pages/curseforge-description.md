@@ -30,7 +30,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 - **Weapon skills**: read from Forever's skill list, with every skill in the tooltip.
 - Profession, talent and Legacy blocks open Forever's own windows.
 
-**Also in your DataBroker bar**: you can share the WoW Forever blocks, like every Tessera block, with **Titan Panel, ChocolateBar, Bazooka** and other DataBroker display addons. Use them on Tessera's own bars, in your favorite panel, or both.
+**Also in your DataBroker bar**: you can share the WoW Forever blocks, like every Tessera block, with **Titan Panel, Arcana (formerly ChocolateBar), Bazooka** and other DataBroker display addons. Use them on Tessera's own bars, in your favorite panel, or both.
 
 ## Features
 
@@ -137,7 +137,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 - **Compétences d'armes** : lues dans la liste de compétences de Forever, toutes les compétences dans l'infobulle.
 - Les blocs métiers, talents et héritage ouvrent les fenêtres propres à Forever.
 
-**Aussi dans ta barre DataBroker** : comme tous les blocs de Tessera, tu peux partager les blocs WoW Forever avec **Titan Panel, ChocolateBar, Bazooka** et les autres addons d'affichage DataBroker. Utilise-les dans les barres de Tessera, dans ton panneau préféré, ou les deux.
+**Aussi dans ta barre DataBroker** : comme tous les blocs de Tessera, tu peux partager les blocs WoW Forever avec **Titan Panel, Arcana (anciennement ChocolateBar), Bazooka** et les autres addons d'affichage DataBroker. Utilise-les dans les barres de Tessera, dans ton panneau préféré, ou les deux.
 
 ## Fonctions
 

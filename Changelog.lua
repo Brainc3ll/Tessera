@@ -64,6 +64,15 @@ ns.CHANGELOG = {
                 "L'onglet À propos remercie Funkeh, dont l'addon StatBlock Core m'a donné l'idée des blocs "
                     .. "libres de Tessera.",
               } },
+            { kind = "fixed",
+              en = {
+                "Arcana, ChocolateBar's new name, now switches Tessera to DataBroker mode like ChocolateBar "
+                    .. "did, and the help names it.",
+              },
+              fr = {
+                "Arcana, le nouveau nom de ChocolateBar, fait de nouveau passer Tessera en mode DataBroker "
+                    .. "comme le faisait ChocolateBar, et l'aide le cite.",
+              } },
         },
     },
     {

@@ -49,7 +49,7 @@ Fait avec Braincell1980 après la review du code (22/10), les sondes de l'API de
 - Bloc Batterie (de l'ordinateur) : impossible, les addons n'ont pas accès au système.
 - Événements du monde, saison JcJ : coupés sur Forever, seulement si Blizzard les active.
 - Compteur de dégâts complet (classement du groupe) : le DPS du joueur suffit.
-- Rouvrir le moteur des rangées : seulement si des joueurs le réclament (`archive/refonte-rangees`).
+- Rouvrir le moteur des rangées : seulement si des joueurs le réclament (`archive/refonte-rangees` du dépôt privé Tessera-dev).
 
 Licences à vérifier avant d'embarquer une bibliothèque (Ace3, LibDeflate en zlib et LibSerialize en MIT semblent compatibles avec la licence MIT de Tessera, sans vérification).
 
@@ -120,7 +120,7 @@ Idée de Braincell1980 : WoW Forever va attirer beaucoup de joueurs de 35 ans et
 - À l'étude : option par bloc « quand il se masque : garder sa place / laisser les voisins se resserrer ». Prudence : le resserrement causait la plupart des bugs de placement.
 - Cadres d'autres interfaces dans `ns.KNOWN_UI_FRAMES` (ElvUI, EllesmereUI, puis TukUI, GW2 UI...) : aimantation et avertissement de chevauchement, à ajouter seulement après test en jeu.
 - Version Forever + Retail : même API (Midnight), modules propres à Forever chargés seulement s'ils existent ; zips de test avec `## Interface: 16001, 120105, 120107`.
-- Fait : la bêta des rangées est rangée (branche `archive/refonte-rangees`) ; ses idées (colonnes de même largeur, alignement par rangée) restent possibles plus tard.
+- Fait : la bêta des rangées est rangée (branche `archive/refonte-rangees` du dépôt privé Tessera-dev depuis le 25/10) ; ses idées (colonnes de même largeur, alignement par rangée) restent possibles plus tard.
 
 ### Remplacement de blocs (14 octobre 2026)
 

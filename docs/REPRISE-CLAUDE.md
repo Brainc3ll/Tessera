@@ -43,7 +43,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - Rien ne disparaît pour un joueur qui avait une option ; ses dispositions continuent de marcher.
 - FlareUI est traité comme ElvUI, EllesmereUI, GW2 UI : dans les textes du jeu, seulement le nom de son style. Les cadres des interfaces connues (chevauchements, aimantation) sont dans `ns.KNOWN_UI_FRAMES` (Core.lua), avec des noms lus dans leur code.
 - Le mode démo reste (il ne faut pas le retirer : il existe depuis la rc5).
-- La version Retail n'est pas une priorité. La bêta des rangées est rangée (branche `archive/refonte-rangees`). L'accessibilité puis la manette se font sur la branche `accessibilite-manette`.
+- La version Retail n'est pas une priorité. La bêta des rangées est rangée (branche `archive/refonte-rangees` du dépôt privé Tessera-dev depuis le 25/10). L'accessibilité puis la manette se font sur la branche `accessibilite-manette`.
 - Fonctions, CVars et événements du vrai client Forever : `Ketho/BlizzardInterfaceResources`, branche `forever` (test `tools/forever_api_check.py`).
 - Code de l'interface de Blizzard pour Forever : `Gethe/wow-ui-source`, branche `forever` (Forever = « Camelot » dans ce code) ; ce qu'on y a trouvé : `docs/etudes/SOURCES.md`, 25/10.
 - Titre CurseForge et Wago « Tessera – Info Blocks That Snap Together for WoW Forever » (24/10, par Braincell1980 : « Forever » dans le titre pour la recherche) ; le mot « data » est évité (les joueurs le prenaient pour un enregistreur de statistiques).
@@ -69,7 +69,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42, validé en jeu ; le reste noté pour la 1.1 dans A-REPRENDRE.
 - 22/10 : sondes de l'API de WoW Forever (test43, test44) : blocs DPS, Corps, Mode de jeu, Météo validés pour la 1.1 (IDEES-FUTUR) ; commandes de dev révisées ; rc9 publiée.
 - 23/10 : exports 10 fois plus courts (`TESSERA2:`), anciens textes toujours lus (fixtures dans `tools/fixtures`, à garder) ; statistique et texture des barres gardées à l'import ; rc9-hotfix publiée avant la fermeture de la bêta.
-- 24/10 : branche `accessibilite-manette` créée depuis `main` ; rangées archivées dans `archive/refonte-rangees` ; disposition « Portable » notée pour après la 2.0.
+- 24/10 : branche `accessibilite-manette` créée depuis `main` ; rangées archivées dans `archive/refonte-rangees` (déplacée le 25/10 dans le dépôt privé Tessera-dev) ; disposition « Portable » notée pour après la 2.0.
 - 24/10 : étude des modules (`docs/etudes/PLAN-modules.md`) et des bibliothèques ; bilan bon / bof / non dans IDEES-FUTUR ; après la 1.0 : corriger, nettoyer, optimiser d'abord (1.1), nouveaux blocs ensuite (1.2).
 - 24/10 : règles ajoutées dans CLAUDE.md (dès la 1.3 : accessibilité et manette préparées ; ne pas refaire ce que le jeu offre ; textes inclusifs) ; blocs « de base ou propres à Forever », sinon un addon avec DataBroker (`docs/etudes/ADDONS-FOREVER.md`) ; petits ajustements reportés à la 1.0.1 ; titre CurseForge / Wago avec « WoW Forever ».
 - 25/10 : sources lues (code de Blizzard et liste de Ketho pour Forever, fils Reddit, forever-addon-kit) dans `docs/etudes/SOURCES.md` ; test `tools/forever_api_check.py` (aussi sur GitHub) ; accroche des descriptions ; skills report-triage, refactor, gate2 ; dossier `docs/` réorganisé (`pages/`, `etudes/`, IDEES-FUTUR par thème) ; nouvelle icône et logo texte (Outfit) dans la 1.0.0.

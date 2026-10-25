@@ -279,6 +279,14 @@ Décidé avec Braincell1980 :
 - **Avertissement** : une nouvelle clé (par exemple `ABOUT_TRANSLATION_NOTE`), vide en anglais et en français. Dans nos traductions : « Traduction générée par Claude (IA), pas encore relue. Tu peux la corriger sur CurseForge. » dans la langue concernée, affichée dans l'onglet À propos (et peut-être une fois au premier lancement). Le traducteur qui relit sa langue vide ce texte.
 - **Crédit** : la clé `ABOUT_TRANSLATORS` existe déjà (onglet À propos, ligne « Traduction ») ; le traducteur y met son nom. L'expliquer dans le texte d'appel aux traducteurs.
 
+### Une interface qui s'adapte à la longueur des textes (idée de Braincell1980, 25 octobre 2026)
+
+But : ne plus avoir peur qu'un texte dépasse, quelle que soit la langue ou la taille du texte.
+- **Aujourd'hui** : les boutons ont une largeur fixe ; un texte trop long passe en petite police, puis il est coupé par « ... » (`FitButtonText` dans `Options.lua`), l'infobulle garde le texte entier. C'est un filet de sécurité, pas une solution.
+- **À faire** : chaque bouton mesure son texte et s'élargit jusqu'à la place disponible dans sa colonne ; au-delà, le texte passe sur deux lignes et le bouton grandit en hauteur. Les rangées de boutons côte à côte passent l'une sous l'autre quand elles ne tiennent plus. Même chose pour les cases à cocher, les listes déroulantes et les onglets : la mise en page se calcule à partir des textes, pas l'inverse.
+- **Pourquoi c'est la même chose que l'accessibilité** : le test « texte deux fois plus grand » de la feuille de route 1.3 pose exactement ce problème. Un seul chantier règle les deux ; à faire avec la 1.3, en commençant par les fenêtres les plus visibles (barre d'onglets, bandeau de placement, visite rapide).
+- En attendant, les traductions gardent les libellés de boutons courts (outil `tools/check_translation.py`, avertissement sur les textes courts qui s'allongent).
+
 ## Code
 
 ### Tessera en modules optionnels (24 octobre 2026, à l'étude)

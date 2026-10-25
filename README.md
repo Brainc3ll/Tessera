@@ -372,6 +372,7 @@ lua5.1 tools/mock_run.lua .      # loads the addon in a rough WoW API mock, prin
 lua5.1 tools/fuzz_blocks.lua .   # WoW Forever's blocks survive missing or changed game functions
 lua5.1 tools/check_docs.lua .    # README, help, descriptions, changelog, strings: up to date?
 python3 tools/api_audit.py <lua-language-server> <vscode-wow-api folder>
+python3 tools/forever_api_check.py <BlizzardInterfaceResources folder, branch forever>
 ```
 
 `tools/api_audit.py` runs the audit addon reviewers use: the Lua Language Server with Ketho's
@@ -379,6 +380,12 @@ WoW API annotations ([vscode-wow-api](https://github.com/Ketho/vscode-wow-api)).
 unknown globals and deprecated functions. Functions that only exist on WoW Forever (not in
 Blizzard's documentation of the modern API) and other addons' globals are read through
 `_G["Name"]`, which tells readers they may be missing.
+
+`tools/forever_api_check.py` compares every `C_Namespace.Function` call with the function list
+of the WoW Forever client itself, from the `forever` branch of Ketho's
+[BlizzardInterfaceResources](https://github.com/Ketho/BlizzardInterfaceResources) (it also lists
+the client's CVars and events). A call the client lacks fails the check, unless a fallback takes
+over on the same line.
 
 `tools/check_docs.lua` checks that the version is the same everywhere, that `CHANGELOG.md` and
 `docs/localization/` match the code, and that every public command, block, Lua file and option

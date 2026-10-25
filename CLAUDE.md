@@ -28,6 +28,7 @@ lua5.1 tools/mock_run.lua . enUS      # also: frFR, "frFR broker" (includes a du
 lua5.1 tools/fuzz_blocks.lua .        # WoW Forever's blocks survive a changing game
 lua5.1 tools/check_docs.lua .         # add "release" before publishing
 python3 tools/api_audit.py <lua-language-server> <vscode-wow-api folder>   # reviewers' audit
+python3 tools/forever_api_check.py <BlizzardInterfaceResources, branch forever>   # real Forever API
 ```
 The WoW API audit (Ketho's annotations) runs on every push. No deprecated function, no unknown
 global: WoW Forever-only functions and other addons' globals are read through `_G["Name"]`.

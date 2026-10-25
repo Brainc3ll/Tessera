@@ -1,7 +1,8 @@
 # Runs on every push and pull request: static checks (luacheck), the mock run of the addon
 # in English, French and DataBroker mode (tools/mock_run.lua, with a dungeon + combat
 # scenario), the robustness test of the blocks (tools/fuzz_blocks.lua), the WoW API audit
-# (tools/api_audit.py, Ketho's annotations), and the documentation check
+# (tools/api_audit.py, Ketho's annotations), the WoW Forever API check (tools/forever_api_check.py,
+# the function list of the real client), and the documentation check
 # (tools/check_docs.lua: README, in-game help, descriptions, changelog and CurseForge strings
 # must follow the code). A red cross on a commit means one of them found a problem.
 name: Checks
@@ -42,6 +43,13 @@ jobs:
           mkdir -p "$RUNNER_TEMP/luals" && tar xzf luals.tgz -C "$RUNNER_TEMP/luals" && rm luals.tgz
           git clone -q --depth 1 https://github.com/Ketho/vscode-wow-api.git "$RUNNER_TEMP/wowapi"
           python3 tools/api_audit.py "$RUNNER_TEMP/luals/bin/lua-language-server" "$RUNNER_TEMP/wowapi"
+
+      # Ketho's dump of WoW Forever's own client (branch "forever"): every C_ call Tessera makes
+      # must exist there, or have a fallback (tools/forever_api_check.py).
+      - name: WoW Forever API check (functions of the real client)
+        run: |
+          git clone -q --depth 1 -b forever https://github.com/Ketho/BlizzardInterfaceResources.git "$RUNNER_TEMP/bir"
+          python3 tools/forever_api_check.py "$RUNNER_TEMP/bir"
 
       - name: Documentation check
         run: lua5.1 tools/check_docs.lua .

@@ -310,3 +310,15 @@ Réponses trouvées le 25/10 :
 - Tessera peut **suivre** : `colorblindMode` (palette daltoniens de Tessera automatique), `overrideScreenFlash` (pas de clignotement des blocs, alertes sans flash), secousses d'interface réduites (moins d'animations dans Tessera), la voix du narrateur pour une lecture vocale.
 - **Horloge** : l'alarme de l'horloge de Blizzard existe sur Forever (`Blizzard_TimeManager`, fichier `Camelot/`). Pour « Je m'arrête à 23h » (bloc Session) : ne pas recoder, ouvrir l'horloge de Blizzard. Idée pour la 1.0.1, à valider : un clic (droit ou Alt) sur le bloc Heure ouvre l'horloge (alarme, chronomètre) ; le clic gauche ouvre déjà le calendrier.
 - **Bateaux et zeppelins** : aucun horaire dans le code de l'interface. Il faudrait les apprendre en jeu, comme Ultimate Panel. Temps de vol : pas de durées fournies non plus.
+
+## Retours d'autres développeurs d'addons avec IA (Reddit r/wowaddons, 25 octobre 2026)
+
+Fil « AI assisted addon development questions », copié par Braincell1980.
+- **Repris** : le code de l'interface de Blizzard (`Gethe/wow-ui-source`, branche `forever`) et la liste des fonctions, CVars et événements du vrai client Forever (`Ketho/BlizzardInterfaceResources`, branche `forever`). Nouveau test `tools/forever_api_check.py`, aussi sur GitHub à chaque envoi : 52 fonctions `C_` utilisées, toutes présentes sur Forever ou avec un repli (`C_AddOns.GetAddOnMemoryUsage` manque, le global `GetAddOnMemoryUsage` prend le relais).
+- Niveaux de risque T0 / T1 / T2 et relecture séparée des changements T2 : skill `tessera-gate2`. Tri des retours joueurs : `tessera-report-triage`. Nettoyage de la 1.1 : `tessera-refactor`.
+- Pièges cités, déjà évités par Tessera : valeurs secrètes (lues dans `pcall`), remplacer des fonctions de Blizzard (jamais ; règle écrite dans le README).
+- **UIForever** : trois développeurs disent que leurs addons, corrects en jeu, y ont des bugs visuels. Bon pour un premier coup d'œil, jamais une preuve.
+- **1.1 (mesures)** : Forever a l'outil de performances des addons de Blizzard (`Blizzard_AddOnPerformance`) et `C_AddOnProfiler` (temps processeur par addon). Mesurer avec eux avant / après l'optimisation, ne pas recoder un profileur.
+- **Idée 1.2** : le bloc Mémoire pourrait montrer aussi le temps processeur par addon (`C_AddOnProfiler.GetAddOnMetric`), à sonder en jeu.
+- **Avant de poster sur r/wowaddons** : la règle 1 du sous-forum porte sur la qualité du code, la responsabilité et la **déclaration de l'IA**. La section « À propos du projet » des descriptions le fait déjà ; la reprendre dans le post. Le reproche fréquent : « des clones d'addons qui existent déjà » ; la règle « bloc de base ou propre à Forever » y répond.
+- Wiki de référence pour l'API : warcraft.wiki.gg (pas l'ancien wowpedia).

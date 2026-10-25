@@ -55,10 +55,14 @@ ns.CHANGELOG = {
               en = {
                 "New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the "
                     .. "minimap button.",
+                "The About tab thanks Funkeh, whose StatBlock Core gave me the idea of Tessera's "
+                    .. "free-floating blocks.",
               },
               fr = {
                 "Nouvelle icône : un T et une tesselle dorée sur fond turquoise, plus facile à repérer dans "
                     .. "la liste des addons et sur le bouton de la minicarte.",
+                "L'onglet À propos remercie Funkeh, dont l'addon StatBlock Core m'a donné l'idée des blocs "
+                    .. "libres de Tessera.",
               } },
         },
     },

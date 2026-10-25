@@ -2104,6 +2104,10 @@ local function AboutText()
     table.insert(lines, "")
     table.insert(lines, L.ABOUT_AI)
     table.insert(lines, "")
+    if L.ABOUT_THANKS and L.ABOUT_THANKS ~= "" then
+        table.insert(lines, L.ABOUT_THANKS)
+        table.insert(lines, "")
+    end
     table.insert(lines, L.ABOUT_BUGS)
     table.insert(lines, "")
     table.insert(lines, L.ABOUT_TRANSLATE)

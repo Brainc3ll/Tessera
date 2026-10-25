@@ -97,6 +97,8 @@ Tessera is a collaboration between me, a player, and an AI.
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
 - the logo (set in Outfit, a free font) and the banner images.
 
+**Thanks** to Funkeh, whose StatBlock Core (free-floating DataBroker blocks, no longer updated since 2022) was my first inspiration for Tessera.
+
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, on [GitHub](https://github.com/Brainc3ll/Tessera)) and to suggest improvements.
 
 **Translations**: I check the English and French myself. Claude translated the German, Spanish (Spain and Mexico) and Brazilian Portuguese texts, and nobody has reviewed them yet: the addon says so in its About tab. You can correct them, or add your language, with CurseForge's localization tool, and your name will appear in the addon.
@@ -201,6 +203,8 @@ Tessera est une collaboration entre moi, un joueur, et une IA.
 - les textes en anglais et en français : options, infobulles, aide, changelog, cette page ;
 - les outils de publication (workflows GitHub, envoi sur CurseForge) et les versions debug ;
 - le logo (en Outfit, une police libre) et les images de la bannière.
+
+**Merci** à Funkeh : son addon StatBlock Core (des blocs DataBroker libres, plus mis à jour depuis 2022) a été ma première inspiration pour Tessera.
 
 **Ce que ça veut dire pour toi.** Des tests automatiques et mes propres tests en jeu vérifient le code, mais aucun programmeur ne l'a relu ligne par ligne. Des bugs peuvent rester : signale-les avec `/tessera bug`. Les développeurs sont les bienvenus pour lire le code (licence MIT, sur [GitHub](https://github.com/Brainc3ll/Tessera)) et proposer des améliorations.
 

@@ -12,6 +12,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Improvements
 
 - New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the minimap button.
+- The About tab thanks Funkeh, whose StatBlock Core gave me the idea of Tessera's free-floating blocks.
 
 ## 1.0.0-rc9-hotfix — 2026-10-23
 

@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.0 — 
+
+### Improvements
+
+- New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the minimap button.
+
 ## 1.0.0-rc9-hotfix — 2026-10-23
 
 ### Improvements

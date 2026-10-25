@@ -45,6 +45,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - Code de l'interface de Blizzard pour Forever : `Gethe/wow-ui-source`, branche `forever` (Forever = « Camelot » dans ce code) ; ce qu'on y a trouvé : `docs/etudes/SOURCES.md`, 25/10.
 - Titre CurseForge et Wago « Tessera – Info Blocks That Snap Together for WoW Forever » (24/10, par Braincell1980 : « Forever » dans le titre pour la recherche) ; le mot « data » est évité (les joueurs le prenaient pour un enregistreur de statistiques).
 - Styles FlareUI et FlareUI carré : fond à 50 %, comme FlareUI 2.4.1.
+- Logo (25/10) : logo texte « Tessera. » en Marcellus (police libre proche de Friz Quadrata, qui n'est pas libre) avec une tesselle turquoise ; icône : un T et une tesselle dorée sur turquoise. Fichiers dans `docs/art`. Les images générées (Gemini) et les dessins « peints » ont été écartés (trop « IA »).
 
 ## Pièges déjà rencontrés
 - Export : ne jamais casser la lecture des anciens textes (`TESSERA1:`, `TESSERA2:`) ; `tools/fixtures/` contient de vrais textes de la rc9 que le simulateur doit toujours importer.
@@ -68,4 +69,4 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - 24/10 : branche `accessibilite-manette` créée depuis `main` ; rangées archivées dans `archive/refonte-rangees` ; disposition « Portable » notée pour après la 2.0.
 - 24/10 : étude des modules (`docs/etudes/PLAN-modules.md`) et des bibliothèques ; bilan bon / bof / non dans IDEES-FUTUR ; après la 1.0 : corriger, nettoyer, optimiser d'abord (1.1), nouveaux blocs ensuite (1.2).
 - 24/10 : règles ajoutées dans CLAUDE.md (dès la 1.3 : accessibilité et manette préparées ; ne pas refaire ce que le jeu offre ; textes inclusifs) ; blocs « de base ou propres à Forever », sinon un addon avec DataBroker (`docs/etudes/ADDONS-FOREVER.md`) ; petits ajustements reportés à la 1.0.1 ; titre CurseForge / Wago avec « WoW Forever ».
-- 25/10 : sources lues (code de Blizzard et liste de Ketho pour Forever, fils Reddit, forever-addon-kit) dans `docs/etudes/SOURCES.md` ; test `tools/forever_api_check.py` (aussi sur GitHub) ; accroche des descriptions ; skills report-triage, refactor, gate2 ; dossier `docs/` réorganisé (`pages/`, `etudes/`, IDEES-FUTUR par thème) ; icône : pas encore décidée.
+- 25/10 : sources lues (code de Blizzard et liste de Ketho pour Forever, fils Reddit, forever-addon-kit) dans `docs/etudes/SOURCES.md` ; test `tools/forever_api_check.py` (aussi sur GitHub) ; accroche des descriptions ; skills report-triage, refactor, gate2 ; dossier `docs/` réorganisé (`pages/`, `etudes/`, IDEES-FUTUR par thème) ; nouvelle icône et logo texte (Marcellus) dans la 1.0.0.

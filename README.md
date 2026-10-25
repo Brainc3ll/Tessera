@@ -56,7 +56,7 @@ Tessera is a collaboration between me, a player, and an AI.
 - all the code of the addon (Lua), and the automatic tests that run it outside the game;
 - the English and French texts: options, tooltips, help, changelog, this page;
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
-- the banner images.
+- the logo (set in Marcellus, a free font) and the banner images.
 
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
 
@@ -195,7 +195,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the release guide
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions
 (`docs/pages`), studies (`docs/etudes`), finished plans (`docs/archive`), the strings sent to
-CurseForge's localization tool (`docs/localization`), the logo in large sizes (`docs/art`), and the
+CurseForge's localization tool (`docs/localization`), the logo and the name in large sizes (`docs/art`), and the
 banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon

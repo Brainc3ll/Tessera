@@ -95,7 +95,7 @@ Tessera is a collaboration between me, a player, and an AI.
 - all the code of the addon (Lua), and the automatic tests that run it outside the game;
 - the English and French texts: options, tooltips, help, changelog, this page;
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
-- the banner images.
+- the logo (set in Marcellus, a free font) and the banner images.
 
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, on [GitHub](https://github.com/Brainc3ll/Tessera)) and to suggest improvements.
 
@@ -200,7 +200,7 @@ Tessera est une collaboration entre moi, un joueur, et une IA.
 - tout le code de l'addon (Lua), et les tests automatiques qui le font tourner hors du jeu ;
 - les textes en anglais et en français : options, infobulles, aide, changelog, cette page ;
 - les outils de publication (workflows GitHub, envoi sur CurseForge) et les versions debug ;
-- les images de la bannière.
+- le logo (en Marcellus, une police libre) et les images de la bannière.
 
 **Ce que ça veut dire pour toi.** Des tests automatiques et mes propres tests en jeu vérifient le code, mais aucun programmeur ne l'a relu ligne par ligne. Des bugs peuvent rester : signale-les avec `/tessera bug`. Les développeurs sont les bienvenus pour lire le code (licence MIT, sur [GitHub](https://github.com/Brainc3ll/Tessera)) et proposer des améliorations.
 

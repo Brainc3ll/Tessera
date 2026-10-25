@@ -37,6 +37,21 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.0.0",
+        date = "",
+        sections = {
+            { kind = "improved",
+              en = {
+                "New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the "
+                    .. "minimap button.",
+              },
+              fr = {
+                "Nouvelle icône : un T et une tesselle dorée sur fond turquoise, plus facile à repérer dans "
+                    .. "la liste des addons et sur le bouton de la minicarte.",
+              } },
+        },
+    },
+    {
         version = "1.0.0-rc9-hotfix",
         date = "2026-10-23",
         sections = {

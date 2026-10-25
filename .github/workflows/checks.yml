@@ -32,6 +32,13 @@ jobs:
             if echo "$out" | grep -q "ERROR\|lua5.1:"; then echo "$out" | grep "ERROR\|lua5.1:"; exit 1; fi
           done
 
+      - name: Old saved variables (rc9 on the WoW Forever beta) convert to full-name keys
+        run: |
+          out=$(TESSERA_SV=tools/fixtures/sv-rc9-forever.lua TESSERA_FULLNAME="Nora Quill" TESSERA_REALM="Classic PvE" lua5.1 tools/mock_run.lua . enUS 2>&1 | grep "^SV\|LOAD ERROR\|EVENT ERROR")
+          echo "$out"
+          if echo "$out" | grep -q "Classic Beta\|ERROR"; then exit 1; fi
+          echo "$out" | grep -q "^SV chars: Mira Fenwick | Nora Quill | Tobin Harrow$"
+
       - name: Blocks survive a changing game (WoW Forever's own blocks and the newest ones)
         run: lua5.1 tools/fuzz_blocks.lua .
 

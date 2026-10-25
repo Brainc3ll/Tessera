@@ -14,7 +14,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### New
 
 - German, Spanish (Spain and Mexico) and Brazilian Portuguese translations. Claude (an AI) made them and nobody has reviewed them yet: you can correct them with CurseForge's localization tool.
-- Streamer mode, for streams and videos: other players' names, your other characters, your realm, your guild's name and your gold show as ***. Turn it on in the General tab, with a key binding, or with the new Streamer mode block (hidden by default).
+- Streamer mode, for streams and videos: other players' names, your other characters, your guild's name and your gold show as ***. Turn it on in the General tab, with a key binding, or with the new Streamer mode block (hidden by default).
 
 ### Improvements
 
@@ -23,6 +23,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Fixes
 
+- Each character's data (its own profile, its gold and gold history) is now saved under its full name, as WoW Forever has no realms: it no longer depends on the server's name, which may change. Your settings carry over on their own at your next login.
 - Arcana, ChocolateBar's new name, now switches Tessera to DataBroker mode like ChocolateBar did, and the help names it.
 
 ## 1.0.0-rc9-hotfix — 2026-10-23

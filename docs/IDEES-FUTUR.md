@@ -332,3 +332,13 @@ Fil pour débutants ; trois choses servent :
 - **Atlas de Blizzard** (`:SetAtlas`, addon Texture Atlas Viewer) : les images du jeu prêtes à l'emploi. Pour la 1.3 (« Comme chez Blizzard », styles HD), la liste des atlas du vrai client Forever est dans `Ketho/BlizzardInterfaceResources`, branche `forever`, `Resources/AtlasInfo.lua` : choisir là-dedans, rien de dessiné à la main.
 - **WowLua** (addon « bac à sable » Lua en jeu) : pour une petite sonde, Braincell1980 pourrait coller quelques lignes dans WowLua au lieu d'attendre un zip de test. À vérifier : existe-t-il pour Forever ?
 - **townlong-yak.com/framexml** : le code de Blizzard lisible dans un navigateur, pour montrer une fenêtre ou une fonction à Braincell1980.
+
+### forever-addon-kit (Thunderz96, MIT, relevés de la bêta, septembre 2026 ; lu le 25/10)
+Relevés faits sur le vrai client, page par page. Vérifié pour Tessera :
+- **Événement inconnu = erreur qui arrête le fichier** : les 49 événements que Tessera enregistre existent tous dans la liste de Ketho pour Forever (1 814). À ajouter un jour à `tools/forever_api_check.py`.
+- **Piège du numéro de version** (`GetBuildInfo() >= 100000` pour « client moderne », Forever répond 16001) : Tessera ne lit `GetBuildInfo` que pour le rapport de bug, pas de souci.
+- **`ReloadUI()` protégé** sur la bêta : à vérifier avant la 1.0.0 (voir A-REPRENDRE).
+- **Plafond de 100 erreurs Lua par session** : après, le client ne transmet plus rien. Si Braincell1980 voit une avalanche d'erreurs, la première compte, pas les suivantes.
+- Les sauvegardes jamais relues (bug de la bêta de septembre) : corrigé depuis, les profils de Tessera survivent aux reconnexions dans les tests de Braincell1980.
+- Boîte à outils des valeurs secrètes plus complète que prévu (`C_Secrets`, 27 questions, `canaccesssecrets`, `scrub`…) ; la santé est secrète en combat, les montants de dégâts (`UNIT_COMBAT`) non : utile pour le bloc DPS de la 1.2.
+- Liste d'autres projets Forever à lire pour la technique (BetterBlizzFrames, forever-addon-dev, hated-wow-mcp, smore-skills pour le camping).

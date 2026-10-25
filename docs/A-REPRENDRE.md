@@ -27,6 +27,7 @@ Le joueur décide au pixel près ; Tessera ne recentre plus rien.
 ## Feuille de route
 Décidé le 24/10 : **les versions après la 1.0 servent d'abord à corriger, nettoyer et optimiser Tessera.** Le détail (bon / bof / non) est dans IDEES-FUTUR, « Bilan du 24 octobre ».
 1. **1.0.0 le 4/11** : la 1.0.0-rc9-hotfix, avec seulement la version et l'intro « Première version stable ».
+   **À vérifier en jeu avant** (25/10) : `ReloadUI()` serait protégé sur Forever d'après `Thunderz96/forever-addon-kit` (mesuré sur la bêta de septembre, peut-être corrigé depuis). Tessera l'appelle dans « Tout réinitialiser » / `/tessera reset` (`Core.lua`, après `TesseraDB = nil`) et dans les boutons « Recharger » (`Options.lua`). Si Braincell1980 voit « action bloquée » : passer par un bouton sécurisé avec la macro `/reload` (comme `SecureClicks.lua`) ; c'est un bug à corriger pour la 1.0.0.
 2. **1.0.x** : corrections des bugs trouvés en jouant (un bug bloquant passe avant tout).
    **1.0.1** : en plus, tous les petits ajustements (décision du 24/10 : rien de neuf dans la 1.0.0) : couleur de faction (Horde / Alliance) au choix à la place de la couleur de classe (teintes plus claires pour le texte, repli sur la classe sans faction, défaut « classe ») ; espace des sacs de chaque personnage dans l'infobulle des Sacs ; option « personnages de cette faction seulement » dans l'infobulle de l'Or. Hors code, avant le 4/11 : titre et résumé CurseForge / Wago avec « WoW Forever », première capture lisible, appel aux traducteurs.
 3. **1.1 « Nettoyage et optimisation »** :

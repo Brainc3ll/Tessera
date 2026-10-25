@@ -74,6 +74,7 @@ Maquette selon la règle de la 1.3 (24/10) : artefact « Tessera – options acc
 
 ## Visibilité
 - CurseForge et Wago (projet ANz7wj64). Pistes : Reddit (r/WoWUI avec le paragraphe « AI Disclaimer », subreddit Forever), Discords Forever (publicité autorisée par Malkkav), WoWInterface, pic de promotion vers le 4/11.
+- Transparence sur l'IA : `ACR.md` à la racine (AI Code Rating E4d, spec 0.1, décidé le 25/10) et un badge en haut du README. À remettre à jour (`updated:`) si la façon de travailler change (par exemple si un programmeur relit le code : la dernière lettre monte).
 - Images (`docs/media`, dans le README) : bannière animée, trois GIF des styles, image anglais / français (sa moitié française vient d'une version plus ancienne : une capture récente du mode démo en français permettrait de la refaire). À envoyer dans les galeries de CurseForge et Wago.
 
 ## Outils de la session (hors dépôt)

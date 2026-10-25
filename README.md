@@ -4,6 +4,8 @@
 
 **Download:** [CurseForge](https://www.curseforge.com/wow/addons/tessera) · [Wago](https://addons.wago.io/addons/tessera) · [GitHub releases](https://github.com/Brainc3ll/Tessera/releases)
 
+[![ACR E4d](https://img.shields.io/badge/ACR-E4d-2140B5)](ACR.md) Written by an AI (Claude) from my ideas; I test every version in game; no human reads the code line by line.
+
 Tessera is a World of Warcraft addon for **WoW Forever** that shows small information blocks
 (gold, bags, durability, FPS, latency, time, XP, quests...) and launcher blocks (minimap and
 addon compartment buttons). Each block can be styled and placed on its own, and blocks placed
@@ -59,6 +61,8 @@ Tessera is a collaboration between me, a player, and an AI.
 - the logo (set in Outfit, a free font) and the banner images.
 
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
+
+In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a maintainer who does not program, 76–100% of the code written by AI, changes tested but not read by a human (details in `ACR.md`).
 
 ## At a glance
 
@@ -196,7 +200,7 @@ The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions
 (`docs/pages`), studies (`docs/etudes`), finished plans (`docs/archive`), the strings sent to
 CurseForge's localization tool (`docs/localization`), the logo and the name in large sizes (`docs/art`), and the
-banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project.
+banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project. `ACR.md` gives the project's AI Code Rating.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
 with a small imitation of the game API and runs every page and feature (texts exported by earlier

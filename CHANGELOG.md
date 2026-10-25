@@ -14,6 +14,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### New
 
 - German, Spanish (Spain and Mexico) and Brazilian Portuguese translations. Claude (an AI) made them and nobody has reviewed them yet: you can correct them with CurseForge's localization tool.
+- Streamer mode, for streams and videos: other players' names, your other characters, your realm, your guild's name and your gold show as ***. Turn it on in the General tab, with a key binding, or with the new Streamer mode block (hidden by default).
 
 ### Improvements
 

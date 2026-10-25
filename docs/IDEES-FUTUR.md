@@ -49,7 +49,7 @@ Fait avec Braincell1980 après la review du code (22/10), les sondes de l'API de
 - Bloc Batterie (de l'ordinateur) : impossible, les addons n'ont pas accès au système.
 - Événements du monde, saison JcJ : coupés sur Forever, seulement si Blizzard les active.
 - Compteur de dégâts complet (classement du groupe) : le DPS du joueur suffit.
-- Rouvrir le moteur des rangées : seulement si des joueurs le réclament (`archive/refonte-rangees`).
+- Rouvrir le moteur des rangées : seulement si des joueurs le réclament (`archive/refonte-rangees` du dépôt privé Tessera-dev).
 
 Licences à vérifier avant d'embarquer une bibliothèque (Ace3, LibDeflate en zlib et LibSerialize en MIT semblent compatibles avec la licence MIT de Tessera, sans vérification).
 
@@ -78,6 +78,8 @@ Que personne ne se sente oublié, au-delà de l'accessibilité. Règle ajoutée 
 - Une main, main gauche : manette (2.0), blocs placés de chaque côté de l'écran.
 - Couleurs : rouge = perte et vert = gain ne valent pas partout ; les formes en plus des couleurs (1.4) règlent ça.
 - À éviter : options « drapeaux » ou thèmes ajoutés pour afficher une valeur. L'inclusivité la plus solide ne se voit pas.
+- Fait (25/10, pour la 1.0.0) : mode streamer (noms des autres, rerolls, royaume, nom de guilde et or en ***), option de l'onglet Général, raccourci clavier et bloc Mode streamer. Idées proposées le même jour, pas encore retenues : infobulles qui expliquent le jargon pour les débutants, alertes jamais seulement sonores, disposition « Grand confort », textes alternatifs sur les images des pages.
+- Règle de Braincell1980 (25/10) : Tessera reste gratuit et open source, libre d'utilisation et de modification. Jamais de version premium, de fonction réservée aux donateurs ni de contenu payant. Un lien « offre-moi un café », sans contrepartie, reste possible un jour (pas une priorité).
 
 ## Nouveaux blocs
 
@@ -87,6 +89,7 @@ Source : la référence de l'API du client WoW Forever publiée par Atraeau (htt
 
 Blocs validés par Braincell1980 pour la 1.1 :
 - **DPS** (`C_DamageMeter`, actif sur Forever) : tes dégâts seulement (`GetCombatSessionSourceFromType` avec `UnitGUID("player")`). En combat les valeurs sont secrètes : le jeu laisse les afficher telles quelles (`SetText`), sans calcul ni texte collé (vu en jeu : « 475 », « 28 ») ; après le combat elles se lisent : DPS = dégâts / `GetSessionDurationSeconds` (vu : 7 DPS, 483 en 67 s). Le nom du bloc passe par l'icône ou un texte à part ; couleurs de seuil seulement hors combat. À essayer : le type `Enum.DamageMeterType.Dps` (1), peut-être affichable en direct.
+  - Infobulle du bloc DPS : durée du combat en cours et plus long combat de la session (`GetSessionDurationSeconds`), comme le faisait StatBlock_TimeInFight de Funkeh (comparaison avec les plugins StatBlock, 25/10 : Tessera couvre déjà tous les autres sauf DPS et DPS de raid, ce dernier écarté).
 - **Corps** (`C_DeathInfo.GetCorpseMapPosition(mapID)`) : en fantôme, distance et direction du corps (vu : 0,491 ; 0,561) ; bloc caché une fois ressuscité ; clic : repère sur la carte.
 - **Mode de jeu** (`C_GameRules` : `IsHardcoreActive`, `IsSelfFoundAllowed`, `IsStandard`, `GetActiveGameMode`) : Standard vu en jeu ; à revérifier sur un royaume Hardcore.
 - **Météo** (`C_Weather.GetCurrentWeather` : type Clair, Pluie, Neige, Tempête de sable, Divers ; intensité) : gadget.
@@ -120,7 +123,7 @@ Idée de Braincell1980 : WoW Forever va attirer beaucoup de joueurs de 35 ans et
 - À l'étude : option par bloc « quand il se masque : garder sa place / laisser les voisins se resserrer ». Prudence : le resserrement causait la plupart des bugs de placement.
 - Cadres d'autres interfaces dans `ns.KNOWN_UI_FRAMES` (ElvUI, EllesmereUI, puis TukUI, GW2 UI...) : aimantation et avertissement de chevauchement, à ajouter seulement après test en jeu.
 - Version Forever + Retail : même API (Midnight), modules propres à Forever chargés seulement s'ils existent ; zips de test avec `## Interface: 16001, 120105, 120107`.
-- Fait : la bêta des rangées est rangée (branche `archive/refonte-rangees`) ; ses idées (colonnes de même largeur, alignement par rangée) restent possibles plus tard.
+- Fait : la bêta des rangées est rangée (branche `archive/refonte-rangees` du dépôt privé Tessera-dev depuis le 25/10) ; ses idées (colonnes de même largeur, alignement par rangée) restent possibles plus tard.
 
 ### Remplacement de blocs (14 octobre 2026)
 
@@ -294,6 +297,11 @@ Une liste « Langue » (onglet Général) : « Comme le jeu » par défaut, puis
 - **Difficulté principale** : les réglages sauvegardés ne sont lus qu'après le chargement des fichiers (événement `ADDON_LOADED`), alors que certains textes sont lus dès le chargement (noms des styles dans `Themes.lua`, par exemple). Il faut donc remplir `L` au moment du choix et vérifier que plus aucun texte n'est copié avant. Changer de langue demande un rechargement de l'interface (la liste le dit et propose le bouton).
 - **Limites à afficher** : les mots que Tessera prend au jeu (noms de classes, de zones, d'objets, textes de Blizzard) restent dans la langue du client. Chinois et coréen : les polices d'un client occidental n'ont pas ces caractères ; ne les proposer que si le client les affiche, sinon des carrés apparaissent.
 - **Quand** : après la 1.0.0 (1.0.1 ou 1.1), car il touche au chargement de tous les textes ; à vérifier avec le mock dans chaque langue. Accessibilité et manette : une liste déroulante ordinaire, déjà utilisable au clavier.
+- **Langues non officielles (idée de Braincell1980, 25/10)** : des communautés traduisent WoW Forever par addon, au-dessus du client anglais (relevé du 25/10 sur CurseForge) : ukrainien (UALL Forever de Pekelnyj, très complet, mis à jour le 13/10 ; UA_Forever), polonais (Polish Forever, ForeverPL, Forever Translated), tchèque (Azeroth česky, Czech Quests), hongrois (ForeverHUN).
+  - Le client reste en anglais (`GetLocale()` = enUS) : seul le sélecteur permet de choisir ces langues. Piste : quand un de ces addons est chargé, proposer une fois la langue de Tessera qui va avec.
+  - L'outil de CurseForge ne connaît que les langues de WoW (deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW) : ces traductions devraient vivre ailleurs, ce qui demande une exception à la règle « anglais et français seulement dans le dépôt » (décision de Braincell1980), ou un petit addon à part par langue.
+  - Polices : les polices occidentales du jeu n'ont pas l'alphabet cyrillique, et peut-être pas toutes les lettres tchèques, polonaises ou hongroises (ř, ł, ő) : à vérifier en jeu ; ces addons apportent sans doute leurs propres polices, que Tessera pourrait proposer via LibSharedMedia s'ils les y enregistrent.
+  - Contacter leurs équipes (Discord, Reddit) le moment venu : ce sont les mieux placées pour traduire Tessera dans leur langue. Décision du 25/10 : attendre de voir si Tessera « prend » avant de leur poser la question.
 
 ## Code
 

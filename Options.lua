@@ -1203,6 +1203,13 @@ local function BuildGeneralPage(page)
         function() return math.floor((ns.db.tooltipScale or 1) * 100 + 0.5) end,
         function(v) ns.db.tooltipScale = v / 100 end, nil, L.TIP_TOOLTIP_SCALE), 1)
 
+    P.Gap(1, 8)
+    Place(CreateHeader(page, L.SECTION_STREAMER), 1)
+    Place(CreateCheck(page, L.STREAMER_MODE,
+        function() return ns:IsStreamer() end,
+        function(v) ns:SetStreamerMode(v) end, nil, L.TIP_STREAMER_MODE), 1)
+    Place(CreateNote(page, L.STREAMER_NOTE), 1)
+
     -- Right column: combat
     Place(CreateHeader(page, L.SECTION_COMBAT), 2)
     Place(CreateCheck(page, L.LOCK_IN_COMBAT,

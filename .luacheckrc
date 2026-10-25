@@ -13,9 +13,9 @@ globals = {
     "SlashCmdList", "SLASH_TESSERA1", "SLASH_TESSERA2",
     "StaticPopupDialogs", "UISpecialFrames",
     "Tessera_OnAddonCompartmentClick",
-    "Tessera_ToggleBlocks", "Tessera_ToggleLock", "Tessera_ToggleOptions", -- Bindings.xml
+    "Tessera_ToggleBlocks", "Tessera_ToggleLock", "Tessera_ToggleOptions", "Tessera_ToggleStreamer", -- Bindings.xml
     "BINDING_HEADER_TESSERA", "BINDING_NAME_TESSERA_TOGGLE", "BINDING_NAME_TESSERA_LOCK",
-    "BINDING_NAME_TESSERA_OPTIONS",
+    "BINDING_NAME_TESSERA_OPTIONS", "BINDING_NAME_TESSERA_STREAMER",
 }
 -- Locale files hold long translated sentences
 files["Locales/"] = { max_line_length = false }

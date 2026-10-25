@@ -15,7 +15,7 @@
 
 ## Why make Tessera when addons like it already exist?
 
-I love bars like Arcana (formerly ChocolateBar) and Bazooka. I used Broker_Everything a lot, and I spent hours building small bars with a single piece of info each, to put them in just the right spot on my interface. My favorite was StatBlock Core by Funkeh: free-floating blocks, one per piece of info, that I could put anywhere. It hasn't been updated since 2022. And tooltips didn't look the same from one broker addon to the next, French was often missing, and many of those addons were no longer maintained.
+I love bars like Arcana (formerly ChocolateBar) and Bazooka. I used Broker_Everything a lot, and I spent hours building small bars with a single piece of info each, to put them in just the right spot on my interface. My favorite was StatBlock Core (StatBlockCore) by Funkeh: free-floating blocks, one per piece of info, that I could put anywhere. It hasn't been updated since 2022. And tooltips didn't look the same from one broker addon to the next, French was often missing, and many of those addons were no longer maintained.
 
 When the WoW Forever beta came out, I came back to WoW and found FlareUI: an interface with a fantasy look, not a futuristic one. Seeing what players were building with AI's help, I wanted to try something: a small thing just for me, that did exactly what I asked for.
 
@@ -78,7 +78,7 @@ Plus de 40 blocs, et des lanceurs pour les boutons de ta minicarte. Une barre to
 
 ## Pourquoi Tessera, alors que des addons du genre existent déjà ?
 
-J'aime bien les barres comme Arcana (anciennement ChocolateBar) ou Bazooka. J'utilisais beaucoup Broker_Everything, et je passais de longs moments à créer de petites barres avec une seule info, pour les poser aux endroits pertinents de mon interface. Mon préféré, c'était StatBlock Core de Funkeh : des blocs libres, une info par bloc, à poser où je voulais. Il n'est plus mis à jour depuis 2022. Et les infobulles changeaient d'un addon broker à l'autre, le français manquait souvent, et beaucoup de ces addons n'étaient plus maintenus.
+J'aime bien les barres comme Arcana (anciennement ChocolateBar) ou Bazooka. J'utilisais beaucoup Broker_Everything, et je passais de longs moments à créer de petites barres avec une seule info, pour les poser aux endroits pertinents de mon interface. Mon préféré, c'était StatBlock Core (StatBlockCore) de Funkeh : des blocs libres, une info par bloc, à poser où je voulais. Il n'est plus mis à jour depuis 2022. Et les infobulles changeaient d'un addon broker à l'autre, le français manquait souvent, et beaucoup de ces addons n'étaient plus maintenus.
 
 À la sortie de la bêta de WoW Forever, j'ai repris WoW et je suis tombé sur FlareUI : une interface typée fantasy, pas futuriste. En voyant ce que des joueurs construisaient avec l'aide de l'IA, j'ai voulu tester un petit truc pour moi, qui réponde à mes demandes précises.
 

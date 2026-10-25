@@ -87,6 +87,7 @@ Source : la référence de l'API du client WoW Forever publiée par Atraeau (htt
 
 Blocs validés par Braincell1980 pour la 1.1 :
 - **DPS** (`C_DamageMeter`, actif sur Forever) : tes dégâts seulement (`GetCombatSessionSourceFromType` avec `UnitGUID("player")`). En combat les valeurs sont secrètes : le jeu laisse les afficher telles quelles (`SetText`), sans calcul ni texte collé (vu en jeu : « 475 », « 28 ») ; après le combat elles se lisent : DPS = dégâts / `GetSessionDurationSeconds` (vu : 7 DPS, 483 en 67 s). Le nom du bloc passe par l'icône ou un texte à part ; couleurs de seuil seulement hors combat. À essayer : le type `Enum.DamageMeterType.Dps` (1), peut-être affichable en direct.
+  - Infobulle du bloc DPS : durée du combat en cours et plus long combat de la session (`GetSessionDurationSeconds`), comme le faisait StatBlock_TimeInFight de Funkeh (comparaison avec les plugins StatBlock, 25/10 : Tessera couvre déjà tous les autres sauf DPS et DPS de raid, ce dernier écarté).
 - **Corps** (`C_DeathInfo.GetCorpseMapPosition(mapID)`) : en fantôme, distance et direction du corps (vu : 0,491 ; 0,561) ; bloc caché une fois ressuscité ; clic : repère sur la carte.
 - **Mode de jeu** (`C_GameRules` : `IsHardcoreActive`, `IsSelfFoundAllowed`, `IsStandard`, `GetActiveGameMode`) : Standard vu en jeu ; à revérifier sur un royaume Hardcore.
 - **Météo** (`C_Weather.GetCurrentWeather` : type Clair, Pluie, Neige, Tempête de sable, Divers ; intensité) : gadget.

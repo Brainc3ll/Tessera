@@ -56,7 +56,7 @@ Tessera is a collaboration between me, a player, and an AI.
 - all the code of the addon (Lua), and the automatic tests that run it outside the game;
 - the English and French texts: options, tooltips, help, changelog, this page;
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
-- the logo (set in Marcellus, a free font) and the banner images.
+- the logo (set in Outfit, a free font) and the banner images.
 
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
 

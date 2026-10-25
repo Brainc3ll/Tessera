@@ -12,5 +12,5 @@ Rien ici n'est livré dans l'addon (`.pkgmeta` ignore le dossier). Notes de trav
 | `etudes/` | Études : découpage en modules (`PLAN-modules.md`), bloc Farm (`PLAN-bloc-farm.md`), addons de WoW Forever et compatibilité DataBroker (`ADDONS-FOREVER.md`), ce qu'on a appris ailleurs (`SOURCES.md`). |
 | `archive/` | Plans terminés et anciennes listes de tests. |
 | `localization/` | Textes de l'addon envoyés à l'outil de traduction de CurseForge (générés : `tools/export_locales.lua`). |
-| `art/` | Logo en grand : icône (512 et 1024 px) et nom « Tessera » sur fond clair, sombre ou transparent. Police Marcellus (licence OFL). |
+| `art/` | Logo en grand : icône (512 et 1024 px) et nom « Tessera » sur fond clair, sombre ou transparent. Police Outfit (licence OFL). |
 | `media/` | Bannière et captures du README. |

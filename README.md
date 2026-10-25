@@ -1,6 +1,6 @@
 # Tessera – Info Blocks That Snap Together for WoW Forever
 
-![Tessera: your info, one tile at a time](docs/media/banner.gif)
+![Tessera: info blocks that snap together, for WoW Forever](docs/media/banner.png)
 
 **Download:** [CurseForge](https://www.curseforge.com/wow/addons/tessera) · [Wago](https://addons.wago.io/addons/tessera) · [GitHub releases](https://github.com/Brainc3ll/Tessera/releases)
 

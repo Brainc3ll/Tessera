@@ -11,6 +11,7 @@ ignore:
     - RELEASE_NOTES.md
     - CLAUDE.md
     - ACR.md
+    - AI-DECLARATION.md
 
 # CurseForge and GitHub release notes: the section of CHANGELOG.md for the version being
 # released, written to RELEASE_NOTES.md by the release workflow

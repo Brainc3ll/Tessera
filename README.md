@@ -62,7 +62,7 @@ Tessera is a collaboration between me, a player, and an AI.
 
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
 
-In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a maintainer who does not program, 76–100% of the code written by AI, changes tested but not read by a human (details in `ACR.md`).
+In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a maintainer who does not program, 76–100% of the code written by AI, changes tested but not read by a human (details in `ACR.md`). `AI-DECLARATION.md` gives the AI's part at each stage (design, code, tests, docs, review, release).
 
 ## At a glance
 
@@ -200,7 +200,7 @@ The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions
 (`docs/pages`), studies (`docs/etudes`), finished plans (`docs/archive`), the strings sent to
 CurseForge's localization tool (`docs/localization`), the logo and the name in large sizes (`docs/art`), and the
-banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project. `ACR.md` gives the project's AI Code Rating.
+banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project. `ACR.md` and `AI-DECLARATION.md` describe how AI is used in the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
 with a small imitation of the game API and runs every page and feature (texts exported by earlier

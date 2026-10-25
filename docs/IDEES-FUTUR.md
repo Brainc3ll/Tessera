@@ -287,6 +287,14 @@ But : ne plus avoir peur qu'un texte dépasse, quelle que soit la langue ou la t
 - **Pourquoi c'est la même chose que l'accessibilité** : le test « texte deux fois plus grand » de la feuille de route 1.3 pose exactement ce problème. Un seul chantier règle les deux ; à faire avec la 1.3, en commençant par les fenêtres les plus visibles (barre d'onglets, bandeau de placement, visite rapide).
 - En attendant, les traductions gardent les libellés de boutons courts (outil `tools/check_translation.py`, avertissement sur les textes courts qui s'allongent).
 
+### Choisir la langue de Tessera (idée de Braincell1980, 25 octobre 2026)
+
+Une liste « Langue » (onglet Général) : « Comme le jeu » par défaut, puis chaque langue livrée. Un choix de plus pour le joueur (un francophone qui joue avec un client anglais, par exemple), et un moyen de tester toutes les traductions sans changer la langue du client.
+- **Faisable** : toutes les langues sont déjà dans le zip (`Locales/*.lua`, remplies par CurseForge à la publication). Aujourd'hui chaque fichier sort tout de suite si `GetLocale()` n'est pas sa langue ; il faudrait qu'il range ses textes dans une table par langue, et que Tessera choisisse.
+- **Difficulté principale** : les réglages sauvegardés ne sont lus qu'après le chargement des fichiers (événement `ADDON_LOADED`), alors que certains textes sont lus dès le chargement (noms des styles dans `Themes.lua`, par exemple). Il faut donc remplir `L` au moment du choix et vérifier que plus aucun texte n'est copié avant. Changer de langue demande un rechargement de l'interface (la liste le dit et propose le bouton).
+- **Limites à afficher** : les mots que Tessera prend au jeu (noms de classes, de zones, d'objets, textes de Blizzard) restent dans la langue du client. Chinois et coréen : les polices d'un client occidental n'ont pas ces caractères ; ne les proposer que si le client les affiche, sinon des carrés apparaissent.
+- **Quand** : après la 1.0.0 (1.0.1 ou 1.1), car il touche au chargement de tous les textes ; à vérifier avec le mock dans chaque langue. Accessibilité et manette : une liste déroulante ordinaire, déjà utilisable au clavier.
+
 ## Code
 
 ### Tessera en modules optionnels (24 octobre 2026, à l'étude)

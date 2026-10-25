@@ -260,6 +260,12 @@ Idée de Braincell1980 : donner le choix de polices pensées pour l'accessibilit
 - Zip : environ 1 à 2 Mo de plus pour les styles normal et gras des 6 polices ; aucun coût en mémoire Lua (le jeu charge une police seulement si elle sert).
 - Avec la règle de la 1.3 : la fenêtre d'options doit rester lisible avec chacune de ces polices (largeurs différentes : OpenDyslexic et Lexend sont larges).
 
+### Manette native de WoW Forever (25 octobre 2026) : bâtir dessus, pas à côté
+
+Forever a une prise en charge native de la manette (annoncée à la BlizzCon, « alpha » en septembre) : menus en cercle, barres d'action propres à la manette, modificateurs sur les gâchettes. Dans le code de Blizzard pour Forever : `Blizzard_Gamepad`, `Blizzard_GamepadActionBars` (chargés seulement sur Forever, « camelot »), `Blizzard_GamepadSmartNavigation` (curseur qui saute de bouton en bouton dans les fenêtres), `Blizzard_GamepadSharedUtility` (invites de boutons, dialogues). Le Mode Édition garde une disposition séparée pour la manette (notes de l'API 1.60.1).
+- Règle « ne pas refaire ce que le jeu fait » : la 2.0 de Tessera s'appuie sur cette navigation au lieu de recoder la sienne. ConsolePort n'est plus le modèle.
+- À étudier avant la 2.0 : une fenêtre d'addon peut-elle entrer dans la navigation de Blizzard (`SmartNavigationMixin:GetPanelInfo`, groupes de boutons) ? Les menus en cercle de Blizzard sont-ils réutilisables pour le menu rapide d'un bloc ? Les dispositions de Tessera doivent-elles suivre la disposition « manette » du Mode Édition ?
+
 ## Code
 
 ### Tessera en modules optionnels (24 octobre 2026, à l'étude)

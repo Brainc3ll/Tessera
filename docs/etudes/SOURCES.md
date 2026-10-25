@@ -109,3 +109,10 @@ Guide de développement d'addons en 16 fichiers, écrit par Claude avec relectur
 - Utile pour la 1.1 : `12a_Secret_Safe_APIs.md` (toutes les fonctions des valeurs secrètes, avec exemples : passer une valeur secrète directement à `SetText`, `canaccessvalue`, `scrubsecretvalues`…) et `05_Patterns_And_Best_Practices.md` (performances). À vérifier contre la liste de Ketho pour Forever avant d'utiliser une fonction.
 - Ses commandes pour Claude Code (agent « WoWAddon-Expert », `/wow`) : pas besoin, CLAUDE.md et les skills Tessera font ce travail.
 
+
+### Notes de l'API de WoW Forever 1.60.1 (warcraft.wiki.gg, lu le 25/10)
+- `GetFrameStrata` peut renvoyer une valeur secrète (nouvel aspect secret `FrameStrata`) : `Layers.lua` le gère déjà (repli sur "DIALOG") ; `SecureClicks.lua` ne le lit que sur les blocs de Tessera.
+- Le Mode Édition enregistre une disposition pour clavier-souris et une pour la manette.
+- « Forever » est accepté comme alias de « Camelot » dans les suffixes de .toc.
+- Cadres du joueur, de la cible, du familier, du focus et l'en-tête de la minicarte ont été redessinés : à garder en tête pour `ns.KNOWN_UI_FRAMES` (chevauchements).
+- `SendChatMessage` en « EMOTE » demande un clic hors instance ; GUID des créatures masqués contre la détection des couches (pas de bloc « couche » possible par ce biais).

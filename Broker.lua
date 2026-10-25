@@ -6,7 +6,7 @@ local L = ns.L
 -- ========================================================================
 -- DataBroker is the common format addons use to share a small piece of data
 -- ("data source": a text, an icon, a tooltip) or a button ("launcher"). Display
--- addons such as Titan Panel, ChocolateBar or Bazooka show these objects in bars.
+-- addons such as Titan Panel, Arcana (formerly ChocolateBar) or Bazooka show these objects in bars.
 -- Tessera never embeds the library: it uses the copy another addon loaded
 -- (LibStub("LibDataBroker-1.1")), which may appear after Tessera itself.
 --
@@ -36,7 +36,7 @@ local OWN_LAUNCHER = "Tessera"
 
 -- Display addons that switch Tessera to DataBroker mode: { folder name, shown name }
 local DISPLAYS = {
-    { "Titan", "Titan Panel" }, { "ChocolateBar", "ChocolateBar" }, { "Bazooka", "Bazooka" },
+    { "Titan", "Titan Panel" }, { "Arcana", "Arcana" }, { "ChocolateBar", "ChocolateBar" }, { "Bazooka", "Bazooka" },
     { "ButtonBin", "ButtonBin" }, { "Fortress", "Fortress" }, { "NinjaPanel", "Ninja Panel" },
     { "DockingStation", "DockingStation" }, { "StatBlockCore", "StatBlock" },
     { "Broker2FuBar", "Broker2FuBar" },

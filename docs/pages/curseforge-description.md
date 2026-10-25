@@ -6,7 +6,7 @@
 
 Drag a block against another and they snap into one bar, like the tiles (*tesserae*) of a mosaic. Your gold, bags, durability, FPS, time and Legacy points sit where you put them, in the style of your UI: FlareUI, ElvUI, EllesmereUI or Blizzard.
 
-40+ blocks, 20 styles, and launchers for your minimap buttons. English and French.
+40+ blocks, 20 styles, and launchers for your minimap buttons. In English, French, German, Spanish and Brazilian Portuguese.
 
 > **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its new systems (Legacy, camping, Comprehension, PvP) are still young and may change, so a game update can break a block until Tessera catches up. Tell me when something looks wrong.
 
@@ -30,7 +30,7 @@ Tessera reads WoW Forever's own systems and gives each one a block:
 - **Weapon skills**: read from Forever's skill list, with every skill in the tooltip.
 - Profession, talent and Legacy blocks open Forever's own windows.
 
-**Also in your DataBroker bar**: you can share the WoW Forever blocks, like every Tessera block, with **Titan Panel, ChocolateBar, Bazooka** and other DataBroker display addons. Use them on Tessera's own bars, in your favorite panel, or both.
+**Also in your DataBroker bar**: you can share the WoW Forever blocks, like every Tessera block, with **Titan Panel, Arcana (formerly ChocolateBar), Bazooka** and other DataBroker display addons. Use them on Tessera's own bars, in your favorite panel, or both.
 
 ## Features
 
@@ -97,9 +97,11 @@ Tessera is a collaboration between me, a player, and an AI.
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
 - the logo (set in Outfit, a free font) and the banner images.
 
+**Thanks** to Funkeh, whose StatBlock Core (free-floating DataBroker blocks, no longer updated since 2022) was my first inspiration for Tessera.
+
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, on [GitHub](https://github.com/Brainc3ll/Tessera)) and to suggest improvements.
 
-**Translations**: Tessera comes in English and French. Players can add other languages with CurseForge's localization tool.
+**Translations**: I check the English and French myself. Claude translated the German, Spanish (Spain and Mexico) and Brazilian Portuguese texts, and nobody has reviewed them yet: the addon says so in its About tab. You can correct them, or add your language, with CurseForge's localization tool, and your name will appear in the addon.
 
 ---
 
@@ -111,7 +113,7 @@ Tessera is a collaboration between me, a player, and an AI.
 
 Pose un bloc contre un autre et ils s'emboîtent en une seule barre, comme les tesselles d'une mosaïque. Ton or, tes sacs, ta durabilité, tes FPS, l'heure et tes points d'héritage restent là où tu les mets, dans le style de ton interface : FlareUI, ElvUI, EllesmereUI ou Blizzard.
 
-Plus de 40 blocs, 20 styles, et des lanceurs pour les boutons de ta minicarte. En anglais et en français.
+Plus de 40 blocs, 20 styles, et des lanceurs pour les boutons de ta minicarte. En anglais, français, allemand, espagnol et portugais du Brésil.
 
 > **Fait pour WoW Forever.** Je développe et teste Tessera sur WoW Forever. Ses nouveaux systèmes (héritage, camping, Compréhension, JcJ) sont encore jeunes et peuvent changer : une mise à jour du jeu peut casser un bloc jusqu'à ce que Tessera suive. Dis-moi quand quelque chose te paraît bizarre.
 
@@ -135,7 +137,7 @@ Tessera lit les systèmes propres à WoW Forever et donne un bloc à chacun :
 - **Compétences d'armes** : lues dans la liste de compétences de Forever, toutes les compétences dans l'infobulle.
 - Les blocs métiers, talents et héritage ouvrent les fenêtres propres à Forever.
 
-**Aussi dans ta barre DataBroker** : comme tous les blocs de Tessera, tu peux partager les blocs WoW Forever avec **Titan Panel, ChocolateBar, Bazooka** et les autres addons d'affichage DataBroker. Utilise-les dans les barres de Tessera, dans ton panneau préféré, ou les deux.
+**Aussi dans ta barre DataBroker** : comme tous les blocs de Tessera, tu peux partager les blocs WoW Forever avec **Titan Panel, Arcana (anciennement ChocolateBar), Bazooka** et les autres addons d'affichage DataBroker. Utilise-les dans les barres de Tessera, dans ton panneau préféré, ou les deux.
 
 ## Fonctions
 
@@ -202,6 +204,8 @@ Tessera est une collaboration entre moi, un joueur, et une IA.
 - les outils de publication (workflows GitHub, envoi sur CurseForge) et les versions debug ;
 - le logo (en Outfit, une police libre) et les images de la bannière.
 
+**Merci** à Funkeh : son addon StatBlock Core (des blocs DataBroker libres, plus mis à jour depuis 2022) a été ma première inspiration pour Tessera.
+
 **Ce que ça veut dire pour toi.** Des tests automatiques et mes propres tests en jeu vérifient le code, mais aucun programmeur ne l'a relu ligne par ligne. Des bugs peuvent rester : signale-les avec `/tessera bug`. Les développeurs sont les bienvenus pour lire le code (licence MIT, sur [GitHub](https://github.com/Brainc3ll/Tessera)) et proposer des améliorations.
 
-**Traductions** : Tessera est en anglais et en français. Les joueurs peuvent ajouter d'autres langues avec l'outil de traduction de CurseForge.
+**Traductions** : je vérifie moi-même l'anglais et le français. Claude a traduit l'allemand, l'espagnol (Espagne et Mexique) et le portugais du Brésil, et personne ne les a encore relus : l'addon le dit dans son onglet À propos. Tu peux les corriger, ou ajouter ta langue, avec l'outil de traduction de CurseForge, et ton nom apparaîtra dans l'addon.

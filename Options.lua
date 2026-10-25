@@ -2093,12 +2093,21 @@ local function AboutText()
     if L.ABOUT_TRANSLATORS and L.ABOUT_TRANSLATORS ~= "" then
         table.insert(lines, InfoLine(L.ABOUT_TRANSLATION, L.ABOUT_TRANSLATORS))
     end
+    -- a translation made by Claude and not reviewed by a player yet says so (empty in English
+    -- and French; the translator who reviews a language empties it)
+    if L.ABOUT_TRANSLATION_NOTE and L.ABOUT_TRANSLATION_NOTE ~= "" then
+        table.insert(lines, "|cffffb040" .. L.ABOUT_TRANSLATION_NOTE .. "|r")
+    end
     table.insert(lines, InfoLine(L.ABOUT_GAME, "WoW Forever"))
     table.insert(lines, InfoLine(L.ABOUT_LICENSE, "MIT"))
     table.insert(lines, InfoLine(L.ABOUT_SOURCE, SOURCE_URL))
     table.insert(lines, "")
     table.insert(lines, L.ABOUT_AI)
     table.insert(lines, "")
+    if L.ABOUT_THANKS and L.ABOUT_THANKS ~= "" then
+        table.insert(lines, L.ABOUT_THANKS)
+        table.insert(lines, "")
+    end
     table.insert(lines, L.ABOUT_BUGS)
     table.insert(lines, "")
     table.insert(lines, L.ABOUT_TRANSLATE)

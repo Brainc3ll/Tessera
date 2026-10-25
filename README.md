@@ -4,6 +4,8 @@
 
 **Download:** [CurseForge](https://www.curseforge.com/wow/addons/tessera) · [Wago](https://addons.wago.io/addons/tessera) · [GitHub releases](https://github.com/Brainc3ll/Tessera/releases)
 
+[![ACR E4d](https://img.shields.io/badge/ACR-E4d-2140B5)](ACR.md) Written by an AI (Claude) from my ideas; I test every version in game; no human reads the code line by line.
+
 Tessera is a World of Warcraft addon for **WoW Forever** that shows small information blocks
 (gold, bags, durability, FPS, latency, time, XP, quests...) and launcher blocks (minimap and
 addon compartment buttons). Each block can be styled and placed on its own, and blocks placed
@@ -58,17 +60,21 @@ Tessera is a collaboration between me, a player, and an AI.
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
 - the logo (set in Outfit, a free font) and the banner images.
 
+**Thanks** to Funkeh, whose [StatBlock Core](https://www.curseforge.com/wow/addons/stat-block-core) (free-floating DataBroker blocks, no longer updated since 2022) was my first inspiration for Tessera.
+
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
+
+In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a maintainer who does not program, 76–100% of the code written by AI, changes tested but not read by a human (details in `ACR.md`). `AI-DECLARATION.md` gives the AI's part at each stage (design, code, tests, docs, review, release).
 
 ## At a glance
 
 - Interface: `16001` (WoW Forever)
-- Languages: English, French (other languages can be added through CurseForge's localization tool)
+- Languages: English and French; German, Spanish (Spain and Mexico) and Brazilian Portuguese made by Claude, not reviewed yet; other languages through CurseForge's localization tool
 - Saved variables: `TesseraDB`
 - Optional addons it adapts to: FlareUI, EllesmereUI and ElvUI (a matching style is
   offered; blocks snap to the XP bar of FlareUI, ElvUI and GW2 UI, and Tessera warns when they
   cover frames of FlareUI, EllesmereUI, ElvUI or GW2 UI), LibSharedMedia-3.0, LibDBIcon-1.0, LibDataBroker-1.1 and DataBroker
-  display addons (Titan Panel, ChocolateBar, Bazooka...)
+  display addons (Titan Panel, Arcana (formerly ChocolateBar), Bazooka...)
 
 ## For players
 
@@ -86,7 +92,7 @@ Help tab inside the game explains everything.
   the styles (or shows them side by side, one per column: "Mixed styles") and hides the game's
   interface, for screenshots. Your layout comes back afterwards.
 - **Blocks made for WoW Forever's own systems**, which can also be shared with DataBroker
-  display addons (Titan Panel, ChocolateBar, Bazooka...):
+  display addons (Titan Panel, Arcana (formerly ChocolateBar), Bazooka...):
   - Legacy points: your points, the next reward, every reward of the track and your Legacy
     challenges completed per category; a click opens the Legacy panel;
   - Comprehension: your scroll-reading skill and the scrolls in your bags; a click casts Scroll
@@ -113,7 +119,7 @@ Help tab inside the game explains everything.
   progress bar, thresholds, show on hover, alerts, click actions, and how the value is shown
   (gold format, coin icons, rounding; bag slots; XP; durability; latency; seconds; decimals...).
 - DataBroker tab: other addons' DataBroker objects as blocks ("Plugins as blocks"); Tessera's
-  blocks shared with Titan Panel, ChocolateBar, Bazooka... ("Sharing and mode"); a DataBroker mode,
+  blocks shared with Titan Panel, Arcana (formerly ChocolateBar), Bazooka... ("Sharing and mode"); a DataBroker mode,
   on automatically when such an addon is installed (Tessera then shows nothing itself), that can
   be turned off to use both.
 - Look tab: styles, how groups look, screen edges, ready-made layouts, blocks in front of or behind
@@ -196,7 +202,7 @@ The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions
 (`docs/pages`), studies (`docs/etudes`), finished plans (`docs/archive`), the strings sent to
 CurseForge's localization tool (`docs/localization`), the logo and the name in large sizes (`docs/art`), and the
-banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project.
+banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project. `ACR.md` and `AI-DECLARATION.md` describe how AI is used in the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
 with a small imitation of the game API and runs every page and feature (texts exported by earlier
@@ -337,7 +343,7 @@ block in `blocks[key]` (see `BLOCK_DEFAULTS` in `Core.lua`).
 `Locales/enUS.lua` defines every key; every other language only overrides keys and falls
 back to English for anything missing.
 
-- English and French are written in the repository (`enUS.lua`, `frFR.lua`).
+- English and French are written in the repository (`enUS.lua`, `frFR.lua`). Other languages live in CurseForge's localization tool; Claude's German, Spanish and Brazilian Portuguese drafts were imported there by hand, checked first with `tools/check_translation.py`.
 - Every other language is translated by the community with CurseForge's localization tool.
   Its file (e.g. `Locales/deDE.lua`) only holds a `--@localization(...)@` line that the
   BigWigs packager replaces with the translated strings when it builds the release zip, so

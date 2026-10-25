@@ -42,6 +42,15 @@ Lanceurs probables : Questie, DBM, BigWigs, Bagnon, Baganator, HandyNotes, RareS
 Pour la manette (2.0) : Dialogue UI (dialogues de quête compatibles manette), à étudier.
 Non disponibles sur Forever (d'après les listes) : WeakAuras (remplacé par ForeverAuras), TradeSkillMaster, AdiBags.
 
+## Les addons de Funkeh (étude du 25 octobre 2026)
+
+Funkeh (funkydude sur GitHub) a écrit StatBlock Core, la première inspiration de Tessera (plus mis à jour depuis 2022, remercié dans l'onglet À propos). Il maintient aujourd'hui BigWigs, LittleWigs, SexyMap, BadBoy, Capping, oRA3... Ses addons ont été mis à jour les 22 et 23/10 et leurs fichiers `.toc` visent tous Forever (16001), sauf oRA3 (retail seulement). Le packager qui construit les zips de Tessera vient aussi de son équipe (BigWigsMods).
+- **BigWigs** : publie un objet DataBroker « BigWigs » (`Loader.lua`) ; il marche donc comme bloc DataBroker ou comme lanceur de Tessera. Rien à faire ; à mettre dans la liste des addons testés.
+- **SexyMap** : peut cacher les boutons de la minicarte (toujours ou hors survol). Les boutons LibDBIcon restent proposés comme lanceurs par Tessera (lus par la bibliothèque) ; un bouton ordinaire caché par SexyMap n'est plus un enfant de la minicarte et n'apparaît plus dans la liste. On ne lit pas les variables internes de SexyMap (règle des adaptateurs) : c'est acceptable. Combinaison à tester et à conseiller : boutons cachés dans SexyMap, lanceurs dans une barre Tessera. SexyMap a aussi une horloge et des coordonnées sur la minicarte, qui font doublon avec les blocs de Tessera (choix du joueur).
+- **SharedMedia_Noto** : 72 variantes de Noto Sans (latin, grec, cyrillique ; pas de chinois ni de coréen) via LibSharedMedia. Tessera les propose déjà dans ses listes de polices. Police très lisible : piste à citer dans l'aide d'accessibilité (1.3), sans rien recoder.
+- **Capping** (timers de champs de bataille), **BadBoy** (spam), **ErrorMonster**, **TargetPercent** : sans lien avec Tessera.
+- Toute la compatibilité passe par des normes publiques (DataBroker, LibDBIcon, LibSharedMedia) : elle survit aux mises à jour de ses addons.
+
 ## Sources (24 octobre 2026)
 
 - [ForeverDB : best addons, octobre 2026](https://foreverdb.net/addons/best) (vérifié le 11/10)

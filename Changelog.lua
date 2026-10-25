@@ -49,20 +49,44 @@ ns.CHANGELOG = {
                 "Nouveau style Tessera, aux couleurs de l'addon : turquoise sur ardoise sombre, avec la "
                     .. "bordure des infobulles du jeu. Le style par défaut ne change pas.",
               } },
+            { kind = "fixed",
+              en = {
+                "Arcana, ChocolateBar's new name, now switches Tessera to DataBroker mode like ChocolateBar "
+                    .. "did, and the help names it.",
+              },
+              fr = {
+                "Arcana, le nouveau nom de ChocolateBar, fait de nouveau passer Tessera en mode DataBroker "
+                    .. "comme le faisait ChocolateBar, et l'aide le cite.",
+              } },
         },
     },
     {
         version = "1.0.0",
         date = "",
         sections = {
+            { kind = "new",
+              en = {
+                "German, Spanish (Spain and Mexico) and Brazilian Portuguese translations. Claude (an AI) "
+                    .. "made them and nobody has reviewed them yet: you can correct them with CurseForge's "
+                    .. "localization tool.",
+              },
+              fr = {
+                "Traductions en allemand, en espagnol (Espagne et Mexique) et en portugais du Brésil. "
+                    .. "Claude (une IA) les a faites et personne ne les a encore relues : tu peux les corriger "
+                    .. "avec l'outil de traduction de CurseForge.",
+              } },
             { kind = "improved",
               en = {
                 "New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the "
                     .. "minimap button.",
+                "The About tab thanks Funkeh, whose StatBlock Core gave me the idea of Tessera's "
+                    .. "free-floating blocks.",
               },
               fr = {
                 "Nouvelle icône : un T et une tesselle dorée sur fond turquoise, plus facile à repérer dans "
                     .. "la liste des addons et sur le bouton de la minicarte.",
+                "L'onglet À propos remercie Funkeh, dont l'addon StatBlock Core m'a donné l'idée des blocs "
+                    .. "libres de Tessera.",
               } },
         },
     },

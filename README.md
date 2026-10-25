@@ -317,6 +317,12 @@ public documentation yet. What Tessera found, with the development probes below:
   only exist on WoW Forever, and other addons' globals, are read through `_G["Name"]` and called
   in `pcall`: if the game removes or changes one, the block shows nothing instead of an error
   (`tools/fuzz_blocks.lua` checks it).
+- **Blizzard's code stays untouched.** Tessera never replaces a Blizzard function or moves a
+  Blizzard frame: replacing one taints the interface and can break it in combat. To react to the
+  game, it listens to events (or, if ever needed, `hooksecurefunc`, which runs after Blizzard's
+  function without replacing it). Blizzard's own interface code for WoW Forever is mirrored in
+  [Gethe/wow-ui-source](https://github.com/Gethe/wow-ui-source), branch `forever` (named
+  "Camelot" in that code).
 
 ### Saved variables
 

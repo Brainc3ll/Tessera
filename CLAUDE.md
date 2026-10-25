@@ -16,7 +16,7 @@ or visible fix, update:
   (`sections`: intro, new, improved, fixed). The changelog stays in `Changelog.lua` (English and
   French), never in the strings sent to CurseForge's translation tool;
 - `README.md` (highlights, block list, commands, file table, developer notes);
-- `docs/pages/curseforge-description.md` and `docs/pages/wago-description.md` (English and French parts);
+- `docs/pages/description.md`, the CurseForge and Wago page (English and French parts);
 - `docs/pages/summary.md` if the core of the addon changes, `docs/A-REPRENDRE.md` (status),
   `docs/IDEES-FUTUR.md` (ideas done or new);
 - `docs/localization/` (`lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua`, same for frFR).

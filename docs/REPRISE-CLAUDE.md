@@ -30,7 +30,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - Zip de test : `TesseraDev.lua` (commandes de test, galerie `/tes debug hd`) et `make_test_zip.sh` sont dans le dépôt **privé** `Brainc3ll/Tessera-dev` (jamais dans ce dépôt public ni dans une publication). Le cloner dans `/home/claude/tessera-dev`, puis `sh /home/claude/tessera-dev/make_test_zip.sh testNN <dossier>`.
 - Publier (après « on publie ») : version dans le .toc, entrée datée en haut de `Changelog.lua`, `check_docs.lua . release`, pousser `main`, puis
   `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`
-  et suivre le run par l'API REST. Le workflow envoie l'anglais et le français à CurseForge. Les descriptions (`docs/pages/curseforge-description.md`, `docs/pages/wago-description.md`), le titre et le résumé (`docs/pages/summary.md`) se recollent à la main.
+  et suivre le run par l'API REST. Le workflow envoie l'anglais et le français à CurseForge. La description (`docs/pages/description.md`, la même pour CurseForge et Wago), le titre et le résumé (`docs/pages/summary.md`) se recollent à la main.
 
 ## Limites de cet environnement
 - GitHub : pas de suppression de branche, pas de réglages du dépôt (description « About »...), pas de GraphQL : Braincell1980 le fait.

@@ -102,6 +102,7 @@ In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a mai
 - On every change, GitHub runs automatic checks: static analysis, the API audit addon reviewers use, a check against WoW Forever's own function list, a full run of the addon in English and French, and a test of the Forever blocks against a changing game.
 - Compatibility with other addons goes through public standards only (DataBroker, LibDBIcon, LibSharedMedia), never through their internals, so their updates don't break Tessera.
 - WoW Forever's own systems are young and may change. If a game update breaks a block, tell me and I'll fix it.
+- Tessera is free and open source (MIT license): every feature for everyone, no premium version, no paid extras. You can read it, change it and share it.
 
 I can't promise how many years I'll keep this up. Today, this is how I run it.
 

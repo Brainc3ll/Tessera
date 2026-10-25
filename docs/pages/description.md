@@ -29,6 +29,7 @@ So I decided to make it available to as many players as I could. That meant watc
 - Your layouts, styles and profiles carry over from one version to the next. If a change ever has to break them, Tessera warns you and converts them.
 - On every change, GitHub runs automatic checks: static analysis, the API audit addon reviewers use, a check against WoW Forever's own function list, a full run of the addon in English and French, and a test of the Forever blocks against a changing game.
 - WoW Forever's own systems are young and may change. If a game update breaks a block, tell me and I'll fix it.
+- Tessera is free and open source (MIT license): every feature for everyone, no premium version, no paid extras. You can read it, change it and share it.
 
 I can't promise how many years I'll keep this up. Today, this is how I run it.
 
@@ -92,6 +93,7 @@ Alors j'ai voulu qu'il soit disponible pour plein de gens. Ça voulait dire surv
 - Tes dispositions, styles et profils passent d'une version à l'autre. Si un changement doit un jour les casser, Tessera te prévient et les convertit.
 - À chaque modification, GitHub lance des vérifications automatiques : analyse du code, l'audit qu'utilisent les relecteurs d'addons, une vérification avec la liste des fonctions de WoW Forever, un lancement complet de l'addon en anglais et en français, et un test des blocs Forever face à un jeu qui change.
 - Les systèmes propres à WoW Forever sont jeunes et peuvent changer. Si une mise à jour du jeu casse un bloc, dis-le-moi et je le corrige.
+- Tessera est gratuit et open source (licence MIT) : toutes les fonctions pour tout le monde, pas de version premium, rien de payant. Tu peux le lire, le modifier et le partager.
 
 Je ne peux pas promettre combien d'années je tiendrai ce rythme. Aujourd'hui, c'est comme ça que je m'en occupe.
 

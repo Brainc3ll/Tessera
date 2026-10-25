@@ -75,7 +75,7 @@ Maquette selon la règle de la 1.3 (24/10) : artefact « Tessera – options acc
 - Images (`docs/media`, dans le README) : bannière animée, trois GIF des styles, image anglais / français (sa moitié française vient d'une version plus ancienne : une capture récente du mode démo en français permettrait de la refaire). À envoyer dans les galeries de CurseForge et Wago.
 
 ## Outils de la session (hors dépôt)
-- `TesseraDev.lua` (commandes de test : `/tes test`, rapport de debug, galerie `/tes debug hd`...) et `make_test_zip.sh` : dépôt privé `Brainc3ll/Tessera-dev` (cloné dans `/home/claude/tessera-dev/`), ajoutés seulement aux zips de test (prochain : test46).
+- `TesseraDev.lua` (commandes de test : `/tes test`, rapport de debug, galerie `/tes debug hd`...) et `make_test_zip.sh` : dépôt privé `Brainc3ll/Tessera-dev` (cloné dans `/home/claude/tessera-dev/`), ajoutés seulement aux zips de test (prochain : test47).
 - Générateur des textes : dans le dépôt, `tools/gen` (anglais et français) ; `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 tools/gen/build.py` pour `main` (les textes de la branche des rangées restent dehors). Le fichier français utilise des espaces normales.
 - Simulateur avec vraies positions : `MOCK_GEOMETRY = true` dans un script qui charge `tools/mock_run.lua` (voir le test des dispositions toutes prêtes).
 

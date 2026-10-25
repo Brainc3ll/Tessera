@@ -37,6 +37,21 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.0.1",
+        date = "",
+        sections = {
+            { kind = "new",
+              en = {
+                "New Tessera style, in the addon's own colors: turquoise on dark slate, with the game's "
+                    .. "tooltip border. The default style does not change.",
+              },
+              fr = {
+                "Nouveau style Tessera, aux couleurs de l'addon : turquoise sur ardoise sombre, avec la "
+                    .. "bordure des infobulles du jeu. Le style par défaut ne change pas.",
+              } },
+        },
+    },
+    {
         version = "1.0.0",
         date = "",
         sections = {

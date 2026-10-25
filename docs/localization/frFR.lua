@@ -1013,3 +1013,5 @@ L["TIP_CLASS_COLOR_SEPARATOR"] = "Les lignes entre les blocs fusionnés prennent
 L["TIP_CLASS_COLOR_SPACER"] = "La ligne de séparation prend la couleur de la classe de ton personnage."
 L["HELP_BLOCKS_8"] = "- Dans cette liste, un point vert marque les blocs affichés dans le jeu ; les blocs masqués sont en gris."
 L["HELP_PLACE_18"] = "- Un groupe reste exactement là où tu le poses : Tessera ne le recentre pas, et un bloc masqué garde sa place, ses voisins ne bougent pas."
+L["HELP_LOOK_12"] = "- Tessera : les couleurs de l'addon, turquoise sur ardoise sombre, avec la bordure des infobulles du jeu."
+L["THEME_TESSERA"] = "Tessera"

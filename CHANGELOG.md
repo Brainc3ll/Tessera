@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.1 — 
+
+### New
+
+- New Tessera style, in the addon's own colors: turquoise on dark slate, with the game's tooltip border. The default style does not change.
+
 ## 1.0.0 — 
 
 ### Improvements

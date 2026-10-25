@@ -544,10 +544,14 @@ local function TooltipStyle(key, name, bg, edge, text)
         end,
     }
 end
--- Runeblade: icy blue (death knights, Northrend); Ember: fire and forge; Sylvan: night elves, druids
+-- Runeblade: icy blue (death knights, Northrend); Ember: fire and forge; Sylvan: night elves, druids;
+-- Tessera (below)
 table.insert(ns.themes, TooltipStyle("runeblade", L.THEME_RUNEBLADE, { 0.03, 0.05, 0.09 }, { 0.55, 0.8, 1 }, { 0.75, 0.9, 1 }))
 table.insert(ns.themes, TooltipStyle("ember", L.THEME_EMBER, { 0.1, 0.04, 0.02 }, { 1, 0.45, 0.15 }, { 1, 0.72, 0.4 }))
 table.insert(ns.themes, TooltipStyle("sylvan", L.THEME_SYLVAN, { 0.03, 0.08, 0.04 }, { 0.45, 0.8, 0.4 }, { 0.75, 1, 0.7 }))
+-- Tessera: the addon's own colors (logo): turquoise #1fb3a3 on dark slate #16222a, cream letters
+table.insert(ns.themes, TooltipStyle("tessera", L.THEME_TESSERA, { 0.086, 0.133, 0.165 }, { 0.122, 0.702, 0.639 },
+    { 0.957, 0.945, 0.918 }))
 
 -- The center of modern tooltips is a white texture that the game tints with
 -- TOOLTIP_DEFAULT_BACKGROUND_COLOR (SharedTooltipTemplates.lua); we do the same

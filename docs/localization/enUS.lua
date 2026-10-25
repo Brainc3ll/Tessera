@@ -1013,3 +1013,5 @@ L["TIP_CLASS_COLOR_SEPARATOR"] = "The lines between merged blocks take your char
 L["TIP_CLASS_COLOR_SPACER"] = "The separator line takes your character's class color."
 L["HELP_BLOCKS_8"] = "- In that list, a green dot marks the blocks shown in the game; hidden blocks are grey."
 L["HELP_PLACE_18"] = "- A group stays exactly where you drop it: Tessera does not recenter it, and a hidden block keeps its place, so its neighbours do not move."
+L["HELP_LOOK_12"] = "- Tessera: the addon's own colors, turquoise on dark slate, with the game's tooltip border."
+L["THEME_TESSERA"] = "Tessera"

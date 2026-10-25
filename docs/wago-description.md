@@ -1,5 +1,7 @@
 # Tessera – Info Blocks That Snap Together for WoW Forever
 
+**I play WoW Forever and test each version in game before I release it. I released 11 updates in the first two weeks, and your settings carry over from one version to the next.**
+
 **Works out of the box: a ready-made bar shows up at first launch. Rearrange it in seconds if you like.**
 
 Drag a block against another and they snap into one bar, like the tiles (*tesserae*) of a mosaic. Your gold, bags, durability, FPS, time and Legacy points sit where you put them, in the style of your UI: FlareUI, ElvUI, EllesmereUI or Blizzard.
@@ -7,6 +9,15 @@ Drag a block against another and they snap into one bar, like the tiles (*tesser
 40+ blocks, 19 styles, and launchers for your minimap buttons. English and French.
 
 > **Made for WoW Forever.** I build and test Tessera on WoW Forever. Its new systems (Legacy, camping, Comprehension, PvP) are still young and may change, so a game update can break a block until Tessera catches up. Tell me when something looks wrong.
+
+## How I look after Tessera
+
+- Your layouts, styles and profiles carry over to each new version. If a change ever has to break them, Tessera warns you and converts them.
+- Export texts from older versions still import.
+- GitHub runs automatic checks on each change: static analysis, the API audit that addon reviewers use, a check against WoW Forever's own function list, a full run of the addon in English and French, and a robustness test of the Forever blocks.
+- Each version has a full changelog, and the code is open (MIT) on [GitHub](https://github.com/Brainc3ll/Tessera).
+
+I can't promise how many years I'll keep this up. Today, this is how I run it.
 
 ## Blocks made for WoW Forever
 
@@ -94,6 +105,8 @@ Tessera is a collaboration between me, a player, and an AI.
 
 # Tessera – Des blocs d'infos qui s'emboîtent, pour WoW Forever (français)
 
+**Je joue à WoW Forever et je teste chaque version en jeu avant de la publier. J'ai publié 11 mises à jour en deux semaines, et tes réglages passent d'une version à l'autre.**
+
 **Prêt dès l'installation : une barre toute prête s'affiche au premier lancement. Réarrange-la en quelques secondes si tu veux.**
 
 Pose un bloc contre un autre et ils s'emboîtent en une seule barre, comme les tesselles d'une mosaïque. Ton or, tes sacs, ta durabilité, tes FPS, l'heure et tes points d'héritage restent là où tu les mets, dans le style de ton interface : FlareUI, ElvUI, EllesmereUI ou Blizzard.
@@ -101,6 +114,15 @@ Pose un bloc contre un autre et ils s'emboîtent en une seule barre, comme les t
 Plus de 40 blocs, 19 styles, et des lanceurs pour les boutons de ta minicarte. En anglais et en français.
 
 > **Fait pour WoW Forever.** Je développe et teste Tessera sur WoW Forever. Ses nouveaux systèmes (héritage, camping, Compréhension, JcJ) sont encore jeunes et peuvent changer : une mise à jour du jeu peut casser un bloc jusqu'à ce que Tessera suive. Dis-moi quand quelque chose te paraît bizarre.
+
+## Comment je suis Tessera
+
+- Tes dispositions, styles et profils passent à chaque nouvelle version. Si un changement devait un jour les casser, Tessera te prévient et les convertit.
+- Les textes d'export des anciennes versions s'importent toujours.
+- GitHub lance des contrôles automatiques à chaque changement : analyse du code, l'audit de l'API qu'utilisent les relecteurs d'addons, une vérification avec la liste des fonctions de WoW Forever, un lancement complet de l'addon en anglais et en français, et un test de robustesse des blocs Forever.
+- Chaque version a son journal des changements complet, et le code est ouvert (MIT) sur [GitHub](https://github.com/Brainc3ll/Tessera).
+
+Je ne peux pas promettre combien d'années je tiendrai. Aujourd'hui, voilà comment je le fais tourner.
 
 ## Des blocs pensés pour WoW Forever
 

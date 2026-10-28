@@ -73,7 +73,7 @@ Maquette selon la règle de la 1.3 (24/10) : artefact « Tessera – options acc
 - À faire après la 1.0.0 : relire les blocs WoW Forever (Compréhension, Camping, Honneur) avec cette documentation.
 
 ## Visibilité
-- CurseForge et Wago (projet ANz7wj64). Pistes : Reddit (r/WoWUI avec le paragraphe « AI Disclaimer », subreddit Forever), Discords Forever (publicité autorisée par Malkkav), WoWInterface, pic de promotion vers le 4/11.
+- CurseForge et Wago (projet ANz7wj64). Pistes : Reddit (r/WoWUI avec le paragraphe « AI Disclaimer », subreddit Forever), Discords Forever (publicité autorisée par Malkkav), WoWInterface, pic de promotion vers le 4/11. Annuaires Forever (28/10) : **reveredwow.tools** (formulaire « Submit a tool or creator », classements par likes, prix « Community Choice » avec nominations ouvertes) et **vranx.com** (liste d'addons Forever triés par catégorie, sans formulaire : contacter l'auteur).
 - Transparence sur l'IA : `ACR.md` à la racine (AI Code Rating E4d, spec 0.1, décidé le 25/10) et un badge en haut du README. À remettre à jour (`updated:`) si la façon de travailler change (par exemple si un programmeur relit le code : la dernière lettre monte). Aussi `AI-DECLARATION.md` (spec 0.1.2, niveau global auto à cause de la relecture), sans badge. Décision : on s'arrête à ces deux formats ; Braincell1980 surveille si une norme se démarque ou est adoptée.
 - Images (`docs/media`, dans le README) : bannière animée, trois GIF des styles, image anglais / français (sa moitié française vient d'une version plus ancienne : une capture récente du mode démo en français permettrait de la refaire). À envoyer dans les galeries de CurseForge et Wago.
 

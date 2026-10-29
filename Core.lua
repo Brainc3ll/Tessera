@@ -95,7 +95,11 @@ ns.borders = {
     { key = "dialog",  name = L.MEDIA_DIALOG,  file = "Interface\\DialogFrame\\UI-DialogBox-Border", insetRatio = 0.35, reach = 0.23, size = 32 },
     { key = "gold",    name = L.MEDIA_GOLD,    file = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", insetRatio = 0.35, reach = 0.2, size = 32 },
     -- Modern tooltip (Retail and Forever): Blizzard's atlas-based nine-slice frame
+    -- The game's own art: gold on WoW Forever, silver on Retail
     { key = "modernTooltip", name = L.MEDIA_MODERN_TOOLTIP, nineSlice = "TooltipDefaultLayout", reach = 0.33, size = 16 },
+    -- The same frame without its color (grey), tinted by the border color: silver on WoW Forever
+    { key = "modernTooltipGrey", name = L.MEDIA_MODERN_TOOLTIP_GREY, nineSlice = "TooltipDefaultLayout", desaturate = true,
+      reach = 0.33, size = 16 },
 }
 
 ns.fonts = {
@@ -267,6 +271,7 @@ function ns:ApplySkin(frame, spec)
         for _, name in ipairs(ns.EDGE_PIECES) do
             local piece = frame[name]
             if piece then
+                if piece.SetDesaturated then piece:SetDesaturated(spec.desaturate == true) end
                 piece:SetVertexColor(Rgba(spec.border))
                 piece:Show()
             end
@@ -820,6 +825,12 @@ end
 -- (RegionalUniqueNamesEnabled is WoW Forever's own.)
 -- WoW Forever's full name ("Ellen Kemp", first name and surname) when the game uses
 -- regional unique names, otherwise nil
+function ns.IsForeverClient()
+    local regional = _G["RegionalUniqueNamesEnabled"]
+    local ok, on = pcall(function() return regional and regional() end)
+    return ok and on == true
+end
+
 function ns.FullCharName()
     local regional = _G["RegionalUniqueNamesEnabled"]
     local ok, on = pcall(function() return regional and regional() end)
@@ -902,6 +913,7 @@ function ns:PrepareProfile(p)
     -- Brand-new profile (first install or reset): apply the default layout
     local fresh = not p.initialized and (type(p.blocks) ~= "table" or next(p.blocks) == nil)
     CopyDefaults(PROFILE_DEFAULTS, p)
+    if self.SplitBlizzardModernTheme then self:SplitBlizzardModernTheme(p) end
     local created = {}
     for _, key in ipairs(self.order) do
         if not p.blocks[key] then created[key] = true end
@@ -1537,7 +1549,7 @@ function ns:SkinBlockFrame(f, cfg)
         -- with the block's colors (the chosen background only decides whether it shows)
         local edge = self:ApplySkin(f, {
             kind = "modern", layout = border.nineSlice,
-            border = borderColor, bg = bgColor, showCenter = bg.file ~= nil,
+            border = borderColor, bg = bgColor, showCenter = bg.file ~= nil, desaturate = border.desaturate,
         })
         inset = math.max(0, math.floor(edge - 4 + 0.5))
         f.nineSliceInfo = { edge = edge }

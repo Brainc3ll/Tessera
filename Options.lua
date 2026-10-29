@@ -1845,7 +1845,7 @@ function ns:SkinWindow(frame, title)
     local t = self:GetThemeInfo(self:GetTheme()).window()
     if title then title:SetTextColor(unpack(t.title)) end
     if t.nineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
-        self:ApplySkin(frame, { kind = "modern", layout = t.nineSlice, border = t.border, bg = t.bg })
+        self:ApplySkin(frame, { kind = "modern", layout = t.nineSlice, border = t.border, bg = t.bg, desaturate = t.desaturate })
     else
         self:ApplySkin(frame, {
             kind = "backdrop",

@@ -6,7 +6,7 @@
 
 - **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
 - **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills.
-- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames. 20 styles in all.
+- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames. 21 styles in all.
 - **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
 - **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
 - **Ready to stream.** Streamer mode hides other players' names, your other characters, your guild's name and your gold in one click.
@@ -71,7 +71,7 @@ Type **/tessera bug**, copy the report and post it on [GitHub](https://github.co
 
 - **Des blocs qui s'emboîtent.** Pose un bloc contre un autre : ils forment une seule barre. Une barre en haut, une colonne, un groupe dans un coin, ou chaque bloc tout seul.
 - **Pensé pour WoW Forever.** Points d'héritage (prochaine récompense, défis par catégorie), Compréhension (avec les parchemins de tes sacs), Camping (bonus et kit), Honneur, compétences d'armes.
-- **Une seule allure pour tout.** Tous les blocs ont les mêmes infobulles et le même style : celui de Blizzard, de FlareUI, d'ElvUI, d'EllesmereUI, ou des styles fantasy faits avec les fenêtres du jeu. 20 styles en tout.
+- **Une seule allure pour tout.** Tous les blocs ont les mêmes infobulles et le même style : celui de Blizzard, de FlareUI, d'ElvUI, d'EllesmereUI, ou des styles fantasy faits avec les fenêtres du jeu. 21 styles en tout.
 - **Dans ta langue.** Anglais et français depuis le premier jour, plus l'allemand, l'espagnol et le portugais du Brésil.
 - **Suivi.** Chaque version est testée en jeu, et tes dispositions passent d'une version à l'autre.
 - **Prêt pour le stream.** Le mode streamer cache en un clic les noms des autres joueurs, tes autres personnages, le nom de ta guilde et ton or.

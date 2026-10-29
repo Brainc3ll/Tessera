@@ -44,10 +44,17 @@ ns.CHANGELOG = {
               en = {
                 "New Tessera style, in the addon's own colors: turquoise on dark slate, with the game's "
                     .. "tooltip border. The default style does not change.",
+                "New Blizzard Forever style: the game's current tooltip frame in gold, on WoW Forever and on "
+                    .. "Retail. Blizzard modern is now silver on both. A WoW Forever profile that used Blizzard "
+                    .. "modern (gold there) moves to Blizzard Forever and keeps its look.",
               },
               fr = {
                 "Nouveau style Tessera, aux couleurs de l'addon : turquoise sur ardoise sombre, avec la "
                     .. "bordure des infobulles du jeu. Le style par défaut ne change pas.",
+                "Nouveau style Blizzard Forever : le cadre actuel des infobulles du jeu en doré, sur WoW "
+                    .. "Forever comme sur Retail. Blizzard moderne est maintenant argenté sur les deux. Un profil "
+                    .. "WoW Forever qui utilisait Blizzard moderne (doré là-bas) passe à Blizzard Forever et garde "
+                    .. "son allure.",
               } },
         },
     },

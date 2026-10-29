@@ -8,6 +8,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### New
 
 - New Tessera style, in the addon's own colors: turquoise on dark slate, with the game's tooltip border. The default style does not change.
+- New Blizzard Forever style: the game's current tooltip frame in gold, on WoW Forever and on Retail. Blizzard modern is now silver on both. A WoW Forever profile that used Blizzard modern (gold there) moves to Blizzard Forever and keeps its look.
 
 ## 1.0.0 — 
 

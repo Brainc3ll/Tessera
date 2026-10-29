@@ -9,6 +9,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - New Tessera style, in the addon's own colors: turquoise on dark slate, with the game's tooltip border. The default style does not change.
 
+### Fixes
+
+- The Tessera icon sits in the middle of its minimap button's ring.
+
 ## 1.0.0 — 
 
 ### New

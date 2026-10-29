@@ -49,6 +49,13 @@ ns.CHANGELOG = {
                 "Nouveau style Tessera, aux couleurs de l'addon : turquoise sur ardoise sombre, avec la "
                     .. "bordure des infobulles du jeu. Le style par défaut ne change pas.",
               } },
+            { kind = "fixed",
+              en = {
+                "The Tessera icon sits in the middle of its minimap button's ring.",
+              },
+              fr = {
+                "L'icône de Tessera est centrée dans l'anneau de son bouton de la minicarte.",
+              } },
         },
     },
     {

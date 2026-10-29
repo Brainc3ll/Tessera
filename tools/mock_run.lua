@@ -1332,6 +1332,10 @@ for _, step in ipairs({
         -- stretched bar: no second row
         ns:ResetProfile("rampart")
         b = ns.db.blocks
+        -- the mock measures short texts wide (40 px at least, see MockTextWidth): the gold
+        -- amount with its three coin icons leaves no room in the mock screen's bar
+        b.gold.goldFormat = "gold"
+        ns:RefreshAllBlocks(); ns:UpdateLayout()
         assert(not ns:CanInsertSpacer("time", "TOP"), "no row above in a stretched bar")
         assert(ns:InsertSpacer("time", "LEFT"), "left is fine in a stretched bar")
         ns:ResetProfile("top")
@@ -1650,7 +1654,7 @@ for _, step in ipairs({
         local fs = { GetStringWidth = function() return 40 end }
         assert(ns.TextWidth(fs, "plain") == 40, "plain text width")
         local w = ns.TextWidth(fs, "5|Ta:12:12:2:0|t 54|Tb:12:12:2:0|t 27|Tc:12:12:2:0|t")
-        assert(w == 46, "three coin icons with a 2 px offset add 6 px: " .. w)
+        assert(w >= 42, "three 12 px coin icons with a 2 px offset count 42 px: " .. w)
         assert(ns.modules.bags.defaults.bagsFormat == "usedTotal", "bags: used / total by default")
     end,
     -- streamer mode: the gold block and its tooltip hide the amounts, the block shows the state

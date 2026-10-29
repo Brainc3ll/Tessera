@@ -48,18 +48,34 @@ local LAUNCHER_PREFIX = "launcher:"
 ns.DEFAULT_PROFILE = DEFAULT_PROFILE
 ns.LAUNCHER_PREFIX = LAUNCHER_PREFIX
 
--- Width of a block's text. The game's measure leaves out the horizontal offset of inline
--- textures (|T file:h:w:x:y|t, e.g. the coin icons after gold amounts): add it, or the last
--- icon spills over the next block
+-- Width of a block's text. The game measures inline textures (|T file:h:w:x:y|t, e.g. the
+-- coin icons after gold amounts) badly: the icons spilled over the next block. Text with
+-- textures is measured without them (on a hidden string with the same font), then each
+-- texture adds its own width (w, or h when w is 0) and its horizontal offset.
+local measure
 function ns.TextWidth(fontString, text)
-    local w = (fontString.GetUnboundedStringWidth and fontString:GetUnboundedStringWidth())
+    local plain = (fontString.GetUnboundedStringWidth and fontString:GetUnboundedStringWidth())
         or fontString:GetStringWidth() or 0
-    if type(text) == "string" and text:find("|T", 1, true) then
-        for x in text:gmatch("|T[^:|]*:%-?%d*:%-?%d*:(%-?%d+)") do
-            w = w + math.max(0, tonumber(x) or 0)
-        end
+    if type(text) ~= "string" or not text:find("|T", 1, true) then return plain end
+    local icons = 0
+    local stripped = text:gsub("|T([^|]*)|t", function(spec)
+        local _, h, w, x = spec:match("^([^:]*):?(%-?%d*):?(%-?%d*):?(%-?%d*)")
+        h, w, x = tonumber(h) or 0, tonumber(w) or 0, tonumber(x) or 0
+        if w == 0 then w = h end
+        icons = icons + math.max(0, w) + math.max(0, x)
+        return ""
+    end)
+    if not measure and CreateFrame and UIParent then
+        measure = UIParent:CreateFontString(nil, "BACKGROUND")
+        measure:Hide()
     end
-    return w
+    local font, size, flags
+    if fontString.GetFont then font, size, flags = fontString:GetFont() end
+    if not (measure and font) then return plain + icons end
+    measure:SetFont(font, size, flags)
+    measure:SetText(stripped)
+    local textW = (measure.GetUnboundedStringWidth and measure:GetUnboundedStringWidth()) or measure:GetStringWidth() or 0
+    return math.max(plain, textW + icons)
 end
 
 -- Chat output. In quiet mode nothing is printed, except in reply to a typed

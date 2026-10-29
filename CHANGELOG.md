@@ -11,6 +11,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - New The War Within and Midnight styles: the frames Blizzard draws for these expansions on the options window, and their colors on the blocks.
 - New Blizzard Forever style: the game's current tooltip frame in gold, on WoW Forever and on Retail. Blizzard modern is now silver on both. A WoW Forever profile that used Blizzard modern (gold there) moves to Blizzard Forever and keeps its look. The square versions follow: Blizzard modern square turns silver, and a profile that used it moves to the new Blizzard Forever square, in gold as before.
 
+### Fixes
+
+- The Tessera icon sits in the middle of its minimap button's ring.
+
 ## 1.0.0 — 
 
 ### New

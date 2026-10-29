@@ -65,6 +65,13 @@ ns.CHANGELOG = {
                     .. "son allure. Les versions carrées suivent : Blizzard moderne carré devient argenté, et un "
                     .. "profil qui l'utilisait passe au nouveau Blizzard Forever carré, doré comme avant.",
               } },
+            { kind = "fixed",
+              en = {
+                "The Tessera icon sits in the middle of its minimap button's ring.",
+              },
+              fr = {
+                "L'icône de Tessera est centrée dans l'anneau de son bouton de la minicarte.",
+              } },
         },
     },
     {

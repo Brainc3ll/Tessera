@@ -62,7 +62,8 @@ function ns.TextWidth(fontString, text)
         local _, h, w, x = spec:match("^([^:]*):?(%-?%d*):?(%-?%d*):?(%-?%d*)")
         h, w, x = tonumber(h) or 0, tonumber(w) or 0, tonumber(x) or 0
         if w == 0 then w = h end
-        icons = icons + math.max(0, w) + math.max(0, x)
+        -- measured in game (29/10): each icon takes about 3 px more than its size and offset
+        icons = icons + math.max(0, w) + math.max(0, x) + 3
         return ""
     end)
     if not measure and CreateFrame and UIParent then

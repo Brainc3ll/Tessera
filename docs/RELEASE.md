@@ -67,7 +67,7 @@ Ce qu'elle ne peut pas vérifier (la clarté des textes, le détail de l'aide) r
 ## Traductions (automatique)
 
 - L'anglais et le français viennent toujours du dépôt : une modification faite sur CurseForge dans ces deux langues n'arrive jamais dans l'addon.
-- Les autres langues sont traduites par la communauté sur CurseForge et ajoutées au zip à chaque publication.
+- Les autres langues sont traduites sur CurseForge et ajoutées au zip à chaque publication. L'allemand, l'espagnol (Espagne et Mexique) et le portugais du Brésil partent des traductions de Claude (dépôt privé `Tessera-dev/traductions-<version>/`, vérifiées par `tools/check_translation.py`) : avant la publication, lancer « Send strings to CurseForge » pour que CurseForge connaisse les nouvelles clés, vérifier qu'aucun traducteur n'a commencé ces langues, puis Braincell1980 importe les fichiers à la main (page Localization, phrases absentes : « do nothing »). Les joueurs peuvent ensuite les corriger.
 - Les textes qui n'existent plus restent sur CurseForge (aucun travail de traducteur n'est supprimé).
 - Si CurseForge refuse l'envoi des textes, la publication continue sans les traductions de la communauté.
 

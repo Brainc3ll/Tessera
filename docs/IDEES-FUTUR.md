@@ -113,7 +113,8 @@ Idée de Braincell1980 : WoW Forever va attirer beaucoup de joueurs de 35 ans et
 ### Blocs pour une version Retail (21 octobre 2026, pas une priorité)
 - À masquer sur Retail : Points d'héritage, Compréhension, Camping, Compétences d'armes, Honneur (version Forever), Munitions, Composants de classe, Secourisme ; Points de talent à refaire (configurations). Un bloc déclare où il existe (Forever, Retail, les deux) ; ailleurs il disparaît des listes, options, « Remplacer par... » et du mode démo, et garde ses réglages.
 - Idées de blocs Retail : spécialisation et spé de butin, configuration de talents, or du bataillon, bloc voyage (téléportations, jouets pierre de foyer) : testables sans Midnight. Grande Chambre forte, clé et cote M+, écus de saison, renom, gouffres, concentration de métier : dépendent de la saison, peut-être pas testables sans Midnight.
-- Logement (housing) : maison, décorations, quartier. Avoir une maison demande Midnight (Braincell1980 ne l'a pas) : seulement en « expérimental » avec des testeurs, pas une priorité.
+- Logement (housing) : maison, décorations, quartier.
+- 29/10 : Braincell1980 a acheté Midnight : les blocs de saison (clé et cote M+, Grande Chambre forte, écus, renom, gouffres, concentration) et le logement deviennent testables par lui. Plan d'une première version Retail : blocs actuels, blocs Forever cachés, puis spécialisation, or du bataillon, voyage, puis blocs de saison et logement. Toujours après Forever, la 1.1 et l'accessibilité.
 
 ## Placement et affichage
 

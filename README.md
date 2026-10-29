@@ -57,11 +57,11 @@ styles are an imitation):
 
 **Interface and Blizzard styles**
 
-![FlareUI, EllesmereUI, ElvUI, Blizzard modern and Blizzard classic styles](docs/media/styles-interfaces.gif)
+![FlareUI, EllesmereUI, ElvUI, Blizzard Retail and Blizzard Classic styles](docs/media/styles-interfaces.gif)
 
 **Square, Clean and Transparent styles**
 
-![FlareUI square, Blizzard modern square, Blizzard classic square, Clean and Transparent styles](docs/media/styles-clean.gif)
+![FlareUI square, Blizzard Retail square, Blizzard Classic square, Clean and Transparent styles](docs/media/styles-clean.gif)
 
 **Fantasy styles and styles made from the game's frames**
 
@@ -226,7 +226,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
 | `Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
-| `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard modern/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
+| `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
 | `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |

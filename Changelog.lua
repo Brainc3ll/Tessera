@@ -47,11 +47,11 @@ ns.CHANGELOG = {
                     .. "reaches its border in every style.",
                 "New The War Within and Midnight styles: the frames Blizzard draws for these expansions on "
                     .. "the options window, and their colors on the blocks.",
-                "New Blizzard Forever style: the game's current tooltip frame in gold, on WoW Forever and on "
-                    .. "Retail. Blizzard modern is now silver on both. A WoW Forever profile that used Blizzard "
-                    .. "modern (gold there) moves to Blizzard Forever and keeps its look. The square versions "
-                    .. "follow: Blizzard modern square turns silver, and a profile that used it moves to the new "
-                    .. "Blizzard Forever square, in gold as before.",
+                "Blizzard styles named after the games: Blizzard Retail (silver, formerly Blizzard modern), "
+                    .. "the new Blizzard Forever (gold) and Blizzard Classic (formerly Blizzard classic), each with "
+                    .. "its square version, and the same color on WoW Forever and on Retail. Your look does not "
+                    .. "change: a profile that showed gold (Blizzard modern on WoW Forever, Blizzard modern square "
+                    .. "everywhere) moves to Blizzard Forever or Blizzard Forever square.",
               },
               fr = {
                 "Nouveau style Tessera, aux couleurs de l'addon : turquoise sur ardoise sombre, avec la "
@@ -59,11 +59,12 @@ ns.CHANGELOG = {
                     .. "d'options touche maintenant sa bordure, dans tous les styles.",
                 "Nouveaux styles The War Within et Midnight : les cadres que Blizzard dessine pour ces "
                     .. "extensions sur la fenêtre d'options, et leurs couleurs sur les blocs.",
-                "Nouveau style Blizzard Forever : le cadre actuel des infobulles du jeu en doré, sur WoW "
-                    .. "Forever comme sur Retail. Blizzard moderne est maintenant argenté sur les deux. Un profil "
-                    .. "WoW Forever qui utilisait Blizzard moderne (doré là-bas) passe à Blizzard Forever et garde "
-                    .. "son allure. Les versions carrées suivent : Blizzard moderne carré devient argenté, et un "
-                    .. "profil qui l'utilisait passe au nouveau Blizzard Forever carré, doré comme avant.",
+                "Les styles Blizzard portent le nom des jeux : Blizzard Retail (argenté, ancien Blizzard "
+                    .. "moderne), le nouveau Blizzard Forever (doré) et Blizzard Classic (ancien Blizzard "
+                    .. "classique), chacun avec sa version carrée, et la même couleur sur WoW Forever et sur "
+                    .. "Retail. Ton allure ne change pas : un profil qui s'affichait en doré (Blizzard moderne "
+                    .. "sur WoW Forever, Blizzard moderne carré partout) passe à Blizzard Forever ou Blizzard "
+                    .. "Forever carré.",
               } },
             { kind = "fixed",
               en = {

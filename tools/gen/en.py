@@ -38,7 +38,7 @@ EN = [
 ("GROUP_HINT","With \"All blocks\" or \"All launchers\", every setting below applies to the whole selection (sizes stay per block)."),
 ("SECTION_DISPLAY","Display"),("SECTION_VISIBILITY","Visibility"),("SECTION_SIZE","Size"),("SECTION_TEXT","Text"),
 ("SECTION_THEME","Style"),("THEME","Style of blocks and window"),
-("THEME_FLAT","Clean"),("THEME_BLIZZARD_MODERN","Blizzard modern"),("THEME_BLIZZARD_CLASSIC","Blizzard classic"),
+("THEME_FLAT","Clean"),("THEME_BLIZZARD_MODERN","Blizzard Retail"),("THEME_BLIZZARD_CLASSIC","Blizzard Classic"),
 ("THEME_HINT","Applies to all blocks, new blocks and this window. When FlareUI, EllesmereUI or ElvUI is installed, Tessera offers its style in a window with a preview; without it, the style is an imitation (the chat says what differs). Transparent shows only the text and icons, Runestone only the text, in black and white."),
 ("SECTION_MOVE","Placement"),("SECTION_COMBAT","Combat"),
 ("COMBAT_HINT","Each block can also be hidden in combat (Blocks tab, Visibility)."),

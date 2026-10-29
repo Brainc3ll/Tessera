@@ -32,7 +32,7 @@ FR = {
 "TOOLTIP_IN_COMBAT_TIP":"Coché : les infobulles des blocs s'affichent en combat.\nDécoché : aucune infobulle pendant un combat.",
 "ALL_LAUNCHERS":"Tous les lanceurs","ALL_BLOCKS":"Tous les blocs","DATA_BLOCKS":"Blocs d'informations","SELECTION":"Blocs à configurer",
 "GROUP_HINT":"Avec « Tous les blocs » ou « Tous les lanceurs », chaque réglage ci-dessous s'applique à toute la sélection (les tailles restent propres à chaque bloc).",
-"SECTION_DISPLAY":"Affichage","SECTION_VISIBILITY":"Visibilité","SECTION_SIZE":"Taille","SECTION_TEXT":"Texte","SECTION_THEME":"Style","THEME":"Style des blocs et de la fenêtre","THEME_FLAT":"Épuré","THEME_BLIZZARD_MODERN":"Blizzard moderne","THEME_BLIZZARD_CLASSIC":"Blizzard classique",
+"SECTION_DISPLAY":"Affichage","SECTION_VISIBILITY":"Visibilité","SECTION_SIZE":"Taille","SECTION_TEXT":"Texte","SECTION_THEME":"Style","THEME":"Style des blocs et de la fenêtre","THEME_FLAT":"Épuré","THEME_BLIZZARD_MODERN":"Blizzard Retail","THEME_BLIZZARD_CLASSIC":"Blizzard Classic",
 "THEME_HINT":"S'applique à tous les blocs, aux nouveaux blocs et à cette fenêtre. Quand FlareUI, EllesmereUI ou ElvUI est installé, Tessera te propose son style dans une fenêtre avec un aperçu ; sans l'interface, le style est une imitation (la discussion dit ce qui change). Transparent n'affiche que le texte et les icônes, Pierre runique que le texte, en noir et blanc.",
 "SECTION_MOVE":"Placement","SECTION_COMBAT":"Combat",
 "COMBAT_HINT":"Chaque bloc peut aussi être masqué en combat (onglet Blocs, Visibilité).",

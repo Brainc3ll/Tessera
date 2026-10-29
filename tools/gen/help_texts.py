@@ -549,8 +549,8 @@ NEW_EN = [
 ("SPACER_NO_ROOM","No room left on this bar: replace or remove a block first."),
 ("SPACER_NO_ROW","A bar stretched over the screen width stays on one row: add the spacer on the left or on the right."),
 ("THEME_FLARE_SQUARE","FlareUI square"),
-("THEME_MODERN_SQUARE","Blizzard modern square"),
-("THEME_CLASSIC_SQUARE","Blizzard classic square"),
+("THEME_MODERN_SQUARE","Blizzard Retail square"),
+("THEME_CLASSIC_SQUARE","Blizzard Classic square"),
 ("SECTION_SEPARATORS","Separators"),
 ("SEPARATORS","Line between merged blocks"),
 ("TIP_SEPARATORS","Draws a thin line where two merged blocks touch, as in the square styles. Spacers draw none."),
@@ -706,8 +706,8 @@ NEW_EN = [
 ]
 NEW_FR = {
 "THEME_FLARE_SQUARE":"FlareUI carré",
-"THEME_MODERN_SQUARE":"Blizzard moderne carré",
-"THEME_CLASSIC_SQUARE":"Blizzard classique carré",
+"THEME_MODERN_SQUARE":"Blizzard Retail carré",
+"THEME_CLASSIC_SQUARE":"Blizzard Classic carré",
 "SECTION_SEPARATORS":"Séparateurs",
 "SEPARATORS":"Ligne entre les blocs fusionnés",
 "TIP_SEPARATORS":"Trace une fine ligne là où deux blocs fusionnés se touchent, comme dans les styles carrés. Les espaces n'en tracent pas.",

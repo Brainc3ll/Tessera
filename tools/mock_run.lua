@@ -1332,9 +1332,9 @@ for _, step in ipairs({
         -- stretched bar: no second row
         ns:ResetProfile("rampart")
         b = ns.db.blocks
-        -- the mock measures short texts wide (40 px at least, see MockTextWidth): the gold
-        -- amount with its three coin icons leaves no room in the mock screen's bar
-        b.gold.goldFormat = "gold"
+        -- the mock measures short texts wide (40 px at least, see MockTextWidth): with the
+        -- gold amount and its coin icons, the mock screen's bar has no room left
+        b.gold.goldFormat, b.gold.goldIcons = "gold", false
         ns:RefreshAllBlocks(); ns:UpdateLayout()
         assert(not ns:CanInsertSpacer("time", "TOP"), "no row above in a stretched bar")
         assert(ns:InsertSpacer("time", "LEFT"), "left is fine in a stretched bar")

@@ -79,7 +79,7 @@ Que personne ne se sente oublié, au-delà de l'accessibilité. Règle ajoutée 
 - Couleurs : rouge = perte et vert = gain ne valent pas partout ; les formes en plus des couleurs (1.4) règlent ça.
 - À éviter : options « drapeaux » ou thèmes ajoutés pour afficher une valeur. L'inclusivité la plus solide ne se voit pas.
 - Fait (25/10, pour la 1.0.0) : mode streamer (noms des autres, rerolls, royaume, nom de guilde et or en ***), option de l'onglet Général, raccourci clavier et bloc Mode streamer. Idées proposées le même jour, pas encore retenues : infobulles qui expliquent le jargon pour les débutants, alertes jamais seulement sonores, disposition « Grand confort », textes alternatifs sur les images des pages.
-- Règle de Braincell1980 (25/10) : Tessera reste gratuit et open source, libre d'utilisation et de modification. Jamais de version premium, de fonction réservée aux donateurs ni de contenu payant. Un lien « offre-moi un café », sans contrepartie, reste possible un jour (pas une priorité).
+- Règle de Braincell1980 (25/10) : Tessera reste gratuit et open source, libre d'utilisation et de modification. Jamais de version premium, de fonction réservée aux donateurs ni de contenu payant. Un lien « offre-moi un café », sans contrepartie, reste possible un jour (pas une priorité), seulement sur la page CurseForge : les règles de Blizzard interdisent de demander des dons dans le jeu.
 
 ## Nouveaux blocs
 
@@ -113,7 +113,8 @@ Idée de Braincell1980 : WoW Forever va attirer beaucoup de joueurs de 35 ans et
 ### Blocs pour une version Retail (21 octobre 2026, pas une priorité)
 - À masquer sur Retail : Points d'héritage, Compréhension, Camping, Compétences d'armes, Honneur (version Forever), Munitions, Composants de classe, Secourisme ; Points de talent à refaire (configurations). Un bloc déclare où il existe (Forever, Retail, les deux) ; ailleurs il disparaît des listes, options, « Remplacer par... » et du mode démo, et garde ses réglages.
 - Idées de blocs Retail : spécialisation et spé de butin, configuration de talents, or du bataillon, bloc voyage (téléportations, jouets pierre de foyer) : testables sans Midnight. Grande Chambre forte, clé et cote M+, écus de saison, renom, gouffres, concentration de métier : dépendent de la saison, peut-être pas testables sans Midnight.
-- Logement (housing) : maison, décorations, quartier. Avoir une maison demande Midnight (Braincell1980 ne l'a pas) : seulement en « expérimental » avec des testeurs, pas une priorité.
+- Logement (housing) : maison, décorations, quartier.
+- 29/10 : Braincell1980 a acheté Midnight : les blocs de saison (clé et cote M+, Grande Chambre forte, écus, renom, gouffres, concentration) et le logement deviennent testables par lui. Plan d'une première version Retail : blocs actuels, blocs Forever cachés, puis spécialisation, or du bataillon, voyage, puis blocs de saison et logement. Toujours après Forever, la 1.1 et l'accessibilité.
 
 ## Placement et affichage
 
@@ -192,6 +193,7 @@ Souhait de Braincell1980 : un Tessera beaucoup plus HD, même sur Forever (il fa
 4. Icônes : Masque, taille plafonnée à ce qui reste net (voir « Icônes nettes » plus haut).
 5. Petites animations : fondu, valeur qui glisse, survol qui s'allume.
 Le 20/10 : le jeu contient 37 cadres HD tout faits (`NineSliceLayouts`), visibles dans la galerie `/tes debug hd` des zips de test ; pas encore testée en jeu.
+Le 29/10 : Braincell1980 a adoré les cadres de Blizzard sur la fenêtre d'options (styles The War Within et Midnight, 1.0.1). Suite décidée, pour plus tard (1.1) : il choisit dans `/tes debug hd` un cadre par style (Grimoire, Forgefer, Pierre runique, Sceau royal, Lame runique, Braise, Sylvestre, Arcanes ; pas les styles des interfaces) ; faire la « Forge naine » avec un cadre en métal ; l'écran de sélection et les médaillons ensuite.
 Méthode proposée : d'abord un nouveau style « HD » (points 1 à 3) à côté des autres, puis étendre ses images aux autres styles s'il plaît. Plutôt en 1.1. Avant de coder : une maquette (même barre, style actuel et style HD côte à côte).
 
 ### Cadres de Blizzard (16 octobre 2026)

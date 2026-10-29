@@ -25,10 +25,12 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Improvements
 
 - New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the minimap button.
+- The Bags block shows used slots out of the total in new profiles (your saved setting does not change; Text tab, Slots shown).
 - The About tab thanks Funkeh, whose StatBlock Core gave me the idea of Tessera's free-floating blocks.
 
 ### Fixes
 
+- The coin icons of the Gold block no longer spill over the next block.
 - Each character's data (its own profile, its gold and gold history) is now saved under its full name, as WoW Forever has no realms: it no longer depends on the server's name, which may change. Your settings carry over on their own at your next login.
 - Arcana, ChocolateBar's new name, now switches Tessera to DataBroker mode like ChocolateBar did, and the help names it.
 

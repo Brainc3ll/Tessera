@@ -441,7 +441,7 @@ ns:RegisterModule("bags", {
         if mode == "usedTotal" then return L.BAGS_FORMAT:format(total - free, total), level end
         return L.BAGS_FORMAT:format(free, total), level
     end,
-    defaults = { bagsFormat = "freeTotal" },
+    defaults = { bagsFormat = "usedTotal" }, -- new profiles; saved profiles keep their choice
     options = {
         { kind = "dropdown", field = "bagsFormat", tab = "text", label = "BAGS_SHOWN", tip = "TIP_BAGS_SHOWN",
           values = { { key = "freeTotal", label = "BAGS_FREE_TOTAL" }, { key = "free", label = "BAGS_FREE" },

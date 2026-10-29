@@ -48,6 +48,20 @@ local LAUNCHER_PREFIX = "launcher:"
 ns.DEFAULT_PROFILE = DEFAULT_PROFILE
 ns.LAUNCHER_PREFIX = LAUNCHER_PREFIX
 
+-- Width of a block's text. The game's measure leaves out the horizontal offset of inline
+-- textures (|T file:h:w:x:y|t, e.g. the coin icons after gold amounts): add it, or the last
+-- icon spills over the next block
+function ns.TextWidth(fontString, text)
+    local w = (fontString.GetUnboundedStringWidth and fontString:GetUnboundedStringWidth())
+        or fontString:GetStringWidth() or 0
+    if type(text) == "string" and text:find("|T", 1, true) then
+        for x in text:gmatch("|T[^:|]*:%-?%d*:%-?%d*:(%-?%d+)") do
+            w = w + math.max(0, tonumber(x) or 0)
+        end
+    end
+    return w
+end
+
 -- Chat output. In quiet mode nothing is printed, except in reply to a typed
 -- command (/tessera ...) or in debug mode.
 local function Print(msg)
@@ -1898,7 +1912,7 @@ function ns:UpdateBlock(key)
         -- second (FPS, latency, coordinates, clock) would otherwise rebuild every bar each
         -- time, and that garbage made Tessera look like it used tens of megabytes
         local text_ = f.text
-        local tw = (text_.GetUnboundedStringWidth and text_:GetUnboundedStringWidth()) or text_:GetStringWidth() or 0
+        local tw = ns.TextWidth(text_, text)
         local th = text_:GetStringHeight() or 0
         tw, th = math.ceil(tw), math.ceil(th)
         if f.textW ~= tw or f.textH ~= th then

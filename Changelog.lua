@@ -49,7 +49,9 @@ ns.CHANGELOG = {
                     .. "the options window, and their colors on the blocks.",
                 "New Blizzard Forever style: the game's current tooltip frame in gold, on WoW Forever and on "
                     .. "Retail. Blizzard modern is now silver on both. A WoW Forever profile that used Blizzard "
-                    .. "modern (gold there) moves to Blizzard Forever and keeps its look.",
+                    .. "modern (gold there) moves to Blizzard Forever and keeps its look. The square versions "
+                    .. "follow: Blizzard modern square turns silver, and a profile that used it moves to the new "
+                    .. "Blizzard Forever square, in gold as before.",
               },
               fr = {
                 "Nouveau style Tessera, aux couleurs de l'addon : turquoise sur ardoise sombre, avec la "
@@ -60,7 +62,8 @@ ns.CHANGELOG = {
                 "Nouveau style Blizzard Forever : le cadre actuel des infobulles du jeu en doré, sur WoW "
                     .. "Forever comme sur Retail. Blizzard moderne est maintenant argenté sur les deux. Un profil "
                     .. "WoW Forever qui utilisait Blizzard moderne (doré là-bas) passe à Blizzard Forever et garde "
-                    .. "son allure.",
+                    .. "son allure. Les versions carrées suivent : Blizzard moderne carré devient argenté, et un "
+                    .. "profil qui l'utilisait passe au nouveau Blizzard Forever carré, doré comme avant.",
               } },
         },
     },

@@ -329,8 +329,28 @@ ns.themes = {
         end,
     },
     {
+        -- silver, like Blizzard modern
         key = "modernSquare",
         name = L.THEME_MODERN_SQUARE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.025, g = 0.05, b = 0.11, a = 0.92 }
+            cfg.border = "solid"
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 0.62, g = 0.64, b = 0.69, a = 1 } -- silver
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.55, g = 0.57, b = 0.62, a = 0.7 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+        end,
+        window = function()
+            return FlatWindow({ 0.03, 0.07, 0.16, 0.96 }, { 0.82, 0.84, 0.88, 1 }, { 1, 0.82, 0 })
+        end,
+    },
+    {
+        -- gold, like Blizzard Forever (Blizzard modern square's look until 1.0.1)
+        key = "foreverSquare",
+        name = L.THEME_FOREVER_SQUARE,
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -669,9 +689,16 @@ end
 -- A profile that chose Blizzard modern on WoW Forever saw it in gold: it keeps that look
 -- under the new Blizzard Forever style (once; a later choice of Blizzard modern stays)
 function ns:SplitBlizzardModernTheme(profile)
-    if type(profile) ~= "table" or profile.blizzardForeverSplit then return end
-    profile.blizzardForeverSplit = true
-    if profile.theme == "blizzardModern" and ns.IsForeverClient() then profile.theme = "blizzardForever" end
+    if type(profile) ~= "table" then return end
+    if not profile.blizzardForeverSplit then
+        profile.blizzardForeverSplit = true
+        if profile.theme == "blizzardModern" and ns.IsForeverClient() then profile.theme = "blizzardForever" end
+    end
+    -- Blizzard modern square was gold everywhere: it keeps that look as Blizzard Forever square
+    if not profile.squareForeverSplit then
+        profile.squareForeverSplit = true
+        if profile.theme == "modernSquare" then profile.theme = "foreverSquare" end
+    end
 end
 
 -- Writes a theme's block style into one block's settings (current theme if key is nil)

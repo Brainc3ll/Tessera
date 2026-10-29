@@ -1633,6 +1633,9 @@ for _, step in ipairs({
         p.theme = "blizzardModern"
         ns:SplitBlizzardModernTheme(p)
         assert(p.theme == "blizzardModern", "a later choice of Blizzard modern stays")
+        local sq = { theme = "modernSquare" }
+        ns:SplitBlizzardModernTheme(sq)
+        assert(sq.theme == "foreverSquare", "Blizzard modern square keeps its gold look")
         _G.RegionalUniqueNamesEnabled = realRegional
         local q = { theme = "blizzardModern" }
         ns:SplitBlizzardModernTheme(q)

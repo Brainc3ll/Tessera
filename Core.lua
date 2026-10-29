@@ -258,7 +258,30 @@ end
 -- layout name), "backdrop" (spec.info = backdrop table) or "none"; spec.border
 -- and spec.bg are colors. Returns the border thickness for "modern" skins
 -- (used to compute insets and seams), 0 otherwise.
+-- Expansion frame art (The War Within, Midnight): one sliced border atlas over a tiled
+-- background atlas, as Blizzard draws its own windows of those expansions
+local function AtlasArt(frame, spec)
+    if not frame.tesseraArtBg then
+        frame.tesseraArtBg = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
+        frame.tesseraArtBorder = frame:CreateTexture(nil, "BORDER", nil, 7)
+    end
+    local bgTex, border = frame.tesseraArtBg, frame.tesseraArtBorder
+    if not spec then bgTex:Hide(); border:Hide(); return end
+    bgTex:ClearAllPoints()
+    bgTex:SetPoint("TOPLEFT", spec.bgInset or 8, -(spec.bgInset or 8))
+    bgTex:SetPoint("BOTTOMRIGHT", -(spec.bgInset or 8), spec.bgInset or 8)
+    bgTex:SetAtlas(spec.bgAtlas, false)
+    if bgTex.SetHorizTile then bgTex:SetHorizTile(true); bgTex:SetVertTile(true) end
+    bgTex:SetVertexColor(Rgba(spec.bg))
+    bgTex:Show()
+    border:ClearAllPoints()
+    border:SetAllPoints(frame)
+    border:SetAtlas(spec.borderAtlas, false)
+    border:Show()
+end
+
 function ns:ApplySkin(frame, spec)
+    if spec.kind ~= "atlas" and frame.tesseraArtBg then AtlasArt(frame, nil) end
     if frame.skinKind and frame.skinKind ~= spec.kind then
         if frame.backdropInfo then frame:SetBackdrop(nil) end
         ResetPieces(frame)
@@ -287,6 +310,10 @@ function ns:ApplySkin(frame, spec)
         local info = atlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas)
         if info and info.width and info.width > 0 then return info.width end
         return corner and corner:GetWidth() or 0
+    elseif spec.kind == "atlas" then
+        if frame.backdropInfo then frame:SetBackdrop(nil) end
+        ResetPieces(frame)
+        AtlasArt(frame, spec)
     elseif spec.kind == "backdrop" then
         frame:SetBackdrop(spec.info)
         if spec.info.bgFile then

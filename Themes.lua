@@ -578,6 +578,29 @@ table.insert(ns.themes, TooltipStyle("sylvan", L.THEME_SYLVAN, { 0.03, 0.08, 0.0
 table.insert(ns.themes, TooltipStyle("tessera", L.THEME_TESSERA, { 0.086, 0.133, 0.165 }, { 0.122, 0.702, 0.639 },
     { 0.957, 0.945, 0.918 }))
 
+-- Worldsoul Saga: the frames Blizzard draws for The War Within and Midnight (atlases also in
+-- the WoW Forever client) on the options window; blocks in their colors, which are a first
+-- guess from the expansions' art (The War Within: stone, bronze and gold; Midnight: void
+-- purple and the Sunwell's light). The Last Titan: once its art is in the game.
+local function ExpansionStyle(key, name, kit, bg, edge, text)
+    local style = TooltipStyle(key, name, bg, edge, text)
+    local plain = style.window
+    style.window = function()
+        local t = plain()
+        t.borderAtlas = "ui-frame-" .. kit .. "-border"
+        t.bgAtlas = "ui-frame-" .. kit .. "-backgroundtile"
+        t.bgInset = 10
+        t.bg = { 1, 1, 1, 1 }
+        t.title = text
+        return t
+    end
+    return style
+end
+table.insert(ns.themes, ExpansionStyle("warWithin", L.THEME_WAR_WITHIN, "thewarwithin", { 0.09, 0.065, 0.045 },
+    { 0.85, 0.62, 0.28 }, { 1, 0.86, 0.55 }))
+table.insert(ns.themes, ExpansionStyle("midnight", L.THEME_MIDNIGHT, "midnight", { 0.07, 0.045, 0.12 },
+    { 0.62, 0.45, 0.95 }, { 1, 0.92, 0.75 }))
+
 -- The center of modern tooltips is a white texture that the game tints with
 -- TOOLTIP_DEFAULT_BACKGROUND_COLOR (SharedTooltipTemplates.lua); we do the same
 function ns.TooltipBackgroundRGB()

@@ -52,7 +52,7 @@ Plans, not promises:
 ## Screenshots
 
 Demo mode (`/tessera demo`) shows every block at once with sample values. The same blocks in
-the 21 styles (FlareUI is shown with the addon installed; without their addon, the interface
+the 23 styles (FlareUI is shown with the addon installed; without their addon, the interface
 styles are an imitation):
 
 **Interface and Blizzard styles**
@@ -169,7 +169,7 @@ Help tab inside the game explains everything.
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- 21 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
+- 23 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
   imitation), Square styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
   Parchment; Arcane) and styles made of the game's own frames (Royal seal, Ironforge, Runeblade, Ember, Sylvan, and Tessera in the addon's own colors).
 - Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options

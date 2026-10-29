@@ -1840,12 +1840,30 @@ end
 ---------------------------------------------------------------------------
 -- Window, skinned according to the theme (FlareUI or Blizzard)
 ---------------------------------------------------------------------------
+-- The window's background reaches under the border's line: the textures' own insets (made
+-- for tooltips and dialogs) leave a see-through line a few pixels wide on a large window
+local WINDOW_FILL = 3
+local function WindowInset(t)
+    local inset = t.inset or 0
+    if t.edgeFile and inset >= 4 then return inset - 2 end
+    return inset
+end
+
 -- Skins a Tessera window with the chosen theme (options window, placement banner, ...)
 function ns:SkinWindow(frame, title)
     local t = self:GetThemeInfo(self:GetTheme()).window()
     if title then title:SetTextColor(unpack(t.title)) end
-    if t.nineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
+    if t.borderAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(t.borderAtlas) then
+        self:ApplySkin(frame, { kind = "atlas", borderAtlas = t.borderAtlas, bgAtlas = t.bgAtlas, bg = t.bg, bgInset = t.bgInset })
+    elseif t.nineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
         self:ApplySkin(frame, { kind = "modern", layout = t.nineSlice, border = t.border, bg = t.bg, desaturate = t.desaturate })
+        -- the tooltip layout keeps its center a few pixels inside the border (made for small
+        -- tooltips): on a large window that leaves a see-through line, so the center fills up to it
+        if frame.Center then
+            frame.Center:ClearAllPoints()
+            frame.Center:SetPoint("TOPLEFT", WINDOW_FILL, -WINDOW_FILL)
+            frame.Center:SetPoint("BOTTOMRIGHT", -WINDOW_FILL, WINDOW_FILL)
+        end
     else
         self:ApplySkin(frame, {
             kind = "backdrop",
@@ -1855,7 +1873,7 @@ function ns:SkinWindow(frame, title)
                 edgeSize = t.edgeSize,
                 tile = t.tile or false,
                 tileSize = t.tileSize,
-                insets = { left = t.inset, right = t.inset, top = t.inset, bottom = t.inset },
+                insets = { left = WindowInset(t), right = WindowInset(t), top = WindowInset(t), bottom = WindowInset(t) },
             },
             border = t.border, bg = t.bg,
         })

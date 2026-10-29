@@ -1644,6 +1644,7 @@ for _, step in ipairs({
         assert(cfg.border == "modernTooltip", "Retail: Blizzard modern uses the game's silver frame")
         ns:ApplyThemeToCfg(cfg, "blizzardForever")
         assert(cfg.borderColor.b < 0.5, "Retail: Blizzard Forever tints the frame gold")
+    end,
     -- block width: the horizontal offset of inline icons (coin icons) is counted
     function()
         local fs = { GetStringWidth = function() return 40 end }

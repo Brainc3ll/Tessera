@@ -193,6 +193,7 @@ Souhait de Braincell1980 : un Tessera beaucoup plus HD, même sur Forever (il fa
 4. Icônes : Masque, taille plafonnée à ce qui reste net (voir « Icônes nettes » plus haut).
 5. Petites animations : fondu, valeur qui glisse, survol qui s'allume.
 Le 20/10 : le jeu contient 37 cadres HD tout faits (`NineSliceLayouts`), visibles dans la galerie `/tes debug hd` des zips de test ; pas encore testée en jeu.
+Le 29/10 : Braincell1980 a adoré les cadres de Blizzard sur la fenêtre d'options (styles The War Within et Midnight, 1.0.1). Suite décidée, pour plus tard (1.1) : il choisit dans `/tes debug hd` un cadre par style (Grimoire, Forgefer, Pierre runique, Sceau royal, Lame runique, Braise, Sylvestre, Arcanes ; pas les styles des interfaces) ; faire la « Forge naine » avec un cadre en métal ; l'écran de sélection et les médaillons ensuite.
 Méthode proposée : d'abord un nouveau style « HD » (points 1 à 3) à côté des autres, puis étendre ses images aux autres styles s'il plaît. Plutôt en 1.1. Avant de coder : une maquette (même barre, style actuel et style HD côte à côte).
 
 ### Cadres de Blizzard (16 octobre 2026)

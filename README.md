@@ -82,11 +82,11 @@ Tessera is a collaboration between me, a player, and an AI.
 - I try to think ahead, for every kind of player: other interfaces, other screens, other languages, other habits.
 - I run the in-game checks (debug versions) that show how WoW Forever works, and I report bugs with screenshots.
 - I review the texts, the French translation and the help.
-- I decide when a version goes out, and I manage the CurseForge and GitHub pages.
+- I decide when a version goes out, and I manage the CurseForge, Wago and GitHub pages.
 
 **Claude (an AI by Anthropic)** writes everything else, from my instructions:
 - all the code of the addon (Lua), and the automatic tests that run it outside the game;
-- the English and French texts: options, tooltips, help, changelog, this page;
+- the English and French texts (options, tooltips, help, changelog, this page) and the German, Spanish and Brazilian Portuguese translations;
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
 - the logo (set in Outfit, a free font) and the banner images.
 
@@ -315,8 +315,14 @@ Blizzard windows through `secureMacro` cannot do so from another addon's bar.
   from the 1.0.0-rc versions) moves to the full name once (`ns:MigrateCharacterKey`,
   `ns:MigrateFullNameKeys`); `tools/fixtures/sv-rc9-forever.lua` tests it on every push.
 
-WoW Forever runs on the modern client (Midnight-era API) but has systems of its own, without
-public documentation yet. What Tessera found, with the development probes below:
+WoW Forever runs on the modern client (Midnight-era API) but has systems of its own. Blizzard
+publishes no documentation for them, but the community now does: Blizzard's interface code
+for Forever ([Gethe/wow-ui-source](https://github.com/Gethe/wow-ui-source), branch `forever`),
+the client's function, event and image lists
+([Ketho/BlizzardInterfaceResources](https://github.com/Ketho/BlizzardInterfaceResources),
+branch `forever`), an API reference built from the client
+([Atraeau/WoW-Addons](https://atraeau.github.io/WoW-Addons/)) and the notes pinned on the
+WoWUIDev Discord. What Tessera found, with those sources and the development probes below:
 
 - **Legacy points** (`legacy` block, `Modules.lua`): the "Legacy" reward track is a renown track
   of Blizzard's major factions system, faction ID `2802`. The points are
@@ -389,9 +395,12 @@ block in `blocks[key]` (see `BLOCK_DEFAULTS` in `Core.lua`).
 `Locales/enUS.lua` defines every key; every other language only overrides keys and falls
 back to English for anything missing.
 
-- English and French are written in the repository (`enUS.lua`, `frFR.lua`). Other languages live in CurseForge's localization tool; Claude's German, Spanish and Brazilian Portuguese drafts were imported there by hand, checked first with `tools/check_translation.py`.
-- Every other language is translated by the community with CurseForge's localization tool.
-  Its file (e.g. `Locales/deDE.lua`) only holds a `--@localization(...)@` line that the
+- English and French are written in the repository (`enUS.lua`, `frFR.lua`). Every other
+  language lives in CurseForge's localization tool. German, Spanish (Spain and Mexico) and
+  Brazilian Portuguese start from Claude's translations, checked with
+  `tools/check_translation.py` and imported there by hand at the 1.0.0 release (they are kept
+  out of this repository); players can correct them, and translate any other language. Each
+  language's file (e.g. `Locales/deDE.lua`) only holds a `--@localization(...)@` line that the
   BigWigs packager replaces with the translated strings when it builds the release zip, so
   a copy installed straight from GitHub simply shows those languages in English.
 - **Small keys, easy to translate.** On CurseForge, changing a text asks every translator to
@@ -408,7 +417,7 @@ back to English for anything missing.
 - `docs/localization/` holds the English and French strings in the format CurseForge imports
   (regenerate with `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua`, same
   for `frFR`). The release workflow sends both to CurseForge before packaging, so translators
-  always see the current strings; nothing has to be imported by hand.
+  always see the current strings.
 
 ### Releasing
 

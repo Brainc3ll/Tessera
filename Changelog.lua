@@ -62,17 +62,22 @@ ns.CHANGELOG = {
               en = {
                 "New icon: a T and a gold tile on turquoise, easier to spot in the addon list and on the "
                     .. "minimap button.",
+                "The Bags block shows used slots out of the total in new profiles (your saved setting does "
+                    .. "not change; Text tab, Slots shown).",
                 "The About tab thanks Funkeh, whose StatBlock Core gave me the idea of Tessera's "
                     .. "free-floating blocks.",
               },
               fr = {
                 "Nouvelle icône : un T et une tesselle dorée sur fond turquoise, plus facile à repérer dans "
                     .. "la liste des addons et sur le bouton de la minicarte.",
+                "Le bloc Sacs affiche les places utilisées sur le total dans les nouveaux profils (ton réglage "
+                    .. "enregistré ne change pas ; onglet Texte, Places affichées).",
                 "L'onglet À propos remercie Funkeh, dont l'addon StatBlock Core m'a donné l'idée des blocs "
                     .. "libres de Tessera.",
               } },
             { kind = "fixed",
               en = {
+                "The coin icons of the Gold block no longer spill over the next block.",
                 "Each character's data (its own profile, its gold and gold history) is now saved under its "
                     .. "full name, as WoW Forever has no realms: it no longer depends on the server's name, which "
                     .. "may change. Your settings carry over on their own at your next login.",
@@ -80,6 +85,7 @@ ns.CHANGELOG = {
                     .. "did, and the help names it.",
               },
               fr = {
+                "Les icônes de pièces du bloc Or ne débordent plus sur le bloc voisin.",
                 "Les données de chaque personnage (son profil à lui, son or et l'historique de l'or) sont "
                     .. "maintenant rangées sous son nom complet, car WoW Forever n'a pas de royaumes : elles ne "
                     .. "dépendent plus du nom du serveur, qui peut changer. Tes réglages suivent tout seuls à ta "

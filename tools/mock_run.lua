@@ -1617,6 +1617,14 @@ for _, step in ipairs({
         ns:ShowWelcomeIfNeeded()
         Tessera_ToggleBlocks(); Tessera_ToggleBlocks()
     end,
+    -- block width: the horizontal offset of inline icons (coin icons) is counted
+    function()
+        local fs = { GetStringWidth = function() return 40 end }
+        assert(ns.TextWidth(fs, "plain") == 40, "plain text width")
+        local w = ns.TextWidth(fs, "5|Ta:12:12:2:0|t 54|Tb:12:12:2:0|t 27|Tc:12:12:2:0|t")
+        assert(w == 46, "three coin icons with a 2 px offset add 6 px: " .. w)
+        assert(ns.modules.bags.defaults.bagsFormat == "usedTotal", "bags: used / total by default")
+    end,
     -- streamer mode: the gold block and its tooltip hide the amounts, the block shows the state
     function()
         local gold = ns.modules.gold

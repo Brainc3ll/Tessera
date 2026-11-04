@@ -15,7 +15,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - The Tessera icon sits in the middle of its minimap button's ring.
 
-## 1.0.0 — 
+## 1.0.0 — 2026-11-04
+
+- First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour shows the essentials, and the demo mode (Help tab) shows every block and every style.
+- In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for minimap and addon buttons, and DataBroker both ways.
+- Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.
 
 ### New
 

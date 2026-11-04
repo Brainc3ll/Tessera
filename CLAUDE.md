@@ -52,6 +52,11 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
 - A rework never takes anything away: every option a 1.0.0 player has stays, so nobody thinks
   "this is not the addon I downloaded".
 - English and French only in the repository; other languages come from CurseForge's tool.
+- Every update that adds or changes texts: remind Braincell1980, before publishing, to add the
+  translations on CurseForge. Give him German, Spanish (Spain and Mexico) and Brazilian Portuguese
+  files that hold ONLY the new or changed keys no translator has done yet (an import replaces
+  existing translations), checked with `tools/check_translation.py`, kept in `Tessera-dev`.
+  He imports them by hand (page Localization, missing phrases: "do nothing"); never automate it.
 - Released versions have no command a player does not need. Test and development commands
   (`/tessera test`, debug report, probes) live only in `TesseraDev.lua`, in the private
   repository `Brainc3ll/Tessera-dev` (never in this one), added to the test zips given to Braincell1980 (never pushed, never released).

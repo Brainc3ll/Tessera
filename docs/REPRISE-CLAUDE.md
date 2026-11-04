@@ -9,6 +9,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - Rappeler à Braincell1980 le processus des traductions (A-REPRENDRE, feuille de route, point 1) : elles doivent être sur CurseForge AVANT de publier.
 
 ## Travailler avec Braincell1980
+- Dossier du jeu pour WoW Forever : `World of Warcraft/_forever_/Interface/AddOns/` (pas `_classic_`).
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
 - Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (prochain numéro : voir A-REPRENDRE, « Outils »), qu'il teste avant tout commit de publication.
 - Proposer avant de coder une nouveauté ; corriger directement un bug.

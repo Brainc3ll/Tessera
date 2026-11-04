@@ -3,7 +3,7 @@
 But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-1.0.0-rc9-hotfix publiée le 23/10 (exports compacts) ; la 1.0.0 sort le 4/11 (WoW Forever ouvre le 5/11 à minuit, heure belge) : le hotfix avec la version 1.0.0 et l'intro « Première version stable » du changelog (historique git de `Changelog.lua`, juste avant « Release 1.0.0-rc9 »). Jusque-là, corrections seulement.
+1.0.0 publiée le 4/11 au matin (GitHub, CurseForge, Wago, avec les traductions de, es, mx, pt importées à la main). Prochaine étape : tests sur le vrai Forever (5-6/11), puis la 1.0.1 (styles, branche `prochaine-1.0.1`) avec les corrections du lancement.
 
 ## Avant la publication de la 1.0.0 (4/11)
 - Rappeler à Braincell1980 le processus des traductions (A-REPRENDRE, feuille de route, point 1) : elles doivent être sur CurseForge AVANT de publier.

@@ -5,6 +5,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.0 — 2026-11-04
 
+- First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour shows the essentials, and the demo mode (Help tab) shows every block and every style.
+- In short: more than 40 information blocks (gold, bags, durability, FPS, latency, clocks, date, XP, quests, professions, reputation, mail, WoW Forever's own systems...), launcher blocks for minimap and addon buttons, and DataBroker both ways.
+- Blocks dropped against each other merge like the tiles of a mosaic: bars, columns, corners. Screen edges, ready-made layouts, 19 styles, profiles and sharing as text.
+
 ### New
 
 - German, Spanish (Spain and Mexico) and Brazilian Portuguese translations. Claude (an AI) made them and nobody has reviewed them yet: you can correct them with CurseForge's localization tool.

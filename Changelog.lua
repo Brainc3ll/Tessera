@@ -70,12 +70,12 @@ ns.CHANGELOG = {
               en = {
                 "The Tessera icon sits in the middle of its minimap button's ring.",
                 "A click on a gathering profession block (Herbalism, for one) opens that profession's page, "
-                    .. "not the last profession you opened.",
+                    .. "not the last profession you opened, and a second click closes it.",
               },
               fr = {
                 "L'icône de Tessera est centrée dans l'anneau de son bouton de la minicarte.",
                 "Un clic sur le bloc d'un métier de récolte (Herboristerie, par exemple) ouvre la page de ce "
-                    .. "métier, et non le dernier métier ouvert.",
+                    .. "métier, et non le dernier métier ouvert ; un deuxième clic la ferme.",
               } },
         },
     },

@@ -2059,8 +2059,11 @@ for _, def in ipairs(PROFESSION_BLOCKS) do
             if p and not p.gathering then return "/cast " .. p.name end
             -- a gathering profession opens its own page: on WoW Forever the micro button
             -- shows the profession window on the last profession opened (Alchemy, for one)
+            -- (a second click closes it, like the crafting professions' spell does)
             if p and p.skillLine and C_TradeSkillUI and C_TradeSkillUI.OpenTradeSkill then
-                return ("/run C_TradeSkillUI.OpenTradeSkill(%d)"):format(p.skillLine)
+                return ("/run local T,F=C_TradeSkillUI,ProfessionsFrame if F and F:IsShown() and "
+                    .. "(T.GetBaseProfessionInfo and T.GetBaseProfessionInfo() or {}).professionID==%d "
+                    .. "then HideUIPanel(F) else T.OpenTradeSkill(%d) end"):format(p.skillLine, p.skillLine)
             end
             return MicroButtonMacro("ProfessionMicroButton", SKILL_FRAME_MACRO)
         end,

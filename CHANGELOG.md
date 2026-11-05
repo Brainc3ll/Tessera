@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.3 — 
+
+### Fixes
+
+- A click on a gathering profession block (Herbalism, for one) opens that profession's page, not the last profession you opened.
+
 ## 1.0.2 — 2026-11-05
 
 ### Fixes

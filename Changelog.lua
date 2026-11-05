@@ -37,6 +37,21 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.0.3",
+        date = "",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "A click on a gathering profession block (Herbalism, for one) opens that profession's page, "
+                    .. "not the last profession you opened.",
+              },
+              fr = {
+                "Un clic sur le bloc d'un métier de récolte (Herboristerie, par exemple) ouvre la page de ce "
+                    .. "métier, et non le dernier métier ouvert.",
+              } },
+        },
+    },
+    {
         version = "1.0.2",
         date = "2026-11-05",
         sections = {

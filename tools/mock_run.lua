@@ -1661,6 +1661,15 @@ for _, step in ipairs({
         assert(p1.update():find("Tailoring"), "tailoring stays the first primary profession")
         assert(p2.isEmpty(), "first aid is not taken for a second primary profession")
         assert(ns.modules.cooking.update() == "10 / 75", "cooking recognized by its skill line")
+        -- a gathering profession opens its own page, not the last profession opened
+        data[2] = { "Herboristerie", "tex-herb", 30, 75, 0, 0, 182 }
+        GetProfessions = function() return 1, 2 end
+        local oldTS = C_TradeSkillUI
+        C_TradeSkillUI = { OpenTradeSkill = function() return true end }
+        assert(p2.secureMacro() == "/run C_TradeSkillUI.OpenTradeSkill(182)", "herbalism click: "
+            .. tostring(p2.secureMacro()))
+        assert(p1.secureMacro() == "/cast Tailoring", "a crafting profession still casts its spell")
+        C_TradeSkillUI = oldTS
         GetProfessions, GetProfessionInfo = oldP, oldI
     end,
     -- streamer mode: the gold block and its tooltip hide the amounts, the block shows the state

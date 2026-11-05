@@ -1665,9 +1665,21 @@ for _, step in ipairs({
         data[2] = { "Herboristerie", "tex-herb", 30, 75, 0, 0, 182 }
         GetProfessions = function() return 1, 2 end
         local oldTS = C_TradeSkillUI
-        C_TradeSkillUI = { OpenTradeSkill = function() return true end }
-        assert(p2.secureMacro() == "/run C_TradeSkillUI.OpenTradeSkill(182)", "herbalism click: "
-            .. tostring(p2.secureMacro()))
+        local opened, hidden, shownId = nil, false, nil
+        C_TradeSkillUI = { OpenTradeSkill = function(id) opened = id shownId = id return true end,
+            GetBaseProfessionInfo = function() return { professionID = shownId } end }
+        local oldF, oldHide = ProfessionsFrame, HideUIPanel
+        ProfessionsFrame = { IsShown = function() return shownId ~= nil end }
+        HideUIPanel = function() hidden = true shownId = nil end
+        local macro = p2.secureMacro()
+        assert(#macro <= 255, "macro too long: " .. #macro)
+        local run = assert(loadstring(macro:gsub("^/run ", "")))
+        shownId = 171 -- Alchemy is open: a click on Herbalism shows Herbalism
+        run()
+        assert(opened == 182 and not hidden, "herbalism click opens herbalism: " .. tostring(opened))
+        run() -- second click on Herbalism: closes it
+        assert(hidden, "a second click closes the herbalism page")
+        ProfessionsFrame, HideUIPanel = oldF, oldHide
         assert(p1.secureMacro() == "/cast Tailoring", "a crafting profession still casts its spell")
         C_TradeSkillUI = oldTS
         GetProfessions, GetProfessionInfo = oldP, oldI

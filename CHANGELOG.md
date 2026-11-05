@@ -7,7 +7,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Fixes
 
-- A click on a gathering profession block (Herbalism, for one) opens that profession's page, not the last profession you opened.
+- A click on a gathering profession block (Herbalism, for one) opens that profession's page, not the last profession you opened, and a second click closes it.
 
 ## 1.0.2 — 2026-11-05
 

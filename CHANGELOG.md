@@ -14,6 +14,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - The Tessera icon sits in the middle of its minimap button's ring.
+- A block that hides itself when empty (Mail, for one) no longer leaves the block above it as wide as it was, even after a reload.
 
 ## 1.0.1 — 2026-11-05
 

@@ -1363,6 +1363,20 @@ for _, step in ipairs({
         ns:UpdateLayout()
         ns:ResetProfile("top")
     end,
+    -- a hidden block docked under another (empty mail under Legacy) does not keep it wide
+    function()
+        ns:ResetProfile("top")
+        local top, below = "fps", "mail"
+        ns.db.blocks[below].enabled, ns.db.blocks[top].enabled = true, true
+        ns.db.blocks[below].dock = { to = top, side = "BOTTOM" }
+        ns.db.blocks[below].slotW = 300 -- the width it had while showing "New mail"
+        ns:UpdateLayout()
+        ns.frames[below]:Hide()
+        ns:UpdateLayout()
+        assert(ns.frames[top]:GetWidth() < 300, "the visible block keeps its own width: "
+            .. ns.frames[top]:GetWidth())
+        ns:ResetProfile("top")
+    end,
     -- a single group's own look, from the quick menu
     function()
         ns:ResetProfile("top")

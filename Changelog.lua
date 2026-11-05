@@ -37,6 +37,21 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.0.2",
+        date = "",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "A block that hides itself when empty (Mail, for one) no longer leaves the block above it as "
+                    .. "wide as it was, even after a reload.",
+              },
+              fr = {
+                "Un bloc qui se masque quand il est vide (Courrier, par exemple) ne laisse plus le bloc "
+                    .. "au-dessus de lui aussi large qu'avant, même après un rechargement.",
+              } },
+        },
+    },
+    {
         version = "1.0.1",
         date = "2026-11-05",
         sections = {

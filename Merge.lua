@@ -714,18 +714,22 @@ function ns:UpdateLayout()
     -- A spacer adapts to the blocks it is merged with but never stretches them:
     -- e.g. a long separator line docked under a block takes that block's width
     -- instead of widening it. (A set made only of spacers keeps their own sizes.)
-    local realW, realH = {}, {}
+    -- A hidden block that keeps its place (empty mail, for one) does not widen the visible
+    -- blocks of its column either: it is invisible, so only its height keeps its place.
+    local realW, realH, shownW = {}, {}, {}
     for key in pairs(need) do
         if not ns.IsSpacerKey(key) then
             realW[Find(parentW, key)] = true
             realH[Find(parentH, key)] = true
+            if self.frames[key]:IsShown() then shownW[Find(parentW, key)] = true end
         end
     end
     local maxW, maxH = {}, {}
     for key, n in pairs(need) do
         local rw, rh = Find(parentW, key), Find(parentH, key)
         local spacer = ns.IsSpacerKey(key)
-        maxW[rw] = math.max(maxW[rw] or 0, (spacer and realW[rw]) and 0 or n[1])
+        local hiddenInColumn = shownW[rw] and not self.frames[key]:IsShown()
+        maxW[rw] = math.max(maxW[rw] or 0, ((spacer and realW[rw]) or hiddenInColumn) and 0 or n[1])
         maxH[rh] = math.max(maxH[rh] or 0, (spacer and realH[rh]) and 0 or n[2])
     end
     local width = {}

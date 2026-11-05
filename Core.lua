@@ -126,7 +126,11 @@ ns.borders = {
     { key = "dialog",  name = L.MEDIA_DIALOG,  file = "Interface\\DialogFrame\\UI-DialogBox-Border", insetRatio = 0.35, reach = 0.23, size = 32 },
     { key = "gold",    name = L.MEDIA_GOLD,    file = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", insetRatio = 0.35, reach = 0.2, size = 32 },
     -- Modern tooltip (Retail and Forever): Blizzard's atlas-based nine-slice frame
+    -- The game's own art: gold on WoW Forever, silver on Retail
     { key = "modernTooltip", name = L.MEDIA_MODERN_TOOLTIP, nineSlice = "TooltipDefaultLayout", reach = 0.33, size = 16 },
+    -- The same frame without its color (grey), tinted by the border color: silver on WoW Forever
+    { key = "modernTooltipGrey", name = L.MEDIA_MODERN_TOOLTIP_GREY, nineSlice = "TooltipDefaultLayout", desaturate = true,
+      reach = 0.33, size = 16 },
 }
 
 ns.fonts = {
@@ -285,7 +289,30 @@ end
 -- layout name), "backdrop" (spec.info = backdrop table) or "none"; spec.border
 -- and spec.bg are colors. Returns the border thickness for "modern" skins
 -- (used to compute insets and seams), 0 otherwise.
+-- Expansion frame art (The War Within, Midnight): one sliced border atlas over a tiled
+-- background atlas, as Blizzard draws its own windows of those expansions
+local function AtlasArt(frame, spec)
+    if not frame.tesseraArtBg then
+        frame.tesseraArtBg = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
+        frame.tesseraArtBorder = frame:CreateTexture(nil, "BORDER", nil, 7)
+    end
+    local bgTex, border = frame.tesseraArtBg, frame.tesseraArtBorder
+    if not spec then bgTex:Hide(); border:Hide(); return end
+    bgTex:ClearAllPoints()
+    bgTex:SetPoint("TOPLEFT", spec.bgInset or 8, -(spec.bgInset or 8))
+    bgTex:SetPoint("BOTTOMRIGHT", -(spec.bgInset or 8), spec.bgInset or 8)
+    bgTex:SetAtlas(spec.bgAtlas, false)
+    if bgTex.SetHorizTile then bgTex:SetHorizTile(true); bgTex:SetVertTile(true) end
+    bgTex:SetVertexColor(Rgba(spec.bg))
+    bgTex:Show()
+    border:ClearAllPoints()
+    border:SetAllPoints(frame)
+    border:SetAtlas(spec.borderAtlas, false)
+    border:Show()
+end
+
 function ns:ApplySkin(frame, spec)
+    if spec.kind ~= "atlas" and frame.tesseraArtBg then AtlasArt(frame, nil) end
     if frame.skinKind and frame.skinKind ~= spec.kind then
         if frame.backdropInfo then frame:SetBackdrop(nil) end
         ResetPieces(frame)
@@ -298,6 +325,7 @@ function ns:ApplySkin(frame, spec)
         for _, name in ipairs(ns.EDGE_PIECES) do
             local piece = frame[name]
             if piece then
+                if piece.SetDesaturated then piece:SetDesaturated(spec.desaturate == true) end
                 piece:SetVertexColor(Rgba(spec.border))
                 piece:Show()
             end
@@ -313,6 +341,10 @@ function ns:ApplySkin(frame, spec)
         local info = atlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas)
         if info and info.width and info.width > 0 then return info.width end
         return corner and corner:GetWidth() or 0
+    elseif spec.kind == "atlas" then
+        if frame.backdropInfo then frame:SetBackdrop(nil) end
+        ResetPieces(frame)
+        AtlasArt(frame, spec)
     elseif spec.kind == "backdrop" then
         frame:SetBackdrop(spec.info)
         if spec.info.bgFile then
@@ -851,6 +883,12 @@ end
 -- (RegionalUniqueNamesEnabled is WoW Forever's own.)
 -- WoW Forever's full name ("Ellen Kemp", first name and surname) when the game uses
 -- regional unique names, otherwise nil
+function ns.IsForeverClient()
+    local regional = _G["RegionalUniqueNamesEnabled"]
+    local ok, on = pcall(function() return regional and regional() end)
+    return ok and on == true
+end
+
 function ns.FullCharName()
     local regional = _G["RegionalUniqueNamesEnabled"]
     local ok, on = pcall(function() return regional and regional() end)
@@ -933,6 +971,7 @@ function ns:PrepareProfile(p)
     -- Brand-new profile (first install or reset): apply the default layout
     local fresh = not p.initialized and (type(p.blocks) ~= "table" or next(p.blocks) == nil)
     CopyDefaults(PROFILE_DEFAULTS, p)
+    if self.SplitBlizzardModernTheme then self:SplitBlizzardModernTheme(p) end
     local created = {}
     for _, key in ipairs(self.order) do
         if not p.blocks[key] then created[key] = true end
@@ -1568,7 +1607,7 @@ function ns:SkinBlockFrame(f, cfg)
         -- with the block's colors (the chosen background only decides whether it shows)
         local edge = self:ApplySkin(f, {
             kind = "modern", layout = border.nineSlice,
-            border = borderColor, bg = bgColor, showCenter = bg.file ~= nil,
+            border = borderColor, bg = bgColor, showCenter = bg.file ~= nil, desaturate = border.desaturate,
         })
         inset = math.max(0, math.floor(edge - 4 + 0.5))
         f.nineSliceInfo = { edge = edge }
@@ -3042,7 +3081,7 @@ local function CreateMinimapButton()
     b:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
     local bg = b:CreateTexture(nil, "BACKGROUND")
     bg:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
-    bg:SetSize(20, 20)
+    bg:SetSize(24, 24) -- same sizes as LibDBIcon's buttons, so the icon sits in the middle of the ring
     bg:SetPoint("CENTER")
     local icon = b:CreateTexture(nil, "ARTWORK")
     icon:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
@@ -3050,7 +3089,7 @@ local function CreateMinimapButton()
     icon:SetPoint("CENTER")
     local border = b:CreateTexture(nil, "OVERLAY")
     border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    border:SetSize(53, 53)
+    border:SetSize(50, 50)
     border:SetPoint("TOPLEFT")
     b:SetScript("OnClick", function(_, button)
         if button == "RightButton" then

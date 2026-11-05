@@ -242,6 +242,10 @@ ns.themes = {
             return FlatWindow({ bg.r, bg.g, bg.b, 0.95 }, { border.r, border.g, border.b, 1 })
         end,
     },
+    -- The game's modern tooltip frame comes in gold on WoW Forever and in silver on Retail
+    -- (same atlas name, different art). Two styles give the same color on both games:
+    -- Blizzard modern is silver (Forever's gold art without its color), Blizzard Forever is
+    -- gold (Retail's silver art tinted gold). Tints to check in game.
     {
         key = "blizzardModern",
         name = L.THEME_BLIZZARD_MODERN,
@@ -250,15 +254,36 @@ ns.themes = {
             cfg.bg = "tooltip"           -- shows the center of the atlas
             local r, g, b = ns.TooltipBackgroundRGB()
             cfg.bgColor = { r = r, g = g, b = b, a = 0.9 }
+            cfg.border = ns.IsForeverClient() and "modernTooltipGrey" or "modernTooltip"
+            cfg.borderSize = 16
+            cfg.borderColor = ns.IsForeverClient() and { r = 0.85, g = 0.87, b = 0.92, a = 1 } or { r = 1, g = 1, b = 1, a = 1 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+        end,
+        window = function()
+            local r, g, b = ns.TooltipBackgroundRGB()
+            local forever = ns.IsForeverClient()
+            return { nineSlice = "TooltipDefaultLayout", title = { 1, 0.82, 0 }, desaturate = forever,
+                     bg = { r, g, b, 0.95 }, border = forever and { 0.85, 0.87, 0.92, 1 } or { 1, 1, 1, 1 } }
+        end,
+    },
+    {
+        key = "blizzardForever",
+        name = L.THEME_BLIZZARD_FOREVER,
+        available = function() return NineSliceUtil ~= nil and NineSliceUtil.ApplyLayoutByName ~= nil end,
+        block = function(cfg)
+            cfg.bg = "tooltip"
+            local r, g, b = ns.TooltipBackgroundRGB()
+            cfg.bgColor = { r = r, g = g, b = b, a = 0.9 }
             cfg.border = "modernTooltip"
             cfg.borderSize = 16
-            cfg.borderColor = { r = 1, g = 1, b = 1, a = 1 }
+            cfg.borderColor = ns.IsForeverClient() and { r = 1, g = 1, b = 1, a = 1 } or { r = 1, g = 0.8, b = 0.42, a = 1 }
             cfg.font, cfg.outline = "friz", "OUTLINE"
         end,
         window = function()
             local r, g, b = ns.TooltipBackgroundRGB()
             return { nineSlice = "TooltipDefaultLayout", title = { 1, 0.82, 0 },
-                     bg = { r, g, b, 0.95 }, border = { 1, 1, 1, 1 } }
+                     bg = { r, g, b, 0.95 },
+                     border = ns.IsForeverClient() and { 1, 1, 1, 1 } or { 1, 0.8, 0.42, 1 } }
         end,
     },
     {
@@ -304,8 +329,28 @@ ns.themes = {
         end,
     },
     {
+        -- silver, like Blizzard modern
         key = "modernSquare",
         name = L.THEME_MODERN_SQUARE,
+        available = function() return true end,
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.025, g = 0.05, b = 0.11, a = 0.92 }
+            cfg.border = "solid"
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 0.62, g = 0.64, b = 0.69, a = 1 } -- silver
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.55, g = 0.57, b = 0.62, a = 0.7 }
+            cfg.font, cfg.outline = "friz", "OUTLINE"
+        end,
+        window = function()
+            return FlatWindow({ 0.03, 0.07, 0.16, 0.96 }, { 0.82, 0.84, 0.88, 1 }, { 1, 0.82, 0 })
+        end,
+    },
+    {
+        -- gold, like Blizzard Forever (Blizzard modern square's look until 1.0.1)
+        key = "foreverSquare",
+        name = L.THEME_FOREVER_SQUARE,
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -544,10 +589,37 @@ local function TooltipStyle(key, name, bg, edge, text)
         end,
     }
 end
--- Runeblade: icy blue (death knights, Northrend); Ember: fire and forge; Sylvan: night elves, druids
+-- Runeblade: icy blue (death knights, Northrend); Ember: fire and forge; Sylvan: night elves, druids;
+-- Tessera (below)
 table.insert(ns.themes, TooltipStyle("runeblade", L.THEME_RUNEBLADE, { 0.03, 0.05, 0.09 }, { 0.55, 0.8, 1 }, { 0.75, 0.9, 1 }))
 table.insert(ns.themes, TooltipStyle("ember", L.THEME_EMBER, { 0.1, 0.04, 0.02 }, { 1, 0.45, 0.15 }, { 1, 0.72, 0.4 }))
 table.insert(ns.themes, TooltipStyle("sylvan", L.THEME_SYLVAN, { 0.03, 0.08, 0.04 }, { 0.45, 0.8, 0.4 }, { 0.75, 1, 0.7 }))
+-- Tessera: the addon's own colors (logo): turquoise #1fb3a3 on dark slate #16222a, cream letters
+table.insert(ns.themes, TooltipStyle("tessera", L.THEME_TESSERA, { 0.086, 0.133, 0.165 }, { 0.122, 0.702, 0.639 },
+    { 0.957, 0.945, 0.918 }))
+
+-- Worldsoul Saga: the frames Blizzard draws for The War Within and Midnight (atlases also in
+-- the WoW Forever client) on the options window; blocks in their colors, which are a first
+-- guess from the expansions' art (The War Within: stone, bronze and gold; Midnight: void
+-- purple and the Sunwell's light). The Last Titan: once its art is in the game.
+local function ExpansionStyle(key, name, kit, bg, edge, text)
+    local style = TooltipStyle(key, name, bg, edge, text)
+    local plain = style.window
+    style.window = function()
+        local t = plain()
+        t.borderAtlas = "ui-frame-" .. kit .. "-border"
+        t.bgAtlas = "ui-frame-" .. kit .. "-backgroundtile"
+        t.bgInset = 10
+        t.bg = { 1, 1, 1, 1 }
+        t.title = text
+        return t
+    end
+    return style
+end
+table.insert(ns.themes, ExpansionStyle("warWithin", L.THEME_WAR_WITHIN, "thewarwithin", { 0.09, 0.065, 0.045 },
+    { 0.85, 0.62, 0.28 }, { 1, 0.86, 0.55 }))
+table.insert(ns.themes, ExpansionStyle("midnight", L.THEME_MIDNIGHT, "midnight", { 0.07, 0.045, 0.12 },
+    { 0.62, 0.45, 0.95 }, { 1, 0.92, 0.75 }))
 
 -- The center of modern tooltips is a white texture that the game tints with
 -- TOOLTIP_DEFAULT_BACKGROUND_COLOR (SharedTooltipTemplates.lua); we do the same
@@ -608,8 +680,25 @@ function ns:GetTheme()
     for _, key in ipairs({ flare, "ellesmere", "elvui" }) do
         if IsInstalled(byKey[key]) then return key end
     end
-    if byKey.blizzardModern.available() then return "blizzardModern" end
+    if byKey.blizzardModern.available() then
+        return ns.IsForeverClient() and "blizzardForever" or "blizzardModern"
+    end
     return "blizzard"
+end
+
+-- A profile that chose Blizzard modern on WoW Forever saw it in gold: it keeps that look
+-- under the new Blizzard Forever style (once; a later choice of Blizzard modern stays)
+function ns:SplitBlizzardModernTheme(profile)
+    if type(profile) ~= "table" then return end
+    if not profile.blizzardForeverSplit then
+        profile.blizzardForeverSplit = true
+        if profile.theme == "blizzardModern" and ns.IsForeverClient() then profile.theme = "blizzardForever" end
+    end
+    -- Blizzard modern square was gold everywhere: it keeps that look as Blizzard Forever square
+    if not profile.squareForeverSplit then
+        profile.squareForeverSplit = true
+        if profile.theme == "modernSquare" then profile.theme = "foreverSquare" end
+    end
 end
 
 -- Writes a theme's block style into one block's settings (current theme if key is nil)

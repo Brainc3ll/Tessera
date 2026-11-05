@@ -5,8 +5,15 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.3 — 
 
+### New
+
+- New Tessera style, in the addon's own colors: turquoise on dark slate, with the game's tooltip border. The default style does not change. The options window's background now reaches its border in every style.
+- New The War Within and Midnight styles: the frames Blizzard draws for these expansions on the options window, and their colors on the blocks.
+- Blizzard styles named after the games: Blizzard Retail (silver, formerly Blizzard modern), the new Blizzard Forever (gold) and Blizzard Classic (formerly Blizzard classic), each with its square version, and the same color on WoW Forever and on Retail. Your look does not change: a profile that showed gold (Blizzard modern on WoW Forever, Blizzard modern square everywhere) moves to Blizzard Forever or Blizzard Forever square.
+
 ### Fixes
 
+- The Tessera icon sits in the middle of its minimap button's ring.
 - A click on a gathering profession block (Herbalism, for one) opens that profession's page, not the last profession you opened, and a second click closes it.
 
 ## 1.0.2 — 2026-11-05

@@ -40,12 +40,40 @@ ns.CHANGELOG = {
         version = "1.0.3",
         date = "",
         sections = {
+            { kind = "new",
+              en = {
+                "New Tessera style, in the addon's own colors: turquoise on dark slate, with the game's "
+                    .. "tooltip border. The default style does not change. The options window's background now "
+                    .. "reaches its border in every style.",
+                "New The War Within and Midnight styles: the frames Blizzard draws for these expansions on "
+                    .. "the options window, and their colors on the blocks.",
+                "Blizzard styles named after the games: Blizzard Retail (silver, formerly Blizzard modern), "
+                    .. "the new Blizzard Forever (gold) and Blizzard Classic (formerly Blizzard classic), each with "
+                    .. "its square version, and the same color on WoW Forever and on Retail. Your look does not "
+                    .. "change: a profile that showed gold (Blizzard modern on WoW Forever, Blizzard modern square "
+                    .. "everywhere) moves to Blizzard Forever or Blizzard Forever square.",
+              },
+              fr = {
+                "Nouveau style Tessera, aux couleurs de l'addon : turquoise sur ardoise sombre, avec la "
+                    .. "bordure des infobulles du jeu. Le style par défaut ne change pas. Le fond de la fenêtre "
+                    .. "d'options touche maintenant sa bordure, dans tous les styles.",
+                "Nouveaux styles The War Within et Midnight : les cadres que Blizzard dessine pour ces "
+                    .. "extensions sur la fenêtre d'options, et leurs couleurs sur les blocs.",
+                "Les styles Blizzard portent le nom des jeux : Blizzard Retail (argenté, ancien Blizzard "
+                    .. "moderne), le nouveau Blizzard Forever (doré) et Blizzard Classic (ancien Blizzard "
+                    .. "classique), chacun avec sa version carrée, et la même couleur sur WoW Forever et sur "
+                    .. "Retail. Ton allure ne change pas : un profil qui s'affichait en doré (Blizzard moderne "
+                    .. "sur WoW Forever, Blizzard moderne carré partout) passe à Blizzard Forever ou Blizzard "
+                    .. "Forever carré.",
+              } },
             { kind = "fixed",
               en = {
+                "The Tessera icon sits in the middle of its minimap button's ring.",
                 "A click on a gathering profession block (Herbalism, for one) opens that profession's page, "
                     .. "not the last profession you opened, and a second click closes it.",
               },
               fr = {
+                "L'icône de Tessera est centrée dans l'anneau de son bouton de la minicarte.",
                 "Un clic sur le bloc d'un métier de récolte (Herboristerie, par exemple) ouvre la page de ce "
                     .. "métier, et non le dernier métier ouvert ; un deuxième clic la ferme.",
               } },

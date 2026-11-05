@@ -52,16 +52,16 @@ Plans, not promises:
 ## Screenshots
 
 Demo mode (`/tessera demo`) shows every block at once with sample values. The same blocks in
-the 19 styles (FlareUI is shown with the addon installed; without their addon, the interface
+19 of the styles, as in version 1.0.0 (FlareUI is shown with the addon installed; without their addon, the interface
 styles are an imitation):
 
 **Interface and Blizzard styles**
 
-![FlareUI, EllesmereUI, ElvUI, Blizzard modern and Blizzard classic styles](docs/media/styles-interfaces.gif)
+![FlareUI, EllesmereUI, ElvUI, Blizzard Retail and Blizzard Classic styles](docs/media/styles-interfaces.gif)
 
 **Square, Clean and Transparent styles**
 
-![FlareUI square, Blizzard modern square, Blizzard classic square, Clean and Transparent styles](docs/media/styles-clean.gif)
+![FlareUI square, Blizzard Retail square, Blizzard Classic square, Clean and Transparent styles](docs/media/styles-clean.gif)
 
 **Fantasy styles and styles made from the game's frames**
 
@@ -169,9 +169,12 @@ Help tab inside the game explains everything.
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- 19 styles: matching FlareUI, ElvUI, EllesmereUI or Blizzard's look (also without that addon, as an
-  imitation), Square styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
-  Parchment; Arcane) and styles made of the game's own frames (Royal seal, Ironforge, Runeblade, Ember, Sylvan).
+- 24 styles: matching FlareUI, ElvUI, EllesmereUI (also without that addon, as an imitation) or
+  Blizzard's look (Blizzard Retail in silver, Blizzard Forever in gold, Blizzard Classic), Square
+  styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
+  Parchment; Arcane), styles made of the game's own frames (Royal seal, Ironforge, Runeblade,
+  Ember, Sylvan), The War Within and Midnight (Blizzard's frames of these expansions on the options
+  window) and Tessera, in the addon's own colors.
 - Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options
   (bright or soft colors for values and class colors, or colorblind values; high contrast;
   minimum text size). Class color on the text, background, border, icon frame and lines.
@@ -226,7 +229,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
 | `Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
-| `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard modern/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
+| `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
 | `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |

@@ -1635,6 +1635,34 @@ for _, step in ipairs({
         ns:ShowWelcomeIfNeeded()
         Tessera_ToggleBlocks(); Tessera_ToggleBlocks()
     end,
+    -- Blizzard modern (silver) and Blizzard Forever (gold): the same color on both games, and a
+    -- WoW Forever profile that had Blizzard modern (gold there) keeps its look, once
+    function()
+        local realRegional = _G.RegionalUniqueNamesEnabled
+        _G.RegionalUniqueNamesEnabled = function() return true end
+        local cfg = {}
+        ns:ApplyThemeToCfg(cfg, "blizzardModern")
+        assert(cfg.border == "modernTooltipGrey", "Forever: Blizzard modern uses the grey frame")
+        ns:ApplyThemeToCfg(cfg, "blizzardForever")
+        assert(cfg.border == "modernTooltip", "Forever: Blizzard Forever uses the game's gold frame")
+        local p = { theme = "blizzardModern" }
+        ns:SplitBlizzardModernTheme(p)
+        assert(p.theme == "blizzardForever", "Forever: a Blizzard modern profile keeps its gold look")
+        p.theme = "blizzardModern"
+        ns:SplitBlizzardModernTheme(p)
+        assert(p.theme == "blizzardModern", "a later choice of Blizzard modern stays")
+        local sq = { theme = "modernSquare" }
+        ns:SplitBlizzardModernTheme(sq)
+        assert(sq.theme == "foreverSquare", "Blizzard modern square keeps its gold look")
+        _G.RegionalUniqueNamesEnabled = realRegional
+        local q = { theme = "blizzardModern" }
+        ns:SplitBlizzardModernTheme(q)
+        assert(q.theme == "blizzardModern", "Retail: Blizzard modern stays")
+        ns:ApplyThemeToCfg(cfg, "blizzardModern")
+        assert(cfg.border == "modernTooltip", "Retail: Blizzard modern uses the game's silver frame")
+        ns:ApplyThemeToCfg(cfg, "blizzardForever")
+        assert(cfg.borderColor.b < 0.5, "Retail: Blizzard Forever tints the frame gold")
+    end,
     -- block width: the horizontal offset of inline icons (coin icons) is counted
     function()
         local fs = { GetStringWidth = function() return 40 end }

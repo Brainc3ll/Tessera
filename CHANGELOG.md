@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.1 — 
+
+### Fixes
+
+- The First Aid block shows your skill on WoW Forever (it stayed on "None"), and First Aid no longer takes the place of a second primary profession.
+
 ## 1.0.0 — 2026-11-04
 
 - First stable version of Tessera, made for WoW Forever. New here? Type /tessera: the quick tour shows the essentials, and the demo mode (Help tab) shows every block and every style.

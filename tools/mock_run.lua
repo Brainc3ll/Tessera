@@ -1629,6 +1629,26 @@ for _, step in ipairs({
         assert(w >= 42, "three 12 px coin icons with a 2 px offset count 42 px: " .. w)
         assert(ns.modules.bags.defaults.bagsFormat == "usedTotal", "bags: used / total by default")
     end,
+    -- professions are recognized by skill line, not by name: on WoW Forever, GetProfessions
+    -- returns prof1, prof2, first aid, fishing, cooking, and the First Aid spell name differs
+    function()
+        local oldP, oldI = GetProfessions, GetProfessionInfo
+        GetProfessions = function() return 1, nil, 2, nil, 3 end
+        local data = {
+            { "Tailoring", "tex-tailoring", 40, 75, 0, 0, 197 },
+            { "Secourisme", "tex-firstaid", 2, 75, 0, 0, 129 },
+            { "Cuisine", "tex-cooking", 10, 75, 0, 0, 185 },
+        }
+        GetProfessionInfo = function(i) return unpack(data[i]) end
+        local fa, p1, p2 = ns.modules.firstAid, ns.modules.profession1, ns.modules.profession2
+        assert(not fa.isEmpty(), "first aid recognized by its skill line")
+        assert(fa.update() == "2 / 75", "first aid rank: " .. tostring(fa.update()))
+        assert(fa.getIcon() == "tex-firstaid", "first aid icon from the game")
+        assert(p1.update():find("Tailoring"), "tailoring stays the first primary profession")
+        assert(p2.isEmpty(), "first aid is not taken for a second primary profession")
+        assert(ns.modules.cooking.update() == "10 / 75", "cooking recognized by its skill line")
+        GetProfessions, GetProfessionInfo = oldP, oldI
+    end,
     -- streamer mode: the gold block and its tooltip hide the amounts, the block shows the state
     function()
         local gold = ns.modules.gold

@@ -1936,6 +1936,17 @@ local PROFESSION_SPELLS = {
     { id = 7620, secondary = "fishing", gathering = true },
 }
 
+-- The same professions by skill line ID (GetProfessionInfo's 7th value): reliable on every
+-- client, unlike names (on WoW Forever the First Aid spell name differs from the profession name)
+local PROFESSION_SKILL_LINES = {
+    [182] = { gathering = true },              -- Herbalism
+    [186] = { gathering = true },              -- Mining
+    [393] = { gathering = true },              -- Skinning
+    [185] = { secondary = "cooking" },
+    [129] = { secondary = "firstAid" },
+    [356] = { secondary = "fishing", gathering = true },
+}
+
 local GetSpellNameFn = (C_Spell and C_Spell.GetSpellName) or function() end
 local GetSpellIconFn = (C_Spell and C_Spell.GetSpellTexture) or function() end
 
@@ -1964,15 +1975,19 @@ local function Professions()
         local indices = { Try(GetProfessions) } -- indices with holes (nil = none)
         for i = 1, 6 do
             if indices[i] then
-                local name, _, rank, max = Try(GetProfessionInfo, indices[i])
-                if name then table.insert(list, { name = name, rank = rank or 0, max = max or 0 }) end
+                local name, icon, rank, max, _, _, skillLine = Try(GetProfessionInfo, indices[i])
+                if name then
+                    table.insert(list, { name = name, rank = rank or 0, max = max or 0, icon = icon,
+                        skillLine = skillLine })
+                end
             end
         end
     end
     if #list == 0 then list = SkillLines().professions end
     local result = { primary = {} }
     for _, p in ipairs(list) do
-        local info = ProfessionInfo(p.name)
+        local info = PROFESSION_SKILL_LINES[p.skillLine] or ProfessionInfo(p.name)
+        if info then p.gathering = info.gathering end
         if info and info.secondary then
             result[info.secondary] = p
         else
@@ -2016,7 +2031,7 @@ for _, def in ipairs(PROFESSION_BLOCKS) do
         getIcon = function()
             local p = Current()
             local info = p and ProfessionInfo(p.name)
-            return info and info.icon or "Interface\\Icons\\INV_Misc_Note_01"
+            return (p and p.icon) or (info and info.icon) or "Interface\\Icons\\INV_Misc_Note_01"
         end,
         events = { "SKILL_LINES_CHANGED", "TRADE_SKILL_SHOW", "CHAT_MSG_SKILL" },
         defaultEnabled = false,
@@ -2041,8 +2056,7 @@ for _, def in ipairs(PROFESSION_BLOCKS) do
         -- without it). Rebuilt out of combat when it changes.
         secureMacro = function()
             local p = Current()
-            local info = p and ProfessionInfo(p.name)
-            if p and info and not info.gathering then return "/cast " .. p.name end
+            if p and not p.gathering then return "/cast " .. p.name end
             return MicroButtonMacro("ProfessionMicroButton", SKILL_FRAME_MACRO)
         end,
         clickHint = L.HINT_PROFESSION,

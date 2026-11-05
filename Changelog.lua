@@ -37,7 +37,7 @@ end
 
 ns.CHANGELOG = {
     {
-        version = "1.0.2",
+        version = "1.0.3",
         date = "",
         sections = {
             { kind = "new",
@@ -69,13 +69,9 @@ ns.CHANGELOG = {
             { kind = "fixed",
               en = {
                 "The Tessera icon sits in the middle of its minimap button's ring.",
-                "A block that hides itself when empty (Mail, for one) no longer leaves the block above it as "
-                    .. "wide as it was, even after a reload.",
               },
               fr = {
                 "L'icône de Tessera est centrée dans l'anneau de son bouton de la minicarte.",
-                "Un bloc qui se masque quand il est vide (Courrier, par exemple) ne laisse plus le bloc "
-                    .. "au-dessus de lui aussi large qu'avant, même après un rechargement.",
               } },
         },
     },

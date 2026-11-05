@@ -311,3 +311,8 @@ Une liste « Langue » (onglet Général) : « Comme le jeu » par défaut, puis
 
 Idée de Braincell1980 : une base et des modules de blocs par catégorie (Forever, Personnage, Monde, Progression, Social, Système) dans le même zip, que le joueur active dans la liste des addons. Étude complète, avec mesures, rétrocompatibilité (blocs « fantômes » qui gardent leur place et leur configuration), packaging, risques et inconnues : `docs/etudes/PLAN-modules.md`. Proposé pour la 1.1, après le nettoyage du code et avant les nouveaux blocs. Trouvé pendant l'étude : le vrai poids mémoire vient des profils (environ 200 Ko chacun, tous les réglages enregistrés), pas du code des blocs.
 
+
+## Guild Self Forever (GSF, addon de guilde de G3nkidan) : un flux DataBroker
+- Idée du 4/11 : des blocs pour les membres d'une guilde « autarcie » qui utilise l'addon GSF (statut de l'aventure et des protections, version, demandes ouvertes / mes demandes / mes prises, âge des photos des banques ; pour les officiers : audits en attente, demandes non attribuées). Visibles seulement avec GSF, absents de l'aide et du nombre de blocs annoncé.
+- GSF garde tout dans son espace privé (pas d'API publique, pas de DataBroker) et n'a pas de licence : ne pas lire ses fichiers de sauvegarde, ne rien reprendre de son code.
+- Voie retenue : si Braincell1980 s'intègre à la guilde, il proposera à l'auteur un flux DataBroker (code + doc) ; Tessera l'affichera alors sans rien ajouter.

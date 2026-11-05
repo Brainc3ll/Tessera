@@ -69,9 +69,13 @@ ns.CHANGELOG = {
             { kind = "fixed",
               en = {
                 "The Tessera icon sits in the middle of its minimap button's ring.",
+                "The First Aid block shows your skill on WoW Forever (it stayed on \"None\"), and First "
+                    .. "Aid no longer takes the place of a second primary profession.",
               },
               fr = {
                 "L'icône de Tessera est centrée dans l'anneau de son bouton de la minicarte.",
+                "Le bloc Secourisme affiche ta compétence sur WoW Forever (il restait sur « Aucun »), et le "
+                    .. "secourisme ne prend plus la place d'un deuxième métier principal.",
               } },
         },
     },

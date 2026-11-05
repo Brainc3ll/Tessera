@@ -316,3 +316,7 @@ Idée de Braincell1980 : une base et des modules de blocs par catégorie (Foreve
 - Idée du 4/11 : des blocs pour les membres d'une guilde « autarcie » qui utilise l'addon GSF (statut de l'aventure et des protections, version, demandes ouvertes / mes demandes / mes prises, âge des photos des banques ; pour les officiers : audits en attente, demandes non attribuées). Visibles seulement avec GSF, absents de l'aide et du nombre de blocs annoncé.
 - GSF garde tout dans son espace privé (pas d'API publique, pas de DataBroker) et n'a pas de licence : ne pas lire ses fichiers de sauvegarde, ne rien reprendre de son code.
 - Voie retenue : si Braincell1980 s'intègre à la guilde, il proposera à l'auteur un flux DataBroker (code + doc) ; Tessera l'affichera alors sans rien ajouter.
+
+## Bloc Temps de jeu : choisir ce qui est affiché (demandé le 5/11, pour après la semaine de maintenance)
+- Aujourd'hui le bloc affiche le temps passé à ce niveau ; la bulle montre session, niveau et total.
+- Option dans l'onglet Texte du bloc : « Affiché : ce niveau / au total / cette session », « ce niveau » par défaut (rien ne change pour ceux qui ont déjà le bloc). Nouveaux textes : traductions de, es, mx, pt à faire importer avant la publication.

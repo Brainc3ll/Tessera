@@ -2057,6 +2057,11 @@ for _, def in ipairs(PROFESSION_BLOCKS) do
         secureMacro = function()
             local p = Current()
             if p and not p.gathering then return "/cast " .. p.name end
+            -- a gathering profession opens its own page: on WoW Forever the micro button
+            -- shows the profession window on the last profession opened (Alchemy, for one)
+            if p and p.skillLine and C_TradeSkillUI and C_TradeSkillUI.OpenTradeSkill then
+                return ("/run C_TradeSkillUI.OpenTradeSkill(%d)"):format(p.skillLine)
+            end
             return MicroButtonMacro("ProfessionMicroButton", SKILL_FRAME_MACRO)
         end,
         clickHint = L.HINT_PROFESSION,

@@ -14,6 +14,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - The Tessera icon sits in the middle of its minimap button's ring.
+- A click on a gathering profession block (Herbalism, for one) opens that profession's page, not the last profession you opened.
 
 ## 1.0.2 — 2026-11-05
 

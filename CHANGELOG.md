@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.0.1 — 
+## 1.0.2 — 
 
 ### New
 
@@ -14,6 +14,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - The Tessera icon sits in the middle of its minimap button's ring.
+
+## 1.0.1 — 2026-11-05
+
+### Fixes
+
 - The First Aid block shows your skill on WoW Forever (it stayed on "None"), and First Aid no longer takes the place of a second primary profession.
 
 ## 1.0.0 — 2026-11-04

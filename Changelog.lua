@@ -76,6 +76,21 @@ ns.CHANGELOG = {
         },
     },
     {
+        version = "1.0.1",
+        date = "2026-11-05",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "The First Aid block shows your skill on WoW Forever (it stayed on \"None\"), and First "
+                    .. "Aid no longer takes the place of a second primary profession.",
+              },
+              fr = {
+                "Le bloc Secourisme affiche ta compétence sur WoW Forever (il restait sur « Aucun »), et le "
+                    .. "secourisme ne prend plus la place d'un deuxième métier principal.",
+              } },
+        },
+    },
+    {
         version = "1.0.0",
         date = "2026-11-04",
         sections = {

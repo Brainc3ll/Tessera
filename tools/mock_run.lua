@@ -1363,6 +1363,20 @@ for _, step in ipairs({
         ns:UpdateLayout()
         ns:ResetProfile("top")
     end,
+    -- the bags block counts only bags that hold anything, not a herb bag's free slots
+    function()
+        local old = C_Container
+        C_Container = {
+            GetContainerNumSlots = function(bag) return bag <= 1 and 16 or 0 end,
+            GetContainerNumFreeSlots = function(bag) if bag == 1 then return 12, 32 end return 0, 0 end,
+            GetContainerItemInfo = function() return nil end,
+        }
+        local bags = ns.modules.bags
+        assert(bags.update({ bagsFormat = "free" }) == "0", "no free slot left: " .. bags.update({ bagsFormat = "free" }))
+        assert(bags.update({ bagsFormat = "usedTotal" }) == ns.L.BAGS_FORMAT:format(16, 16), "full backpack only")
+        assert(bags.progress() == 1, "bar full")
+        C_Container = old
+    end,
     -- a hidden block docked under another (empty mail under Legacy) does not keep it wide
     function()
         ns:ResetProfile("top")

@@ -422,19 +422,30 @@ local function LastBag()
     return NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS or 4
 end
 
+-- Free and total slots of the bags that hold anything: a profession bag (herbs, soul
+-- shards, reagents...) only takes its own items, so its free slots do not count
+-- (GetContainerNumFreeSlots' second value is the bag family: 0 = any item)
+local function GeneralBagSlots()
+    local free, total = 0, 0
+    for bag = 0, LastBag() do
+        local slots = C_Container.GetContainerNumSlots(bag) or 0
+        if slots > 0 then
+            local bagFree, family = C_Container.GetContainerNumFreeSlots(bag)
+            if not family or family == 0 then
+                total = total + slots
+                free = free + (bagFree or 0)
+            end
+        end
+    end
+    return free, total
+end
+
 ns:RegisterModule("bags", {
     label = "BAGS",
     icon = "Interface\\Icons\\INV_Misc_Bag_08",
     events = { "BAG_UPDATE_DELAYED" },
     update = function(cfg)
-        local free, total = 0, 0
-        for bag = 0, LastBag() do
-            local slots = C_Container.GetContainerNumSlots(bag) or 0
-            if slots > 0 then
-                total = total + slots
-                free = free + (C_Container.GetContainerNumFreeSlots(bag) or 0)
-            end
-        end
+        local free, total = GeneralBagSlots()
         local level = Threshold(cfg, free, THRESHOLDS.bags)
         local mode = cfg and cfg.bagsFormat or "freeTotal"
         if mode == "free" then return tostring(free), level end
@@ -450,12 +461,7 @@ ns:RegisterModule("bags", {
     thresholds = THRESHOLDS.bags,
     -- progress bar: how full the bags are
     progress = function()
-        local free, total = 0, 0
-        for bag = 0, LastBag() do
-            local slots = C_Container.GetContainerNumSlots(bag) or 0
-            total = total + slots
-            if slots > 0 then free = free + (C_Container.GetContainerNumFreeSlots(bag) or 0) end
-        end
+        local free, total = GeneralBagSlots()
         return total > 0 and (total - free) / total or 0
     end,
     tooltip = function(tt)

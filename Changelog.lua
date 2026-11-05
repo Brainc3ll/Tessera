@@ -37,6 +37,21 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.0.4",
+        date = "",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "The Bags block no longer counts the free slots of profession bags (herb bag, for one), "
+                    .. "which only take their own items. The tooltip still lists every bag.",
+              },
+              fr = {
+                "Le bloc Sacs ne compte plus les places libres des sacs de métier (sac d'herbes, par exemple), "
+                    .. "qui ne prennent que leurs propres objets. La bulle montre toujours chaque sac.",
+              } },
+        },
+    },
+    {
         version = "1.0.3",
         date = "2026-11-05",
         sections = {

@@ -2,11 +2,11 @@
 
 ## Title (CurseForge)
 
-Tessera – Info Blocks That Snap Together for WoW Forever (CurseForge and Wago, chosen by Braincell1980 on 24/10)
+Tessera: little info blocks you put anywhere (CurseForge and Wago, chosen by Braincell1980 on 6/11; before: "Tessera – Info Blocks That Snap Together for WoW Forever")
 
 ## CurseForge summary (one line, English)
 
-Info blocks that match your UI (FlareUI, ElvUI, EllesmereUI): drag blocks together and they merge like mosaic tiles. Made for WoW Forever, inspired by StatBlock Core. Broker display and DataBroker plugins, both ways.
+Little info blocks you put anywhere, or stick together into a panel. Made for WoW Forever. Data Broker display and DataBroker plugins (Titan Panel, Bazooka, Arcana). Matches FlareUI and ElvUI. Like StatBlock Core.
 
 ## GitHub "About" (repository description)
 

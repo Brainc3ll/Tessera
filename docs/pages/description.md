@@ -1,4 +1,4 @@
-# Tessera – Info Blocks That Snap Together for WoW Forever
+# Tessera: little info blocks you put anywhere
 
 **TL;DR:** Gold, bags, FPS, Legacy points… in small blocks that snap together like mosaic tiles. Made by a player who can't code and an AI that can't play (yet). So I test it a lot.
 
@@ -65,7 +65,7 @@ Type **/tessera bug**, copy the report and post it on [GitHub](https://github.co
 
 ---
 
-# Tessera – Des blocs d'infos qui s'emboîtent, pour WoW Forever (français)
+# Tessera : des petits blocs d'infos à placer où tu veux (français)
 
 **TL;DR :** Or, sacs, FPS, points d'héritage… dans de petits blocs qui s'emboîtent comme les pièces d'une mosaïque. Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour le moment). Alors je teste beaucoup.
 

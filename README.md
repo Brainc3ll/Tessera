@@ -1,4 +1,4 @@
-# Tessera – Info Blocks That Snap Together for WoW Forever
+# Tessera: little info blocks you put anywhere
 
 ![Tessera: info blocks that snap together, for WoW Forever](docs/media/banner.png)
 

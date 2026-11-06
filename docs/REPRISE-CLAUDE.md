@@ -47,7 +47,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - La version Retail n'est pas une priorité. La bêta des rangées est rangée (branche `archive/refonte-rangees` du dépôt privé Tessera-dev depuis le 25/10). L'accessibilité puis la manette se font sur la branche `accessibilite-manette`.
 - Fonctions, CVars et événements du vrai client Forever : `Ketho/BlizzardInterfaceResources`, branche `forever` (test `tools/forever_api_check.py`).
 - Code de l'interface de Blizzard pour Forever : `Gethe/wow-ui-source`, branche `forever` (Forever = « Camelot » dans ce code) ; ce qu'on y a trouvé : `docs/etudes/SOURCES.md`, 25/10.
-- Titre CurseForge et Wago « Tessera – Info Blocks That Snap Together for WoW Forever » (24/10, par Braincell1980 : « Forever » dans le titre pour la recherche) ; le mot « data » est évité (les joueurs le prenaient pour un enregistreur de statistiques).
+- Titre CurseForge et Wago « Tessera: little info blocks you put anywhere » (6/11, écrit par Braincell1980 pour éviter les formules « IA » ; avant : « Tessera – Info Blocks That Snap Together for WoW Forever » (24/10, par Braincell1980 : « Forever » dans le titre pour la recherche) ; le mot « data » est évité (les joueurs le prenaient pour un enregistreur de statistiques).
 - Styles FlareUI et FlareUI carré : fond à 50 %, comme FlareUI 2.4.1.
 - Logo (25/10) : logo texte « Tessera. » en Outfit gras (police libre, licence OFL) avec une tesselle turquoise ; Friz Quadrata, la police du jeu, n'est pas libre ; icône : un T et une tesselle dorée sur turquoise. Fichiers dans `docs/art`. Les images générées (Gemini) et les dessins « peints » ont été écartés (trop « IA »).
 

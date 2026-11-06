@@ -52,6 +52,21 @@ ns.CHANGELOG = {
         },
     },
     {
+        version = "1.1.1",
+        date = "",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "\"Replace with...\" a hidden block could break a bar apart, when that block still sat in "
+                    .. "the bar among other hidden blocks. Ctrl + Z undid it; now it no longer happens.",
+              },
+              fr = {
+                "« Remplacer par... » un bloc masqué pouvait casser une barre, quand ce bloc était encore "
+                    .. "placé dans la barre parmi d'autres blocs masqués. Ctrl + Z l'annulait ; ça n'arrive plus.",
+              } },
+        },
+    },
+    {
         version = "1.1.0",
         date = "2026-11-06",
         sections = {

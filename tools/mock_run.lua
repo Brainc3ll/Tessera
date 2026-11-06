@@ -1248,6 +1248,36 @@ for _, step in ipairs({
         ns.modules.date.tooltip(GameTooltip, cfg)
         ns:ResetProfile("top")
     end,
+    -- a hidden block still in a chain takes another block's place: the bar must not come
+    -- apart (a player's bar broke: the old chain looped back on the hidden block)
+    function()
+        ns:ResetProfile("top")
+        local b = ns.db.blocks
+        local function Chain(keys)
+            for i = 2, #keys do b[keys[i]].dock = { to = keys[i - 1], side = "RIGHT" } end
+        end
+        -- gold > bags > friends (hidden) > durability > fps > time
+        for _, k in ipairs({ "gold", "bags", "friends", "durability", "fps", "time" }) do b[k].enabled = true end
+        Chain({ "gold", "bags", "friends", "durability", "fps", "time" })
+        b.friends.enabled = false
+        ns:RefreshAllBlocks()
+        assert(ns:ReplaceBlock("fps", "friends"), "replace refused")
+        for k, c in pairs(b) do
+            assert(not (c.dock and c.dock.to == k), k .. " docked to itself")
+        end
+        assert(b.durability.dock and b.durability.dock.to == "bags", "durability follows what friends followed")
+        assert(b.friends.dock and b.friends.dock.to == "durability", "friends takes fps' place")
+        assert(b.time.dock and b.time.dock.to == "friends", "time follows friends")
+        -- the block replaced sits right after the hidden one: no self-dock
+        ns:ResetProfile("top")
+        b = ns.db.blocks
+        for _, k in ipairs({ "gold", "bags", "friends", "durability" }) do b[k].enabled = true end
+        Chain({ "gold", "bags", "friends", "durability" })
+        b.friends.enabled = false
+        ns:RefreshAllBlocks()
+        assert(ns:ReplaceBlock("durability", "friends"), "replace refused")
+        assert(b.friends.dock and b.friends.dock.to == "bags", "friends after bags: " .. tostring(b.friends.dock and b.friends.dock.to))
+    end,
     -- replace a block in place, then swap two shown blocks
     function()
         ns:ResetProfile("top")

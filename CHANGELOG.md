@@ -9,6 +9,12 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your ranged weapon's while you shoot), or a skill you pick (This block).
 
+## 1.1.1 — 
+
+### Fixes
+
+- "Replace with..." a hidden block could break a bar apart, when that block still sat in the bar among other hidden blocks. Ctrl + Z undid it; now it no longer happens.
+
 ## 1.1.0 — 2026-11-06
 
 - Your first big Tessera update on WoW Forever: 7 new blocks, a choice of display on 14 more, pinned tooltips and names of your own.

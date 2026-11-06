@@ -1,20 +1,21 @@
 # Tessera: little info blocks you put anywhere
 
-**TL;DR:** Gold, bags, FPS, Legacy points… in small blocks that snap together like mosaic tiles. Made by a player who can't code and an AI that can't play (yet). So I test it a lot.
+Gold, bags, FPS, Legacy points... each in its own little block. Put a block anywhere on your screen, or drop it against another one and they stick together into a bar. A bar shows up at first launch, so you can start from there.
 
-## What makes it different?
+Made by a player who can't code and an AI that can't play (yet). So I test it a lot.
 
-- **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
-- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills, minimap tracking, your hunter pet's happiness, poisons and sharpening stones, Well Fed and other long buffs.
-- **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level: most blocks give you a choice.
-- **A micro-menu that grows with you.** Blizzard's micro-menu buttons as blocks you place anywhere; a menu you have not unlocked yet stays grey until you reach it.
-- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames. 24 styles in all.
-- **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
-- **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
-- **Ready to stream.** Streamer mode hides other players' names, your other characters, your guild's name and your gold in one click.
-- **DataBroker both ways.** Show your other addons' DataBroker objects as blocks, or share Tessera's blocks with Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
+I made it for WoW Forever, so you also get blocks for Forever's own stuff: Legacy points and the next reward, Comprehension and the scrolls in your bags, camping buffs and your campfire kit, honor, weapon skills. Since 1.0.5 there's also minimap tracking, your hunter pet's mood, poisons and sharpening stones, Well Fed and other long buffs, XP per hour, and Blizzard's micro-menu buttons as blocks (the ones you haven't unlocked yet stay grey).
 
-60+ blocks in all, plus launchers for your minimap buttons. A ready-made bar shows up at first launch. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
+Most blocks let you choose what they show: played time this level or in total, honor out of its cap, completed quests, and so on.
+
+Other things you might like:
+
+- 24 styles, so the blocks match your UI: Blizzard, FlareUI, ElvUI, EllesmereUI, or fantasy looks made from the game's own frames.
+- Streamer mode hides other players' names, your other characters, your guild and your gold.
+- DataBroker works both ways: your other addons' Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
+- English and French, plus German, Spanish and Brazilian Portuguese.
+
+Over 60 blocks, plus launchers for your minimap buttons. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
 
 ## Why make Tessera when addons like it already exist?
 
@@ -24,17 +25,15 @@ When the WoW Forever beta came out, I came back to WoW and found FlareUI: an int
 
 That's how Tessera was born. It was never meant to be published. I wanted to learn how it works when you start a GitHub repo from scratch and release an addon. Then I put it through more testing than I gave the Forever beta itself, and the ideas kept coming. Some are in Tessera today. Others are on the way: accessibility for players with disabilities, and full gamepad support, something I have never seen in a panel or DataBroker addon.
 
-So I decided to make it available to as many players as I could. That meant watching closely what the AI does: the right WoW words in every language, and code checked with the tools real addon developers use.
+So I put it out there. That meant keeping an eye on what the AI writes: the right WoW words in each language, and code checked with the same tools addon developers use.
 
 ## How I look after it
 
-- I play WoW Forever and test each version in game before I release it.
-- Your layouts, styles and profiles carry over from one version to the next. If a change ever has to break them, Tessera warns you and converts them.
-- On every change, GitHub runs automatic checks: static analysis, the API audit addon reviewers use, a check against WoW Forever's own function list, a full run of the addon in English and French, and a test of the Forever blocks against a changing game.
-- WoW Forever's own systems are young and may change. If a game update breaks a block, tell me and I'll fix it.
-- Tessera is free and open source (MIT license): every feature for everyone, no premium version, no paid extras. You can read it, change it and share it.
+I play WoW Forever and test each version in game before I release it. Your layouts and profiles carry over between versions; if a change ever has to break them, Tessera tells you and converts them. GitHub also runs a set of automatic checks on every change (the API audit addon reviewers use, a check against Forever's own function list, a full run of the addon in English and French).
 
-I can't promise how many years I'll keep this up. Today, this is how I run it.
+Forever's own systems are still young. If a game update breaks a block, tell me and I'll fix it.
+
+Tessera is free and open source (MIT). No premium version, no paid extras.
 
 ## Who writes what
 

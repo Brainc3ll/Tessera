@@ -1363,6 +1363,40 @@ for _, step in ipairs({
         ns:UpdateLayout()
         ns:ResetProfile("top")
     end,
+    -- the weapon skill block takes the skill of the weapon held, by item subclass, not by
+    -- name ("Épées à deux mains" also contains "Épées")
+    function()
+        local oldS, oldLink, oldItem = C_SkillInfo, GetInventoryItemLink, C_Item
+        C_SkillInfo = {
+            GetNumSkillLines = function() return 2 end,
+            GetSkillLineInfo = function(i)
+                return ({ { name = "Épées", rank = 12, maxRank = 60, skillLineCategoryID = 6, skillID = 43 },
+                          { name = "Épées à deux mains", rank = 60, maxRank = 60, skillLineCategoryID = 6,
+                            skillID = 55 } })[i]
+            end,
+        }
+        GetInventoryItemLink = function() return "item:2h-sword" end
+        C_Item = setmetatable({ GetItemInfoInstant = function() return 1, "", "", "", "", 2, 8 end },
+            { __index = oldItem })
+        local value = ns.modules.weaponSkills.update(ns.db.blocks.weaponSkills)
+        assert(value:find("deux mains"), "two-handed sword skill: " .. tostring(value))
+        C_SkillInfo, GetInventoryItemLink, C_Item = oldS, oldLink, oldItem
+    end,
+    -- unspent talent points on WoW Forever: modern talent trees, no UnitCharacterPoints
+    function()
+        local oldU, oldCT, oldT = UnitCharacterPoints, C_ClassTalents, C_Traits
+        UnitCharacterPoints = nil
+        C_ClassTalents = { GetActiveConfigID = function() return 7 end, HasUnspentTalentPoints = function() return true end }
+        C_Traits = { GetConfigInfo = function() return { treeIDs = { 42 } } end,
+                     GetTreeCurrencyInfo = function() return { { quantity = 2 }, { quantity = 1 } } end }
+        local t = ns.modules.talents
+        assert(not t.isEmpty(), "talent points left are seen")
+        assert(t.update() == "3", "talent points: " .. tostring(t.update()))
+        C_Traits.GetTreeCurrencyInfo = function() return { { quantity = 0 } } end
+        C_ClassTalents.HasUnspentTalentPoints = function() return false end
+        assert(t.isEmpty(), "no point left: the block hides")
+        UnitCharacterPoints, C_ClassTalents, C_Traits = oldU, oldCT, oldT
+    end,
     -- the bags block counts only bags that hold anything, not a herb bag's free slots
     function()
         local old = C_Container

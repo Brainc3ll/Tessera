@@ -3,6 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.0.5 — 
+
+### Fixes
+
+- The Talent points block shows your unspent points on WoW Forever (it never appeared).
+- The Weapon skills block shows the skill of the weapon you hold: a two-handed sword no longer shows your one-handed sword skill (same for axes and maces).
+
 ## 1.0.4 — 2026-11-05
 
 ### Fixes

@@ -37,6 +37,23 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.0.5",
+        date = "",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "The Talent points block shows your unspent points on WoW Forever (it never appeared).",
+                "The Weapon skills block shows the skill of the weapon you hold: a two-handed sword no "
+                    .. "longer shows your one-handed sword skill (same for axes and maces).",
+              },
+              fr = {
+                "Le bloc Points de talent affiche tes points non dépensés sur WoW Forever (il n'apparaissait jamais).",
+                "Le bloc Compétences d'armes affiche la compétence de l'arme que tu tiens : une épée à deux "
+                    .. "mains n'affiche plus ta compétence d'épée à une main (pareil pour les haches et les masses).",
+              } },
+        },
+    },
+    {
         version = "1.0.4",
         date = "2026-11-05",
         sections = {

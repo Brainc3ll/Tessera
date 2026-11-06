@@ -2079,8 +2079,21 @@ end
 
 -- Weapon skill matching the main-hand weapon (its type name contains the skill name,
 -- e.g. "One-Handed Swords" / "Swords"), else the weapon skill furthest from its max
+-- Weapon item subclass (GetItemInfoInstant) -> weapon skill line ID: exact in every language
+-- (by name, "Two-Handed Swords" also contains "Swords" and took the one-handed skill)
+local WEAPON_SUBCLASS_SKILL = {
+    [0] = 44, [1] = 172, [2] = 45, [3] = 46, [4] = 54, [5] = 160, [6] = 229, [7] = 43,
+    [8] = 55, [10] = 136, [13] = 473, [15] = 173, [16] = 176, [18] = 226, [19] = 228,
+}
 local function CurrentWeaponSkill(weapons)
     local link = Try(GetInventoryItemLink, "player", 16)
+    local _, _, _, _, _, classID, subClassID = Try(C_Item and C_Item.GetItemInfoInstant, link)
+    local skillID = classID == 2 and WEAPON_SUBCLASS_SKILL[subClassID]
+    if skillID then
+        for _, w in ipairs(weapons) do
+            if w.id == skillID then return w end
+        end
+    end
     local subType = link and select(7, GetItemInfoFn(link))
     local best
     for _, w in ipairs(weapons) do
@@ -2260,16 +2273,30 @@ end
 ---------------------------------------------------------------------------
 -- Unspent talent points (shows only when some are left)
 ---------------------------------------------------------------------------
--- UnitCharacterPoints is the classic talent function (WoW Forever's talents are classic
--- style); it is not in Blizzard's documentation of the modern API, hence _G
+-- UnitCharacterPoints on classic clients; WoW Forever uses the modern talent trees
+-- (C_ClassTalents / C_Traits): the points left are the currencies of the active tree
 local function FreeTalentPoints()
-    return Try(_G["UnitCharacterPoints"], "player") or 0
+    local classic = _G["UnitCharacterPoints"]
+    if classic then return Try(classic, "player") or 0 end
+    local CT, T = C_ClassTalents, C_Traits
+    if not (CT and T and CT.GetActiveConfigID and T.GetConfigInfo and T.GetTreeCurrencyInfo) then return 0 end
+    local configID = Try(CT.GetActiveConfigID)
+    local info = configID and Try(T.GetConfigInfo, configID)
+    local treeID = type(info) == "table" and type(info.treeIDs) == "table" and info.treeIDs[1]
+    local currencies = treeID and Try(T.GetTreeCurrencyInfo, configID, treeID, false)
+    local points = 0
+    for _, c in ipairs(type(currencies) == "table" and currencies or {}) do
+        points = points + (tonumber(c.quantity) or 0)
+    end
+    if points == 0 and CT.HasUnspentTalentPoints and Try(CT.HasUnspentTalentPoints) then points = 1 end
+    return points
 end
 
 ns:RegisterModule("talents", {
     label = "TALENTS",
     icon = "Interface\\Icons\\Ability_Marksmanship",
-    events = { "CHARACTER_POINTS_CHANGED", "PLAYER_LEVEL_UP", "PLAYER_TALENT_UPDATE" },
+    events = { "CHARACTER_POINTS_CHANGED", "PLAYER_LEVEL_UP", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_UPDATED",
+               "TRAIT_TREE_CURRENCY_INFO_UPDATED" },
     defaultEnabled = false,
     alertOnShow = true,
     isEmpty = function() return FreeTalentPoints() <= 0 end,

@@ -1555,6 +1555,23 @@ for _, step in ipairs({
         assert(title and after, "herb bag listed under its own title")
         C_Container = oldC
     end,
+    -- expansion styles: their art frame on a large window only; a small window (the placement
+    -- banner) takes the plain frame; under the art, a solid base hides what is behind
+    function()
+        local oldTex, oldTheme = C_Texture, ns.db.theme
+        C_Texture = setmetatable({ GetAtlasInfo = function(a) return a:find("^ui%-frame%-") and { width = 64 } or nil end },
+            { __index = oldTex or {} })
+        ns.db.theme = "warWithin"
+        local big = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+        big:SetSize(800, 600)
+        ns:SkinWindow(big)
+        assert(big.skinKind == "atlas" and big.tesseraArtBase, "large window: art frame with a solid base")
+        local small = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+        small:SetSize(500, 110)
+        ns:SkinWindow(small)
+        assert(small.skinKind ~= "atlas", "small window: plain frame (" .. tostring(small.skinKind) .. ")")
+        C_Texture, ns.db.theme = oldTex, oldTheme
+    end,
     -- the bags block counts only bags that hold anything, not a herb bag's free slots
     function()
         local old = C_Container

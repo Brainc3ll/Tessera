@@ -293,11 +293,19 @@ end
 -- background atlas, as Blizzard draws its own windows of those expansions
 local function AtlasArt(frame, spec)
     if not frame.tesseraArtBg then
+        -- a solid base under the tile: the expansion's background tile is partly see-through,
+        -- and the game's texts behind the window showed through it
+        frame.tesseraArtBase = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
         frame.tesseraArtBg = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
         frame.tesseraArtBorder = frame:CreateTexture(nil, "BORDER", nil, 7)
     end
-    local bgTex, border = frame.tesseraArtBg, frame.tesseraArtBorder
-    if not spec then bgTex:Hide(); border:Hide(); return end
+    local base, bgTex, border = frame.tesseraArtBase, frame.tesseraArtBg, frame.tesseraArtBorder
+    if not spec then base:Hide(); bgTex:Hide(); border:Hide(); return end
+    base:ClearAllPoints()
+    base:SetPoint("TOPLEFT", spec.bgInset or 8, -(spec.bgInset or 8))
+    base:SetPoint("BOTTOMRIGHT", -(spec.bgInset or 8), spec.bgInset or 8)
+    base:SetColorTexture(0.03, 0.025, 0.02, 1)
+    base:Show()
     bgTex:ClearAllPoints()
     bgTex:SetPoint("TOPLEFT", spec.bgInset or 8, -(spec.bgInset or 8))
     bgTex:SetPoint("BOTTOMRIGHT", -(spec.bgInset or 8), spec.bgInset or 8)

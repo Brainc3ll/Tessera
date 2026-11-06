@@ -1850,6 +1850,7 @@ end
 -- The window's background reaches under the border's line: the textures' own insets (made
 -- for tooltips and dialogs) leave a see-through line a few pixels wide on a large window
 local WINDOW_FILL = 3
+local ATLAS_MIN_HEIGHT = 220 -- smallest window that gets an expansion's art frame
 local function WindowInset(t)
     local inset = t.inset or 0
     if t.edgeFile and inset >= 4 then return inset - 2 end
@@ -1860,7 +1861,11 @@ end
 function ns:SkinWindow(frame, title)
     local t = self:GetThemeInfo(self:GetTheme()).window()
     if title then title:SetTextColor(unpack(t.title)) end
-    if t.borderAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(t.borderAtlas) then
+    -- the expansion frames (The War Within, Midnight) are drawn for large windows: on a small
+    -- one (placement banner, its info panel) their thick border crowds the text, so a small
+    -- window takes the style's plain frame in the same colors
+    local small = (frame:GetHeight() or 0) < ATLAS_MIN_HEIGHT
+    if t.borderAtlas and not small and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(t.borderAtlas) then
         self:ApplySkin(frame, { kind = "atlas", borderAtlas = t.borderAtlas, bgAtlas = t.bgAtlas, bg = t.bg, bgInset = t.bgInset })
     elseif t.nineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
         self:ApplySkin(frame, { kind = "modern", layout = t.nineSlice, border = t.border, bg = t.bg, desaturate = t.desaturate })

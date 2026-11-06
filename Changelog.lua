@@ -120,11 +120,17 @@ ns.CHANGELOG = {
               } },
             { kind = "fixed",
               en = {
+                "The War Within and Midnight styles: the placement banner and small windows take a plain frame "
+                    .. "in the style's colors (the large art frame crowded their text), and the game's texts no longer "
+                    .. "show through the options window.",
                 "The Talent points block shows your unspent points on WoW Forever (it never appeared).",
                 "The Weapon skills block shows the skill of the weapon you hold: a two-handed sword no "
                     .. "longer shows your one-handed sword skill (same for axes and maces).",
               },
               fr = {
+                "Styles The War Within et Midnight : le bandeau de placement et les petites fenêtres prennent un "
+                    .. "cadre simple aux couleurs du style (le grand cadre décoré serrait leur texte), et les textes du "
+                    .. "jeu ne se voient plus à travers la fenêtre d'options.",
                 "Le bloc Points de talent affiche tes points non dépensés sur WoW Forever (il n'apparaissait jamais).",
                 "Le bloc Compétences d'armes affiche la compétence de l'arme que tu tiens : une épée à deux "
                     .. "mains n'affiche plus ta compétence d'épée à une main (pareil pour les haches et les masses).",

@@ -5,7 +5,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.5 — 
 
-- Your first big Tessera update on WoW Forever: 17 new blocks, and a choice of display on 13 more.
+- Your first big Tessera update on WoW Forever: 17 new blocks, and a choice of display on 14 more.
 
 ### New
 

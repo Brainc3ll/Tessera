@@ -794,6 +794,9 @@ end
 
 -- Display name: the launcher's own label, or the module's localized label
 function ns:GetBlockName(key)
+    -- a name the player typed (Display tab, "Custom name") comes first
+    local own = self.db and self.db.blocks[key] and self.db.blocks[key].customName
+    if type(own) == "string" and own ~= "" and not ns.IsSpacerKey(key) then return own end
     if ns.IsLauncherKey(key) then
         local cfg = self.db.blocks[key]
         return cfg and cfg.launcher and cfg.launcher.label or key

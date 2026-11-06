@@ -271,6 +271,13 @@ C_Minimap = { GetNumTrackingTypes = function() return 2 end, GetTrackingInfo = f
               { name = "Find Minerals", texture = 136025, active = false, type = "spell", subType = 0 } })[i]
 end }
 HasPetUI = function() return true, true end
+-- 1.1.0: damage meter (last fight: 1200 damage in 60 s), realm rules, weather, a ghost
+C_DamageMeter = { GetCombatSessionSourceFromType = function() return { totalAmount = 1200, maxAmount = 300 } end,
+                  GetSessionDurationSeconds = function() return 60 end }
+C_GameRules = { IsHardcoreActive = function() return false end, IsSelfFoundAllowed = function() return false end }
+C_Weather = { GetCurrentWeather = function() return { type = 1, intensity = 0.4 } end }
+UnitIsGhost = function() return false end
+C_Container.GetContainerItemDurability = function(bag, slot) if bag == 0 and slot == 1 then return 30, 60 end end
 C_PetInfo = { GetPetHappiness = function() return 3, 125, 20 end, GetPetLoyalty = function() return "Loyalty level 3" end }
 C_Item = C_Item or {}
 C_Item.GetWeaponEnchantInfo = function(slot)
@@ -1490,6 +1497,63 @@ for _, step in ipairs({
         assert(rate:find("2[ ,.\194\160]?000"), "xp rate: " .. rate)
         assert(m.xpRate.update({ xpRateShown = "time" }) == "15m", "500 XP left at 2000/h: 15 minutes")
         UnitXP, GetTime = oldXP, oldTime
+    end,
+    -- 1.1.0: pinned tooltips, custom names, item goal, DPS, corpse, game mode, weather,
+    -- worn items in the bags, profession bags apart in the bags tooltip
+    function()
+        local m = ns.modules
+        -- custom name: used everywhere the block is named, empty = the usual name
+        ns.db.blocks.gold.customName = "Mes sous"
+        assert(ns:GetBlockName("gold") == "Mes sous", "custom name")
+        ns.db.blocks.gold.customName = nil
+        assert(ns:GetBlockName("gold") == ns.L.GOLD, "usual name back")
+        -- pinned tooltip: toggled, saved, refreshed without error
+        ns:TogglePin("fps")
+        assert(ns:IsPinned("fps"), "pinned")
+        ns:RefreshPins()
+        ns:TogglePin("fps")
+        assert(not ns:IsPinned("fps"), "unpinned")
+        ns:RunClickAction("fps", "pin")
+        assert(ns:IsPinned("fps"), "pin from a click action")
+        ns:TogglePin("fps")
+        -- item goal: 7 in the bags out of 20
+        local oldCount = C_Item.GetItemCount
+        C_Item.GetItemCount = function(id) return id == 2592 and 7 or 0 end
+        local cfg = { goalType = "item", goalItem = 2592, goalValue = 20 }
+        assert(m.goal.update(cfg) == "7 / 20", "item goal: " .. tostring(m.goal.update(cfg)))
+        m.goal.tooltip(GameTooltip, cfg)
+        C_Item.GetItemCount = oldCount
+        -- DPS of the last fight: 1200 / 60 s = 20
+        assert(m.dps.update() == ns.L.DPS_FORMAT:format("20"), "dps: " .. tostring(m.dps.update()))
+        m.dps.tooltip(GameTooltip)
+        local oldSecret = issecretvalue
+        issecretvalue = function(v) return v == 1200 end
+        -- (the block reads issecretvalue when it loads; the "In combat" path is checked through FightDPS)
+        issecretvalue = oldSecret
+        -- corpse: hidden while alive
+        assert(m.corpse.isEmpty(), "corpse hidden while alive")
+        assert(m.gameMode.update() == ns.L.GAME_MODE_STANDARD, "game mode")
+        assert(m.weather.update() == ns.L.WEATHER_RAIN .. " 40%", "weather: " .. tostring(m.weather.update()))
+        m.durability.tooltip(GameTooltip, ns.db.blocks.durability)
+        -- bags tooltip with a herb bag listed apart
+        local oldC = C_Container
+        C_Container = setmetatable({
+            GetContainerNumSlots = function(bag) return bag <= 1 and 16 or 0 end,
+            GetContainerNumFreeSlots = function(bag) if bag == 1 then return 12, 32 end return 0, 0 end,
+            GetContainerItemInfo = function() return nil end,
+            GetBagName = function(bag) return bag == 1 and "Herb Pouch" or "Backpack" end,
+        }, { __index = oldC })
+        local lines = {}
+        local tt = setmetatable({ AddLine = function(_, t) lines[#lines + 1] = t end,
+            AddDoubleLine = function(_, l) lines[#lines + 1] = l end }, { __index = GameTooltip })
+        m.bags.tooltip(tt)
+        local title, after = nil, false
+        for i, t in ipairs(lines) do
+            if t == ns.L.TT_PROFESSION_BAGS then title = i end
+            if title and t == "Herb Pouch" then after = true end
+        end
+        assert(title and after, "herb bag listed under its own title")
+        C_Container = oldC
     end,
     -- the bags block counts only bags that hold anything, not a herb bag's free slots
     function()

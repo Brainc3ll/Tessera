@@ -17,14 +17,14 @@ local L = ns.L
 
 local CATEGORIES = {
     { title = "DEMO_CAT_CHARACTER", keys = { "gold", "bags", "durability", "xp", "rested", "stats", "regen", "speed",
-        "talents", "itemLevel", "pet", "weaponEnchant", "longBuffs" } },
+        "talents", "itemLevel", "pet", "weaponEnchant", "longBuffs", "dps", "corpse" } },
     { title = "DEMO_CAT_SOCIAL", keys = { "friends", "guild", "group", "whispers", "mail", "loot" } },
     { title = "DEMO_CAT_WORLD", keys = { "zone", "subzone", "coords", "time", "serverTime", "date", "hearthstone", "instances",
-        "reset", "tracking" } },
+        "reset", "tracking", "weather" } },
     { title = "DEMO_CAT_PROGRESS", keys = { "reputation", "currency", "quests", "goal", "profession1", "profession2",
         "cooking", "firstAid", "fishing", "ammo", "reagents", "xpRate", "goldSession" } },
     { title = "DEMO_CAT_SYSTEM", keys = { "fps", "latency", "memory", "volume", "played", "streamer" } },
-    { title = "DEMO_CAT_FOREVER", keys = { "legacy", "comprehension", "camping", "honor", "weaponSkills" } },
+    { title = "DEMO_CAT_FOREVER", keys = { "legacy", "comprehension", "camping", "honor", "weaponSkills", "gameMode" } },
     { title = "DEMO_CAT_MICRO", keys = { "microCharacter", "microSpellbook", "microTalents", "microProfessions",
         "microQuests", "microGuild", "microGroupFinder", "microJournal", "microCollections", "microLegacy",
         "microGameMenu" } },

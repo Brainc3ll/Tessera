@@ -37,16 +37,17 @@ end
 
 ns.CHANGELOG = {
     {
-        version = "1.0.5",
+        version = "1.1.0",
         date = "",
         sections = {
             { kind = "intro",
               en = {
-                "Your first big Tessera update on WoW Forever: 17 new blocks, and a choice of display on 14 more.",
+                "Your first big Tessera update on WoW Forever: 21 new blocks, a choice of display on 14 more, pinned tooltips "
+                    .. "and names of your own.",
               },
               fr = {
-                "La première grosse mise à jour de Tessera sur WoW Forever : 17 nouveaux blocs, et un choix "
-                    .. "d'affichage sur 14 autres.",
+                "La première grosse mise à jour de Tessera sur WoW Forever : 21 nouveaux blocs, un choix "
+                    .. "d'affichage sur 14 autres, des infobulles épinglées et des noms à toi.",
               } },
             { kind = "new",
               en = {
@@ -59,6 +60,13 @@ ns.CHANGELOG = {
                 "Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.",
                 "XP per hour, or the time to your next level at your pace.",
                 "Gold this session: what you earned or spent since you logged in, and per hour.",
+                "DPS: your damage per second in the last fight, with the longest fight of the session.",
+                "Corpse: while you are a ghost, the distance and an arrow toward your body; click for a map pin.",
+                "Game mode (Standard, Hardcore, Self-Found) and Weather (rain, snow, sandstorm, and how strong).",
+                "Pin a tooltip: it stays open next to its block and updates every second (quick menu, or a "
+                    .. "Shift / middle click).",
+                "Custom name: rename any block, for example a launcher that shows \"SomeAddonMinimapButton\".",
+                "Goal: a new \"Item\" type counts an item in your bags toward your target (\"47 / 100\").",
               },
               fr = {
                 "Micro-menu : les boutons du micro-menu de Blizzard (personnage, grimoire, talents, métiers, "
@@ -71,6 +79,15 @@ ns.CHANGELOG = {
                 "Buffs longs : Bien nourri, élixirs et buffs mondiaux de 10 minutes ou plus, le plus court en premier.",
                 "XP par heure, ou le temps avant ton niveau suivant à ton rythme.",
                 "Or de la session : ce que tu as gagné ou dépensé depuis ta connexion, et par heure.",
+                "DPS : tes dégâts par seconde du dernier combat, avec le plus long combat de la session.",
+                "Corps : quand tu es un fantôme, la distance et une flèche vers ton corps ; clic pour un repère "
+                    .. "sur la carte.",
+                "Mode de jeu (Standard, Hardcore, Autonome) et Météo (pluie, neige, tempête de sable, et son intensité).",
+                "Épingle une infobulle : elle reste ouverte à côté de son bloc et se met à jour chaque seconde "
+                    .. "(menu rapide, ou Maj + clic / clic milieu).",
+                "Nom personnalisé : renomme n'importe quel bloc, par exemple un lanceur qui affiche "
+                    .. "« SomeAddonMinimapButton ».",
+                "Objectif : un nouveau type « Objet » compte un objet de tes sacs vers ton but (« 47 / 100 »).",
               } },
             { kind = "improved",
               en = {
@@ -80,6 +97,10 @@ ns.CHANGELOG = {
                     .. "weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.",
                 "Volume: choose the volume the block shows and your mouse wheel changes (music, effects...).",
                 "Friends: you can leave out your Battle.net friends.",
+                "Bags: the tooltip lists profession bags (herb bag...) apart. Durability: the tooltip also lists "
+                    .. "worn items in your bags, under their own title.",
+                "Comprehension reads your skill directly and shows its description; Honor shows yesterday's kills "
+                    .. "and honor when the game gives them.",
                 "The demo mode shows the new blocks, with a Micro-menu column.",
               },
               fr = {
@@ -91,6 +112,10 @@ ns.CHANGELOG = {
                     .. "Tessera seul.",
                 "Volume : choisis le volume que le bloc affiche et que ta molette change (musique, effets...).",
                 "Amis : tu peux laisser de côté tes amis Battle.net.",
+                "Sacs : l'infobulle liste les sacs de métier (sac d'herbes...) à part. Durabilité : l'infobulle "
+                    .. "liste aussi les pièces abîmées de tes sacs, sous leur propre titre.",
+                "Compréhension lit ta compétence directement et montre sa description ; Honneur montre les "
+                    .. "victoires et l'honneur d'hier quand le jeu les donne.",
                 "Le mode démo montre les nouveaux blocs, avec une colonne Micro-menu.",
               } },
             { kind = "fixed",

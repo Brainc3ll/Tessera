@@ -466,13 +466,19 @@ ns:RegisterModule("bags", {
     end,
     tooltip = function(tt)
         local junk = 0
+        local special = {} -- profession bags: listed apart, after the bags that take anything
         for bag = 0, LastBag() do
             local slots = C_Container.GetContainerNumSlots(bag) or 0
             if slots > 0 then
-                local free = C_Container.GetContainerNumFreeSlots(bag) or 0
+                local free, family = C_Container.GetContainerNumFreeSlots(bag)
+                free = free or 0
                 local name = C_Container.GetBagName and C_Container.GetBagName(bag)
                 name = name or (bag == 0 and L.TT_BACKPACK or L.TT_BAG:format(bag))
-                tt:AddDoubleLine(name, L.BAGS_FORMAT:format(free, slots), 1, 1, 1, 1, 1, 1)
+                if family and family ~= 0 then
+                    table.insert(special, { name = name, text = L.BAGS_FORMAT:format(free, slots) })
+                else
+                    tt:AddDoubleLine(name, L.BAGS_FORMAT:format(free, slots), 1, 1, 1, 1, 1, 1)
+                end
                 -- junk (grey items) sell value; the price is only known once the item is cached
                 for slot = 1, slots do
                     local info = C_Container.GetContainerItemInfo and C_Container.GetContainerItemInfo(bag, slot)
@@ -482,6 +488,11 @@ ns:RegisterModule("bags", {
                     end
                 end
             end
+        end
+        if #special > 0 then
+            tt:AddLine(" ")
+            tt:AddLine(L.TT_PROFESSION_BAGS, 0.4, 0.8, 1)
+            for _, b in ipairs(special) do tt:AddDoubleLine(b.name, b.text, 0.4, 0.8, 1, 0.4, 0.8, 1) end
         end
         if junk > 0 then
             tt:AddLine(" ")
@@ -586,6 +597,30 @@ ns:RegisterModule("durability", {
                 local ok, link = pcall(GetInventoryItemLink, "player", slot)
                 link = ok and link or "?"
                 tt:AddDoubleLine(link, LevelColor(DurabilityLevel(pct, cfg)) .. ("%d%%"):format(math.floor(pct + 0.5)) .. "|r")
+            end
+        end
+        -- items with durability carried in the bags, under their own title
+        local getDurability = C_Container and C_Container.GetContainerItemDurability
+        if getDurability then
+            local title = false
+            for bag = 0, LastBag() do
+                local okS, slots = pcall(C_Container.GetContainerNumSlots, bag)
+                for slot = 1, (okS and tonumber(slots)) or 0 do
+                    local okD, cur, max = pcall(getDurability, bag, slot)
+                    if not okD then cur, max = nil, nil end
+                    if type(cur) == "number" and type(max) == "number" and max > 0 then
+                        if not title then
+                            tt:AddLine(" ")
+                            tt:AddLine(L.TT_IN_BAGS, 1, 0.82, 0)
+                            title = true
+                        end
+                        local pct = Percent(cur, max)
+                        local okI, info = pcall(C_Container.GetContainerItemInfo, bag, slot)
+                        if not okI then info = nil end
+                        local link = type(info) == "table" and info.hyperlink or "?"
+                        tt:AddDoubleLine(link, LevelColor(DurabilityLevel(pct, cfg)) .. ("%d%%"):format(math.floor(pct + 0.5)) .. "|r")
+                    end
+                end
             end
         end
         local cost = RepairCost()
@@ -2561,6 +2596,12 @@ end
 -- Returns progress (0..1), current value text, target text
 local function GoalProgress(cfg)
     local target = cfg.goalValue or 1000
+    if cfg.goalType == "item" then
+        local id = tonumber(cfg.goalItem)
+        local count = id and Try(C_Item and C_Item.GetItemCount, id) or 0
+        local name = id and (Try(C_Item and C_Item.GetItemNameByID, id) or ("#" .. id)) or L.GOAL_NO_ITEM
+        return math.min(1, target > 0 and count / target or 1), ("%s : %d"):format(name, count), tostring(target), count
+    end
     if cfg.goalType == "level" then
         local level = UnitLevel("player") or 1
         local max = UnitXPMax("player")
@@ -2576,17 +2617,26 @@ end
 ns:RegisterModule("goal", {
     label = "GOAL",
     icon = "Interface\\Icons\\INV_Misc_Gem_Pearl_04",
-    events = { "PLAYER_MONEY", "PLAYER_XP_UPDATE", "PLAYER_LEVEL_UP" },
     defaultEnabled = false,
     defaults = { progressBar = true, goalType = "gold", goalValue = 1000 },
     options = {
         { kind = "dropdown", field = "goalType", label = "GOAL_TYPE", tip = "TIP_GOAL_TYPE",
-          values = { { key = "gold", label = "GOAL_GOLD" }, { key = "level", label = "GOAL_LEVEL" } } },
+          values = { { key = "gold", label = "GOAL_GOLD" }, { key = "level", label = "GOAL_LEVEL" },
+                     { key = "item", label = "GOAL_ITEM" } } },
+        { kind = "number", field = "goalItem", label = "GOAL_ITEM_ID", tip = "TIP_GOAL_ITEM_ID", min = 1,
+          shown = function(cfg) return cfg.goalType == "item" end },
         { kind = "number", field = "goalValue", label = "GOAL_VALUE", tip = "TIP_GOAL_VALUE", min = 1 },
     },
+    -- an item goal shows the item's icon
+    getIcon = function(cfg)
+        local id = cfg and cfg.goalType == "item" and tonumber(cfg.goalItem)
+        return id and Try(C_Item and C_Item.GetItemIconByID, id) or "Interface\\Icons\\INV_Misc_Gem_Pearl_04"
+    end,
+    events = { "PLAYER_MONEY", "PLAYER_XP_UPDATE", "PLAYER_LEVEL_UP", "BAG_UPDATE_DELAYED" },
     progress = function(cfg) return (GoalProgress(cfg)) end,
     update = function(cfg)
-        local progress = GoalProgress(cfg)
+        local progress, _, target, count = GoalProgress(cfg)
+        if cfg.goalType == "item" then return ("%d / %s"):format(count, target), progress >= 1 and GOOD or nil end
         return ("%d%%"):format(math.floor(progress * 100)), progress >= 1 and GOOD or nil
     end,
     tooltip = function(tt, cfg)
@@ -2770,6 +2820,11 @@ end
 -- Comprehension skill: { rank, max } or nil (learned from level 6)
 local function ComprehensionSkill()
     local S = _G["C_SkillInfo"] -- WoW Forever only (not in the modern API docs)
+    -- by its ID first: works even with its category folded in the skills window
+    local byID = S and S.GetSkillLineInfoByID and Try(S.GetSkillLineInfoByID, COMPREHENSION_SKILL)
+    if type(byID) == "table" and byID.name and (byID.maxRank or 0) > 0 then
+        return { name = byID.name, rank = byID.rank or 0, max = byID.maxRank or 0, description = byID.description }
+    end
     if not (S and S.GetNumSkillLines and S.GetSkillLineInfo) then return nil end
     for i = 1, tonumber((Try(S.GetNumSkillLines))) or 0 do
         local info = Try(S.GetSkillLineInfo, i)
@@ -2883,6 +2938,7 @@ ns:RegisterModule("comprehension", {
             return
         end
         WHITE(tt, s.name, ("%d / %d"):format(s.rank, s.max))
+        if type(s.description) == "string" and s.description ~= "" then tt:AddLine(s.description, 0.8, 0.8, 0.8, true) end
         tt:AddLine(" ")
         local scrolls = ScrollsInBags()
         if #scrolls == 0 then
@@ -3000,6 +3056,10 @@ ns:RegisterModule("honor", {
         if info.canEarnPerWeek then WHITE(tt, L.TT_HONOR_WEEK, fmt(info.quantityEarnedThisWeek or 0)) end
         local hk = Try(GetPVPLifetimeStats)
         if hk then WHITE(tt, L.TT_HONOR_KILLS, fmt(hk)) end
+        local yKills, yHonor = Try(_G["GetPVPYesterdayStats"])
+        if type(yKills) == "number" then
+            WHITE(tt, L.TT_HONOR_YESTERDAY, L.TT_HONOR_YESTERDAY_FORMAT:format(fmt(yKills), fmt(yHonor or 0)))
+        end
         tt:AddLine(" ")
         tt:AddLine(L.TT_HONOR_RANKS_LATER, 0.6, 0.6, 0.6, true)
     end,
@@ -3238,6 +3298,175 @@ ns:RegisterModule("longBuffs", {
 })
 
 ---------------------------------------------------------------------------
+-- DPS: your damage per second in the current or last fight (Blizzard's damage meter).
+-- During a fight the game keeps these values "secret": an addon may not read or
+-- compute them, so the block says "In combat" and shows the DPS once the fight ends.
+---------------------------------------------------------------------------
+local DM_CURRENT, DM_DAMAGE = 1, 0 -- Enum.DamageMeterSessionType.Current, Enum.DamageMeterType.DamageDone
+local IsSecret = _G["issecretvalue"] or function() return false end
+local fights = { longest = 0 }
+
+local function FightDPS()
+    local DM = C_DamageMeter
+    if not (DM and DM.GetCombatSessionSourceFromType and DM.GetSessionDurationSeconds) then return nil end
+    local source = Try(DM.GetCombatSessionSourceFromType, DM_CURRENT, DM_DAMAGE, Try(UnitGUID, "player"))
+    local duration = Try(DM.GetSessionDurationSeconds, DM_CURRENT)
+    local total = type(source) == "table" and source.totalAmount
+    if total == nil or duration == nil or IsSecret(total) or IsSecret(duration) then return nil, true end
+    if duration > fights.longest then fights.longest = duration end
+    return duration > 0 and total / duration or 0, false, total, duration
+end
+
+if C_DamageMeter and C_DamageMeter.GetCombatSessionSourceFromType then
+ns:RegisterModule("dps", {
+    label = "DPS",
+    icon = "Interface\\Icons\\Ability_DualWield",
+    events = { "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED", "DAMAGE_METER_RESET" },
+    interval = 2,
+    defaultEnabled = false,
+    update = function()
+        local dps, secret = FightDPS()
+        if secret or (ns.state.inCombat and not dps) then return L.DPS_IN_COMBAT end
+        if not dps then return L.NA end
+        local fmt = BreakUpLargeNumbers or tostring
+        return L.DPS_FORMAT:format(fmt(math.floor(dps + 0.5)))
+    end,
+    tooltip = function(tt)
+        local dps, secret, total, duration = FightDPS()
+        local fmt = BreakUpLargeNumbers or tostring
+        if secret then tt:AddLine(L.TT_DPS_SECRET, 0.8, 0.8, 0.8, true) end
+        if dps then
+            WHITE(tt, L.TT_DPS_DAMAGE, fmt(math.floor(total)))
+            WHITE(tt, L.TT_DPS_DURATION, ShortTime(duration))
+        end
+        if fights.longest > 0 then WHITE(tt, L.TT_DPS_LONGEST, ShortTime(fights.longest)) end
+    end,
+})
+end
+
+---------------------------------------------------------------------------
+-- Corpse: while you are a ghost, the distance and direction to your body
+---------------------------------------------------------------------------
+local ARROWS = { "↑", "↗", "→", "↘", "↓", "↙", "←", "↖" }
+local function CorpseInfo()
+    if not (UnitIsGhost and Try(UnitIsGhost, "player")) then return nil end
+    local M, D = C_Map, C_DeathInfo
+    local mapID = M and M.GetBestMapForUnit and Try(M.GetBestMapForUnit, "player")
+    local corpse = mapID and D and D.GetCorpseMapPosition and Try(D.GetCorpseMapPosition, mapID)
+    local me = mapID and M.GetPlayerMapPosition and Try(M.GetPlayerMapPosition, mapID, "player")
+    if not (corpse and me and M.GetWorldPosFromMapPos) then return { mapID = mapID } end
+    local _, a = Try(M.GetWorldPosFromMapPos, mapID, corpse)
+    local _, b = Try(M.GetWorldPosFromMapPos, mapID, me)
+    if not (a and b) then return { mapID = mapID } end
+    local ok, info = pcall(function()
+        local dx, dy = a.x - b.x, a.y - b.y
+        local yards = math.sqrt(dx * dx + dy * dy)
+        local arrow
+        local facing = GetPlayerFacing and GetPlayerFacing()
+        if type(facing) == "number" then
+            -- world x points north, y points west; facing 0 = north, counter-clockwise
+            local angle = math.atan2(dy, dx) - facing
+            local step = math.floor(((-angle) % (2 * math.pi)) / (math.pi / 4) + 0.5) % 8
+            arrow = ARROWS[step + 1]
+        end
+        return { mapID = mapID, corpse = corpse, meters = yards * 0.9144, arrow = arrow }
+    end)
+    return ok and info or { mapID = mapID }
+end
+
+ns:RegisterModule("corpse", {
+    label = "CORPSE",
+    icon = "Interface\\Icons\\Ability_Rogue_FeignDeath",
+    events = { "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST" },
+    interval = 0.5,
+    defaultEnabled = false,
+    isEmpty = function() return CorpseInfo() == nil end,
+    update = function()
+        local info = CorpseInfo()
+        if not info then return L.NONE end
+        if not info.meters then return L.CORPSE_GHOST end
+        return ("%s %s"):format(L.CORPSE_FORMAT:format(info.meters), info.arrow or ""), WARN
+    end,
+    tooltip = function(tt)
+        local info = CorpseInfo()
+        if not info then tt:AddLine(L.TT_CORPSE_ALIVE, 0.8, 0.8, 0.8, true) return end
+        tt:AddLine(L.TT_CORPSE_HELP, 1, 1, 1, true)
+    end,
+    -- click: a map pin on your body, tracked on screen
+    onClick = function(_, button)
+        if button ~= "LeftButton" then return end
+        local info = CorpseInfo()
+        if not (info and info.corpse and UiMapPoint and C_Map.SetUserWaypoint) then return end
+        pcall(C_Map.SetUserWaypoint, UiMapPoint.CreateFromVector2D(info.mapID, info.corpse))
+        if C_SuperTrack and C_SuperTrack.SetSuperTrackedUserWaypoint then pcall(C_SuperTrack.SetSuperTrackedUserWaypoint, true) end
+    end,
+    clickHint = L.HINT_CORPSE,
+})
+
+---------------------------------------------------------------------------
+-- Game mode: Standard, Hardcore or Self-Found (WoW Forever's realm rules)
+---------------------------------------------------------------------------
+local function GameMode()
+    local R = C_GameRules
+    if not R then return nil end
+    local hardcore = R.IsHardcoreActive and Try(R.IsHardcoreActive)
+    local selfFound = R.IsSelfFoundAllowed and Try(R.IsSelfFoundAllowed)
+    if hardcore and selfFound then return "GAME_MODE_HARDCORE_SF", BAD end
+    if hardcore then return "GAME_MODE_HARDCORE", BAD end
+    if selfFound then return "GAME_MODE_SELF_FOUND", WARN end
+    return "GAME_MODE_STANDARD", GOOD
+end
+
+if C_GameRules and C_GameRules.IsHardcoreActive then
+ns:RegisterModule("gameMode", {
+    label = "GAME_MODE",
+    icon = "Interface\\Icons\\INV_Misc_Book_07",
+    defaultEnabled = false,
+    update = function()
+        local key, level = GameMode()
+        return key and L[key] or L.NA, level
+    end,
+    tooltip = function(tt)
+        local key = GameMode()
+        if key then tt:AddLine(L["TT_" .. key], 1, 1, 1, true) end
+    end,
+})
+end
+
+---------------------------------------------------------------------------
+-- Weather where you stand (clear, rain, snow, sandstorm...), with its strength
+---------------------------------------------------------------------------
+local WEATHER_NAMES = { [0] = "WEATHER_CLEAR", "WEATHER_RAIN", "WEATHER_SNOW", "WEATHER_SANDSTORM", "WEATHER_OTHER" }
+local WEATHER_ICONS = { [0] = "Interface\\Icons\\Spell_Holy_SurgeOfLight", "Interface\\Icons\\Spell_Frost_SummonWaterElemental",
+    "Interface\\Icons\\Spell_Frost_FrostShock", "Interface\\Icons\\Spell_Nature_Cyclone", "Interface\\Icons\\Spell_Nature_StormReach" }
+local function Weather()
+    local info = C_Weather and C_Weather.GetCurrentWeather and Try(C_Weather.GetCurrentWeather)
+    if type(info) ~= "table" then return nil end
+    return tonumber(info.type) or 0, tonumber(info.intensity) or 0
+end
+
+if C_Weather and C_Weather.GetCurrentWeather then
+ns:RegisterModule("weather", {
+    label = "WEATHER",
+    icon = "Interface\\Icons\\Spell_Nature_StormReach",
+    getIcon = function()
+        local kind = Weather()
+        return WEATHER_ICONS[kind or 0] or WEATHER_ICONS[0]
+    end,
+    events = { "WEATHER_CHANGED", "ZONE_CHANGED_NEW_AREA" },
+    interval = 30,
+    defaultEnabled = false,
+    update = function()
+        local kind, intensity = Weather()
+        if not kind then return L.NA end
+        local name = L[WEATHER_NAMES[kind] or "WEATHER_OTHER"]
+        if kind == 0 or intensity <= 0 then return name end
+        return ("%s %d%%"):format(name, math.floor(math.min(1, intensity) * 100 + 0.5))
+    end,
+})
+end
+
+---------------------------------------------------------------------------
 -- Session: XP per hour and time to the next level; gold earned since you logged in
 ---------------------------------------------------------------------------
 local xpSession = { start = GetTime(), gained = 0, lastXP = nil, lastMax = nil, lastLevel = nil }
@@ -3387,6 +3616,10 @@ local MORE_SAMPLES = {
     longBuffs    = function() return L.LONG_BUFFS_FORMAT:format(3, "42:15"), GOOD end,
     xpRate       = function() return L.XP_RATE_FORMAT:format("18 450") end,
     goldSession  = function() return "+" .. ns.FormatMoney(1234567), GOOD end,
+    dps          = function() return L.DPS_FORMAT:format("142") end,
+    corpse       = function() return L.CORPSE_FORMAT:format(84) .. " ↗", WARN end,
+    gameMode     = function() return L.GAME_MODE_STANDARD, GOOD end,
+    weather      = function() return L.WEATHER_RAIN .. " 40%" end,
 }
 for key, sample in pairs(MORE_SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

@@ -880,6 +880,12 @@ local function BuildBlockPage(page)
         spacerNote.isShown = function() return ns.IsSpacerKey(selected) end
         P.Place(Check(sub, L.ENABLED, "enabled", L.TIP_ENABLED), 1)
         P.Place(Check(sub, L.SHOW_LABEL, "showLabel", L.TIP_SHOW_LABEL), 1)
+        -- a name of your own (a launcher shows "SomeAddonMinimapButton": rename it)
+        local getN = Field("customName")
+        P.Place(CreateEditBox(sub, L.CUSTOM_NAME, getN, function(v)
+            v = type(v) == "string" and strtrim(v) or ""
+            SetField("customName", v ~= "" and v or nil)
+        end, function() return not IsGroup() and not ns.IsSpacerKey(selected) end, L.TIP_CUSTOM_NAME), 1)
         P.Place(Check(sub, L.SHOW_ICON, "showIcon", L.TIP_SHOW_ICON), 1)
         P.Place(Check(sub, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP), 1)
         P.Place(Check(sub, L.COLORIZE, "colorize", L.TIP_COLORIZE), 1)
@@ -1093,7 +1099,8 @@ local function BuildBlockPage(page)
                 table.insert(list, { key = mod.extraAction.key, name = L[mod.extraAction.label] })
             end
             for _, a in ipairs({ { "none", L.ACTION_NONE }, { "chat", L.ACTION_CHAT },
-                                 { "options", L.ACTION_OPTIONS }, { "hide", L.ACTION_HIDE } }) do
+                                 { "options", L.ACTION_OPTIONS }, { "hide", L.ACTION_HIDE },
+                                 { "pin", L.ACTION_PIN } }) do
                 table.insert(list, { key = a[1], name = a[2] })
             end
             return list

@@ -3,9 +3,9 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.0.5 — 
+## 1.1.0 — 
 
-- Your first big Tessera update on WoW Forever: 17 new blocks, and a choice of display on 14 more.
+- Your first big Tessera update on WoW Forever: 21 new blocks, a choice of display on 14 more, pinned tooltips and names of your own.
 
 ### New
 
@@ -16,12 +16,20 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.
 - XP per hour, or the time to your next level at your pace.
 - Gold this session: what you earned or spent since you logged in, and per hour.
+- DPS: your damage per second in the last fight, with the longest fight of the session.
+- Corpse: while you are a ghost, the distance and an arrow toward your body; click for a map pin.
+- Game mode (Standard, Hardcore, Self-Found) and Weather (rain, snow, sandstorm, and how strong).
+- Pin a tooltip: it stays open next to its block and updates every second (quick menu, or a Shift / middle click).
+- Custom name: rename any block, for example a launcher that shows "SomeAddonMinimapButton".
+- Goal: a new "Item" type counts an item in your bags toward your target ("47 / 100").
 
 ### Improvements
 
 - Pick what a block shows (Text tab, "Value shown"): played time this level, in total or this session; zone with its subzone; completed quests; one tracked currency; honor out of its cap or in percent; the next Legacy reward; Comprehension scrolls; rested XP in bubbles; daily or weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.
 - Volume: choose the volume the block shows and your mouse wheel changes (music, effects...).
 - Friends: you can leave out your Battle.net friends.
+- Bags: the tooltip lists profession bags (herb bag...) apart. Durability: the tooltip also lists worn items in your bags, under their own title.
+- Comprehension reads your skill directly and shows its description; Honor shows yesterday's kills and honor when the game gives them.
 - The demo mode shows the new blocks, with a Micro-menu column.
 
 ### Fixes

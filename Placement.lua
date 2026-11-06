@@ -421,7 +421,8 @@ end
 ns.InsertInChat = InsertInChat
 
 -- Readable name of a click action for the tooltip help lines (nil for "none")
-local ACTION_LABELS = { chat = "ACTION_CHAT", options = "ACTION_OPTIONS", hide = "ACTION_HIDE", open = "ACTION_OPEN" }
+local ACTION_LABELS = { chat = "ACTION_CHAT", options = "ACTION_OPTIONS", hide = "ACTION_HIDE", open = "ACTION_OPEN",
+                        pin = "ACTION_PIN" }
 function ns:GetActionName(key, action)
     if not action or action == "none" then return nil end
     local mod = self:GetModule(key)
@@ -438,6 +439,8 @@ function ns:RunClickAction(key, action, frame)
         if self.OpenOptionsFor then self:OpenOptionsFor(key) end
     elseif action == "hide" then
         self:HideBlock(key)
+    elseif action == "pin" then
+        if self.TogglePin then self:TogglePin(key) end
     elseif action == "open" then
         local mod = self:GetModule(key)
         if mod and mod.onClick then pcall(mod.onClick, frame or self.frames[key], "LeftButton", self.db.blocks[key]) end
@@ -492,6 +495,9 @@ function ns:OpenQuickMenu(key)
     MenuUtil.CreateContextMenu(frame, function(_, root)
         root:CreateTitle(self:GetBlockName(key))
         root:CreateButton(L.MENU_SETTINGS, function() self:OpenOptionsFor(key) end)
+        if self.CanPinTooltip and self.CanPinTooltip(key) then
+            root:CreateButton(self:IsPinned(key) and L.MENU_UNPIN or L.MENU_PIN, function() self:TogglePin(key) end)
+        end
         if not self:IsFrozen(key) then
             root:CreateButton(L.MENU_HIDE, function()
                 self:PushUndo()

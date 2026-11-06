@@ -1434,6 +1434,27 @@ for _, step in ipairs({
             { __index = oldItem })
         local value = ns.modules.weaponSkills.update(ns.db.blocks.weaponSkills)
         assert(value:find("deux mains"), "two-handed sword skill: " .. tostring(value))
+        -- "Follows the fight": the ranged weapon's skill while shooting (wand: subclass 19, skill 228)
+        C_SkillInfo.GetNumSkillLines = function() return 3 end
+        local lines = C_SkillInfo.GetSkillLineInfo
+        C_SkillInfo.GetSkillLineInfo = function(i)
+            if i == 3 then return { name = "Baguettes", rank = 30, maxRank = 60, skillLineCategoryID = 6, skillID = 228 } end
+            return lines(i)
+        end
+        GetInventoryItemLink = function(_, slot) return slot == 18 and "item:wand" or "item:2h-sword" end
+        C_Item = setmetatable({ GetItemInfoInstant = function(link)
+            if link == "item:wand" then return 1, "", "", "", "", 2, 19 end
+            return 1, "", "", "", "", 2, 8 end }, { __index = oldItem })
+        local cfg = { skillShown = "combat" }
+        assert(ns.modules.weaponSkills.update(cfg):find("deux mains"), "not shooting: weapon in hand")
+        ns.state.autoRepeat = true
+        assert(ns.modules.weaponSkills.update(cfg):find("Baguettes"), "shooting: wand skill")
+        ns.state.autoRepeat = nil
+        -- "Picked": always the chosen skill, offered in the option's list
+        cfg = { skillShown = "chosen", skillChosen = 43 }
+        assert(ns.modules.weaponSkills.update(cfg):find("^Épées 12"), "picked skill: " .. ns.modules.weaponSkills.update(cfg))
+        local picks = ns.modules.weaponSkills.options[2].values()
+        assert(#picks == 3 and picks[3].key == 228, "skill list for the picker")
         C_SkillInfo, GetInventoryItemLink, C_Item = oldS, oldLink, oldItem
     end,
     -- unspent talent points on WoW Forever: modern talent trees, no UnitCharacterPoints
@@ -1459,8 +1480,10 @@ for _, step in ipairs({
             for _, o in ipairs(mod.options or {}) do
                 if o.kind == "dropdown" and o.field then
                     local saved = cfg[o.field]
-                    for _, v in ipairs(o.values) do
-                        assert(ns.L[v.label], key .. ": no text for " .. tostring(v.label))
+                    -- (a list made at the time, like the player's skills: its labels are game names)
+                    local listed = type(o.values) == "function"
+                    for _, v in ipairs(listed and o.values() or o.values) do
+                        assert(listed or ns.L[v.label], key .. ": no text for " .. tostring(v.label))
                         cfg[o.field] = v.key
                         local ok, err = pcall(mod.update, cfg)
                         assert(ok, key .. " " .. o.field .. "=" .. tostring(v.key) .. ": " .. tostring(err))

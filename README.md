@@ -144,7 +144,7 @@ Help tab inside the game explains everything.
   - Camping: time left on your camp buffs, or your campfire kit's cooldown; a click lights a
     campfire with the kit;
   - Honor: your honor points (PvP ranks in a later version);
-  - weapon skills read from Forever's skill list; profession, talent and Legacy blocks that open
+  - skills read from Forever's skill list (the weapon in hand, the ranged one while you shoot, or one you pick); profession, talent and Legacy blocks that open
     Forever's own windows.
 - More than 50 blocks in all: gold (with history and your characters' gold; Alt + right-click forgets a deleted character), bags (with junk value), durability (with the
   repair cost), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,

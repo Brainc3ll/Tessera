@@ -37,6 +37,21 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.2.0",
+        date = "",
+        sections = {
+            { kind = "improved",
+              en = {
+                "Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your "
+                    .. "ranged weapon's while you shoot), or a skill you pick (This block).",
+              },
+              fr = {
+                "Compétences d'armes devient Compétences : affiche la compétence de l'arme en main, suit le "
+                    .. "combat (celle de l'arme à distance pendant que tu tires), ou une compétence que tu choisis (Ce bloc).",
+              } },
+        },
+    },
+    {
         version = "1.1.0",
         date = "2026-11-06",
         sections = {

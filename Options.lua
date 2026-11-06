@@ -762,8 +762,15 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
             if opt.kind == "check" then
                 P.Place(CreateCheck(sub, label, get, setter, shown, tip), col)
             elseif opt.kind == "dropdown" then
-                local values = {}
-                for _, v in ipairs(opt.values) do table.insert(values, { key = v.key, name = L[v.label] or v.label }) end
+                -- values: a list, or a function (a list that changes: the player's skills...)
+                local values = function()
+                    local entries = {}
+                    local source = type(opt.values) == "function" and opt.values() or opt.values
+                    for _, v in ipairs(source or {}) do
+                        table.insert(entries, { key = v.key, name = L[v.label] or v.label })
+                    end
+                    return entries
+                end
                 P.Place(CreateDropdown(sub, label, values, get, setter, shown, nil, tip), col)
             elseif opt.kind == "slider" then
                 P.Place(CreateSlider(sub, label, opt.min, opt.max, opt.step or 1,

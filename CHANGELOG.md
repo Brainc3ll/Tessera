@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.2.0 — 
+
+### Improvements
+
+- Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your ranged weapon's while you shoot), or a skill you pick (This block).
+
 ## 1.1.0 — 2026-11-06
 
 - Your first big Tessera update on WoW Forever: 7 new blocks, a choice of display on 14 more, pinned tooltips and names of your own.

@@ -2179,8 +2179,8 @@ local WEAPON_SUBCLASS_SKILL = {
     [0] = 44, [1] = 172, [2] = 45, [3] = 46, [4] = 54, [5] = 160, [6] = 229, [7] = 43,
     [8] = 55, [10] = 136, [13] = 473, [15] = 173, [16] = 176, [18] = 226, [19] = 228,
 }
-local function CurrentWeaponSkill(weapons)
-    local link = Try(GetInventoryItemLink, "player", 16)
+local function CurrentWeaponSkill(weapons, slot)
+    local link = Try(GetInventoryItemLink, "player", slot or 16)
     local _, _, _, _, _, classID, subClassID = Try(C_Item and C_Item.GetItemInfoInstant, link)
     local skillID = classID == 2 and WEAPON_SUBCLASS_SKILL[subClassID]
     if skillID then
@@ -2193,10 +2193,37 @@ local function CurrentWeaponSkill(weapons)
     for _, w in ipairs(weapons) do
         if subType and (subType:find(w.name, 1, true) or w.name:find(subType, 1, true)) then return w end
         -- (defense, skill 95, is listed with the weapons but is not one)
-        if w.id ~= 95 and (not best or (w.max - w.rank) > (best.max - best.rank)) then best = w end
+        if not slot and w.id ~= 95 and (not best or (w.max - w.rank) > (best.max - best.rank)) then best = w end
     end
     return best
 end
+
+-- The skill the block shows (option "skillShown"):
+--   weapon  the main-hand weapon's (the old display)
+--   combat  the ranged weapon's while you shoot (wand, bow, thrown: auto-repeat), else the main hand's
+--   chosen  the one picked in "This block" (cfg.skillChosen, a skill line ID)
+local function ShownSkill(cfg)
+    local weapons = SkillLines().weapons
+    local mode = cfg and cfg.skillShown
+    if mode == "chosen" then
+        for _, w in ipairs(weapons) do
+            if w.id == cfg.skillChosen then return w end
+        end
+    elseif mode == "combat" and ns.state.autoRepeat then
+        local ranged = CurrentWeaponSkill(weapons, 18)
+        if ranged then return ranged end
+    end
+    return CurrentWeaponSkill(weapons)
+end
+
+-- auto-repeat (shooting) starts and stops: followed for the "combat" display
+local autoRepeatWatch = CreateFrame("Frame")
+autoRepeatWatch:RegisterEvent("START_AUTOREPEAT_SPELL")
+autoRepeatWatch:RegisterEvent("STOP_AUTOREPEAT_SPELL")
+autoRepeatWatch:SetScript("OnEvent", function(_, event)
+    ns.state.autoRepeat = event == "START_AUTOREPEAT_SPELL"
+    if ns.UpdateBlock and ns.db then ns:UpdateBlock("weaponSkills") end
+end)
 
 -- Weapon skills only exist on clients with a skill list (C_SkillInfo on WoW Forever):
 -- the block is offered only there
@@ -2209,14 +2236,29 @@ ns:RegisterModule("weaponSkills", {
     icon = "Interface\\Icons\\INV_Sword_04",
     events = { "SKILL_LINES_CHANGED", "PLAYER_EQUIPMENT_CHANGED", "CHAT_MSG_SKILL" },
     defaultEnabled = false,
+    defaults = { skillShown = "weapon", skillChosen = 0 }, -- (0: none picked yet; a number so imports keep it)
+    options = {
+        { kind = "dropdown", field = "skillShown", tab = "text", label = "SKILL_SHOWN", tip = "TIP_SKILL_SHOWN",
+          values = { { key = "weapon", label = "SKILL_WEAPON" }, { key = "combat", label = "SKILL_COMBAT" },
+                     { key = "chosen", label = "SKILL_CHOSEN" } } },
+        { kind = "dropdown", field = "skillChosen", tab = "text", label = "SKILL_PICK", tip = "TIP_SKILL_PICK",
+          values = function()
+              local list = {}
+              for _, w in ipairs(SkillLines().weapons) do
+                  table.insert(list, { key = w.id, label = ("%s (%d/%d)"):format(w.name, w.rank, w.max) })
+              end
+              return list
+          end,
+          shown = function(cfg) return cfg.skillShown == "chosen" end },
+    },
     isEmpty = function() return #SkillLines().weapons == 0 end,
-    update = function()
-        local w = CurrentWeaponSkill(SkillLines().weapons)
+    update = function(cfg)
+        local w = ShownSkill(cfg)
         if not w then return L.NONE end
         return ("%s %d/%d"):format(w.name, w.rank, w.max), w.rank >= w.max and GOOD or WARN
     end,
-    progress = function()
-        local w = CurrentWeaponSkill(SkillLines().weapons)
+    progress = function(cfg)
+        local w = ShownSkill(cfg)
         return w and w.max > 0 and w.rank / w.max or nil
     end,
     tooltip = function(tt) SkillTooltip(tt, SkillLines().weapons) end,

@@ -1401,6 +1401,26 @@ for _, step in ipairs({
         assert(t.isEmpty(), "no point left: the block hides")
         UnitCharacterPoints, C_ClassTalents, C_Traits = oldU, oldCT, oldT
     end,
+    -- every value of every block's display choices gives a value without error, and the
+    -- default of each choice is the block's former display
+    function()
+        for _, key in ipairs(ns.order) do
+            local mod, cfg = ns.modules[key], ns.db.blocks[key]
+            for _, o in ipairs(mod.options or {}) do
+                if o.kind == "dropdown" and o.field then
+                    local saved = cfg[o.field]
+                    for _, v in ipairs(o.values) do
+                        assert(ns.L[v.label], key .. ": no text for " .. tostring(v.label))
+                        cfg[o.field] = v.key
+                        local ok, err = pcall(mod.update, cfg)
+                        assert(ok, key .. " " .. o.field .. "=" .. tostring(v.key) .. ": " .. tostring(err))
+                    end
+                    cfg[o.field] = saved
+                    assert(ns.L[o.label] and ns.L[o.tip], key .. ": label or tooltip text missing")
+                end
+            end
+        end
+    end,
     -- the bags block counts only bags that hold anything, not a herb bag's free slots
     function()
         local old = C_Container
@@ -1794,7 +1814,9 @@ if os.getenv("TESSERA_EXPORT_NS") then TESSERA_NS = ns end
 -- tools/check_docs.lua asks for the list of blocks (key and locale key of the name)
 if os.getenv("TESSERA_LIST_MODULES") then
     for _, key in ipairs(ns.order) do
-        print("MODULE " .. key .. " " .. tostring(ns.modules[key].label))
+        local fields = {}
+        for _, o in ipairs(ns.modules[key].options or {}) do fields[#fields + 1] = tostring(o.field) end
+        print("MODULE " .. key .. " " .. tostring(ns.modules[key].label) .. " " .. table.concat(fields, ","))
     end
 end
 print("mock run finished")

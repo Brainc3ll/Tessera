@@ -998,11 +998,19 @@ ns:RegisterModule("zone", {
     icon = "Interface\\Icons\\Ability_Hunter_Pathfinding",
     events = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" },
     defaultEnabled = false,
-    -- main zone (e.g. Stormwind), without the subzone
-    update = function()
+    -- main zone (e.g. Stormwind), without the subzone; or "Zone - Subzone"
+    update = function(cfg)
         local text = GetRealZoneText and GetRealZoneText() or GetZoneText()
-        return text ~= "" and text or nil
+        if text == "" then return nil end
+        local sub = cfg and cfg.zoneShown == "both" and GetSubZoneText()
+        if sub and sub ~= "" and sub ~= text then return ("%s - %s"):format(text, sub) end
+        return text
     end,
+    defaults = { zoneShown = "zone" },
+    options = {
+        { kind = "dropdown", field = "zoneShown", tab = "text", label = "ZONE_SHOWN", tip = "TIP_ZONE_SHOWN",
+          values = { { key = "zone", label = "ZONE_ONLY" }, { key = "both", label = "ZONE_AND_SUBZONE" } } },
+    },
     tooltip = ZoneTooltip,
     secureMacro = "/run ToggleWorldMap()",
     clickHint = L.HINT_MAP,
@@ -1041,9 +1049,9 @@ ns:RegisterModule("friends", {
     events = { "FRIENDLIST_UPDATE", "BN_FRIEND_ACCOUNT_ONLINE", "BN_FRIEND_ACCOUNT_OFFLINE", "BN_CONNECTED" },
     defaultEnabled = false,
     -- nobody online: block hidden ("Hide when empty" option)
-    isEmpty = function()
+    isEmpty = function(cfg)
         local online = C_FriendList.GetNumOnlineFriends() or 0
-        if BNGetNumFriends then
+        if BNGetNumFriends and not (cfg and cfg.noBNetFriends) then
             local _, bnOnline = BNGetNumFriends()
             online = online + (bnOnline or 0)
         end
@@ -1052,7 +1060,7 @@ ns:RegisterModule("friends", {
     update = function(cfg)
         local online = C_FriendList.GetNumOnlineFriends() or 0
         local total = C_FriendList.GetNumFriends() or 0
-        if BNGetNumFriends then
+        if BNGetNumFriends and not (cfg and cfg.noBNetFriends) then
             local bnTotal, bnOnline = BNGetNumFriends()
             online = online + (bnOnline or 0)
             total = total + (bnTotal or 0)
@@ -1061,7 +1069,8 @@ ns:RegisterModule("friends", {
         return tostring(online)
     end,
     defaults = { countFormat = "online" },
-    options = { COUNT_OPTION },
+    options = { COUNT_OPTION, { kind = "check", field = "noBNetFriends", tab = "text", label = "NO_BNET_FRIENDS",
+                                tip = "TIP_NO_BNET_FRIENDS" } },
     tooltip = function(tt)
         local shown = 0
         local count = C_FriendList.GetNumFriends() or 0
@@ -1168,10 +1177,21 @@ ns:RegisterModule("memory", {
     icon = "Interface\\Icons\\INV_Misc_Gear_01",
     interval = 30,
     defaultEnabled = false,
-    update = function()
+    update = function(cfg)
         pcall(RefreshMemory) -- on failure, keep showing the last known total
+        if cfg and cfg.memoryShown == "tessera" then
+            for _, e in ipairs(memoryCache.list) do
+                if e.name == "Tessera" or e.folder == "Tessera" then return FormatMemory(e.kb) end
+            end
+            return FormatMemory(0)
+        end
         return FormatMemory(memoryCache.total)
     end,
+    defaults = { memoryShown = "total" },
+    options = {
+        { kind = "dropdown", field = "memoryShown", tab = "text", label = "MEMORY_SHOWN", tip = "TIP_MEMORY_SHOWN",
+          values = { { key = "total", label = "MEMORY_ALL_ADDONS" }, { key = "tessera", label = "MEMORY_TESSERA" } } },
+    },
     tooltip = function(tt)
         -- Tessera's own footprint first, then the heaviest addons
         local own = 0
@@ -1325,11 +1345,25 @@ ns:RegisterModule("quests", {
     icon = "Interface\\Icons\\INV_Misc_Book_09",
     events = { "QUEST_LOG_UPDATE" },
     defaultEnabled = false,
-    update = function()
-        local count, max = #QuestList(), MaxQuests()
+    update = function(cfg)
+        local list = QuestList()
+        local count, max = #list, MaxQuests()
         local level = count >= max and BAD or (count >= max - 2 and WARN or GOOD)
+        local mode = cfg and cfg.questsFormat or "countMax"
+        if mode == "count" then return tostring(count), level end
+        if mode == "complete" then
+            local done = 0
+            for _, q in ipairs(list) do if q.complete then done = done + 1 end end
+            return ("%d / %d"):format(done, count), done > 0 and GOOD or nil
+        end
         return ("%d / %d"):format(count, max), level
     end,
+    defaults = { questsFormat = "countMax" },
+    options = {
+        { kind = "dropdown", field = "questsFormat", tab = "text", label = "QUESTS_SHOWN", tip = "TIP_QUESTS_SHOWN",
+          values = { { key = "countMax", label = "QUESTS_COUNT_MAX" }, { key = "count", label = "QUESTS_COUNT" },
+                     { key = "complete", label = "QUESTS_COMPLETE" } } },
+    },
     tooltip = function(tt)
         local list = QuestList()
         for i = 1, math.min(#list, MAX_LINES) do
@@ -1433,6 +1467,8 @@ ns:RegisterModule("currency", {
     isEmpty = function() return #TrackedCurrencies() == 0 end,
     update = function(cfg)
         local list = TrackedCurrencies()
+        local which = tonumber(cfg.currencyShown)
+        if which then list = { list[which] } end
         if #list == 0 then return L.NONE end
         local size = cfg.fontSize or 12
         local parts = {}
@@ -1449,6 +1485,12 @@ ns:RegisterModule("currency", {
             WHITE(tt, c.name, BreakUpLargeNumbers and BreakUpLargeNumbers(c.count) or tostring(c.count))
         end
     end,
+    defaults = { currencyShown = "all" },
+    options = {
+        { kind = "dropdown", field = "currencyShown", tab = "text", label = "CURRENCY_SHOWN", tip = "TIP_CURRENCY_SHOWN",
+          values = { { key = "all", label = "CURRENCY_ALL" }, { key = "1", label = "CURRENCY_1" },
+                     { key = "2", label = "CURRENCY_2" }, { key = "3", label = "CURRENCY_3" } } },
+    },
     secureMacro = "/run if ToggleCharacter then ToggleCharacter('TokenFrame') end",
     clickHint = L.HINT_CURRENCY,
 })
@@ -1533,13 +1575,22 @@ ns:RegisterModule("speed", {
     icon = "Interface\\Icons\\Spell_Nature_Swiftness",
     interval = 0.5,
     defaultEnabled = false,
-    update = function()
+    update = function(cfg)
         local current, run = Try(GetUnitSpeed, "player")
         if not current then return nil end
         -- pcall: the speed can be a "secret" value on Midnight-era clients; comparing it errors
-        local ok, speed = pcall(function() return current > 0 and current or run end)
-        return ("%d%%"):format(SpeedPercent(ok and speed or run))
+        local ok, text = pcall(function()
+            local speed = current > 0 and current or run
+            if cfg and cfg.speedUnit == "meters" then return L.SPEED_METERS_FORMAT:format(speed * 0.9144) end
+            return ("%d%%"):format(SpeedPercent(speed))
+        end)
+        return ok and text or nil
     end,
+    defaults = { speedUnit = "percent" },
+    options = {
+        { kind = "dropdown", field = "speedUnit", tab = "text", label = "SPEED_SHOWN", tip = "TIP_SPEED_SHOWN",
+          values = { { key = "percent", label = "SPEED_PERCENT" }, { key = "meters", label = "SPEED_METERS" } } },
+    },
     tooltip = function(tt)
         local current, run, flight, swim = Try(GetUnitSpeed, "player")
         -- each line on its own pcall: any of these values may be "secret"
@@ -1577,10 +1628,17 @@ ns:RegisterModule("volume", {
     events = { "CVAR_UPDATE" },
     interval = 5,
     defaultEnabled = false,
-    update = function()
+    update = function(cfg)
         if Try(GetCVar, "Sound_EnableAllSound") == "0" then return L.MUTED, BAD end
-        return ("%d%%"):format(math.floor(CVarNumber("Sound_MasterVolume") * 100 + 0.5))
+        return ("%d%%"):format(math.floor(CVarNumber(cfg and cfg.volumeChannel or "Sound_MasterVolume") * 100 + 0.5))
     end,
+    defaults = { volumeChannel = "Sound_MasterVolume" },
+    options = {
+        { kind = "dropdown", field = "volumeChannel", tab = "text", label = "VOLUME_SHOWN", tip = "TIP_VOLUME_SHOWN",
+          values = { { key = "Sound_MasterVolume", label = "TT_MASTER" }, { key = "Sound_MusicVolume", label = "TT_MUSIC" },
+                     { key = "Sound_SFXVolume", label = "TT_EFFECTS" }, { key = "Sound_AmbienceVolume", label = "TT_AMBIENCE" },
+                     { key = "Sound_DialogVolume", label = "TT_DIALOG" } } },
+    },
     tooltip = function(tt)
         for _, v in ipairs(VOLUMES) do
             WHITE(tt, L[v[2]], ("%d%%"):format(math.floor(CVarNumber(v[1]) * 100 + 0.5)))
@@ -1592,10 +1650,11 @@ ns:RegisterModule("volume", {
         local enabled = Try(GetCVar, "Sound_EnableAllSound") ~= "0"
         SetCVar("Sound_EnableAllSound", enabled and "0" or "1")
     end,
-    onWheel = function(delta)
-        local v = CVarNumber("Sound_MasterVolume") + (delta > 0 and 0.05 or -0.05)
+    onWheel = function(delta, cfg)
+        local cvar = cfg and cfg.volumeChannel or "Sound_MasterVolume"
+        local v = CVarNumber(cvar) + (delta > 0 and 0.05 or -0.05)
         v = math.max(0, math.min(1, math.floor(v * 20 + 0.5) / 20))
-        SetCVar("Sound_MasterVolume", tostring(v))
+        SetCVar(cvar, tostring(v))
     end,
 })
 
@@ -2214,11 +2273,20 @@ ns:RegisterModule("legacy", {
     events = { "MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "MAJOR_FACTION_UNLOCKED", "UPDATE_FACTION" },
     interval = 60, -- in case the renown events are not sent for this track
     defaultEnabled = false,
-    update = function()
+    update = function(cfg)
         local data = LegacyData()
         if not data then return L.NA end
+        if cfg and cfg.legacyShown == "next" then
+            local nextReward = NextLegacyReward(data.renownLevel)
+            if nextReward then return L.LEGACY_NEXT_FORMAT:format(data.renownLevel, nextReward.level) end
+        end
         return tostring(data.renownLevel)
     end,
+    defaults = { legacyShown = "points" },
+    options = {
+        { kind = "dropdown", field = "legacyShown", tab = "text", label = "LEGACY_SHOWN", tip = "TIP_LEGACY_SHOWN",
+          values = { { key = "points", label = "LEGACY_POINTS" }, { key = "next", label = "LEGACY_NEXT" } } },
+    },
     -- progress toward the next reward
     progress = function()
         local data = LegacyData()
@@ -2329,9 +2397,17 @@ ns:RegisterModule("rested", {
     events = { "UPDATE_EXHAUSTION", "PLAYER_XP_UPDATE", "PLAYER_UPDATE_RESTING", "PLAYER_LEVEL_UP" },
     defaultEnabled = false,
     isEmpty = function() return RestedPercent() <= 0 end,
-    update = function()
+    update = function(cfg)
+        if cfg and cfg.restedFormat == "bubbles" then
+            return L.BUBBLES_FORMAT:format(RestedPercent() / 5)
+        end
         return ("%d%%"):format(math.floor(RestedPercent() + 0.5))
     end,
+    defaults = { restedFormat = "percent" },
+    options = {
+        { kind = "dropdown", field = "restedFormat", tab = "text", label = "RESTED_SHOWN", tip = "TIP_RESTED_SHOWN",
+          values = { { key = "percent", label = "RESTED_PERCENT" }, { key = "bubbles", label = "RESTED_BUBBLES" } } },
+    },
     progress = function() return math.min(1, RestedPercent() / 150) end, -- rested XP caps at 150 %
     tooltip = function(tt)
         local fmt = BreakUpLargeNumbers or tostring
@@ -2384,10 +2460,19 @@ ns:RegisterModule("played", {
     defaultEnabled = false,
     request = RequestPlayed,
     requestInterval = 3600,
-    update = function()
-        local level = PlayedNow(played.level)
-        return level and ShortDuration(level) or ShortDuration(GetTime() - session.start)
+    update = function(cfg)
+        local mode = cfg and cfg.playedShown or "level"
+        local sessionTime = ShortDuration(GetTime() - session.start)
+        if mode == "session" then return sessionTime end
+        local value = PlayedNow(mode == "total" and played.total or played.level)
+        return value and ShortDuration(value) or sessionTime
     end,
+    defaults = { playedShown = "level" },
+    options = {
+        { kind = "dropdown", field = "playedShown", tab = "text", label = "PLAYED_SHOWN", tip = "TIP_PLAYED_SHOWN",
+          values = { { key = "level", label = "TT_PLAYED_LEVEL" }, { key = "total", label = "TT_PLAYED_TOTAL" },
+                     { key = "session", label = "PLAYED_SESSION" } } },
+    },
     tooltip = function(tt)
         WHITE(tt, L.TT_SESSION_TIME, FormatDuration(GetTime() - session.start))
         if played.level then WHITE(tt, L.TT_PLAYED_LEVEL, FormatDuration(PlayedNow(played.level))) end
@@ -2445,10 +2530,22 @@ if C_DateAndTime and C_DateAndTime.GetSecondsUntilDailyReset then
         icon = "Interface\\Icons\\INV_Misc_PocketWatch_02",
         interval = 30,
         defaultEnabled = false,
-        update = function()
+        update = function(cfg)
             local daily = Try(C_DateAndTime.GetSecondsUntilDailyReset)
+            local weekly = C_DateAndTime.GetSecondsUntilWeeklyReset and Try(C_DateAndTime.GetSecondsUntilWeeklyReset)
+            local mode = cfg and cfg.resetShown or "daily"
+            if mode == "weekly" and weekly then return ShortDuration(weekly) end
+            if mode == "both" and daily and weekly then
+                return ("%s · %s"):format(ShortDuration(daily), ShortDuration(weekly))
+            end
             return daily and ShortDuration(daily) or nil
         end,
+        defaults = { resetShown = "daily" },
+        options = {
+            { kind = "dropdown", field = "resetShown", tab = "text", label = "RESET_SHOWN", tip = "TIP_RESET_SHOWN",
+              values = { { key = "daily", label = "RESET_DAILY" }, { key = "weekly", label = "RESET_WEEKLY" },
+                         { key = "both", label = "RESET_BOTH" } } },
+        },
         tooltip = function(tt)
             local daily = Try(C_DateAndTime.GetSecondsUntilDailyReset)
             local weekly = C_DateAndTime.GetSecondsUntilWeeklyReset and Try(C_DateAndTime.GetSecondsUntilWeeklyReset)
@@ -2615,10 +2712,19 @@ ns:RegisterModule("whispers", {
     icon = "Interface\\Icons\\INV_Letter_02",
     alertOnShow = true,
     isEmpty = function() return #whispers == 0 end,
-    update = function()
+    update = function(cfg)
         local n = UnreadCount()
+        local last = whispers[#whispers]
+        if cfg and cfg.whispersShown == "name" and last then
+            return ("%s (%d)"):format(Masked(last.name), n), n > 0 and WARN or GOOD
+        end
         return tostring(n), n > 0 and WARN or GOOD
     end,
+    defaults = { whispersShown = "count" },
+    options = {
+        { kind = "dropdown", field = "whispersShown", tab = "text", label = "WHISPERS_SHOWN", tip = "TIP_WHISPERS_SHOWN",
+          values = { { key = "count", label = "WHISPERS_COUNT" }, { key = "name", label = "WHISPERS_NAME" } } },
+    },
     tooltip = function(tt)
         if #whispers == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
         for i = #whispers, 1, -1 do
@@ -2750,11 +2856,22 @@ ns:RegisterModule("comprehension", {
     events = { "SKILL_LINES_CHANGED", "CHAT_MSG_SKILL", "BAG_UPDATE_DELAYED" },
     defaultEnabled = false,
     isEmpty = function() return ComprehensionSkill() == nil end,
-    update = function()
+    update = function(cfg)
         local s = ComprehensionSkill()
         if not s then return L.NONE end
+        if cfg and cfg.comprehensionShown == "scrolls" then
+            local count = 0
+            for _, sc in ipairs(ScrollsInBags()) do count = count + sc.count end
+            return L.SCROLLS_FORMAT:format(count)
+        end
         return ("%d/%d"):format(s.rank, s.max), s.rank >= s.max and GOOD or WARN
     end,
+    defaults = { comprehensionShown = "rank" },
+    options = {
+        { kind = "dropdown", field = "comprehensionShown", tab = "text", label = "COMPREHENSION_SHOWN",
+          tip = "TIP_COMPREHENSION_SHOWN",
+          values = { { key = "rank", label = "COMPREHENSION_RANK" }, { key = "scrolls", label = "COMPREHENSION_SCROLLS" } } },
+    },
     progress = function()
         local s = ComprehensionSkill()
         return s and s.max > 0 and s.rank / s.max or nil
@@ -2846,13 +2963,26 @@ ns:RegisterModule("honor", {
     events = { "CURRENCY_DISPLAY_UPDATE", "PLAYER_PVP_KILLS_CHANGED" },
     interval = 60,
     defaultEnabled = false,
-    update = function()
+    update = function(cfg)
         local info = HonorInfo()
         if not info then return L.NA end
         local fmt = BreakUpLargeNumbers or tostring
-        local capped = info.maxQuantity and info.maxQuantity > 0 and info.quantity >= info.maxQuantity
+        local hasMax = info.maxQuantity and info.maxQuantity > 0
+        local capped = hasMax and info.quantity >= info.maxQuantity
+        local mode = cfg and cfg.honorFormat or "current"
+        if hasMax and mode == "currentMax" then
+            return ("%s / %s"):format(fmt(info.quantity or 0), fmt(info.maxQuantity)), capped and WARN or nil
+        elseif hasMax and mode == "percent" then
+            return ("%d%%"):format(math.floor((info.quantity or 0) / info.maxQuantity * 100)), capped and WARN or nil
+        end
         return fmt(info.quantity or 0), capped and WARN or nil
     end,
+    defaults = { honorFormat = "current" },
+    options = {
+        { kind = "dropdown", field = "honorFormat", tab = "text", label = "HONOR_SHOWN", tip = "TIP_HONOR_SHOWN",
+          values = { { key = "current", label = "HONOR_CURRENT" }, { key = "currentMax", label = "HONOR_CURRENT_MAX" },
+                     { key = "percent", label = "HONOR_PERCENT" } } },
+    },
     progress = function()
         local info = HonorInfo()
         if not (info and info.maxQuantity and info.maxQuantity > 0) then return nil end

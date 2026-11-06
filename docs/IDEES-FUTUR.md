@@ -317,11 +317,11 @@ Idée de Braincell1980 : une base et des modules de blocs par catégorie (Foreve
 - GSF garde tout dans son espace privé (pas d'API publique, pas de DataBroker) et n'a pas de licence : ne pas lire ses fichiers de sauvegarde, ne rien reprendre de son code.
 - Voie retenue : si Braincell1980 s'intègre à la guilde, il proposera à l'auteur un flux DataBroker (code + doc) ; Tessera l'affichera alors sans rien ajouter.
 
-## Bloc Temps de jeu : choisir ce qui est affiché (demandé le 5/11, pour après la semaine de maintenance)
+## Bloc Temps de jeu : choisir ce qui est affiché (demandé le 5/11) : fait dans la 1.0.5
 - Aujourd'hui le bloc affiche le temps passé à ce niveau ; la bulle montre session, niveau et total.
 - Option dans l'onglet Texte du bloc : « Affiché : ce niveau / au total / cette session », « ce niveau » par défaut (rien ne change pour ceux qui ont déjà le bloc). Nouveaux textes : traductions de, es, mx, pt à faire importer avant la publication.
 
-## Idées du 6/11 (après la semaine de maintenance)
+## Idées du 6/11 : faites dans la 1.0.5 (sauf le familier : humeur et fidélité seulement)
 - **Bloc Micro-menu** (idée de Braincell1980) : les boutons du micro-menu de Blizzard (personnage, sorts, talents, métiers, quêtes, guilde, Héritage, collections, donjons...) en petites icônes dans un bloc ; évolutif : un menu pas encore débloqué (niveau trop bas) est grisé ou caché, et apparaît quand il se débloque.
 - **Options d'affichage par bloc** (liste proposée le 6/11, à trier avec lui) : Temps de jeu (session / niveau / total), Heure et Heure du serveur (12 h / 24 h), Amis et Guilde (« 5 » ou « 5 / 20 », amis Battle.net ou non), Quêtes (« 13 / 40 », « 13 », quêtes terminées), Monnaies (choisir la monnaie), Vitesse (% ou mètres/s), Volume (général, musique, effets), Repos (% ou bulles), Honneur (actuel, actuel / max, %), Héritage (points ou prochaine récompense), Compréhension (rang ou parchemins), Réinitialisation (quotidienne, hebdomadaire, les deux), Chuchotements (nombre ou dernier nom), Mémoire (total ou Tessera seul), Zone (zone, sous-zone ou les deux).
 - **Nouveaux blocs proposés** : Pistage (le pistage actif de la minicarte, clic pour changer : herbes, minerais...), Familier du chasseur (humeur, fidélité), Enchantement d'arme temporaire (poisons, pierres à aiguiser, imprégnations du chaman : temps restant), Buffs longs (Bien nourri, élixirs, buffs mondiaux : temps restant), XP par heure et temps avant le niveau suivant, Or gagné pendant la session.

@@ -40,6 +40,59 @@ ns.CHANGELOG = {
         version = "1.0.5",
         date = "",
         sections = {
+            { kind = "intro",
+              en = {
+                "Your first big Tessera update on WoW Forever: 17 new blocks, and a choice of display on 14 more.",
+              },
+              fr = {
+                "La première grosse mise à jour de Tessera sur WoW Forever : 17 nouveaux blocs, et un choix "
+                    .. "d'affichage sur 14 autres.",
+              } },
+            { kind = "new",
+              en = {
+                "Micro-menu: Blizzard's micro-menu buttons (character, spellbook, talents, professions, quests, "
+                    .. "guild, Legacy...) as blocks you place anywhere. A menu you have not unlocked yet stays grey "
+                    .. "until you reach it.",
+                "Tracking: your active minimap tracking (herbs, minerals...); click for the tracking menu.",
+                "Hunter pet: your pet's happiness, with its damage and loyalty; a warning when it loses loyalty.",
+                "Weapon enchant: time left on your poisons, sharpening stones or shaman imbues.",
+                "Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.",
+                "XP per hour, or the time to your next level at your pace.",
+                "Gold this session: what you earned or spent since you logged in, and per hour.",
+              },
+              fr = {
+                "Micro-menu : les boutons du micro-menu de Blizzard (personnage, grimoire, talents, métiers, "
+                    .. "quêtes, guilde, Héritage...) en blocs à placer où tu veux. Un menu pas encore débloqué "
+                    .. "reste gris jusqu'à ce que tu l'atteignes.",
+                "Pistage : ton pistage actif de la minicarte (herbes, minerais...) ; clic pour le menu du pistage.",
+                "Familier du chasseur : l'humeur de ton familier, avec ses dégâts et sa fidélité ; une alerte "
+                    .. "quand il perd de la fidélité.",
+                "Enchantement d'arme : temps restant de tes poisons, pierres à aiguiser ou imprégnations du chaman.",
+                "Buffs longs : Bien nourri, élixirs et buffs mondiaux de 10 minutes ou plus, le plus court en premier.",
+                "XP par heure, ou le temps avant ton niveau suivant à ton rythme.",
+                "Or de la session : ce que tu as gagné ou dépensé depuis ta connexion, et par heure.",
+              } },
+            { kind = "improved",
+              en = {
+                "Pick what a block shows (Text tab, \"Value shown\"): played time this level, in total or this "
+                    .. "session; zone with its subzone; completed quests; one tracked currency; honor out of its cap "
+                    .. "or in percent; the next Legacy reward; Comprehension scrolls; rested XP in bubbles; daily or "
+                    .. "weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.",
+                "Volume: choose the volume the block shows and your mouse wheel changes (music, effects...).",
+                "Friends: you can leave out your Battle.net friends.",
+                "The demo mode shows the new blocks, with a Micro-menu column.",
+              },
+              fr = {
+                "Choisis ce que montre un bloc (onglet Texte, « Valeur affichée ») : temps de jeu à ce niveau, "
+                    .. "au total ou cette session ; zone avec sa sous-zone ; quêtes terminées ; une seule monnaie "
+                    .. "suivie ; honneur sur son plafond ou en pourcentage ; prochaine récompense d'Héritage ; "
+                    .. "parchemins de Compréhension ; XP de repos en bulles ; réinitialisation quotidienne ou "
+                    .. "hebdomadaire ; nom du dernier chuchotement ; vitesse en mètres par seconde ; mémoire de "
+                    .. "Tessera seul.",
+                "Volume : choisis le volume que le bloc affiche et que ta molette change (musique, effets...).",
+                "Amis : tu peux laisser de côté tes amis Battle.net.",
+                "Le mode démo montre les nouveaux blocs, avec une colonne Micro-menu.",
+              } },
             { kind = "fixed",
               en = {
                 "The Talent points block shows your unspent points on WoW Forever (it never appeared).",

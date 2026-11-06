@@ -5,14 +5,16 @@
 ## What makes it different?
 
 - **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
-- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills.
+- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills, minimap tracking, your hunter pet's happiness, poisons and sharpening stones, Well Fed and other long buffs.
+- **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level: most blocks give you a choice.
+- **A micro-menu that grows with you.** Blizzard's micro-menu buttons as blocks you place anywhere; a menu you have not unlocked yet stays grey until you reach it.
 - **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames. 24 styles in all.
 - **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
 - **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
 - **Ready to stream.** Streamer mode hides other players' names, your other characters, your guild's name and your gold in one click.
 - **DataBroker both ways.** Show your other addons' DataBroker objects as blocks, or share Tessera's blocks with Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 
-40+ blocks in all, plus launchers for your minimap buttons. A ready-made bar shows up at first launch. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
+60+ blocks in all, plus launchers for your minimap buttons. A ready-made bar shows up at first launch. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
 
 ## Why make Tessera when addons like it already exist?
 
@@ -46,7 +48,7 @@ Type **/tessera bug**, copy the report and post it on [GitHub](https://github.co
 
 ## Every block and command
 
-**All the blocks**: gold (with a 7-day history and your characters' gold; forget a deleted character from its menu), bags (with junk value), durability, FPS and latency (with graphs), local and server time, date, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, a personal goal, mana regeneration, character stats, group loot, streamer mode... plus the WoW Forever blocks above.
+**All the blocks**: gold (with a 7-day history and your characters' gold; forget a deleted character from its menu), bags (with junk value), durability, FPS and latency (with graphs), local and server time, date, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, a personal goal, mana regeneration, character stats, group loot, streamer mode, micro-menu (one block per button), minimap tracking, hunter pet, weapon enchant, long buffs, XP per hour, gold this session... plus the WoW Forever blocks above.
 
 | Command | Effect |
 |---|---|
@@ -70,14 +72,16 @@ Type **/tessera bug**, copy the report and post it on [GitHub](https://github.co
 ## Qu'est-ce qui le rend différent ?
 
 - **Des blocs qui s'emboîtent.** Pose un bloc contre un autre : ils forment une seule barre. Une barre en haut, une colonne, un groupe dans un coin, ou chaque bloc tout seul.
-- **Pensé pour WoW Forever.** Points d'héritage (prochaine récompense, défis par catégorie), Compréhension (avec les parchemins de tes sacs), Camping (bonus et kit), Honneur, compétences d'armes.
+- **Pensé pour WoW Forever.** Points d'héritage (prochaine récompense, défis par catégorie), Compréhension (avec les parchemins de tes sacs), Camping (bonus et kit), Honneur, compétences d'armes, pistage de la minicarte, humeur de ton familier de chasseur, poisons et pierres à aiguiser, Bien nourri et autres buffs longs.
+- **Tu choisis ce que montre chaque bloc.** Temps de jeu à ce niveau ou au total, honneur sur son plafond, prochaine récompense d'Héritage, XP par heure ou temps avant ton niveau suivant : la plupart des blocs te laissent le choix.
+- **Un micro-menu qui grandit avec toi.** Les boutons du micro-menu de Blizzard en blocs à placer où tu veux ; un menu pas encore débloqué reste gris jusqu'à ce que tu l'atteignes.
 - **Une seule allure pour tout.** Tous les blocs ont les mêmes infobulles et le même style : celui de Blizzard, de FlareUI, d'ElvUI, d'EllesmereUI, ou des styles fantasy faits avec les fenêtres du jeu. 24 styles en tout.
 - **Dans ta langue.** Anglais et français depuis le premier jour, plus l'allemand, l'espagnol et le portugais du Brésil.
 - **Suivi.** Chaque version est testée en jeu, et tes dispositions passent d'une version à l'autre.
 - **Prêt pour le stream.** Le mode streamer cache en un clic les noms des autres joueurs, tes autres personnages, le nom de ta guilde et ton or.
 - **DataBroker dans les deux sens.** Affiche les objets DataBroker de tes autres addons comme des blocs, ou partage les blocs de Tessera avec Titan Panel, Bazooka ou Arcana (anciennement ChocolateBar).
 
-Plus de 40 blocs, et des lanceurs pour les boutons de ta minicarte. Une barre toute prête s'affiche au premier lancement. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.
+Plus de 60 blocs, et des lanceurs pour les boutons de ta minicarte. Une barre toute prête s'affiche au premier lancement. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.
 
 ## Pourquoi Tessera, alors que des addons du genre existent déjà ?
 
@@ -111,7 +115,7 @@ Tape **/tessera bug**, copie le rapport et poste-le sur [GitHub](https://github.
 
 ## Tous les blocs et commandes
 
-**Tous les blocs** : or (avec l'historique sur 7 jours et l'or de tes personnages ; un personnage supprimé s'oublie depuis son menu), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, date, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, réinitialisation quotidienne et hebdomadaire, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe, mode streamer... en plus des blocs WoW Forever ci-dessus.
+**Tous les blocs** : or (avec l'historique sur 7 jours et l'or de tes personnages ; un personnage supprimé s'oublie depuis son menu), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, date, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, réinitialisation quotidienne et hebdomadaire, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe, mode streamer, micro-menu (un bloc par bouton), pistage, familier du chasseur, enchantement d'arme, buffs longs, XP par heure, or de la session... en plus des blocs WoW Forever ci-dessus.
 
 | Commande | Effet |
 |---|---|

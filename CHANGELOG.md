@@ -5,6 +5,25 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.0.5 — 
 
+- Your first big Tessera update on WoW Forever: 17 new blocks, and a choice of display on 13 more.
+
+### New
+
+- Micro-menu: Blizzard's micro-menu buttons (character, spellbook, talents, professions, quests, guild, Legacy...) as blocks you place anywhere. A menu you have not unlocked yet stays grey until you reach it.
+- Tracking: your active minimap tracking (herbs, minerals...); click for the tracking menu.
+- Hunter pet: your pet's happiness, with its damage and loyalty; a warning when it loses loyalty.
+- Weapon enchant: time left on your poisons, sharpening stones or shaman imbues.
+- Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.
+- XP per hour, or the time to your next level at your pace.
+- Gold this session: what you earned or spent since you logged in, and per hour.
+
+### Improvements
+
+- Pick what a block shows (Text tab, "Value shown"): played time this level, in total or this session; zone with its subzone; completed quests; one tracked currency; honor out of its cap or in percent; the next Legacy reward; Comprehension scrolls; rested XP in bubbles; daily or weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.
+- Volume: choose the volume the block shows and your mouse wheel changes (music, effects...).
+- Friends: you can leave out your Battle.net friends.
+- The demo mode shows the new blocks, with a Micro-menu column.
+
 ### Fixes
 
 - The Talent points block shows your unspent points on WoW Forever (it never appeared).

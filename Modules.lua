@@ -3037,10 +3037,21 @@ ns:RegisterModule("streamer", {
 -- Sample values for the preview mode (/tessera preview): used for screenshots,
 -- they show what each block looks like with typical values. Blocks without a
 -- sample keep showing their real value.
+-- One reading per moment: a block asks for the same list for "hide when empty", its icon,
+-- its text and its tooltip within one refresh; the list is read once and reused
+local function PerMoment(read)
+    local at, value
+    return function()
+        local now = GetTime()
+        if at ~= now then at, value = now, read() end
+        return value
+    end
+end
+
 ---------------------------------------------------------------------------
 -- Minimap tracking (herbs, minerals, beasts...): the active one; click = the tracking menu
 ---------------------------------------------------------------------------
-local function ActiveTracking()
+local function ReadTracking()
     local M, list = C_Minimap, {}
     if not (M and M.GetNumTrackingTypes and M.GetTrackingInfo) then return list end
     for i = 1, tonumber((Try(M.GetNumTrackingTypes))) or 0 do
@@ -3049,6 +3060,7 @@ local function ActiveTracking()
     end
     return list
 end
+local ActiveTracking = PerMoment(ReadTracking)
 
 if C_Minimap and C_Minimap.GetTrackingInfo then
 ns:RegisterModule("tracking", {
@@ -3129,7 +3141,7 @@ end
 -- Temporary weapon enchant (poisons, sharpening stones, shaman imbues): time left
 ---------------------------------------------------------------------------
 local WEAPON_SLOT_NAMES = { [0] = "TT_MAIN_HAND", [1] = "TT_OFF_HAND", [2] = "TT_RANGED" }
-local function WeaponEnchants()
+local function ReadWeaponEnchants()
     local list = {}
     local get = C_Item and C_Item.GetWeaponEnchantInfo
     if not get then return list end
@@ -3144,6 +3156,7 @@ local function WeaponEnchants()
     end
     return list
 end
+local WeaponEnchants = PerMoment(ReadWeaponEnchants)
 
 if C_Item and C_Item.GetWeaponEnchantInfo then
 ns:RegisterModule("weaponEnchant", {
@@ -3177,7 +3190,7 @@ end
 -- shortest time left. Aura data can be "secret" in combat: each read is protected.
 ---------------------------------------------------------------------------
 local LONG_BUFF = 600
-local function LongBuffs()
+local function ReadLongBuffs()
     local list, UA = {}, C_UnitAuras
     if not (UA and UA.GetBuffDataByIndex) then return list end
     local now = GetTime()
@@ -3194,6 +3207,7 @@ local function LongBuffs()
     table.sort(list, function(a, b) return a.left < b.left end)
     return list
 end
+local LongBuffs = PerMoment(ReadLongBuffs)
 
 ns:RegisterModule("longBuffs", {
     label = "LONG_BUFFS",
@@ -3202,8 +3216,7 @@ ns:RegisterModule("longBuffs", {
         local first = LongBuffs()[1]
         return first and first.icon or "Interface\\Icons\\INV_Misc_Food_15"
     end,
-    events = { "UNIT_AURA" },
-    interval = 5,
+    interval = 5, -- (not UNIT_AURA: it fires for every unit around you, and these buffs last 10 minutes or more)
     defaultEnabled = false,
     isEmpty = function() return #LongBuffs() == 0 end,
     update = function()
@@ -3281,11 +3294,10 @@ ns:RegisterModule("xpRate", {
     end,
 })
 
-local moneyStart
+-- the money at login is recorded by Core.lua (ns.sessionMoney)
 local function MoneyChange()
     local now = Try(GetMoney) or 0
-    moneyStart = moneyStart or now
-    return now - moneyStart
+    return now - (ns.sessionMoney or now)
 end
 
 ns:RegisterModule("goldSession", {

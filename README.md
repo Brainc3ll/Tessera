@@ -24,7 +24,9 @@ LibDataBroker to exchange data with DataBroker addons.
 ## What makes it different?
 
 - **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
-- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills.
+- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills, minimap tracking, your hunter pet's happiness, poisons and sharpening stones, Well Fed and other long buffs.
+- **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level: most blocks give you a choice.
+- **A micro-menu that grows with you.** Blizzard's micro-menu buttons as blocks you place anywhere; a menu you have not unlocked yet stays grey until you reach it.
 - **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames.
 - **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
 - **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
@@ -143,12 +145,14 @@ Help tab inside the game explains everything.
   - Honor: your honor points (PvP ranks in a later version);
   - weapon skills read from Forever's skill list; profession, talent and Legacy blocks that open
     Forever's own windows.
-- More than 40 blocks in all: gold (with history and your characters' gold; Alt + right-click forgets a deleted character), bags (with junk value), durability (with the
+- More than 60 blocks in all: gold (with history and your characters' gold; Alt + right-click forgets a deleted character), bags (with junk value), durability (with the
   repair cost), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
   zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
   reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, goal, mana
-  regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode...
+  regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode,
+  micro-menu (one block per button, grey until unlocked), minimap tracking, hunter pet, weapon enchant,
+  long buffs, XP per hour, gold this session...
 - Streamer mode (General tab, a key binding or its block): for streams and videos, other players' names,
   your other characters, your guild's name and your gold show as `***`.
 - Blocks that have nothing to show hide themselves and keep their place (in the ready-made bars,
@@ -237,6 +241,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
 | `Changelog.lua` | Version history for the in-game About tab (Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (not sent to CurseForge's translation tool) (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
 | `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
+| `MicroMenu.lua` | Micro-menu blocks: one block per button of Blizzard's micro menu, opened through the game's own button. |
 | `Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
 | `Spacers.lua` | Spacer blocks (empty, separator line or text). |
 | `Demo.lua` | Demo mode: every block by category with sample values, style switcher (also mixed styles, one per column), the player's profile put aside and given back. |

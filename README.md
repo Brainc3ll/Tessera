@@ -146,7 +146,7 @@ Help tab inside the game explains everything.
   - Honor: your honor points (PvP ranks in a later version);
   - weapon skills read from Forever's skill list; profession, talent and Legacy blocks that open
     Forever's own windows.
-- More than 60 blocks in all: gold (with history and your characters' gold; Alt + right-click forgets a deleted character), bags (with junk value), durability (with the
+- More than 50 blocks in all: gold (with history and your characters' gold; Alt + right-click forgets a deleted character), bags (with junk value), durability (with the
   repair cost), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
   zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
@@ -250,7 +250,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Demo.lua` | Demo mode: every block by category with sample values, style switcher (also mixed styles, one per column), the player's profile put aside and given back. |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
-| `Options.lua` | Options window (tabs Blocks — with sub-tabs Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About), widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, Blizzard Settings page. |
+| `Options.lua` | Options window: a list of pages on the left (Blocks — with sub-tabs This block, Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About) and a hint per page; widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, side windows kept beside the options (never over them), Blizzard Settings page. |
 
 The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the release guide
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions

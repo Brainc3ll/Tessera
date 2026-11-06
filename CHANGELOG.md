@@ -22,10 +22,14 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
-- Pick what a block shows (Text tab, "Value shown"): played time this level, in total or this session; zone with its subzone; completed quests; one tracked currency; honor out of its cap or in percent; the next Legacy reward; Comprehension scrolls; rested XP in bubbles; daily or weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.
+- Pick what a block shows ("This block" tab, "Value shown"): played time this level, in total or this session; zone with its subzone; completed quests; one tracked currency; honor out of its cap or in percent; the next Legacy reward; Comprehension scrolls; rested XP in bubbles; daily or weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.
 - Volume: choose the volume the block shows and your mouse wheel changes (music, effects...).
 - Friends: you can leave out your Battle.net friends.
 - Any block can show its icon alone (Display, "Show the value"); the tooltip and the clicks stay.
+- Options window: a list of pages on the left, a short hint on each page, more room, and a first "This block" tab with everything a block has of its own (right-click a block to open it). Nothing was removed: settings only moved.
+- Tessera's windows no longer cover each other: the tour and the text windows open beside the options.
+- Translations now live on GitHub: send yours as a pull request or a "Translation" issue.
+- Quick tour: two new steps, a block's own settings and the quick menu.
 - Weapon enchant: watch both hands, the main hand or the off hand. Micro-menu: its count can stay on.
 - Bags: the tooltip lists profession bags (herb bag...) apart. Durability: the tooltip also lists worn items in your bags, under their own title.
 - Comprehension reads your skill directly and shows its description; Honor shows yesterday's kills and honor when the game gives them.

@@ -296,6 +296,11 @@ end
 
 -- Help tooltip shown when hovering an option
 local function AttachTip(frame, title, tip)
+    if frame and not tip then
+        -- every option explains itself: the mock run lists the ones that do not
+        ns.optionsWithoutTip = ns.optionsWithoutTip or {}
+        ns.optionsWithoutTip[tostring(title)] = true
+    end
     if not frame or not tip then return end
     frame:HookScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -2437,8 +2442,10 @@ function ns:OpenAllBlocks(sub)
 end
 
 -- Opens the Blocks tab with a given block selected (the DataBroker tab in DataBroker mode)
+-- (a right-click on a block: the options open on "This block", its own settings)
 function ns:OpenOptionsFor(key)
     self:OpenOptions(self.brokerModeActive and PAGE_BROKER or PAGE_BLOCKS, key)
+    if not self.brokerModeActive and self.ShowBlockSub then self.ShowBlockSub(5) end
 end
 
 -- Shows or hides the options window
@@ -2741,11 +2748,17 @@ StaticPopupDialogs["TESSERA_WELCOME"] = {
 local TUTORIAL_STEPS = {
     { text = "TUTORIAL_1" },
     { text = "TUTORIAL_8", layouts = true, action = "TUTORIAL_DO_KEEP", run = function() ns:KeepTourLayout() end },
+    { text = "TUTORIAL_9", action = "TUTORIAL_DO_BLOCK", run = function()
+        local key = ns.db.blocks.gold and "gold" or ns.order[1]
+        ns:OpenOptionsFor(key)
+        if ns.ShowBlockSub then ns.ShowBlockSub(5) end
+    end },
     { text = "TUTORIAL_2", action = "TUTORIAL_DO_UNLOCK", run = function() ns:SetLocked(false) end },
     { text = "TUTORIAL_3" },
     { text = "TUTORIAL_4" },
     { text = "TUTORIAL_5" },
     { text = "TUTORIAL_6", action = "TUTORIAL_DO_LOOK", run = function() ns:OpenOptions(PAGE_LOOK) end },
+    { text = "TUTORIAL_10" },
     { text = "TUTORIAL_7", action = "TUTORIAL_DO_LOCK", run = function() ns:SetLocked(true) end },
 }
 local tutorial

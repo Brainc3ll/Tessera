@@ -16,7 +16,7 @@ Other things you might like:
 - Pin a block's tooltip so it stays open, and give any block a name of your own.
 - English and French, plus German, Spanish and Brazilian Portuguese.
 
-Over 60 blocks, plus launchers for your minimap buttons. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
+Over 50 blocks, plus launchers for your minimap buttons. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
 
 ## Why make Tessera when addons like it already exist?
 
@@ -81,7 +81,7 @@ Type **/tessera bug**, copy the report and post it on [GitHub](https://github.co
 - **Prêt pour le stream.** Le mode streamer cache en un clic les noms des autres joueurs, tes autres personnages, le nom de ta guilde et ton or.
 - **DataBroker dans les deux sens.** Affiche les objets DataBroker de tes autres addons comme des blocs, ou partage les blocs de Tessera avec Titan Panel, Bazooka ou Arcana (anciennement ChocolateBar).
 
-Plus de 60 blocs, et des lanceurs pour les boutons de ta minicarte. Une barre toute prête s'affiche au premier lancement. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.
+Plus de 50 blocs, et des lanceurs pour les boutons de ta minicarte. Une barre toute prête s'affiche au premier lancement. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.
 
 ## Pourquoi Tessera, alors que des addons du genre existent déjà ?
 

@@ -414,6 +414,7 @@ if not ok then print("OPTIONS ERROR: " .. tostring(err)) end
 for i = 1, 8 do local ok2, err2 = xpcall(function() ns.ShowOptionsPage(i) end, debug.traceback) if not ok2 then print("PAGE ERROR " .. i .. ": " .. tostring(err2)) end end
 -- every options page must fit in the window (pages start 98 px below its top)
 -- (every page keeps the 40 px of the bottom buttons free: nothing may ever cover them)
+for title in pairs(ns.optionsWithoutTip or {}) do print("STEP ERROR: option without a tooltip: " .. title) end
 local pageRoom = TesseraOptions:GetHeight() + ns.OPTIONS_PAGE_TOP - 12 - 40
 if -(ns.optionsLowestY or 0) > pageRoom then
     print("STEP ERROR: options page too tall: " .. -ns.optionsLowestY .. " px for " .. pageRoom)

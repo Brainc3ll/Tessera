@@ -46,7 +46,7 @@ Type **/tessera bug**, copy the report and post it on [GitHub](https://github.co
 
 ## Every block and command
 
-**All the blocks**: gold (with a 7-day history and your characters' gold; forget a deleted character from its menu), bags (with junk value), durability, FPS and latency (with graphs), local and server time, date, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, played time, a personal goal, mana regeneration, character stats, group loot, streamer mode... plus the WoW Forever blocks above.
+**All the blocks**: gold (with a 7-day history and your characters' gold; forget a deleted character from its menu), bags (with junk value), durability, FPS and latency (with graphs), local and server time, date, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, a personal goal, mana regeneration, character stats, group loot, streamer mode... plus the WoW Forever blocks above.
 
 | Command | Effect |
 |---|---|
@@ -111,7 +111,7 @@ Tape **/tessera bug**, copie le rapport et poste-le sur [GitHub](https://github.
 
 ## Tous les blocs et commandes
 
-**Tous les blocs** : or (avec l'historique sur 7 jours et l'or de tes personnages ; un personnage supprimé s'oublie depuis son menu), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, date, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe, mode streamer... en plus des blocs WoW Forever ci-dessus.
+**Tous les blocs** : or (avec l'historique sur 7 jours et l'or de tes personnages ; un personnage supprimé s'oublie depuis son menu), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, date, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, réinitialisation quotidienne et hebdomadaire, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe, mode streamer... en plus des blocs WoW Forever ci-dessus.
 
 | Commande | Effet |
 |---|---|

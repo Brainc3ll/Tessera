@@ -147,7 +147,7 @@ Help tab inside the game explains everything.
   repair cost), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
   zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
-  reagents, ammo, item level, speed, volume, addon memory, instances, played time, goal, mana
+  reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, goal, mana
   regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode...
 - Streamer mode (General tab, a key binding or its block): for streams and videos, other players' names,
   your other characters, your guild's name and your gold show as `***`.

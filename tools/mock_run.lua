@@ -227,6 +227,10 @@ C_Container = { GetContainerNumSlots = function() return 16 end, GetContainerNum
 C_AddOns = { GetAddOnMetadata = function() return "test" end, GetNumAddOns = function() return 0 end,
     IsAddOnLoaded = function(name) return arg[3] == "broker" and name == "ChocolateBar" end }
 
+-- blocks registered only when the client has their functions (so the doc check sees them)
+GetAverageItemLevel = function() return 52.4, 50.1 end
+C_DateAndTime = setmetatable({ GetSecondsUntilDailyReset = function() return 3600 end,
+    GetSecondsUntilWeeklyReset = function() return 90000 end }, { __index = C_DateAndTime or {} })
 -- WoW Forever APIs: skill list, Legacy renown track
 C_SkillInfo = {
     GetNumSkillLines = function() return 4 end,

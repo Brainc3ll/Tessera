@@ -30,7 +30,7 @@ So I put it out there. That meant keeping an eye on what the AI writes: the righ
 
 ## How I look after it
 
-I play WoW Forever and test each version in game before I release it. Your layouts and profiles carry over between versions; if a change ever has to break them, Tessera tells you and converts them. GitHub also runs a set of automatic checks on every change (the API audit addon reviewers use, a check against Forever's own function list, a full run of the addon in English and French).
+I play WoW Forever and test each version in game before I release it. Your layouts and profiles carry over between versions; if a change ever has to break them, Tessera tells you and converts them. GitHub also runs a set of automatic checks on every change (the API audit addon reviewers use, a check against Forever's own function list, a full run of the addon in each language).
 
 Forever's own systems are still young. If a game update breaks a block, tell me and I'll fix it.
 
@@ -40,7 +40,7 @@ Tessera is free and open source (MIT). No premium version, no paid extras.
 
 I don't write code. Claude (an AI by Anthropic) writes all of it, from my instructions, along with the tests and most texts. I decide what Tessera does and how it looks, I test it, and I review the French. No human programmer reads the code line by line ([AI Code Rating](https://aicoderating.com): E4d). The code is open (MIT) on [GitHub](https://github.com/Brainc3ll/Tessera).
 
-Claude translated the German, Spanish and Brazilian Portuguese texts, and nobody has reviewed them yet. You can correct them, or add your language, with CurseForge's localization tool, and your name will appear in the addon.
+Claude translated the German, Spanish and Brazilian Portuguese texts, and nobody has reviewed them yet. You can correct them, or add your language, on [GitHub](https://github.com/Brainc3ll/Tessera/blob/main/docs/TRANSLATING.md): a pull request, or an issue with your lines. Your name will appear in the addon.
 
 ## Bugs and ideas
 
@@ -67,47 +67,47 @@ Type **/tessera bug**, copy the report and post it on [GitHub](https://github.co
 
 # Tessera : des petits blocs d'infos à placer où tu veux (français)
 
-**TL;DR :** Or, sacs, FPS, points d'héritage… dans de petits blocs qui s'emboîtent comme les pièces d'une mosaïque. Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour le moment). Alors je teste beaucoup.
+Or, sacs, FPS, points d'Héritage... chacun dans son petit bloc. Pose un bloc où tu veux sur ton écran, ou colle-le contre un autre : ils forment une barre. Une barre s'affiche au premier lancement, tu peux partir de là.
 
-## Qu'est-ce qui le rend différent ?
+Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour le moment). Alors je teste beaucoup.
 
-- **Des blocs qui s'emboîtent.** Pose un bloc contre un autre : ils forment une seule barre. Une barre en haut, une colonne, un groupe dans un coin, ou chaque bloc tout seul.
-- **Pensé pour WoW Forever.** Points d'héritage (prochaine récompense, défis par catégorie), Compréhension (avec les parchemins de tes sacs), Camping (bonus et kit), Honneur, compétences d'armes, humeur de ton familier de chasseur, poisons et pierres à aiguiser, Bien nourri et autres buffs longs.
-- **Tu choisis ce que montre chaque bloc.** Temps de jeu à ce niveau ou au total, honneur sur son plafond, prochaine récompense d'Héritage, XP par heure ou temps avant ton niveau suivant : la plupart des blocs te laissent le choix.
-- **Un micro-menu qui grandit avec toi.** Les boutons du micro-menu de Blizzard en blocs à placer où tu veux ; un menu pas encore débloqué reste gris jusqu'à ce que tu l'atteignes.
-- **Une seule allure pour tout.** Tous les blocs ont les mêmes infobulles et le même style : celui de Blizzard, de FlareUI, d'ElvUI, d'EllesmereUI, ou des styles fantasy faits avec les fenêtres du jeu. 24 styles en tout.
-- **Dans ta langue.** Anglais et français depuis le premier jour, plus l'allemand, l'espagnol et le portugais du Brésil.
-- **Suivi.** Chaque version est testée en jeu, et tes dispositions passent d'une version à l'autre.
-- **Prêt pour le stream.** Le mode streamer cache en un clic les noms des autres joueurs, tes autres personnages, le nom de ta guilde et ton or.
-- **DataBroker dans les deux sens.** Affiche les objets DataBroker de tes autres addons comme des blocs, ou partage les blocs de Tessera avec Titan Panel, Bazooka ou Arcana (anciennement ChocolateBar).
+Je l'ai fait pour WoW Forever, donc tu as aussi des blocs pour ses systèmes à lui : points d'Héritage et prochaine récompense, Compréhension et les parchemins de tes sacs, Camping (bonus et kit de feu de camp), honneur, compétences d'armes. Depuis la 1.1, il y a aussi l'humeur de ton familier de chasseur, les poisons et pierres à aiguiser, Bien nourri et les autres buffs longs, l'XP par heure, une flèche vers ton corps quand tu meurs, et le micro-menu de Blizzard en un seul bloc (les menus pas encore débloqués restent gris).
 
-Plus de 50 blocs, et des lanceurs pour les boutons de ta minicarte. Une barre toute prête s'affiche au premier lancement. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.
+La plupart des blocs te laissent choisir ce qu'ils affichent : temps de jeu à ce niveau ou au total, honneur sur son plafond, quêtes terminées, etc.
+
+D'autres choses qui pourraient te plaire :
+
+- 24 styles, pour que les blocs collent à ton interface : Blizzard, FlareUI, ElvUI, EllesmereUI, ou des allures fantasy faites avec les fenêtres du jeu.
+- Le mode streamer cache les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
+- DataBroker dans les deux sens : les objets Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (anciennement ChocolateBar).
+- Épingle l'infobulle d'un bloc pour qu'elle reste ouverte, et donne à n'importe quel bloc le nom que tu veux.
+- Anglais et français, plus l'allemand, l'espagnol et le portugais du Brésil.
+
+Plus de 50 blocs, et des lanceurs pour les boutons de ta minicarte. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.
 
 ## Pourquoi Tessera, alors que des addons du genre existent déjà ?
 
-J'aime bien les barres comme Arcana (anciennement ChocolateBar) ou Bazooka. J'utilisais beaucoup Broker_Everything, et je passais de longs moments à créer de petites barres avec une seule info, pour les poser aux endroits pertinents de mon interface. Mon préféré, c'était StatBlock Core (StatBlockCore) de Funkeh : des blocs libres, une info par bloc, à poser où je voulais. Il n'est plus mis à jour depuis 2022. Et les infobulles changeaient d'un addon broker à l'autre, le français manquait souvent, et beaucoup de ces addons n'étaient plus maintenus.
+J'aime bien les barres comme Arcana (anciennement ChocolateBar) ou Bazooka. J'utilisais beaucoup Broker_Everything, et je passais des heures à créer de petites barres avec une seule info, pour les poser au bon endroit de mon interface. Mon préféré, c'était StatBlock Core (StatBlockCore) de Funkeh : des blocs libres, une info par bloc, à poser où je voulais. Il n'est plus mis à jour depuis 2022. En plus, les infobulles changeaient d'un addon broker à l'autre, le français manquait souvent, et beaucoup de ces addons n'étaient plus maintenus.
 
-À la sortie de la bêta de WoW Forever, j'ai repris WoW et je suis tombé sur FlareUI : une interface typée fantasy, pas futuriste. En voyant ce que des joueurs construisaient avec l'aide de l'IA, j'ai voulu tester un petit truc pour moi, qui réponde à mes demandes précises.
+À la sortie de la bêta de WoW Forever, je suis revenu sur WoW et je suis tombé sur FlareUI : une interface à l'allure fantasy, pas futuriste. En voyant ce que des joueurs construisaient avec l'aide de l'IA, j'ai voulu tester un petit truc rien que pour moi, qui fasse exactement ce que je demandais.
 
-Voilà comment Tessera est né. Il ne devait pas du tout être publié : je voulais savoir comment ça marche quand on crée un dépôt GitHub de zéro et qu'on publie un addon. Ensuite, je l'ai plus mis à l'épreuve que la bêta de Forever elle-même, et les idées sont venues. Certaines sont déjà là. D'autres arrivent : l'accessibilité pour les personnes en situation de handicap, et un support manette complet, ce que je n'ai encore jamais vu dans un addon de barre ou DataBroker.
+Voilà comment Tessera est né. Il ne devait pas être publié : je voulais savoir comment ça marche quand on crée un dépôt GitHub de zéro et qu'on publie un addon. Puis je l'ai plus mis à l'épreuve que la bêta de Forever elle-même, et les idées sont arrivées. Certaines sont dans Tessera aujourd'hui. D'autres arrivent : l'accessibilité pour les personnes en situation de handicap, et un vrai support manette, ce que je n'ai jamais vu dans un addon de barre ou DataBroker.
 
-Alors j'ai voulu qu'il soit disponible pour plein de gens. Ça voulait dire surveiller de près ce que fait l'IA : le bon jargon de WoW dans chaque langue, et un code vérifié avec les outils qu'utilisent les vrais développeurs d'addons.
+Alors je l'ai partagé. Ça voulait dire surveiller ce que l'IA écrit : les bons mots de WoW dans chaque langue, et un code vérifié avec les outils qu'utilisent les développeurs d'addons.
 
-## Comment je suis Tessera
+## Comment je m'en occupe
 
-- Je joue à WoW Forever et je teste chaque version en jeu avant de la publier.
-- Tes dispositions, styles et profils passent d'une version à l'autre. Si un changement doit un jour les casser, Tessera te prévient et les convertit.
-- À chaque modification, GitHub lance des vérifications automatiques : analyse du code, l'audit qu'utilisent les relecteurs d'addons, une vérification avec la liste des fonctions de WoW Forever, un lancement complet de l'addon en anglais et en français, et un test des blocs Forever face à un jeu qui change.
-- Les systèmes propres à WoW Forever sont jeunes et peuvent changer. Si une mise à jour du jeu casse un bloc, dis-le-moi et je le corrige.
-- Tessera est gratuit et open source (licence MIT) : toutes les fonctions pour tout le monde, pas de version premium, rien de payant. Tu peux le lire, le modifier et le partager.
+Je joue à WoW Forever et je teste chaque version en jeu avant de la publier. Tes dispositions et tes profils passent d'une version à l'autre ; si un changement doit un jour les casser, Tessera te prévient et les convertit. GitHub lance aussi des vérifications automatiques à chaque modification (l'audit qu'utilisent les relecteurs d'addons, une vérification avec la liste des fonctions de Forever, un lancement complet de l'addon dans chaque langue).
 
-Je ne peux pas promettre combien d'années je tiendrai ce rythme. Aujourd'hui, c'est comme ça que je m'en occupe.
+Les systèmes propres à Forever sont encore jeunes. Si une mise à jour du jeu casse un bloc, dis-le-moi et je le corrige.
+
+Tessera est gratuit et open source (MIT). Pas de version premium, rien de payant.
 
 ## Qui écrit quoi
 
 Je ne code pas. Claude (une IA d'Anthropic) écrit tout le code à partir de mes consignes, ainsi que les tests et la plupart des textes. Je décide de ce que fait Tessera et de son allure, je le teste et je relis le français. Aucun programmeur humain ne relit le code ligne par ligne ([AI Code Rating](https://aicoderating.com) : E4d). Le code est ouvert (MIT) sur [GitHub](https://github.com/Brainc3ll/Tessera).
 
-Claude a traduit l'allemand, l'espagnol et le portugais du Brésil, et personne ne les a encore relus. Tu peux les corriger, ou ajouter ta langue, avec l'outil de traduction de CurseForge, et ton nom apparaîtra dans l'addon.
+Claude a traduit l'allemand, l'espagnol et le portugais du Brésil, et personne ne les a encore relus. Tu peux les corriger, ou ajouter ta langue, sur [GitHub](https://github.com/Brainc3ll/Tessera/blob/main/docs/TRANSLATING.md) : une pull request, ou une issue avec tes lignes. Ton nom apparaîtra dans l'addon.
 
 ## Bugs et idées
 

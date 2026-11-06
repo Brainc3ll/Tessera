@@ -11,6 +11,7 @@ Rien ici n'est livré dans l'addon (`.pkgmeta` ignore le dossier). Notes de trav
 | `pages/` | Textes publiés hors de l'addon : description CurseForge et Wago, la même sur les deux (`description.md`), titre, résumé et description GitHub (`summary.md`). |
 | `etudes/` | Études : découpage en modules (`PLAN-modules.md`), bloc Farm (`PLAN-bloc-farm.md`), addons de WoW Forever et compatibilité DataBroker (`ADDONS-FOREVER.md`), ce qu'on a appris ailleurs (`SOURCES.md`). |
 | `archive/` | Plans terminés et anciennes listes de tests. |
-| `localization/` | Textes de l'addon envoyés à l'outil de traduction de CurseForge (générés : `tools/export_locales.lua`). |
+| `localization/` | Textes anglais et français de l'addon, une ligne par texte, pour les traducteurs (générés : `tools/export_locales.lua`). |
+| `TRANSLATING.md` | Comment traduire Tessera (pull request ou issue « Translation »), en anglais. |
 | `art/` | Logo en grand : icône (512 et 1024 px) et nom « Tessera » sur fond clair, sombre ou transparent. Police Outfit (licence OFL). |
 | `media/` | Bannière (`banner.png`, et `banner-2x.png` pour CurseForge et Wago) et captures du README. |

@@ -113,7 +113,7 @@ I can't promise how many years I'll keep this up. Today, this is how I run it.
 ## At a glance
 
 - Interface: `16001` (WoW Forever)
-- Languages: English and French; German, Spanish (Spain and Mexico) and Brazilian Portuguese made by Claude, not reviewed yet; other languages through CurseForge's localization tool
+- Languages: English and French; German, Spanish (Spain and Mexico) and Brazilian Portuguese made by Claude, not reviewed yet; other languages welcome as a pull request or a "Translation" issue (see `docs/TRANSLATING.md`)
 - Saved variables: `TesseraDB`
 - Optional addons it adapts to: FlareUI, EllesmereUI and ElvUI (a matching style is
   offered; blocks snap to the XP bar of FlareUI, ElvUI and GW2 UI, and Tessera warns when they
@@ -233,6 +233,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 |---|---|
 | `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
+| `Locales/deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`... | The other languages, sent by pull request or issue; a missing text shows in English. |
 | `Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
 | `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
 | `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
@@ -240,7 +241,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
 | `Profiles.lua` | Profile export / import (compact text; older texts still read), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
-| `Changelog.lua` | Version history for the in-game About tab (Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (not sent to CurseForge's translation tool) (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
+| `Changelog.lua` | Version history for the in-game About tab (Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
 | `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
 | `MicroMenu.lua` | Micro-menu block: Blizzard's micro menu in a tooltip and a list of secure buttons that open each menu. |
 | `Pins.lua` | Pinned tooltips: a block's tooltip kept open next to it and refreshed every second. |
@@ -253,8 +254,8 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 
 The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the release guide
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions
-(`docs/pages`), studies (`docs/etudes`), finished plans (`docs/archive`), the strings sent to
-CurseForge's localization tool (`docs/localization`), the logo and the name in large sizes (`docs/art`), and the
+(`docs/pages`), studies (`docs/etudes`), finished plans (`docs/archive`), the English and French strings
+for translators (`docs/localization`, how to translate: `docs/TRANSLATING.md`), the logo and the name in large sizes (`docs/art`), and the
 banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project. `ACR.md` and `AI-DECLARATION.md` describe how AI is used in the project.
 
 Automatic tests: `lua5.1 tools/mock_run.lua . enUS` (or `frFR`, `frFR broker`) loads the addon
@@ -406,15 +407,13 @@ block in `blocks[key]` (see `BLOCK_DEFAULTS` in `Core.lua`).
 back to English for anything missing.
 
 - English and French are written in the repository (`enUS.lua`, `frFR.lua`). Every other
-  language lives in CurseForge's localization tool. German, Spanish (Spain and Mexico) and
-  Brazilian Portuguese start from Claude's translations, checked with
-  `tools/check_translation.py` and imported there by hand at the 1.0.0 release (they are kept
-  out of this repository); players can correct them, and translate any other language. Each
-  language's file (e.g. `Locales/deDE.lua`) only holds a `--@localization(...)@` line that the
-  BigWigs packager replaces with the translated strings when it builds the release zip, so
-  a copy installed straight from GitHub simply shows those languages in English.
-- **Small keys, easy to translate.** On CurseForge, changing a text asks every translator to
-  redo that whole text. So long texts are split: the in-game help has one key per line or
+  language also lives here, in its own file (`Locales/deDE.lua`...), sent as a GitHub pull
+  request or pasted in a "Translation" issue (`docs/TRANSLATING.md`). German, Spanish (Spain and
+  Mexico) and Brazilian Portuguese started from Claude's translations, checked with
+  `tools/check_translation.py`. Up to 1.0.4 they came from CurseForge's localization tool;
+  since 1.1.0 nothing is fetched from there.
+- **Small keys, easy to translate.** Changing a text means every translator redoes that whole
+  text. So long texts are split: the in-game help has one key per line or
   paragraph (`HELP_<TOPIC>_<n>`, topic titles `HELP_T_<TOPIC>`), and their order is given by
   `ns.HELP_LAYOUT` / `ns.HELP_LAYOUT_BROKER` at the end of `Locales/enUS.lua`. To add a line,
   create a **new** key (next free number of its topic) and put it where it belongs in the layout;
@@ -424,16 +423,15 @@ back to English for anything missing.
 - The English and French texts are written in `tools/gen/*.py`; `python3 tools/gen/build.py`
   writes `Locales/enUS.lua` and `Locales/frFR.lua` from them (it checks that every key has its
   French text and the same `%s` / `%d`).
-- `docs/localization/` holds the English and French strings in the format CurseForge imports
+- `docs/localization/` holds the English and French strings, one per line, for translators
   (regenerate with `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua`, same
-  for `frFR`). The release workflow sends both to CurseForge before packaging, so translators
-  always see the current strings.
+  for `frFR`); `tools/check_translation.py` compares a translation with them.
 
 ### Releasing
 
 One workflow publishes everywhere: **Package and release** (`.github/workflows/release.yml`,
 "Run workflow" in the Actions tab). It checks the documentation, tags the version written in
-`Tessera.toc`, sends the strings to CurseForge, builds the zip with the BigWigs packager and
+`Tessera.toc`, builds the zip with the BigWigs packager and
 uploads it to GitHub, CurseForge and Wago. Details (in French) in `docs/RELEASE.md`.
 
 ### Checking your changes

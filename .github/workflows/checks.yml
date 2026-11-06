@@ -24,9 +24,17 @@ jobs:
       - name: Static checks
         run: luacheck .
 
-      - name: Mock run (English, French, DataBroker mode)
+      - name: Translations (Locales/ against the English strings)
         run: |
-          for args in "enUS" "frFR" "frFR broker"; do
+          for f in Locales/*.lua; do
+            case "$f" in */enUS.lua|*/frFR.lua) continue ;; esac
+            python3 tools/check_translation.py "$f" | tail -1
+            python3 tools/check_translation.py "$f" | grep -q " 0 error(s)" || { python3 tools/check_translation.py "$f" | grep -i "^error"; exit 1; }
+          done
+
+      - name: Mock run (English, French, DataBroker mode, the other languages)
+        run: |
+          for args in "enUS" "frFR" "frFR broker" "deDE" "esES" "esMX" "ptBR"; do
             out=$(lua5.1 tools/mock_run.lua . $args 2>&1)
             echo "$out" | tail -3
             if echo "$out" | grep -q "ERROR\|lua5.1:"; then echo "$out" | grep "ERROR\|lua5.1:"; exit 1; fi

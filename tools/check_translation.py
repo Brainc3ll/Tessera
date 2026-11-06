@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Checks a translation before it is imported into CurseForge's localization tool.
+"""Checks a translation (a file of Locales/, or the text of a pull request or an issue).
 
-A translation lives in CurseForge, not in this repository; this script checks a file in the
-format of docs/localization/enUS.lua (one `L["KEY"] = "text"` per line) against the English one:
+It reads `L["KEY"] = "text"` lines (and [=[ ]=] texts over several lines) and compares them with
+the English strings of docs/localization/enUS.lua:
 - every key exists in English (no typo, no removed key);
 - the format codes (%s, %d, %.1f...) are the same and in the same order: string.format would
   raise a Lua error otherwise;
 - color codes (|cAARRGGBB ... |r), textures (|T...|t) and line breaks (\\n) match;
 - short texts (labels, buttons) that grew a lot are listed as warnings: they may not fit.
-Usage: python3 tools/check_translation.py <translation.lua> [docs/localization/enUS.lua]
+Usage: python3 tools/check_translation.py Locales/deDE.lua [docs/localization/enUS.lua]
 """
 import os
 import re
@@ -20,18 +20,43 @@ COLOR = re.compile(r'\|c[0-9a-fA-F]{8}')
 TEXTURE = re.compile(r'\|T[^|]*\|t')
 
 
+LONG = re.compile(r'^L\["([^"]+)"\]\s*=\s*\[(=*)\[(.*)$')
+HEADER = re.compile(r'^(local |if GetLocale\(\)|end$)')
+
+
 def read(path):
+    """Reads `L["KEY"] = "text"` lines and `L["KEY"] = [=[ ... ]=]` texts over several lines
+    (the locale files of Locales/); a real line break counts as \n. The file's few header
+    lines (local ..., if GetLocale() ...) are skipped."""
     strings, bad = {}, []
+    long_key, long_end, long_text = None, None, []
     with open(path, encoding="utf-8") as f:
         for number, line in enumerate(f, 1):
             line = line.rstrip("\n")
-            if not line.strip() or line.startswith("--"):
+            if long_key:
+                if long_end in line:
+                    long_text.append(line[:line.index(long_end)])
+                    strings[long_key] = "\\n".join(long_text)
+                    long_key = None
+                else:
+                    long_text.append(line)
+                continue
+            if not line.strip() or line.startswith("--") or HEADER.match(line):
                 continue
             m = LINE.match(line)
-            if not m:
-                bad.append(f"{os.path.basename(path)}:{number}: not a `L[\"KEY\"] = \"text\"` line")
+            if m:
+                strings[m.group(1)] = m.group(2)
                 continue
-            strings[m.group(1)] = m.group(2)
+            m = LONG.match(line)
+            if m:
+                long_key, long_end, rest = m.group(1), "]" + m.group(2) + "]", m.group(3)
+                if long_end in rest:
+                    strings[long_key] = rest[:rest.index(long_end)]
+                    long_key = None
+                else:
+                    long_text = [rest]
+                continue
+            bad.append(f"{os.path.basename(path)}:{number}: not a `L[\"KEY\"] = \"text\"` line")
     return strings, bad
 
 

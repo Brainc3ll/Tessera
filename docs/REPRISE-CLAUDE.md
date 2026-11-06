@@ -6,7 +6,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 1.0.3 publiée le 5/11 (styles + correctifs du lancement : Secourisme 1.0.1, bloc sous un Courrier masqué 1.0.2, clic sur les métiers de récolte 1.0.3). Branches : `main` et `accessibilite-manette` seulement. Semaine du lancement : correctifs seulement ; à chaque nouveau texte, fichiers de traduction (de, es, mx, pt) des seules clés nouvelles, importés à la main avant de publier.
 
 ## Avant la publication de la 1.0.0 (4/11)
-- Rappeler à Braincell1980 le processus des traductions (A-REPRENDRE, feuille de route, point 1) : elles doivent être sur CurseForge AVANT de publier.
+- Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).
 
 ## Travailler avec Braincell1980
 - Dossier du jeu pour WoW Forever : `World of Warcraft/_forever_/Interface/AddOns/` (pas `_classic_`).

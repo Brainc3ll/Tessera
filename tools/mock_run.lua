@@ -1215,7 +1215,9 @@ for _, step in ipairs({
         local short = ns.FormatDate(t, "short")
         assert(short:find("15", 1, true) and not short:find("{", 1, true), "short date: " .. short)
         _G.WEEKDAY_THURSDAY, _G.FULLDATE_MONTH_OCTOBER = "Thursday", "October"
-        assert(ns.FormatDate(t, "long") == "Thursday 15 October", "long date with the game's names")
+        local long = ns.FormatDate(t, "long") -- (the order is the language's: German puts a dot)
+        assert(long:find("Thursday", 1, true) and long:find("October", 1, true) and long:find("15", 1, true),
+            "long date with the game's names: " .. long)
         _G.WEEKDAY_THURSDAY, _G.FULLDATE_MONTH_OCTOBER = nil, nil
         local cfg = ns.db.blocks.date
         assert(cfg and not cfg.enabled, "new block hidden by default")

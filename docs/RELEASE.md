@@ -8,9 +8,8 @@ Un seul bouton publie partout : le workflow **Package and release** (onglet Acti
 
 1. **vérifie la documentation** (`tools/check_docs.lua`, voir plus bas) : si elle n'est pas à jour, rien n'est publié ;
 2. lit la version dans `Tessera.toc` et crée le tag `v<version>` ;
-3. envoie l'anglais et le français à l'outil de traduction de CurseForge (`docs/localization/`) ;
-4. fabrique le zip `Tessera-v<version>-forever.zip`, avec les traductions de la communauté ;
-5. crée la release GitHub (titre `v<version>`) et envoie le zip sur **CurseForge** et sur **Wago**, avec la partie de cette version de `CHANGELOG.md` comme notes de version.
+3. fabrique le zip `Tessera-v<version>-forever.zip`, avec toutes les traductions de `Locales/` telles qu'elles sont dans le dépôt ;
+4. crée la release GitHub (titre `v<version>`) et envoie le zip sur **CurseForge** et sur **Wago**, avec la partie de cette version de `CHANGELOG.md` comme notes de version.
 
 Le type de version vient du nom : « alpha » → Alpha, « beta » → Beta (Wago : alpha / beta), tout le reste → Release (Wago : stable).
 
@@ -54,7 +53,7 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 
 ### Des textes faciles à traduire
 
-Sur CurseForge, changer un texte oblige les traducteurs à refaire tout ce texte. Les longs textes sont donc découpés : l'aide a une clé par ligne ou par paragraphe. Ajouter une ligne = une **nouvelle** clé ; corriger une ligne = la même clé ; on ne renumérote jamais. Ainsi, un mot changé ou une ligne ajoutée ne demande de retraduire que cette ligne.
+Changer un texte oblige les traducteurs à refaire tout ce texte. Les longs textes sont donc découpés : l'aide a une clé par ligne ou par paragraphe. Ajouter une ligne = une **nouvelle** clé ; corriger une ligne = la même clé ; on ne renumérote jamais. Ainsi, un mot changé ou une ligne ajoutée ne demande de retraduire que cette ligne.
 
 Ce qu'elle ne peut pas vérifier (la clarté des textes, le détail de l'aide) reste à relire : par Claude à chaque changement, par Braincell1980 avant la publication.
 
@@ -64,13 +63,9 @@ Ce qu'elle ne peut pas vérifier (la clarté des textes, le détail de l'aide) r
 - **« About » du dépôt GitHub** : roue dentée sur la page du dépôt, texte et topics dans `docs/pages/summary.md`.
 - **Captures d'écran** : `/tessera preview` (valeurs d'exemple) ou le mode démo (`/tessera demo`) ; éviter les pseudos d'autres joueurs, les notifications du bureau et les boutons d'autres addons.
 
-## Traductions (automatique)
+## Traductions (dans le dépôt depuis la 1.1.0)
 
-- L'anglais et le français viennent toujours du dépôt : une modification faite sur CurseForge dans ces deux langues n'arrive jamais dans l'addon.
-- Les autres langues sont traduites sur CurseForge et ajoutées au zip à chaque publication. L'allemand, l'espagnol (Espagne et Mexique) et le portugais du Brésil partent des traductions de Claude (dépôt privé `Tessera-dev/traductions-<version>/`, vérifiées par `tools/check_translation.py`) : avant la publication, lancer « Send strings to CurseForge » pour que CurseForge connaisse les nouvelles clés, vérifier qu'aucun traducteur n'a commencé ces langues, puis Braincell1980 importe les fichiers à la main (page Localization, phrases absentes : « do nothing »). Les joueurs peuvent ensuite les corriger. **À chaque mise à jour qui ajoute ou change des textes, Claude prévient Braincell1980 avant la publication** et lui donne des fichiers qui ne contiennent que les clés nouvelles ou changées, pas encore traduites par la communauté (un import remplace les traductions existantes). L'import reste manuel, jamais automatique.
-- Les textes qui n'existent plus restent sur CurseForge (aucun travail de traducteur n'est supprimé).
-- Si CurseForge refuse l'envoi des textes, la publication continue sans les traductions de la communauté.
-
-## Faire le ménage des textes sur CurseForge
-
-Quand l'addon n'utilise plus certains textes : page Localization de CurseForge, **Import**, langue **English**, coller tout `docs/localization/enUS.lua`, option des phrases absentes réglée pour les **supprimer** ; puis **Import** en **French** avec `docs/localization/frFR.lua` et l'option « ne rien faire ». Fait ainsi le 16/10/2026 (43 textes retirés d'un coup).
+- Toutes les langues sont dans `Locales/` (un fichier par langue). Le zip les prend telles quelles ; plus rien ne vient de l'outil de traduction de CurseForge (décision de Braincell1980, 6/11/2026). Les traductions publiées jusqu'à la 1.0.4 ont été reprises du zip 1.0.4.
+- Les traducteurs envoient une pull request ou une issue « Translation » (`docs/TRANSLATING.md`, modèle dans `.github/ISSUE_TEMPLATE/translation.md`). Claude vérifie avec `python3 tools/check_translation.py Locales/<langue>.lua` avant de fusionner.
+- L'allemand, l'espagnol (Espagne et Mexique) et le portugais du Brésil : Claude traduit les textes nouveaux ou changés directement dans ces fichiers, avant la publication, et les vérifie avec le même outil. Plus d'import à la main.
+- Un texte anglais changé : retirer sa ligne dans les autres langues (elle s'affiche en anglais) ou la retraduire.

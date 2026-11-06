@@ -14,12 +14,12 @@ or visible fix, update:
   version: it must not contradict itself (a later change in the same version rewrites the earlier
   line instead of adding a "fix" for something players never had). Sort the changes by kind
   (`sections`: intro, new, improved, fixed). The changelog stays in `Changelog.lua` (English and
-  French), never in the strings sent to CurseForge's translation tool;
+  French only);
 - `README.md` (highlights, block list, commands, file table, developer notes);
 - `docs/pages/description.md`, the CurseForge and Wago page (English and French parts);
 - `docs/pages/summary.md` if the core of the addon changes, `docs/A-REPRENDRE.md` (status),
   `docs/IDEES-FUTUR.md` (ideas done or new);
-- `docs/localization/` (`lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua`, same for frFR).
+- `docs/localization/` (`lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua`, same for frFR), the English reference for translators.
 
 Then run, and fix everything they report:
 ```sh
@@ -37,7 +37,7 @@ release (`.github/workflows/release.yml`) when the documentation is behind. The 
 is `docs/RELEASE.md`.
 
 ## Texts that are easy to translate
-Changing a text on CurseForge makes translators redo all of it. Keep every text short: one key
+Changing a text makes translators redo all of it. Keep every text short: one key
 per line or paragraph (the help: `HELP_<TOPIC>_<n>` keys ordered by `ns.HELP_LAYOUT` at the end
 of `Locales/enUS.lua`). Add a line = a NEW key; change a line = keep its key; never renumber,
 rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
@@ -51,12 +51,11 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
   ever has to break them, show a message and convert them.
 - A rework never takes anything away: every option a 1.0.0 player has stays, so nobody thinks
   "this is not the addon I downloaded".
-- English and French only in the repository; other languages come from CurseForge's tool.
-- Every update that adds or changes texts: remind Braincell1980, before publishing, to add the
-  translations on CurseForge. Give him German, Spanish (Spain and Mexico) and Brazilian Portuguese
-  files that hold ONLY the new or changed keys no translator has done yet (an import replaces
-  existing translations), checked with `tools/check_translation.py`, kept in `Tessera-dev`.
-  He imports them by hand (page Localization, missing phrases: "do nothing"); never automate it.
+- Every language lives in the repository (`Locales/`). Since 1.1.0 translations come as GitHub
+  pull requests or "Translation" issues (`docs/TRANSLATING.md`), never from CurseForge's
+  localization tool. Before publishing, Claude translates the new or changed texts into German,
+  Spanish (Spain and Mexico) and Brazilian Portuguese directly in those files, checked with
+  `tools/check_translation.py`.
 - Released versions have no command a player does not need. Test and development commands
   (`/tessera test`, debug report, probes) live only in `TesseraDev.lua`, in the private
   repository `Brainc3ll/Tessera-dev` (never in this one), added to the test zips given to Braincell1980 (never pushed, never released).

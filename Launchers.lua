@@ -89,20 +89,34 @@ function ns:GetLauncherSources()
             local obj = button and button.dataObject
             -- the same data object already placed as a DataBroker block: not twice
             if not (obj and ns.IsBrokerObjectPlaced and ns:IsBrokerObjectPlaced(obj)) then
-                local label = StripText(obj and (obj.label or obj.text) or "")
+                -- its label, else its registered name: obj.text is live data ("Patrol: done."),
+                -- not a name
+                local label = StripText(obj and obj.label or "")
                 Add("libdbicon", name, label ~= "" and label or name)
             end
         end
     end
 
     -- Buttons placed on the minimap (or stored in FlareUI's minimap button bag)
+    -- Map pins are not buttons to launch: an addon that draws many numbered frames on the
+    -- minimap (QuestieFrame10, QuestieFrame11...) is a pin pool, left out
+    local buttons, perStem = {}, {}
     for _, parent in ipairs({ Minimap, MinimapCluster, _G["FlareUI_MinimapBag"] }) do
         if parent and parent.GetChildren then
             for _, child in ipairs({ parent:GetChildren() }) do
                 if IsForeignButton(child) then
-                    Add("frame", child:GetName(), NiceFrameName(child:GetName()))
+                    local name = child:GetName()
+                    local stem = name:match("^(.-)%d+$")
+                    if stem then perStem[stem] = (perStem[stem] or 0) + 1 end
+                    table.insert(buttons, name)
                 end
             end
+        end
+    end
+    for _, name in ipairs(buttons) do
+        local stem = name:match("^(.-)%d+$")
+        if not (stem and perStem[stem] >= 3) then
+            Add("frame", name, NiceFrameName(name))
         end
     end
 

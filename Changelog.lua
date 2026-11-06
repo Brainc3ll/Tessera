@@ -130,6 +130,8 @@ ns.CHANGELOG = {
               } },
             { kind = "fixed",
               en = {
+                "\"Add a launcher block\" no longer lists map pins (Questie's numbered frames), nor a status "
+                    .. "text in place of an addon's name.",
                 "The War Within and Midnight styles: the placement banner and small windows take a plain frame "
                     .. "in the style's colors (the large art frame crowded their text), and the game's texts no longer "
                     .. "show through the options window.",
@@ -138,6 +140,8 @@ ns.CHANGELOG = {
                     .. "longer shows your one-handed sword skill (same for axes and maces).",
               },
               fr = {
+                "« Ajouter un bloc lanceur » ne liste plus les repères de carte (cadres numérotés de Questie), "
+                    .. "ni un texte d'état à la place du nom d'un addon.",
                 "Styles The War Within et Midnight : le bandeau de placement et les petites fenêtres prennent un "
                     .. "cadre simple aux couleurs du style (le grand cadre décoré serrait leur texte), et les textes du "
                     .. "jeu ne se voient plus à travers la fenêtre d'options.",

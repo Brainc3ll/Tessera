@@ -1839,6 +1839,24 @@ for _, step in ipairs({
         ns:ResetProfile("top")
         RunTimers()
     end,
+    -- launchers: a pool of numbered map pins on the minimap is not offered (QuestieFrame10...)
+    function()
+        local function Btn(name)
+            return { GetName = function() return name end, IsObjectType = function(_, t) return t == "Button" end,
+                IsForbidden = function() return false end, IsProtected = function() return false end,
+                GetSize = function() return 24, 24 end }
+        end
+        local old = Minimap.GetChildren
+        Minimap.GetChildren = function()
+            return Btn("QuestieFrame10"), Btn("QuestieFrame11"), Btn("QuestieFrame12"), Btn("MyAddonMinimapButton"),
+                Btn("OtherAddon2")
+        end
+        local labels = {}
+        for _, src in ipairs(ns:GetLauncherSources()) do labels[src.label] = true end
+        Minimap.GetChildren = old
+        assert(labels.MyAddon and labels.OtherAddon2, "real minimap buttons offered")
+        assert(not labels.QuestieFrame10 and not labels.QuestieFrame11, "map pins left out")
+    end,
     -- no window over another: a side window closes the other one and docks beside the options
     function()
         ns:OpenOptions()

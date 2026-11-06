@@ -37,6 +37,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Fixes
 
+- "Add a launcher block" no longer lists map pins (Questie's numbered frames), nor a status text in place of an addon's name.
 - The War Within and Midnight styles: the placement banner and small windows take a plain frame in the style's colors (the large art frame crowded their text), and the game's texts no longer show through the options window.
 - The Talent points block shows your unspent points on WoW Forever (it never appeared).
 - The Weapon skills block shows the skill of the weapon you hold: a two-handed sword no longer shows your one-handed sword skill (same for axes and maces).

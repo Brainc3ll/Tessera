@@ -55,7 +55,7 @@ ns.CHANGELOG = {
                     .. "talents, professions, quests, guild, Legacy...); a click opens the list. A menu you have not "
                     .. "unlocked yet stays grey until you reach it.",
                 "Hunter pet: your pet's happiness, with its damage and loyalty; a warning when it loses loyalty.",
-                "Weapon enchant: time left on your poisons, sharpening stones or shaman imbues.",
+                "Weapon enchant: time left on your poisons, sharpening stones or shaman imbues, on both hands or one.",
                 "Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.",
                 "XP per hour, or the time to your next level at your pace.",
                 "Gold this session: what you earned or spent since you logged in, and per hour.",
@@ -71,7 +71,7 @@ ns.CHANGELOG = {
                     .. "encore débloqué reste gris jusqu'à ce que tu l'atteignes.",
                 "Familier du chasseur : l'humeur de ton familier, avec ses dégâts et sa fidélité ; une alerte "
                     .. "quand il perd de la fidélité.",
-                "Enchantement d'arme : temps restant de tes poisons, pierres à aiguiser ou imprégnations du chaman.",
+                "Enchantement d'arme : temps restant de tes poisons, pierres à aiguiser ou imprégnations du chaman, sur les deux mains ou une seule.",
                 "Buffs longs : Bien nourri, élixirs et buffs mondiaux de 10 minutes ou plus, le plus court en premier.",
                 "XP par heure, ou le temps avant ton niveau suivant à ton rythme.",
                 "Or de la session : ce que tu as gagné ou dépensé depuis ta connexion, et par heure.",

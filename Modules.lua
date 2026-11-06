@@ -2699,11 +2699,13 @@ StaticPopupDialogs["TESSERA_GOAL_COUNT"] = {
     hideOnEscape = true,
     OnShow = function(self, data)
         local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
-        if box and data then box:SetNumeric(true); box:SetText(tostring(data.count or 20)); box:HighlightText() end
+        if box and data then box:SetText(tostring(data.count or 20)); box:HighlightText() end
     end,
     OnAccept = function(self, data)
         local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
-        if data then ns:AddGoalItem(data.key, data.id, box and tonumber(box:GetText())) end
+        -- (no SetNumeric: the game shares these boxes with every popup, other addons' too)
+        local count = box and tonumber((box:GetText():gsub("%s", "")))
+        if data and count then ns:AddGoalItem(data.key, data.id, count) end
     end,
     EditBoxOnEnterPressed = function(self, data)
         local parent = self:GetParent()
@@ -3344,7 +3346,15 @@ local function ReadWeaponEnchants()
     end
     return list
 end
-local WeaponEnchants = PerMoment(ReadWeaponEnchants)
+local AllWeaponEnchants = PerMoment(ReadWeaponEnchants)
+-- option "weaponSlots": both (every weapon, the ranged one too), main hand or off hand only
+local function WeaponEnchants(cfg)
+    local all, only = AllWeaponEnchants(), cfg and cfg.weaponSlots
+    if only ~= "main" and only ~= "off" then return all end
+    local slot, list = only == "main" and 0 or 1, {}
+    for _, e in ipairs(all) do if e.slot == slot then table.insert(list, e) end end
+    return list
+end
 
 if C_Item and C_Item.GetWeaponEnchantInfo then
 ns:RegisterModule("weaponEnchant", {
@@ -3353,16 +3363,22 @@ ns:RegisterModule("weaponEnchant", {
     events = { "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED" },
     interval = 5,
     defaultEnabled = false,
-    isEmpty = function() return #WeaponEnchants() == 0 end,
-    update = function()
-        local list = WeaponEnchants()
+    defaults = { weaponSlots = "both" },
+    options = {
+        { kind = "dropdown", field = "weaponSlots", label = "WEAPON_SLOTS", tip = "TIP_WEAPON_SLOTS",
+          values = { { key = "both", label = "WEAPON_SLOTS_BOTH" }, { key = "main", label = "TT_MAIN_HAND" },
+                     { key = "off", label = "TT_OFF_HAND" } } },
+    },
+    isEmpty = function(cfg) return #WeaponEnchants(cfg) == 0 end,
+    update = function(cfg)
+        local list = WeaponEnchants(cfg)
         if #list == 0 then return L.NONE, WARN end
         local shortest = list[1]
         for _, e in ipairs(list) do if e.left < shortest.left then shortest = e end end
         return ShortTime(shortest.left), shortest.left < 300 and WARN or GOOD
     end,
-    tooltip = function(tt)
-        local list = WeaponEnchants()
+    tooltip = function(tt, cfg)
+        local list = WeaponEnchants(cfg)
         if #list == 0 then tt:AddLine(L.TT_NO_WEAPON_ENCHANT, 0.8, 0.8, 0.8, true) end
         for _, e in ipairs(list) do
             local right = ShortTime(e.left)

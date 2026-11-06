@@ -1445,6 +1445,7 @@ end
 -- without Alt) opens the quick menu; when locked, right click opens its options and
 -- other clicks go to the module's onClick
 local function OnMouseUp(self, button)
+    if self.itemDropped then self.itemDropped = nil; return end
     if not ns:IsLocked() then
         if button == "LeftButton" and IsControlKeyDown() and not self.dragMoved
             and not ns:IsFrozen(self.key) then
@@ -1566,16 +1567,17 @@ local function CreateBlock(key)
     f:SetScript("OnMouseUp", OnMouseUp)
     -- an item dropped from the bags (Goal block): the click that drops it is handled there
     if ns.modules[key] and ns.modules[key].onItemDrop then
-        local function Drop()
+        local function Drop(fromClick)
             local kind, id = GetCursorInfo()
             if kind ~= "item" or not id then return false end
             ClearCursor()
+            f.itemDropped = fromClick -- the mouse-up of this click must not also open the menu
             local ok, err = pcall(ns.modules[key].onItemDrop, id)
             if not ok then Print(tostring(err)) end
             return true
         end
-        f:SetScript("OnReceiveDrag", Drop)
-        f:HookScript("OnMouseDown", function() if GetCursorInfo() == "item" then Drop() end end)
+        f:SetScript("OnReceiveDrag", function() Drop(false) end)
+        f:HookScript("OnMouseDown", function() if GetCursorInfo() == "item" then Drop(true) end end)
     end
     if ns.modules[key] and ns.modules[key].onWheel then
         f:EnableMouseWheel(true)

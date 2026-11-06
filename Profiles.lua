@@ -332,6 +332,16 @@ local function CleanBlock(self, key, block, keys)
             if SameShape(value, defaults[field]) then clean[field] = value end
         elseif field == "point" then
             clean.point = CleanPoint(value)
+        elseif field == "goalItems" and key == "goal" and type(value) == "table" then
+            -- Goal block items: up to GOAL_MAX_ITEMS { id, count }, positive whole numbers
+            local list = {}
+            for _, it in ipairs(value) do
+                if #list >= (self.GOAL_MAX_ITEMS or 3) then break end
+                if type(it) == "table" and IsNumber(it.id) and IsNumber(it.count) and it.id >= 1 and it.count >= 1 then
+                    table.insert(list, { id = math.floor(it.id), count = math.floor(it.count) })
+                end
+            end
+            clean.goalItems = list
         elseif field == "dock" and type(value) == "table" and type(value.to) == "string"
             and keys[value.to] and value.to ~= key and SIDES[value.side] then
             clean.dock = { to = value.to, side = value.side }

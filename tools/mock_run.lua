@@ -1516,33 +1516,41 @@ for _, step in ipairs({
         ns:RunClickAction("fps", "pin")
         assert(ns:IsPinned("fps"), "pin from a click action")
         ns:TogglePin("fps")
-        -- item goal: 7 in the bags out of 20
+        -- item goal: the single item of the first test builds becomes the list's first item
         local oldCount = C_Item.GetItemCount
-        C_Item.GetItemCount = function(id) return id == 2592 and 7 or 0 end
+        C_Item.GetItemCount = function(id) return (id == 2592 and 7) or (id == 2589 and 30) or 0 end
         local cfg = { goalType = "item", goalItem = 2592, goalValue = 20 }
         assert(m.goal.update(cfg) == "7 / 20", "item goal: " .. tostring(m.goal.update(cfg)))
+        assert(cfg.goalItem == nil and #cfg.goalItems == 1, "old item converted")
+        ns.GoalItems(cfg)
+        assert(#cfg.goalItems == 1 and cfg.goalItems[1].count == 20, "conversion runs once")
         m.goal.tooltip(GameTooltip, cfg)
+        -- the list on the real block: add, newest shown, all shown, full at 3, change, remove
+        local g = ns.db.blocks.goal
+        g.goalItems, g.goalType = {}, "gold"
+        assert(ns:AddGoalItem("goal", 2592, 20) and g.goalType == "item", "add an item")
+        assert(ns:AddGoalItem("goal", 2589, 25), "add a second item")
+        assert(m.goal.update(g) == "30 / 25", "newest item shown: " .. tostring(m.goal.update(g)))
+        g.goalItemsShown = "all"
+        assert(select(2, m.goal.update(g):gsub("/", "")) == 2, "every item shown: " .. m.goal.update(g))
+        g.goalItemsShown = "last"
+        assert(ns:AddGoalItem("goal", 4306, 10), "third item")
+        assert(not ns:AddGoalItem("goal", 4338, 10) and #g.goalItems == 3, "no fourth item")
+        assert(ns:AddGoalItem("goal", 2592, 5) and #g.goalItems == 3 and g.goalItems[3].id == 2592, "change moves it last")
+        ns:RemoveGoalItem("goal", 4306)
+        assert(#g.goalItems == 2, "removed")
+        m.goal.tooltip(GameTooltip, g)
+        ns:FillGoalMenu(setmetatable({}, { __index = function() return function(self) return self end end }), "goal")
+        -- the list survives an export and an import; a broken list is cleaned
+        local text = ns:ExportProfile()
+        local data = ns:DecodeProfile(text)
+        assert(data and #data.blocks.goal.goalItems == 2, "goal items exported and read back")
+        g.goalItems[3] = { id = "x", count = -1 }
+        g.goalItems[4], g.goalItems[5] = { id = 1, count = 1 }, { id = 2, count = 2 }
+        data = ns:DecodeProfile(ns:ExportProfile())
+        assert(#data.blocks.goal.goalItems == 3, "broken entry dropped, at most 3 kept")
+        g.goalItems[5], g.goalItems[4], g.goalItems[3] = nil, nil, nil
         C_Item.GetItemCount = oldCount
-        -- DPS of the last fight: 1200 / 60 s = 20
-        assert(m.dps.update() == ns.L.DPS_FORMAT:format("20"), "dps: " .. tostring(m.dps.update()))
-        m.dps.tooltip(GameTooltip)
-        -- in combat: a readable 0 gives "In combat", never "0 DPS"
-        local oldDM, oldSecret, oldAbbr = C_DamageMeter.GetCombatSessionSourceFromType, issecretvalue, AbbreviateLargeNumbers
-        ns.state.inCombat = true
-        C_DamageMeter.GetCombatSessionSourceFromType = function() return { totalAmount = 0, amountPerSecond = 0 } end
-        assert(m.dps.update() == ns.L.DPS_IN_COMBAT, "no 0 DPS in combat")
-        assert(m.dps.liveText() == nil, "a readable value is not live")
-        -- secret values: shown live, shortened, through the block
-        C_DamageMeter.GetCombatSessionSourceFromType = function() return { totalAmount = 99999, amountPerSecond = 12345 } end
-        issecretvalue = function(v) return v == 99999 or v == 12345 end
-        AbbreviateLargeNumbers = function(v) return v == 12345 and "12.3K" or tostring(v) end
-        assert(m.dps.update() == ns.L.DPS_IN_COMBAT, "secret total")
-        assert(m.dps.liveText() == ns.L.DPS_FORMAT:format("12.3K"), "live dps: " .. tostring(m.dps.liveText()))
-        if ns.frames.dps then
-            ns.db.blocks.dps.enabled = true; ns.frames.dps:Show(); ns:UpdateBlock("dps")
-        end
-        ns.state.inCombat = false
-        C_DamageMeter.GetCombatSessionSourceFromType, issecretvalue, AbbreviateLargeNumbers = oldDM, oldSecret, oldAbbr
         -- corpse: hidden while alive
         assert(m.corpse.isEmpty(), "corpse hidden while alive")
         m.durability.tooltip(GameTooltip, ns.db.blocks.durability)

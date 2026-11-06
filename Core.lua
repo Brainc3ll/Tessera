@@ -1564,6 +1564,19 @@ local function CreateBlock(key)
     f:SetScript("OnLeave", OnLeave)
     f:SetScript("OnMouseDown", OnMouseDown)
     f:SetScript("OnMouseUp", OnMouseUp)
+    -- an item dropped from the bags (Goal block): the click that drops it is handled there
+    if ns.modules[key] and ns.modules[key].onItemDrop then
+        local function Drop()
+            local kind, id = GetCursorInfo()
+            if kind ~= "item" or not id then return false end
+            ClearCursor()
+            local ok, err = pcall(ns.modules[key].onItemDrop, id)
+            if not ok then Print(tostring(err)) end
+            return true
+        end
+        f:SetScript("OnReceiveDrag", Drop)
+        f:HookScript("OnMouseDown", function() if GetCursorInfo() == "item" then Drop() end end)
+    end
     if ns.modules[key] and ns.modules[key].onWheel then
         f:EnableMouseWheel(true)
         f:SetScript("OnMouseWheel", OnMouseWheel)
@@ -1909,19 +1922,6 @@ function ns:UpdateBlock(key)
     end
     f.lastLevel = level
     self:UpdateBar(f, cfg, mod, level)
-    -- live secret value (DPS in combat): handed straight to the FontString. The game forbids
-    -- reading, comparing or changing it, so no colors, no width check, no "same text" test.
-    if mod.liveText and not self.previewMode then
-        local okLive, live = pcall(mod.liveText, cfg)
-        if okLive and live ~= nil and pcall(function()
-            local t = live
-            if cfg.showLabel then t = L.LABEL_FORMAT:format(self:GetBlockName(key), live) end
-            f.text:SetText(t)
-        end) then
-            f.lastText = nil -- the next normal value redraws
-            return
-        end
-    end
     if value == nil then value = L.NA end
     value = tostring(value)
     if cfg.monochrome then

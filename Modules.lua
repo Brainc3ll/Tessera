@@ -2593,14 +2593,46 @@ end
 ---------------------------------------------------------------------------
 -- Goal: progress towards an amount of gold or a level, chosen by the player
 ---------------------------------------------------------------------------
--- Returns progress (0..1), current value text, target text
+-- Item goals: up to GOAL_MAX_ITEMS items, cfg.goalItems = { { id =, count = }, ... }, the newest
+-- last. The player adds them by dropping an item on the block or from a list of the bags: no
+-- item number to type.
+local GOAL_MAX_ITEMS = 3
+ns.GOAL_MAX_ITEMS = GOAL_MAX_ITEMS
+local GOAL_ICON = "Interface\\Icons\\INV_Misc_Gem_Pearl_04"
+
+-- The list, converting the single item of the first 1.1.0 test builds (cfg.goalItem, never
+-- published) on first read; a second read finds goalItems and changes nothing
+local function GoalItems(cfg)
+    if type(cfg.goalItems) ~= "table" then
+        cfg.goalItems = {}
+        local id = tonumber(cfg.goalItem)
+        if id and id > 0 then
+            cfg.goalItems[1] = { id = math.floor(id), count = math.max(1, math.floor(tonumber(cfg.goalValue) or 1)) }
+        end
+    end
+    cfg.goalItem = nil
+    return cfg.goalItems
+end
+ns.GoalItems = GoalItems
+
+local function ItemName(id)
+    return Try(C_Item and C_Item.GetItemNameByID, id) or ("#" .. id)
+end
+local function ItemIcon(id)
+    return Try(C_Item and C_Item.GetItemIconByID, id) or GOAL_ICON
+end
+local function ItemCount(id)
+    return tonumber((Try(C_Item and C_Item.GetItemCount, id))) or 0
+end
+
+-- Returns progress (0..1), current value text, target text (gold and level goals)
 local function GoalProgress(cfg)
     local target = cfg.goalValue or 1000
     if cfg.goalType == "item" then
-        local id = tonumber(cfg.goalItem)
-        local count = id and Try(C_Item and C_Item.GetItemCount, id) or 0
-        local name = id and (Try(C_Item and C_Item.GetItemNameByID, id) or ("#" .. id)) or L.GOAL_NO_ITEM
-        return math.min(1, target > 0 and count / target or 1), ("%s : %d"):format(name, count), tostring(target), count
+        -- the whole list: the share of items that reached their target
+        local items, sum = GoalItems(cfg), 0
+        for _, it in ipairs(items) do sum = sum + math.min(1, ItemCount(it.id) / math.max(1, it.count)) end
+        return #items > 0 and sum / #items or 0
     end
     if cfg.goalType == "level" then
         local level = UnitLevel("player") or 1
@@ -2614,37 +2646,179 @@ local function GoalProgress(cfg)
         FormatGold(target * 10000, { goldFormat = "gold" })
 end
 
+local function ItemText(it, withIcon)
+    local text = ("%d / %d"):format(ItemCount(it.id), it.count)
+    if withIcon then text = ("|T%s:0|t %s"):format(ItemIcon(it.id), text) end
+    return text
+end
+
+-- Adds an item (or changes its target if it is already there); false when the list is full
+function ns:AddGoalItem(key, id, count)
+    local cfg = self.db.blocks[key]
+    id, count = tonumber(id), tonumber(count)
+    if not (cfg and id and count and id > 0 and count > 0) then return false end
+    local items = GoalItems(cfg)
+    id, count = math.floor(id), math.floor(count)
+    for i, it in ipairs(items) do
+        if it.id == id then
+            table.remove(items, i)
+            table.insert(items, { id = id, count = count })
+            cfg.goalType = "item"
+            self:UpdateBlock(key)
+            return true
+        end
+    end
+    if #items >= GOAL_MAX_ITEMS then
+        self.Print(L.GOAL_FULL:format(GOAL_MAX_ITEMS))
+        return false
+    end
+    table.insert(items, { id = id, count = count })
+    cfg.goalType = "item"
+    self:UpdateBlock(key)
+    return true
+end
+
+function ns:RemoveGoalItem(key, id)
+    local cfg = self.db.blocks[key]
+    if not cfg then return end
+    local items = GoalItems(cfg)
+    for i, it in ipairs(items) do
+        if it.id == id then table.remove(items, i); break end
+    end
+    self:UpdateBlock(key)
+end
+
+-- "How many?" box, then the item goes in the list
+StaticPopupDialogs["TESSERA_GOAL_COUNT"] = {
+    text = L.GOAL_HOW_MANY,
+    button1 = ACCEPT,
+    button2 = CANCEL,
+    hasEditBox = true,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnShow = function(self, data)
+        local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
+        if box and data then box:SetNumeric(true); box:SetText(tostring(data.count or 20)); box:HighlightText() end
+    end,
+    OnAccept = function(self, data)
+        local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
+        if data then ns:AddGoalItem(data.key, data.id, box and tonumber(box:GetText())) end
+    end,
+    EditBoxOnEnterPressed = function(self, data)
+        local parent = self:GetParent()
+        StaticPopupDialogs["TESSERA_GOAL_COUNT"].OnAccept(parent, data or parent.data)
+        parent:Hide()
+    end,
+}
+function ns:AskGoalCount(key, id, current)
+    if not StaticPopup_Show then return self:AddGoalItem(key, id, current or 20) end
+    StaticPopup_Show("TESSERA_GOAL_COUNT", ItemName(id), nil, { key = key, id = id, count = current })
+end
+
+-- The items in the bags, once each, sorted by name (for "Add from my bags")
+local function BagItems()
+    local seen, list = {}, {}
+    local C = C_Container
+    if not (C and C.GetContainerNumSlots and C.GetContainerItemInfo) then return list end
+    for bag = 0, 4 do
+        for slot = 1, tonumber((Try(C.GetContainerNumSlots, bag))) or 0 do
+            local info = Try(C.GetContainerItemInfo, bag, slot)
+            local id = type(info) == "table" and info.itemID
+            if id and not seen[id] then
+                seen[id] = true
+                table.insert(list, { id = id, name = ItemName(id), icon = info.iconFileID or ItemIcon(id) })
+            end
+        end
+    end
+    table.sort(list, function(x, y) return x.name < y.name end)
+    return list
+end
+
+-- The block's item entries, in a menu (its click and the quick menu)
+function ns:FillGoalMenu(root, key)
+    local cfg = self.db.blocks[key]
+    if not cfg then return end
+    local items = GoalItems(cfg)
+    local add = root:CreateButton(L.GOAL_ADD_ITEM)
+    if add.SetScrollMode then add:SetScrollMode(400) end
+    local bag = BagItems()
+    if #bag == 0 then add:CreateTitle(L.GOAL_BAGS_EMPTY) end
+    for _, b in ipairs(bag) do
+        add:CreateButton(("|T%s:0|t %s"):format(b.icon, b.name), function() self:AskGoalCount(key, b.id) end)
+    end
+    for _, it in ipairs(items) do
+        local sub = root:CreateButton(("|T%s:0|t %s"):format(ItemIcon(it.id), ItemName(it.id)))
+        sub:CreateButton(L.GOAL_CHANGE, function() self:AskGoalCount(key, it.id, it.count) end)
+        sub:CreateButton(L.GOAL_REMOVE, function() self:RemoveGoalItem(key, it.id) end)
+    end
+end
+
 ns:RegisterModule("goal", {
     label = "GOAL",
-    icon = "Interface\\Icons\\INV_Misc_Gem_Pearl_04",
+    icon = GOAL_ICON,
     defaultEnabled = false,
-    defaults = { progressBar = true, goalType = "gold", goalValue = 1000 },
+    defaults = { progressBar = true, goalType = "gold", goalValue = 1000, goalItemsShown = "last" },
     options = {
         { kind = "dropdown", field = "goalType", label = "GOAL_TYPE", tip = "TIP_GOAL_TYPE",
           values = { { key = "gold", label = "GOAL_GOLD" }, { key = "level", label = "GOAL_LEVEL" },
                      { key = "item", label = "GOAL_ITEM" } } },
-        { kind = "number", field = "goalItem", label = "GOAL_ITEM_ID", tip = "TIP_GOAL_ITEM_ID", min = 1,
+        { kind = "number", field = "goalValue", label = "GOAL_VALUE", tip = "TIP_GOAL_VALUE", min = 1,
+          shown = function(cfg) return cfg.goalType ~= "item" end },
+        { kind = "dropdown", field = "goalItemsShown", label = "GOAL_ITEMS_SHOWN", tip = "TIP_GOAL_ITEMS_SHOWN",
+          values = { { key = "last", label = "GOAL_SHOWN_LAST" }, { key = "all", label = "GOAL_SHOWN_ALL" } },
           shown = function(cfg) return cfg.goalType == "item" end },
-        { kind = "number", field = "goalValue", label = "GOAL_VALUE", tip = "TIP_GOAL_VALUE", min = 1 },
     },
-    -- an item goal shows the item's icon
+    -- an item goal shows the newest item's icon
     getIcon = function(cfg)
-        local id = cfg and cfg.goalType == "item" and tonumber(cfg.goalItem)
-        return id and Try(C_Item and C_Item.GetItemIconByID, id) or "Interface\\Icons\\INV_Misc_Gem_Pearl_04"
+        if not (cfg and cfg.goalType == "item") then return GOAL_ICON end
+        local items = GoalItems(cfg)
+        return items[#items] and ItemIcon(items[#items].id) or GOAL_ICON
     end,
     events = { "PLAYER_MONEY", "PLAYER_XP_UPDATE", "PLAYER_LEVEL_UP", "BAG_UPDATE_DELAYED" },
     progress = function(cfg) return (GoalProgress(cfg)) end,
     update = function(cfg)
-        local progress, _, target, count = GoalProgress(cfg)
-        if cfg.goalType == "item" then return ("%d / %s"):format(count, target), progress >= 1 and GOOD or nil end
+        local progress = GoalProgress(cfg)
+        if cfg.goalType == "item" then
+            local items = GoalItems(cfg)
+            if #items == 0 then return L.GOAL_NO_ITEM end
+            if cfg.goalItemsShown == "all" then
+                local parts = {}
+                for _, it in ipairs(items) do table.insert(parts, ItemText(it, true)) end
+                return table.concat(parts, "  "), progress >= 1 and GOOD or nil
+            end
+            return ItemText(items[#items], false), progress >= 1 and GOOD or nil
+        end
         return ("%d%%"):format(math.floor(progress * 100)), progress >= 1 and GOOD or nil
     end,
     tooltip = function(tt, cfg)
+        if cfg.goalType == "item" then
+            local items = GoalItems(cfg)
+            if #items == 0 then tt:AddLine(L.GOAL_NO_ITEM, 0.8, 0.8, 0.8) end
+            for i = #items, 1, -1 do
+                local it = items[i]
+                local done = ItemCount(it.id) >= it.count
+                tt:AddDoubleLine(("|T%s:0|t %s"):format(ItemIcon(it.id), ItemName(it.id)), ItemText(it, false),
+                    1, 1, 1, done and 0.3 or 1, done and 1 or 1, done and 0.3 or 1)
+            end
+            return
+        end
         local progress, current, target = GoalProgress(cfg)
         WHITE(tt, L.TT_GOAL_CURRENT, current)
         WHITE(tt, L.TT_GOAL_TARGET, target)
         WHITE(tt, L.TT_GOAL_PROGRESS, ("%d%%"):format(math.floor(progress * 100)))
     end,
+    -- click: the item menu (add from the bags, change, remove)
+    onClick = function(self)
+        if not (MenuUtil and MenuUtil.CreateContextMenu) then return end
+        MenuUtil.CreateContextMenu(self, function(_, root)
+            root:CreateTitle(ns:GetBlockName("goal"))
+            ns:FillGoalMenu(root, "goal")
+        end)
+    end,
+    -- an item dropped on the block (from the bags) is added
+    onItemDrop = function(id) ns:AskGoalCount("goal", id) end,
+    clickHint = L.HINT_GOAL,
 })
 
 ---------------------------------------------------------------------------
@@ -3252,66 +3426,6 @@ ns:RegisterModule("longBuffs", {
 })
 
 ---------------------------------------------------------------------------
--- DPS: your damage per second in the current or last fight (Blizzard's damage meter).
--- During a fight the game keeps these values "secret": an addon may not read or compute
--- them, but it may show them as they are (Blizzard's own meter does). So in combat the
--- block shows Blizzard's live DPS through liveText; "In combat" only when even that fails.
----------------------------------------------------------------------------
-local DM_CURRENT, DM_DAMAGE = 1, 0 -- Enum.DamageMeterSessionType.Current, Enum.DamageMeterType.DamageDone
-local function IsSecret(v)
-    local check = _G["issecretvalue"]
-    return check and check(v) or false
-end
-local fights = { longest = 0 }
-
-local function FightDPS()
-    local DM = C_DamageMeter
-    if not (DM and DM.GetCombatSessionSourceFromType and DM.GetSessionDurationSeconds) then return nil end
-    local source = Try(DM.GetCombatSessionSourceFromType, DM_CURRENT, DM_DAMAGE, Try(UnitGUID, "player"))
-    local duration = Try(DM.GetSessionDurationSeconds, DM_CURRENT)
-    local total = type(source) == "table" and source.totalAmount
-    if total == nil or duration == nil or IsSecret(total) or IsSecret(duration) then return nil, true end
-    if duration > fights.longest then fights.longest = duration end
-    return duration > 0 and total / duration or 0, false, total, duration
-end
-
-if C_DamageMeter and C_DamageMeter.GetCombatSessionSourceFromType then
-ns:RegisterModule("dps", {
-    label = "DPS",
-    icon = "Interface\\Icons\\Ability_DualWield",
-    events = { "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED", "DAMAGE_METER_RESET" },
-    interval = 2,
-    defaultEnabled = false,
-    update = function()
-        local dps, secret = FightDPS()
-        -- in combat, a readable 0 is only the meter starting or resetting: no "0 DPS" flash
-        if secret or (ns.state.inCombat and (not dps or dps == 0)) then return L.DPS_IN_COMBAT end
-        if not dps then return L.NA end
-        local fmt = BreakUpLargeNumbers or tostring
-        return L.DPS_FORMAT:format(fmt(math.floor(dps + 0.5)))
-    end,
-    -- in combat: Blizzard's secret DPS, shortened and shown as it is (never read or compared)
-    liveText = function()
-        if not ns.state.inCombat or not AbbreviateLargeNumbers then return nil end
-        local source = Try(C_DamageMeter.GetCombatSessionSourceFromType, DM_CURRENT, DM_DAMAGE, Try(UnitGUID, "player"))
-        local perSecond = type(source) == "table" and source.amountPerSecond
-        if perSecond == nil or perSecond == false or not IsSecret(perSecond) then return nil end
-        return L.DPS_FORMAT:format(AbbreviateLargeNumbers(perSecond))
-    end,
-    tooltip = function(tt)
-        local dps, secret, total, duration = FightDPS()
-        local fmt = BreakUpLargeNumbers or tostring
-        if secret then tt:AddLine(L.TT_DPS_SECRET, 0.8, 0.8, 0.8, true) end
-        if dps then
-            WHITE(tt, L.TT_DPS_DAMAGE, fmt(math.floor(total)))
-            WHITE(tt, L.TT_DPS_DURATION, ShortTime(duration))
-        end
-        if fights.longest > 0 then WHITE(tt, L.TT_DPS_LONGEST, ShortTime(fights.longest)) end
-    end,
-})
-end
-
----------------------------------------------------------------------------
 -- Corpse: while you are a ghost, the distance and direction to your body
 ---------------------------------------------------------------------------
 local ARROWS = { "↑", "↗", "→", "↘", "↓", "↙", "←", "↖" }
@@ -3520,7 +3634,6 @@ local MORE_SAMPLES = {
     longBuffs    = function() return L.LONG_BUFFS_FORMAT:format(3, "42:15"), GOOD end,
     xpRate       = function() return L.XP_RATE_FORMAT:format("18 450") end,
     goldSession  = function() return "+" .. ns.FormatMoney(1234567), GOOD end,
-    dps          = function() return L.DPS_FORMAT:format("142") end,
     corpse       = function() return L.CORPSE_FORMAT:format(84) .. " ↗", WARN end,
 }
 for key, sample in pairs(MORE_SAMPLES) do

@@ -17,7 +17,7 @@ local L = ns.L
 
 local CATEGORIES = {
     { title = "DEMO_CAT_CHARACTER", keys = { "gold", "bags", "durability", "xp", "rested", "stats", "regen", "speed",
-        "talents", "itemLevel", "pet", "weaponEnchant", "longBuffs", "dps", "corpse" } },
+        "talents", "itemLevel", "pet", "weaponEnchant", "longBuffs", "corpse" } },
     { title = "DEMO_CAT_SOCIAL", keys = { "friends", "guild", "group", "whispers", "mail", "loot" } },
     { title = "DEMO_CAT_WORLD", keys = { "zone", "subzone", "coords", "time", "serverTime", "date", "hearthstone", "instances",
         "reset" } },

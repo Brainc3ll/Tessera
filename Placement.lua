@@ -537,6 +537,11 @@ function ns:OpenQuickMenu(key)
                     function() self:PushUndo(); self:SetGroupOwnLook(key, look) end)
             end
         end
+        -- Goal block: its items (add from the bags, change, remove)
+        if key == "goal" and self.FillGoalMenu then
+            local sub = root:CreateButton(L.GOAL_ITEMS_MENU)
+            self:FillGoalMenu(sub, key)
+        end
         -- Gold block: forget a character (deleted or renamed) from its tooltip
         if key == "gold" then
             local others = self:GetOtherCharacters()

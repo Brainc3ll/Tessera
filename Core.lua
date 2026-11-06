@@ -2209,6 +2209,33 @@ function ns:ReplaceBlock(oldKey, newKey)
     if not old or not new or oldKey == newKey or InCombatLockdown() then return false end
     self:PushUndo()
     local swap = new.enabled and self.frames[newKey] ~= nil
+    -- A hidden block can still hold its old place in a chain (other hidden blocks docked
+    -- on it). It leaves that chain first: what was docked or hung on it now follows what
+    -- it followed. Otherwise, once it takes its new place, the old chain can loop back on
+    -- it and the layout cuts the loop somewhere else: a whole bar came apart.
+    if not swap then
+        local heir
+        for key, cfg in pairs(blocks) do
+            if cfg.dock and cfg.dock.to == newKey then
+                if new.dock then
+                    cfg.dock.to = new.dock.to
+                elseif not heir then
+                    -- it headed its group: the first block on it heads it now
+                    heir = key
+                    cfg.dock = nil
+                    for _, field in ipairs(PLACE_FIELDS) do
+                        if field ~= "dock" then cfg[field] = DeepCopy(new[field]) end
+                    end
+                else
+                    cfg.dock.to = heir
+                end
+            end
+        end
+        for _, cfg in pairs(blocks) do
+            if cfg.anchor and cfg.anchor.below == newKey then cfg.anchor.below = heir or (new.dock and new.dock.to) end
+            if cfg.anchor and cfg.anchor.above == newKey then cfg.anchor.above = heir or (new.dock and new.dock.to) end
+        end
+    end
     -- every reference to one of the two blocks now points to the other
     -- (a swap) or to the new one (a replacement)
     local function Relabel(k)

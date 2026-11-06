@@ -5,7 +5,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.1.0 — 
 
-- Your first big Tessera update on WoW Forever: 11 new blocks, a choice of display on 14 more, pinned tooltips and names of your own.
+- Your first big Tessera update on WoW Forever: 10 new blocks, a choice of display on 14 more, pinned tooltips and names of your own.
 
 ### New
 
@@ -18,7 +18,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Gold this session: what you earned or spent since you logged in, and per hour.
 - DPS: your damage per second in the last fight, with the longest fight of the session.
 - Corpse: while you are a ghost, the distance and an arrow toward your body; click for a map pin.
-- Game mode (Standard, Hardcore, Self-Found) and Weather (rain, snow, sandstorm, and how strong).
+- Weather (rain, snow, sandstorm, and how strong).
 - Pin a tooltip: it stays open next to its block and updates every second (quick menu, or a Shift / middle click).
 - Custom name: rename any block, for example a launcher that shows "SomeAddonMinimapButton".
 - Goal: a new "Item" type counts an item in your bags toward your target ("47 / 100").

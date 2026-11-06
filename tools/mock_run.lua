@@ -1534,7 +1534,6 @@ for _, step in ipairs({
         issecretvalue = oldSecret
         -- corpse: hidden while alive
         assert(m.corpse.isEmpty(), "corpse hidden while alive")
-        assert(m.gameMode.update() == ns.L.GAME_MODE_STANDARD, "game mode")
         assert(m.weather.update() == ns.L.WEATHER_RAIN .. " 40%", "weather: " .. tostring(m.weather.update()))
         m.durability.tooltip(GameTooltip, ns.db.blocks.durability)
         -- bags tooltip with a herb bag listed apart

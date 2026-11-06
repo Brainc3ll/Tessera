@@ -3425,36 +3425,6 @@ ns:RegisterModule("corpse", {
 })
 
 ---------------------------------------------------------------------------
--- Game mode: Standard, Hardcore or Self-Found (WoW Forever's realm rules)
----------------------------------------------------------------------------
-local function GameMode()
-    local R = C_GameRules
-    if not R then return nil end
-    local hardcore = R.IsHardcoreActive and Try(R.IsHardcoreActive)
-    local selfFound = R.IsSelfFoundAllowed and Try(R.IsSelfFoundAllowed)
-    if hardcore and selfFound then return "GAME_MODE_HARDCORE_SF", BAD end
-    if hardcore then return "GAME_MODE_HARDCORE", BAD end
-    if selfFound then return "GAME_MODE_SELF_FOUND", WARN end
-    return "GAME_MODE_STANDARD", GOOD
-end
-
-if C_GameRules and C_GameRules.IsHardcoreActive then
-ns:RegisterModule("gameMode", {
-    label = "GAME_MODE",
-    icon = "Interface\\Icons\\INV_Misc_Book_07",
-    defaultEnabled = false,
-    update = function()
-        local key, level = GameMode()
-        return key and L[key] or L.NA, level
-    end,
-    tooltip = function(tt)
-        local key = GameMode()
-        if key then tt:AddLine(L["TT_" .. key], 1, 1, 1, true) end
-    end,
-})
-end
-
----------------------------------------------------------------------------
 -- Weather where you stand (clear, rain, snow, sandstorm...), with its strength
 ---------------------------------------------------------------------------
 local WEATHER_NAMES = { [0] = "WEATHER_CLEAR", "WEATHER_RAIN", "WEATHER_SNOW", "WEATHER_SANDSTORM", "WEATHER_OTHER" }
@@ -3641,7 +3611,6 @@ local MORE_SAMPLES = {
     goldSession  = function() return "+" .. ns.FormatMoney(1234567), GOOD end,
     dps          = function() return L.DPS_FORMAT:format("142") end,
     corpse       = function() return L.CORPSE_FORMAT:format(84) .. " ↗", WARN end,
-    gameMode     = function() return L.GAME_MODE_STANDARD, GOOD end,
     weather      = function() return L.WEATHER_RAIN .. " 40%" end,
 }
 for key, sample in pairs(MORE_SAMPLES) do

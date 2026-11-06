@@ -153,7 +153,7 @@ Help tab inside the game explains everything.
   reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, goal, mana
   regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode,
   micro-menu (the menus in its tooltip, grey until unlocked), minimap tracking, hunter pet, weapon enchant,
-  long buffs, XP per hour, gold this session, DPS, corpse, game mode, weather...
+  long buffs, XP per hour, gold this session, DPS, corpse, weather...
 - Streamer mode (General tab, a key binding or its block): for streams and videos, other players' names,
   your other characters, your guild's name and your gold show as `***`.
 - Blocks that have nothing to show hide themselves and keep their place (in the ready-made bars,

@@ -11,7 +11,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Micro-menu: Blizzard's micro menu in one block. Its tooltip lists the menus (character, spellbook, talents, professions, quests, guild, Legacy...); a click opens the list. A menu you have not unlocked yet stays grey until you reach it.
 - Hunter pet: your pet's happiness, with its damage and loyalty; a warning when it loses loyalty.
-- Weapon enchant: time left on your poisons, sharpening stones or shaman imbues, on both hands or one.
+- Weapon enchant: time left on your poisons, sharpening stones or shaman imbues.
 - Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.
 - XP per hour, or the time to your next level at your pace.
 - Gold this session: what you earned or spent since you logged in, and per hour.
@@ -25,6 +25,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Pick what a block shows (Text tab, "Value shown"): played time this level, in total or this session; zone with its subzone; completed quests; one tracked currency; honor out of its cap or in percent; the next Legacy reward; Comprehension scrolls; rested XP in bubbles; daily or weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.
 - Volume: choose the volume the block shows and your mouse wheel changes (music, effects...).
 - Friends: you can leave out your Battle.net friends.
+- Any block can show its icon alone (Display, "Show the value"); the tooltip and the clicks stay.
+- Weapon enchant: watch both hands, the main hand or the off hand. Micro-menu: its count can stay on.
 - Bags: the tooltip lists profession bags (herb bag...) apart. Durability: the tooltip also lists worn items in your bags, under their own title.
 - Comprehension reads your skill directly and shows its description; Honor shows yesterday's kills and honor when the game gives them.
 - The demo mode shows the new blocks.

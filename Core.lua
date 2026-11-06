@@ -523,6 +523,7 @@ function ns:SetIcon(tex, icon)
     tex:SetVertexColor(1, 1, 1)
     tex:SetTexCoord(0, 1, 0, 1)
     if type(icon) ~= "table" then icon = { file = icon } end
+    if tex.SetRotation then tex:SetRotation(icon.rotation or 0) end
     if icon.atlas then
         tex:SetAtlas(icon.atlas)
     else
@@ -650,6 +651,7 @@ local BLOCK_DEFAULTS = {
     enabled = true,
     showLabel = false, -- icon + value, like the stock bar
     showIcon = true,
+    showValue = true,       -- false: the icon alone (tooltip and clicks unchanged)
     tooltip = true,
     colorize = true,
     hideInCombat = false,
@@ -1706,7 +1708,7 @@ function ns:ApplyStyle(key)
     local launcherLike = ns.IsLauncherKey(key) or (cfg.broker and cfg.broker.kind == "launcher")
     -- a "text only" style hides the icons, except the launchers' (they are the point)
     local showIcon = cfg.showIcon and not (cfg.hideIcons and not launcherLike)
-    local iconOnly = showIcon and launcherLike and not cfg.showLabel
+    local iconOnly = showIcon and not cfg.showLabel and (launcherLike or cfg.showValue == false)
     -- icon size: chosen in pixels (to make every icon the same), or following the height
     local iconSize = (cfg.iconSize or 0) > 0 and math.min(cfg.iconSize, cfg.height * 2)
         or math.max(8, cfg.height - 2 * inset - 4)
@@ -1926,6 +1928,11 @@ function ns:UpdateBlock(key)
     self:UpdateBar(f, cfg, mod, level)
     if value == nil then value = L.NA end
     value = tostring(value)
+    -- "Show the value" unchecked: the icon alone, or the name when the icon is hidden too
+    if cfg.showValue == false and not ns.IsLauncherKey(key) then
+        value = ""
+        if not cfg.showIcon and not cfg.showLabel then value = self:GetBlockName(key) end
+    end
     if cfg.monochrome then
         -- black and white style: the colors and the small pictures (coins, currencies)
         -- written into the value go away

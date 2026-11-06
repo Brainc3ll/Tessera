@@ -909,6 +909,8 @@ local function BuildBlockPage(page)
         }, "strata", L.TIP_STRATA), 1)
 
         P.Place(CreateHeader(sub, L.SECTION_SIZE), 2)
+        -- (with the size: the icon alone makes the block as small as it gets)
+        P.Place(Check(sub, L.SHOW_VALUE, "showValue", L.TIP_SHOW_VALUE), 2)
         P.Place(Check(sub, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP), 2)
         local sizeNote = P.Place(CreateNote(sub, L.SIZE_GROUP_HINT), 2)
         sizeNote.isShown = IsGroup

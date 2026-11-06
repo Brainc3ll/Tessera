@@ -3444,7 +3444,8 @@ ns:RegisterModule("longBuffs", {
 ---------------------------------------------------------------------------
 -- Corpse: while you are a ghost, the distance and direction to your body
 ---------------------------------------------------------------------------
-local ARROWS = { "↑", "↗", "→", "↘", "↓", "↙", "←", "↖" }
+-- the direction is the block's icon, turned (the game's fonts have no arrow characters)
+local CORPSE_ARROW = "Interface\\Minimap\\MinimapArrow"
 local function CorpseInfo()
     if not (UnitIsGhost and Try(UnitIsGhost, "player")) then return nil end
     local M, D = C_Map, C_DeathInfo
@@ -3458,15 +3459,14 @@ local function CorpseInfo()
     local ok, info = pcall(function()
         local dx, dy = a.x - b.x, a.y - b.y
         local yards = math.sqrt(dx * dx + dy * dy)
-        local arrow
+        local angle
         local facing = GetPlayerFacing and GetPlayerFacing()
         if type(facing) == "number" then
-            -- world x points north, y points west; facing 0 = north, counter-clockwise
-            local angle = math.atan2(dy, dx) - facing
-            local step = math.floor(((-angle) % (2 * math.pi)) / (math.pi / 4) + 0.5) % 8
-            arrow = ARROWS[step + 1]
+            -- world x points north, y points west; facing 0 = north, counter-clockwise, like
+            -- a texture's rotation: the angle turns the arrow toward the body
+            angle = math.atan2(dy, dx) - facing
         end
-        return { mapID = mapID, corpse = corpse, meters = yards * 0.9144, arrow = arrow }
+        return { mapID = mapID, corpse = corpse, meters = yards * 0.9144, angle = angle }
     end)
     return ok and info or { mapID = mapID }
 end
@@ -3474,6 +3474,11 @@ end
 ns:RegisterModule("corpse", {
     label = "CORPSE",
     icon = "Interface\\Icons\\Ability_Rogue_FeignDeath",
+    getIcon = function()
+        local info = CorpseInfo()
+        if info and info.angle then return { file = CORPSE_ARROW, rotation = info.angle } end
+        return "Interface\\Icons\\Ability_Rogue_FeignDeath"
+    end,
     events = { "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST" },
     interval = 0.5,
     defaultEnabled = false,
@@ -3482,7 +3487,7 @@ ns:RegisterModule("corpse", {
         local info = CorpseInfo()
         if not info then return L.NONE end
         if not info.meters then return L.CORPSE_GHOST end
-        return ("%s %s"):format(L.CORPSE_FORMAT:format(info.meters), info.arrow or ""), WARN
+        return L.CORPSE_FORMAT:format(info.meters), WARN
     end,
     tooltip = function(tt)
         local info = CorpseInfo()

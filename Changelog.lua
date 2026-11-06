@@ -55,7 +55,7 @@ ns.CHANGELOG = {
                     .. "talents, professions, quests, guild, Legacy...); a click opens the list. A menu you have not "
                     .. "unlocked yet stays grey until you reach it.",
                 "Hunter pet: your pet's happiness, with its damage and loyalty; a warning when it loses loyalty.",
-                "Weapon enchant: time left on your poisons, sharpening stones or shaman imbues, on both hands or one.",
+                "Weapon enchant: time left on your poisons, sharpening stones or shaman imbues.",
                 "Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.",
                 "XP per hour, or the time to your next level at your pace.",
                 "Gold this session: what you earned or spent since you logged in, and per hour.",
@@ -71,7 +71,7 @@ ns.CHANGELOG = {
                     .. "encore débloqué reste gris jusqu'à ce que tu l'atteignes.",
                 "Familier du chasseur : l'humeur de ton familier, avec ses dégâts et sa fidélité ; une alerte "
                     .. "quand il perd de la fidélité.",
-                "Enchantement d'arme : temps restant de tes poisons, pierres à aiguiser ou imprégnations du chaman, sur les deux mains ou une seule.",
+                "Enchantement d'arme : temps restant de tes poisons, pierres à aiguiser ou imprégnations du chaman.",
                 "Buffs longs : Bien nourri, élixirs et buffs mondiaux de 10 minutes ou plus, le plus court en premier.",
                 "XP par heure, ou le temps avant ton niveau suivant à ton rythme.",
                 "Or de la session : ce que tu as gagné ou dépensé depuis ta connexion, et par heure.",
@@ -91,6 +91,8 @@ ns.CHANGELOG = {
                     .. "weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.",
                 "Volume: choose the volume the block shows and your mouse wheel changes (music, effects...).",
                 "Friends: you can leave out your Battle.net friends.",
+                "Any block can show its icon alone (Display, \"Show the value\"); the tooltip and the clicks stay.",
+                "Weapon enchant: watch both hands, the main hand or the off hand. Micro-menu: its count can stay on.",
                 "Bags: the tooltip lists profession bags (herb bag...) apart. Durability: the tooltip also lists "
                     .. "worn items in your bags, under their own title.",
                 "Comprehension reads your skill directly and shows its description; Honor shows yesterday's kills "
@@ -106,6 +108,8 @@ ns.CHANGELOG = {
                     .. "Tessera seul.",
                 "Volume : choisis le volume que le bloc affiche et que ta molette change (musique, effets...).",
                 "Amis : tu peux laisser de côté tes amis Battle.net.",
+                "Chaque bloc peut n'afficher que son icône (Affichage, « Afficher la valeur ») ; l'infobulle et les clics restent.",
+                "Enchantement d'arme : surveille les deux mains, la main droite ou la main gauche. Micro-menu : son compteur peut rester affiché.",
                 "Sacs : l'infobulle liste les sacs de métier (sac d'herbes...) à part. Durabilité : l'infobulle "
                     .. "liste aussi les pièces abîmées de tes sacs, sous leur propre titre.",
                 "Compréhension lit ta compétence directement et montre sa description ; Honneur montre les "

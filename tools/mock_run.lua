@@ -1556,6 +1556,34 @@ for _, step in ipairs({
         C_Item.GetItemCount = oldCount
         -- corpse: hidden while alive
         assert(m.corpse.isEmpty(), "corpse hidden while alive")
+        -- corpse: no arrow character in the text (the game's fonts lack them), a turned icon instead
+        local oldGhost, oldFacing = UnitIsGhost, GetPlayerFacing
+        UnitIsGhost, GetPlayerFacing = function() return true end, function() return 0 end
+        local oldMap, oldDeath = C_Map, C_DeathInfo
+        C_Map = setmetatable({ GetBestMapForUnit = function() return 1 end,
+            GetPlayerMapPosition = function() return { x = 0.5, y = 0.5 } end,
+            GetWorldPosFromMapPos = function(_, p) return 1, { x = p.x * 1000, y = p.y * 1000 } end }, { __index = oldMap })
+        C_DeathInfo = { GetCorpseMapPosition = function() return { x = 0.6, y = 0.5 } end }
+        local ctext = m.corpse.update()
+        assert(not ctext:find("[\128-\255]") and ctext:find("%d"), "corpse text: " .. ctext)
+        local cicon = m.corpse.getIcon()
+        assert(type(cicon) == "table" and cicon.rotation, "corpse arrow icon")
+        UnitIsGhost, GetPlayerFacing, C_Map, C_DeathInfo = oldGhost, oldFacing, oldMap, oldDeath
+        -- "Show the value" unchecked: the icon alone; the name when the icon is hidden too
+        local fcfg = ns.db.blocks.fps
+        fcfg.showValue = false
+        ns:ApplyStyle("fps"); ns:UpdateBlock("fps")
+        assert(ns.frames.fps.iconOnly or not fcfg.showIcon, "icon alone")
+        fcfg.showIcon = false
+        ns:ApplyStyle("fps"); ns:UpdateBlock("fps")
+        assert(tostring(ns.frames.fps.lastText):find(ns:GetBlockName("fps"), 1, true), "name when no icon: " .. tostring(ns.frames.fps.lastText))
+        fcfg.showValue, fcfg.showIcon = true, true
+        ns:ApplyStyle("fps"); ns:UpdateBlock("fps")
+        -- micro-menu count: hidden when every menu is open, unless "always"
+        if m.microMenu then
+            local mt = m.microMenu.update({ microCount = "always" })
+            assert(mt:find("/"), "micro count always: " .. mt)
+        end
         m.durability.tooltip(GameTooltip, ns.db.blocks.durability)
         -- bags tooltip with a herb bag listed apart
         local oldC = C_Container

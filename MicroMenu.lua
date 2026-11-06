@@ -140,13 +140,19 @@ ns:RegisterModule("microMenu", {
     icon = "Interface\\Icons\\INV_Misc_Book_07",
     events = { "PLAYER_LEVEL_UP" },
     defaultEnabled = false,
-    update = function()
+    defaults = { microCount = "locked" },
+    options = {
+        { kind = "dropdown", field = "microCount", label = "MICRO_COUNT", tip = "TIP_MICRO_COUNT",
+          values = { { key = "locked", label = "MICRO_COUNT_LOCKED" }, { key = "always", label = "MICRO_COUNT_ALWAYS" } } },
+    },
+    update = function(cfg)
         local open, total = 0, 0
         for _, e in ipairs(Entries()) do
             total = total + 1
             if Unlocked(e.button) then open = open + 1 end
         end
-        return open < total and ("%d / %d"):format(open, total) or ""
+        if open < total or (cfg and cfg.microCount == "always") then return ("%d / %d"):format(open, total) end
+        return ""
     end,
     tooltip = function(tt)
         for _, e in ipairs(Entries()) do

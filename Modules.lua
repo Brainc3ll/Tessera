@@ -3439,13 +3439,15 @@ end
 local WEATHER_NAMES = { [0] = "WEATHER_CLEAR", "WEATHER_RAIN", "WEATHER_SNOW", "WEATHER_SANDSTORM", "WEATHER_OTHER" }
 local WEATHER_ICONS = { [0] = "Interface\\Icons\\Spell_Holy_SurgeOfLight", "Interface\\Icons\\Spell_Frost_SummonWaterElemental",
     "Interface\\Icons\\Spell_Frost_FrostShock", "Interface\\Icons\\Spell_Nature_Cyclone", "Interface\\Icons\\Spell_Nature_StormReach" }
+-- C_Weather exists on WoW Forever only (not in Blizzard's documentation of Retail), hence _G
+local WeatherAPI = _G["C_Weather"]
 local function Weather()
-    local info = C_Weather and C_Weather.GetCurrentWeather and Try(C_Weather.GetCurrentWeather)
+    local info = WeatherAPI and WeatherAPI.GetCurrentWeather and Try(WeatherAPI.GetCurrentWeather)
     if type(info) ~= "table" then return nil end
     return tonumber(info.type) or 0, tonumber(info.intensity) or 0
 end
 
-if C_Weather and C_Weather.GetCurrentWeather then
+if WeatherAPI and WeatherAPI.GetCurrentWeather then
 ns:RegisterModule("weather", {
     label = "WEATHER",
     icon = "Interface\\Icons\\Spell_Nature_StormReach",

@@ -227,6 +227,15 @@ C_Container = { GetContainerNumSlots = function() return 16 end, GetContainerNum
 C_AddOns = { GetAddOnMetadata = function() return "test" end, GetNumAddOns = function() return 0 end,
     IsAddOnLoaded = function(name) return arg[3] == "broker" and name == "ChocolateBar" end }
 
+-- Blizzard's micro menu buttons (Legacy still locked)
+local function MicroButton(enabled)
+    return { IsEnabled = function() return enabled end, disabledTooltip = not enabled and "Available at level 10" or nil,
+             GetNormalTexture = function() return { GetAtlas = function() return nil end } end }
+end
+for _, name in ipairs({ "CharacterMicroButton", "SpellbookMicroButton", "TalentMicroButton", "ProfessionMicroButton",
+                        "QuestLogMicroButton", "GuildMicroButton", "LFDMicroButton", "EJMicroButton",
+                        "CollectionsMicroButton", "MainMenuMicroButton" }) do _G[name] = MicroButton(true) end
+LegacyMicroButton = MicroButton(false)
 -- blocks registered only when the client has their functions (so the doc check sees them)
 GetAverageItemLevel = function() return 52.4, 50.1 end
 C_DateAndTime = setmetatable({ GetSecondsUntilDailyReset = function() return 3600 end,
@@ -251,6 +260,23 @@ GetCategoryNumAchievements = function(id) return ({ [15577] = 3, [15593] = 3 })[
 C_UnitAuras = { GetPlayerAuraBySpellID = function(id)
     if id == 1229741 then return { name = "Camp Perks", spellId = id, expirationTime = 3000 } end
 end }
+-- long buffs: Well Fed (30 min, 20 left) and a short buff that is not counted
+C_UnitAuras.GetBuffDataByIndex = function(_, i)
+    return ({ { name = "Well Fed", icon = 136000, duration = 1800, expirationTime = 2200 },
+              { name = "Sprint", icon = 132307, duration = 15, expirationTime = 1010 } })[i]
+end
+-- minimap tracking (Find Herbs on), hunter pet (happy), a poison on the main hand
+C_Minimap = { GetNumTrackingTypes = function() return 2 end, GetTrackingInfo = function(i)
+    return ({ { name = "Find Herbs", texture = 133939, active = true, type = "spell", subType = 0 },
+              { name = "Find Minerals", texture = 136025, active = false, type = "spell", subType = 0 } })[i]
+end }
+HasPetUI = function() return true, true end
+C_PetInfo = { GetPetHappiness = function() return 3, 125, 20 end, GetPetLoyalty = function() return "Loyalty level 3" end }
+C_Item = C_Item or {}
+C_Item.GetWeaponEnchantInfo = function(slot)
+    if slot == 0 then return { { hasEnchant = true, enchantType = 0, timeLeft = 1500000, charges = 40 } } end
+    return {}
+end
 C_CurrencyInfo = C_CurrencyInfo or {}
 C_CurrencyInfo.GetCurrencyInfo = function(id)
     if id == 1792 then return { name = "Honor", quantity = 1250, maxQuantity = 25000 } end
@@ -1420,6 +1446,50 @@ for _, step in ipairs({
                 end
             end
         end
+    end,
+    -- micro-menu blocks: one per button of the client; a locked menu is grey, says why,
+    -- and hides with "Hide when empty"; the click goes through Blizzard's own button
+    function()
+        assert(#ns.MICRO_KEYS == 11, "micro-menu blocks: " .. #ns.MICRO_KEYS)
+        local legacy, char = ns.modules.microLegacy, ns.modules.microCharacter
+        assert(legacy.isEmpty() and not char.isEmpty(), "locked / unlocked")
+        assert(legacy.getIcon().color and not char.getIcon().color, "grey icon while locked")
+        assert(char.secureMacro == "/click CharacterMicroButton", "click through Blizzard's button")
+        legacy.tooltip(GameTooltip)
+        LegacyMicroButton = MicroButton(true)
+        assert(not legacy.isEmpty(), "unlocked later: the block appears")
+        LegacyMicroButton = MicroButton(false)
+    end,
+    -- the new blocks of 1.0.5: tracking, hunter pet, weapon enchant, long buffs, session XP and gold
+    function()
+        local m = ns.modules
+        assert(m.tracking.update() == "Find Herbs", "tracking: " .. tostring(m.tracking.update()))
+        assert(m.pet.update() == (PET_HAPPINESS3 or "3"), "pet happiness")
+        local text, level = m.weaponEnchant.update()
+        assert(text == "25:00" and level == 1, "poison time left: " .. tostring(text))
+        assert(m.longBuffs.update() == "20:00", "long buffs: only Well Fed, 20 minutes left: " .. tostring(m.longBuffs.update()))
+        for _, key in ipairs({ "tracking", "pet", "weaponEnchant", "longBuffs", "xpRate", "goldSession" }) do
+            m[key].tooltip(GameTooltip, ns.db.blocks[key])
+            assert(m[key].sample, key .. " has a demo sample")
+        end
+        -- session gold: +1 gold 50 silver since login; hidden in streamer mode
+        local oldMoney = GetMoney
+        m.goldSession.update(ns.db.blocks.goldSession)
+        GetMoney = function() return oldMoney() + 15000 end
+        assert(m.goldSession.update(ns.db.blocks.goldSession):sub(1, 1) == "+", "gold earned")
+        ns:SetStreamerMode(true)
+        assert(m.goldSession.update(ns.db.blocks.goldSession) == ns.HIDDEN, "gold hidden in streamer mode")
+        ns:SetStreamerMode(false)
+        GetMoney = oldMoney
+        -- XP per hour: 1000 XP (500 -> 1500) in half an hour = 2000 XP/h
+        local oldXP, oldTime = UnitXP, GetTime
+        m.xpRate.update(ns.db.blocks.xpRate)
+        UnitXP = function() return 2000 - 500 end
+        GetTime = function() return oldTime() + 1800 end
+        local rate = m.xpRate.update({ xpRateShown = "rate" })
+        assert(rate:find("2[ ,.\194\160]?000"), "xp rate: " .. rate)
+        assert(m.xpRate.update({ xpRateShown = "time" }) == "15m", "500 XP left at 2000/h: 15 minutes")
+        UnitXP, GetTime = oldXP, oldTime
     end,
     -- the bags block counts only bags that hold anything, not a herb bag's free slots
     function()

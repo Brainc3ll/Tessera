@@ -17,14 +17,17 @@ local L = ns.L
 
 local CATEGORIES = {
     { title = "DEMO_CAT_CHARACTER", keys = { "gold", "bags", "durability", "xp", "rested", "stats", "regen", "speed",
-        "talents", "itemLevel" } },
+        "talents", "itemLevel", "pet", "weaponEnchant", "longBuffs" } },
     { title = "DEMO_CAT_SOCIAL", keys = { "friends", "guild", "group", "whispers", "mail", "loot" } },
     { title = "DEMO_CAT_WORLD", keys = { "zone", "subzone", "coords", "time", "serverTime", "date", "hearthstone", "instances",
-        "reset" } },
+        "reset", "tracking" } },
     { title = "DEMO_CAT_PROGRESS", keys = { "reputation", "currency", "quests", "goal", "profession1", "profession2",
-        "cooking", "firstAid", "fishing", "ammo", "reagents" } },
+        "cooking", "firstAid", "fishing", "ammo", "reagents", "xpRate", "goldSession" } },
     { title = "DEMO_CAT_SYSTEM", keys = { "fps", "latency", "memory", "volume", "played", "streamer" } },
     { title = "DEMO_CAT_FOREVER", keys = { "legacy", "comprehension", "camping", "honor", "weaponSkills" } },
+    { title = "DEMO_CAT_MICRO", keys = { "microCharacter", "microSpellbook", "microTalents", "microProfessions",
+        "microQuests", "microGuild", "microGroupFinder", "microJournal", "microCollections", "microLegacy",
+        "microGameMenu" } },
 }
 local COLUMN_W, COLUMN_GAP, TOP = 272, 18, -130
 local MIXED_STEPS = 4 -- 4 x 6 columns: every style is shown at least once

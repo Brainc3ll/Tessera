@@ -3038,6 +3038,282 @@ ns:RegisterModule("streamer", {
 -- they show what each block looks like with typical values. Blocks without a
 -- sample keep showing their real value.
 ---------------------------------------------------------------------------
+-- Minimap tracking (herbs, minerals, beasts...): the active one; click = the tracking menu
+---------------------------------------------------------------------------
+local function ActiveTracking()
+    local M, list = C_Minimap, {}
+    if not (M and M.GetNumTrackingTypes and M.GetTrackingInfo) then return list end
+    for i = 1, tonumber((Try(M.GetNumTrackingTypes))) or 0 do
+        local info = Try(M.GetTrackingInfo, i)
+        if type(info) == "table" and info.active and info.name then table.insert(list, info) end
+    end
+    return list
+end
+
+if C_Minimap and C_Minimap.GetTrackingInfo then
+ns:RegisterModule("tracking", {
+    label = "TRACKING",
+    icon = "Interface\\Icons\\INV_Misc_Map_01",
+    getIcon = function()
+        local first = ActiveTracking()[1]
+        return first and first.texture or "Interface\\Icons\\INV_Misc_Map_01"
+    end,
+    events = { "MINIMAP_UPDATE_TRACKING" },
+    defaultEnabled = false,
+    isEmpty = function() return #ActiveTracking() == 0 end,
+    update = function()
+        local list = ActiveTracking()
+        if #list == 0 then return L.NONE, WARN end
+        if #list > 1 then return L.TRACKING_MORE:format(list[1].name, #list - 1) end
+        return list[1].name
+    end,
+    tooltip = function(tt)
+        local list = ActiveTracking()
+        if #list == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
+        for _, info in ipairs(list) do tt:AddLine(info.name, 1, 1, 1) end
+    end,
+    -- click: Blizzard's tracking menu, opened from the minimap's own button
+    onClick = function(_, button)
+        if button ~= "LeftButton" then return end
+        local b = MinimapCluster and MinimapCluster.Tracking and MinimapCluster.Tracking.Button
+        if b and b.OpenMenu then pcall(b.OpenMenu, b) end
+    end,
+    clickHint = L.HINT_TRACKING,
+})
+end
+
+---------------------------------------------------------------------------
+-- Hunter pet: happiness (Mad / Neutral / Happy, the game's own names) and loyalty
+---------------------------------------------------------------------------
+local PET_COLORS = { [1] = BAD, [2] = WARN, [3] = GOOD }
+local function PetHappiness()
+    local P = C_PetInfo
+    local _, isHunterPet = Try(HasPetUI)
+    if not (isHunterPet and P and P.GetPetHappiness) then return nil end
+    local happiness, damage, loyaltyRate = Try(P.GetPetHappiness)
+    if not PET_COLORS[happiness] then return nil end
+    return happiness, damage, loyaltyRate
+end
+
+if C_PetInfo and C_PetInfo.GetPetHappiness then
+ns:RegisterModule("pet", {
+    label = "PET",
+    icon = "Interface\\Icons\\Ability_Hunter_BeastTaming",
+    events = { "UNIT_HAPPINESS", "UNIT_PET", "PET_UI_UPDATE" },
+    interval = 10,
+    defaultEnabled = false,
+    isEmpty = function() return PetHappiness() == nil end,
+    update = function()
+        local happiness = PetHappiness()
+        if not happiness then return L.NONE end
+        return _G["PET_HAPPINESS" .. happiness] or tostring(happiness), PET_COLORS[happiness]
+    end,
+    tooltip = function(tt)
+        local happiness, damage, loyaltyRate = PetHappiness()
+        if not happiness then
+            tt:AddLine(L.TT_NO_PET, 0.8, 0.8, 0.8, true)
+            return
+        end
+        WHITE(tt, Try(UnitName, "pet") or L.PET, _G["PET_HAPPINESS" .. happiness] or "")
+        if type(damage) == "number" then WHITE(tt, L.TT_PET_DAMAGE, ("%d%%"):format(damage)) end
+        local loyalty = C_PetInfo.GetPetLoyalty and Try(C_PetInfo.GetPetLoyalty)
+        if type(loyalty) == "string" and loyalty ~= "" then WHITE(tt, L.TT_PET_LOYALTY, loyalty) end
+        if type(loyaltyRate) == "number" and loyaltyRate < 0 then
+            tt:AddLine(L.TT_PET_LOSING_LOYALTY, 1, 0.6, 0.2, true)
+        end
+    end,
+})
+end
+
+---------------------------------------------------------------------------
+-- Temporary weapon enchant (poisons, sharpening stones, shaman imbues): time left
+---------------------------------------------------------------------------
+local WEAPON_SLOT_NAMES = { [0] = "TT_MAIN_HAND", [1] = "TT_OFF_HAND", [2] = "TT_RANGED" }
+local function WeaponEnchants()
+    local list = {}
+    local get = C_Item and C_Item.GetWeaponEnchantInfo
+    if not get then return list end
+    for slot = 0, 2 do
+        local enchants = Try(get, slot)
+        for _, e in ipairs(type(enchants) == "table" and enchants or {}) do
+            if type(e) == "table" and e.hasEnchant then
+                table.insert(list, { slot = slot, left = (tonumber(e.timeLeft) or 0) / 1000,
+                                     charges = tonumber(e.charges) or 0 })
+            end
+        end
+    end
+    return list
+end
+
+if C_Item and C_Item.GetWeaponEnchantInfo then
+ns:RegisterModule("weaponEnchant", {
+    label = "WEAPON_ENCHANT",
+    icon = "Interface\\Icons\\INV_Stone_SharpeningStone_01",
+    events = { "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED" },
+    interval = 5,
+    defaultEnabled = false,
+    isEmpty = function() return #WeaponEnchants() == 0 end,
+    update = function()
+        local list = WeaponEnchants()
+        if #list == 0 then return L.NONE, WARN end
+        local shortest = list[1]
+        for _, e in ipairs(list) do if e.left < shortest.left then shortest = e end end
+        return ShortTime(shortest.left), shortest.left < 300 and WARN or GOOD
+    end,
+    tooltip = function(tt)
+        local list = WeaponEnchants()
+        if #list == 0 then tt:AddLine(L.TT_NO_WEAPON_ENCHANT, 0.8, 0.8, 0.8, true) end
+        for _, e in ipairs(list) do
+            local right = ShortTime(e.left)
+            if e.charges > 0 then right = right .. "  " .. L.TT_CHARGES:format(e.charges) end
+            WHITE(tt, L[WEAPON_SLOT_NAMES[e.slot]], right)
+        end
+    end,
+})
+end
+
+---------------------------------------------------------------------------
+-- Long buffs (Well Fed, elixirs, world buffs...): buffs of 10 minutes or more, the
+-- shortest time left. Aura data can be "secret" in combat: each read is protected.
+---------------------------------------------------------------------------
+local LONG_BUFF = 600
+local function LongBuffs()
+    local list, UA = {}, C_UnitAuras
+    if not (UA and UA.GetBuffDataByIndex) then return list end
+    local now = GetTime()
+    for i = 1, 40 do
+        local aura = Try(UA.GetBuffDataByIndex, "player", i)
+        if type(aura) ~= "table" then break end
+        local ok, entry = pcall(function()
+            if aura.duration and aura.duration >= LONG_BUFF and aura.expirationTime and aura.expirationTime > 0 then
+                return { name = aura.name, icon = aura.icon, left = aura.expirationTime - now }
+            end
+        end)
+        if ok and entry then table.insert(list, entry) end
+    end
+    table.sort(list, function(a, b) return a.left < b.left end)
+    return list
+end
+
+ns:RegisterModule("longBuffs", {
+    label = "LONG_BUFFS",
+    icon = "Interface\\Icons\\INV_Misc_Food_15",
+    getIcon = function()
+        local first = LongBuffs()[1]
+        return first and first.icon or "Interface\\Icons\\INV_Misc_Food_15"
+    end,
+    events = { "UNIT_AURA" },
+    interval = 5,
+    defaultEnabled = false,
+    isEmpty = function() return #LongBuffs() == 0 end,
+    update = function()
+        local list = LongBuffs()
+        if #list == 0 then return L.NONE, WARN end
+        local first = list[1]
+        local text = ShortTime(first.left)
+        if #list > 1 then text = L.LONG_BUFFS_FORMAT:format(#list, text) end
+        return text, first.left < 300 and WARN or GOOD
+    end,
+    tooltip = function(tt)
+        local list = LongBuffs()
+        if #list == 0 then tt:AddLine(L.TT_NO_LONG_BUFF, 0.8, 0.8, 0.8, true) end
+        for _, b in ipairs(list) do
+            local icon = b.icon and ("|T%s:14:14:0:0:64:64:5:59:5:59|t "):format(b.icon) or ""
+            WHITE(tt, icon .. tostring(b.name or "?"), ShortTime(b.left))
+        end
+    end,
+})
+
+---------------------------------------------------------------------------
+-- Session: XP per hour and time to the next level; gold earned since you logged in
+---------------------------------------------------------------------------
+local xpSession = { start = GetTime(), gained = 0, lastXP = nil, lastMax = nil, lastLevel = nil }
+local function TrackXP()
+    local xp, max, level = UnitXP("player"), UnitXPMax("player"), UnitLevel("player")
+    local s = xpSession
+    if s.lastXP then
+        if level > s.lastLevel then
+            s.gained = s.gained + (s.lastMax - s.lastXP) + xp
+        elseif xp > s.lastXP then
+            s.gained = s.gained + (xp - s.lastXP)
+        end
+    end
+    s.lastXP, s.lastMax, s.lastLevel = xp, max, level
+end
+local function XPRate()
+    TrackXP()
+    local hours = (GetTime() - xpSession.start) / 3600
+    if hours < 1 / 60 or xpSession.gained <= 0 then return 0 end
+    return xpSession.gained / hours
+end
+
+ns:RegisterModule("xpRate", {
+    label = "XP_RATE",
+    icon = "Interface\\Icons\\INV_Misc_PocketWatch_01",
+    events = { "PLAYER_XP_UPDATE", "PLAYER_LEVEL_UP" },
+    interval = 15,
+    defaultEnabled = false,
+    isEmpty = function() return AtMaxLevel() end,
+    update = function(cfg)
+        if AtMaxLevel() then return L.NA end
+        local rate = XPRate()
+        local fmt = BreakUpLargeNumbers or tostring
+        if rate <= 0 then return L.XP_RATE_FORMAT:format("0") end
+        if cfg and cfg.xpRateShown == "time" then
+            return ShortDuration((UnitXPMax("player") - UnitXP("player")) / rate * 3600)
+        end
+        return L.XP_RATE_FORMAT:format(fmt(math.floor(rate)))
+    end,
+    defaults = { xpRateShown = "rate" },
+    options = {
+        { kind = "dropdown", field = "xpRateShown", tab = "text", label = "XP_RATE_SHOWN", tip = "TIP_XP_RATE_SHOWN",
+          values = { { key = "rate", label = "XP_RATE_PER_HOUR" }, { key = "time", label = "XP_RATE_TIME" } } },
+    },
+    tooltip = function(tt)
+        local rate = XPRate()
+        local fmt = BreakUpLargeNumbers or tostring
+        WHITE(tt, L.TT_SESSION_TIME, FormatDuration(GetTime() - xpSession.start))
+        WHITE(tt, L.TT_XP_GAINED, fmt(xpSession.gained))
+        WHITE(tt, L.XP_RATE_PER_HOUR, fmt(math.floor(rate)))
+        if rate > 0 and not AtMaxLevel() then
+            WHITE(tt, L.TT_XP_LEVEL_IN, FormatDuration((UnitXPMax("player") - UnitXP("player")) / rate * 3600))
+        end
+    end,
+})
+
+local moneyStart
+local function MoneyChange()
+    local now = Try(GetMoney) or 0
+    moneyStart = moneyStart or now
+    return now - moneyStart
+end
+
+ns:RegisterModule("goldSession", {
+    label = "GOLD_SESSION",
+    icon = "Interface\\Icons\\INV_Misc_Coin_02",
+    events = { "PLAYER_MONEY", "PLAYER_ENTERING_WORLD" },
+    defaultEnabled = false,
+    update = function(cfg)
+        local change = MoneyChange()
+        if ns:IsStreamer() then return ns.HIDDEN end
+        local text = ns.FormatMoney(math.abs(change), cfg and cfg.fontSize)
+        if change < 0 then return "-" .. text, WARN end
+        return (change > 0 and "+" or "") .. text, change > 0 and GOOD or nil
+    end,
+    tooltip = function(tt)
+        local change = MoneyChange()
+        WHITE(tt, L.TT_SESSION_TIME, FormatDuration(GetTime() - xpSession.start))
+        if ns:IsStreamer() then
+            WHITE(tt, L.GOLD_SESSION, ns.HIDDEN)
+            return
+        end
+        WHITE(tt, change < 0 and L.TT_GOLD_LOST or L.TT_GOLD_EARNED, ns.FormatMoney(math.abs(change)))
+        local hours = (GetTime() - xpSession.start) / 3600
+        if hours >= 1 / 60 and change > 0 then WHITE(tt, L.TT_GOLD_PER_HOUR, ns.FormatMoney(math.floor(change / hours))) end
+    end,
+})
+
+---------------------------------------------------------------------------
 local SAMPLES = {
     gold        = function(cfg) return FormatGold(12345678, cfg) end,
     bags        = function() return L.BAGS_FORMAT:format(18, 64), GOOD end,
@@ -3093,6 +3369,12 @@ local MORE_SAMPLES = {
     camping      = function() return L.CAMP_BUFFS_LEFT:format("52m"), GOOD end,
     honor        = function() return "3 250" end,
     streamer     = function() return L.STREAMER_ON, WARN end,
+    tracking     = function() return L.TRACKING end,
+    pet          = function() return _G["PET_HAPPINESS3"] or "Happy", GOOD end,
+    weaponEnchant = function() return "24:10", GOOD end,
+    longBuffs    = function() return L.LONG_BUFFS_FORMAT:format(3, "42:15"), GOOD end,
+    xpRate       = function() return L.XP_RATE_FORMAT:format("18 450") end,
+    goldSession  = function() return "+" .. ns.FormatMoney(1234567), GOOD end,
 }
 for key, sample in pairs(MORE_SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

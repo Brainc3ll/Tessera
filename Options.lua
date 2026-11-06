@@ -2232,14 +2232,35 @@ function ns:DockBesidePanel(frame)
     end
 end
 
--- Shows a side window: the other side windows close, and it docks beside the options
+-- Shows a side window, docked beside the options. One at a time: one already open steps
+-- aside and comes back when this one closes (the welcome tour and the style offer can both
+-- open at the first login: neither is lost).
+local waiting = {}
 function ns:ShowSideWindow(frame)
     if not frame then return end
     local known = false
     for _, f in ipairs(sideWindows) do
-        if f == frame then known = true elseif f:IsShown() then f:Hide() end
+        if f == frame then
+            known = true
+        elseif f:IsShown() then
+            table.insert(waiting, f)
+            f.sideHidden = true
+            f:Hide()
+            f.sideHidden = nil
+        end
     end
-    if not known then table.insert(sideWindows, frame) end
+    if not known then
+        table.insert(sideWindows, frame)
+        frame:HookScript("OnHide", function(window)
+            if window.sideHidden then return end -- stepped aside, not closed
+            local back = table.remove(waiting)
+            if back then
+                back:Show()
+                ns:DockBesidePanel(back)
+            end
+        end)
+    end
+    for i = #waiting, 1, -1 do if waiting[i] == frame then table.remove(waiting, i) end end
     frame:Show()
     self:DockBesidePanel(frame)
 end

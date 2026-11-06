@@ -54,7 +54,8 @@ def read(path):
                     strings[long_key] = rest[:rest.index(long_end)]
                     long_key = None
                 else:
-                    long_text = [rest]
+                    # Lua drops a line break right after the opening bracket
+                    long_text = [rest] if rest else []
                 continue
             bad.append(f"{os.path.basename(path)}:{number}: not a `L[\"KEY\"] = \"text\"` line")
     return strings, bad

@@ -22,7 +22,7 @@ local methods = {
     RegisterUnitEvent = function(self, e) self.__events[e] = true; frames[self] = true end,
     UnregisterEvent = function(self, e) self.__events[e] = nil end,
     IsEventRegistered = function(self, e) return self.__events[e] end,
-    Show = function(self) self.__shown = true end, Hide = function(self) self.__shown = false end,
+    Show = function(self) local was = self.__shown; self.__shown = true; if not was and self.__scripts and self.__scripts.OnShow then self.__scripts.OnShow(self) end end, Hide = function(self) local was = self.__shown; self.__shown = false; if was and self.__scripts and self.__scripts.OnHide then self.__scripts.OnHide(self) end end,
     SetShown = function(self, v) self.__shown = v and true or false end,
     IsShown = function(self) return self.__shown end, IsVisible = function(self) return self.__shown end,
     GetWidth = function(self) return self.__w end, GetHeight = function(self) return self.__h end,
@@ -1835,6 +1835,8 @@ for _, step in ipairs({
         ns:StartTutorial()
         assert(TesseraTutorial:IsShown() and not TesseraDebugCopy:IsShown(), "one side window at a time")
         TesseraTutorial:Hide()
+        assert(TesseraDebugCopy:IsShown(), "the window that stepped aside comes back")
+        TesseraDebugCopy:Hide()
         local a = { GetEffectiveScale = function() return 1 end, GetLeft = function() return 0 end,
             GetRight = function() return 100 end, GetTop = function() return 100 end, GetBottom = function() return 0 end }
         local b = setmetatable({ GetLeft = function() return 50 end, GetRight = function() return 150 end }, { __index = a })

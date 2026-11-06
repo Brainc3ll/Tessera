@@ -9,7 +9,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your ranged weapon's while you shoot), or a skill you pick (This block).
 
-## 1.1.1 — 
+## 1.1.1 — 2026-11-06
 
 ### Fixes
 

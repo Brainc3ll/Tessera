@@ -53,7 +53,7 @@ ns.CHANGELOG = {
     },
     {
         version = "1.1.1",
-        date = "",
+        date = "2026-11-06",
         sections = {
             { kind = "fixed",
               en = {

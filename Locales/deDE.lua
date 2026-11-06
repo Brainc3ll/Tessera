@@ -791,7 +791,6 @@ L["TIP_CLASS_COLOR_BORDER"] = "Der Rand nimmt die Klassenfarbe deines Charakters
 L["TIP_CLASS_COLOR_ICON"] = "Der Symbolrahmen (quadratisch oder rund) nimmt die Klassenfarbe deines Charakters an."
 L["TIP_CLASS_COLOR_SEPARATOR"] = "Die Linien zwischen verbundenen Blöcken nehmen die Klassenfarbe deines Charakters an."
 L["TIP_CLASS_COLOR_SPACER"] = "Die Trennlinie nimmt die Klassenfarbe deines Charakters an."
-L["TIP_CLASS_COLOR_TEXT"] = "Der Text nimmt die Klassenfarbe deines Charakters an statt der Farbe oben."
 L["TIP_CLOCK_24"] = "Deaktiviert: 12-Stunden-Uhr mit AM / PM."
 L["TIP_COLORIZE"] = "Färbt den Wert nach Schwellen (Haltbarkeit, Taschen, BPS, Latenz): gut, Warnung oder schlecht, in den Farben aus dem Reiter Allgemein (standardmäßig Grün, Gelb, Rot)."
 L["TIP_COORD_DECIMALS"] = "0: 45, 67. 1: 45.3, 67.8. 2: 45.32, 67.81."

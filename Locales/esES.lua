@@ -791,7 +791,6 @@ L["TIP_CLASS_COLOR_BORDER"] = "El borde toma el color de la clase de tu personaj
 L["TIP_CLASS_COLOR_ICON"] = "El marco del icono (cuadrado o redondo) toma el color de la clase de tu personaje."
 L["TIP_CLASS_COLOR_SEPARATOR"] = "Las líneas entre bloques unidos toman el color de la clase de tu personaje."
 L["TIP_CLASS_COLOR_SPACER"] = "La línea separadora toma el color de la clase de tu personaje."
-L["TIP_CLASS_COLOR_TEXT"] = "El texto toma el color de la clase de tu personaje en lugar del color de arriba."
 L["TIP_CLOCK_24"] = "Desmarcado: reloj de 12 horas con AM / PM."
 L["TIP_COLORIZE"] = "Colorea el valor según umbrales (durabilidad, bolsas, FPS, latencia): bueno, aviso o malo, con los colores elegidos en la pestaña General (verde, amarillo y rojo por defecto)."
 L["TIP_COORD_DECIMALS"] = "0: 45, 67. 1: 45.3, 67.8. 2: 45.32, 67.81."

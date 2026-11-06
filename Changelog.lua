@@ -42,18 +42,18 @@ ns.CHANGELOG = {
         sections = {
             { kind = "intro",
               en = {
-                "Your first big Tessera update on WoW Forever: 21 new blocks, a choice of display on 14 more, pinned tooltips "
+                "Your first big Tessera update on WoW Forever: 11 new blocks, a choice of display on 14 more, pinned tooltips "
                     .. "and names of your own.",
               },
               fr = {
-                "La première grosse mise à jour de Tessera sur WoW Forever : 21 nouveaux blocs, un choix "
+                "La première grosse mise à jour de Tessera sur WoW Forever : 11 nouveaux blocs, un choix "
                     .. "d'affichage sur 14 autres, des infobulles épinglées et des noms à toi.",
               } },
             { kind = "new",
               en = {
-                "Micro-menu: Blizzard's micro-menu buttons (character, spellbook, talents, professions, quests, "
-                    .. "guild, Legacy...) as blocks you place anywhere. A menu you have not unlocked yet stays grey "
-                    .. "until you reach it.",
+                "Micro-menu: Blizzard's micro menu in one block. Its tooltip lists the menus (character, spellbook, "
+                    .. "talents, professions, quests, guild, Legacy...); a click opens the list. A menu you have not "
+                    .. "unlocked yet stays grey until you reach it.",
                 "Tracking: your active minimap tracking (herbs, minerals...); click for the tracking menu.",
                 "Hunter pet: your pet's happiness, with its damage and loyalty; a warning when it loses loyalty.",
                 "Weapon enchant: time left on your poisons, sharpening stones or shaman imbues.",
@@ -69,9 +69,9 @@ ns.CHANGELOG = {
                 "Goal: a new \"Item\" type counts an item in your bags toward your target (\"47 / 100\").",
               },
               fr = {
-                "Micro-menu : les boutons du micro-menu de Blizzard (personnage, grimoire, talents, métiers, "
-                    .. "quêtes, guilde, Héritage...) en blocs à placer où tu veux. Un menu pas encore débloqué "
-                    .. "reste gris jusqu'à ce que tu l'atteignes.",
+                "Micro-menu : le micro-menu de Blizzard en un seul bloc. Son infobulle liste les menus (personnage, "
+                    .. "grimoire, talents, métiers, quêtes, guilde, Héritage...) ; un clic ouvre la liste. Un menu pas "
+                    .. "encore débloqué reste gris jusqu'à ce que tu l'atteignes.",
                 "Pistage : ton pistage actif de la minicarte (herbes, minerais...) ; clic pour le menu du pistage.",
                 "Familier du chasseur : l'humeur de ton familier, avec ses dégâts et sa fidélité ; une alerte "
                     .. "quand il perd de la fidélité.",
@@ -101,7 +101,7 @@ ns.CHANGELOG = {
                     .. "worn items in your bags, under their own title.",
                 "Comprehension reads your skill directly and shows its description; Honor shows yesterday's kills "
                     .. "and honor when the game gives them.",
-                "The demo mode shows the new blocks, with a Micro-menu column.",
+                "The demo mode shows the new blocks.",
               },
               fr = {
                 "Choisis ce que montre un bloc (onglet Texte, « Valeur affichée ») : temps de jeu à ce niveau, "
@@ -116,7 +116,7 @@ ns.CHANGELOG = {
                     .. "liste aussi les pièces abîmées de tes sacs, sous leur propre titre.",
                 "Compréhension lit ta compétence directement et montre sa description ; Honneur montre les "
                     .. "victoires et l'honneur d'hier quand le jeu les donne.",
-                "Le mode démo montre les nouveaux blocs, avec une colonne Micro-menu.",
+                "Le mode démo montre les nouveaux blocs.",
               } },
             { kind = "fixed",
               en = {

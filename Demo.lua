@@ -23,11 +23,8 @@ local CATEGORIES = {
         "reset", "tracking", "weather" } },
     { title = "DEMO_CAT_PROGRESS", keys = { "reputation", "currency", "quests", "goal", "profession1", "profession2",
         "cooking", "firstAid", "fishing", "ammo", "reagents", "xpRate", "goldSession" } },
-    { title = "DEMO_CAT_SYSTEM", keys = { "fps", "latency", "memory", "volume", "played", "streamer" } },
+    { title = "DEMO_CAT_SYSTEM", keys = { "fps", "latency", "memory", "volume", "played", "streamer", "microMenu" } },
     { title = "DEMO_CAT_FOREVER", keys = { "legacy", "comprehension", "camping", "honor", "weaponSkills", "gameMode" } },
-    { title = "DEMO_CAT_MICRO", keys = { "microCharacter", "microSpellbook", "microTalents", "microProfessions",
-        "microQuests", "microGuild", "microGroupFinder", "microJournal", "microCollections", "microLegacy",
-        "microGameMenu" } },
 }
 local COLUMN_W, COLUMN_GAP, TOP = 272, 18, -130
 local MIXED_STEPS = 4 -- 4 x 6 columns: every style is shown at least once

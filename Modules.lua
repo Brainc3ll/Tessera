@@ -3111,6 +3111,8 @@ end
 ---------------------------------------------------------------------------
 -- Minimap tracking (herbs, minerals, beasts...): the active one; click = the tracking menu
 ---------------------------------------------------------------------------
+-- Your tracking spells first (Find Herbs, Find Minerals...); the minimap's other filters
+-- (flight master, innkeeper...) are on by default and only go in the tooltip
 local function ReadTracking()
     local M, list = C_Minimap, {}
     if not (M and M.GetNumTrackingTypes and M.GetTrackingInfo) then return list end
@@ -3120,29 +3122,48 @@ local function ReadTracking()
     end
     return list
 end
+-- the minimap's townsfolk filters (flight master, innkeeper...: Blizzard's subType 2) are on
+-- by default; the block shows the other kinds (Find Herbs, hunter tracking...)
+local TOWNSFOLK = 2
 local ActiveTracking = PerMoment(ReadTracking)
+local function TrackingSpells()
+    local spells = {}
+    for _, info in ipairs(ActiveTracking()) do
+        if info.subType ~= TOWNSFOLK then table.insert(spells, info) end
+    end
+    return spells
+end
 
 if C_Minimap and C_Minimap.GetTrackingInfo then
 ns:RegisterModule("tracking", {
     label = "TRACKING",
     icon = "Interface\\Icons\\INV_Misc_Map_01",
     getIcon = function()
-        local first = ActiveTracking()[1]
+        local first = TrackingSpells()[1]
         return first and first.texture or "Interface\\Icons\\INV_Misc_Map_01"
     end,
     events = { "MINIMAP_UPDATE_TRACKING" },
     defaultEnabled = false,
-    isEmpty = function() return #ActiveTracking() == 0 end,
+    isEmpty = function() return #TrackingSpells() == 0 end,
+    -- the block shows your tracking spell (two at once: "Find Herbs +1")
     update = function()
-        local list = ActiveTracking()
-        if #list == 0 then return L.NONE, WARN end
-        if #list > 1 then return L.TRACKING_MORE:format(list[1].name, #list - 1) end
-        return list[1].name
+        local spells = TrackingSpells()
+        if #spells == 0 then return L.NONE, WARN end
+        if #spells > 1 then return L.TRACKING_MORE:format(spells[1].name, #spells - 1) end
+        return spells[1].name
     end,
     tooltip = function(tt)
-        local list = ActiveTracking()
-        if #list == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
-        for _, info in ipairs(list) do tt:AddLine(info.name, 1, 1, 1) end
+        local spells, others = TrackingSpells(), {}
+        for _, info in ipairs(ActiveTracking()) do
+            if info.subType == TOWNSFOLK then table.insert(others, info) end
+        end
+        if #spells == 0 then tt:AddLine(L.TT_NO_TRACKING, 0.8, 0.8, 0.8, true) end
+        for _, info in ipairs(spells) do tt:AddLine(info.name, 1, 1, 1) end
+        if #others > 0 then
+            tt:AddLine(" ")
+            tt:AddLine(L.TT_TRACKING_OTHERS, 1, 0.82, 0)
+            for _, info in ipairs(others) do tt:AddLine(info.name, 0.8, 0.8, 0.8) end
+        end
     end,
     -- click: Blizzard's tracking menu, opened from the minimap's own button
     onClick = function(_, button)

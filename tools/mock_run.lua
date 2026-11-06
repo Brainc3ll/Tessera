@@ -266,8 +266,9 @@ C_UnitAuras.GetBuffDataByIndex = function(_, i)
               { name = "Sprint", icon = 132307, duration = 15, expirationTime = 1010 } })[i]
 end
 -- minimap tracking (Find Herbs on), hunter pet (happy), a poison on the main hand
-C_Minimap = { GetNumTrackingTypes = function() return 2 end, GetTrackingInfo = function(i)
-    return ({ { name = "Find Herbs", texture = 133939, active = true, type = "spell", subType = 0 },
+C_Minimap = { GetNumTrackingTypes = function() return 3 end, GetTrackingInfo = function(i)
+    return ({ { name = "Flight Master", texture = 1, active = true, type = "other", subType = 2 },
+              { name = "Find Herbs", texture = 133939, active = true, type = "spell", subType = 0 },
               { name = "Find Minerals", texture = 136025, active = false, type = "spell", subType = 0 } })[i]
 end }
 HasPetUI = function() return true, true end
@@ -1454,17 +1455,18 @@ for _, step in ipairs({
             end
         end
     end,
-    -- micro-menu blocks: one per button of the client; a locked menu is grey, says why,
-    -- and hides with "Hide when empty"; the click goes through Blizzard's own button
+    -- micro-menu block: one block; its tooltip lists the menus (Legacy locked); a click opens
+    -- the list of secure rows, out of combat only
     function()
-        assert(#ns.MICRO_KEYS == 11, "micro-menu blocks: " .. #ns.MICRO_KEYS)
-        local legacy, char = ns.modules.microLegacy, ns.modules.microCharacter
-        assert(legacy.isEmpty() and not char.isEmpty(), "locked / unlocked")
-        assert(legacy.getIcon().color and not char.getIcon().color, "grey icon while locked")
-        assert(char.secureMacro == "/click CharacterMicroButton", "click through Blizzard's button")
-        legacy.tooltip(GameTooltip)
+        assert(#ns.MicroMenuEntries() == 11, "menus listed: " .. #ns.MicroMenuEntries())
+        local m = ns.modules.microMenu
+        assert(m.update() == "10 / 11", "unlocked menus: " .. tostring(m.update()))
+        m.tooltip(GameTooltip)
+        ns:ToggleMicroMenuList(UIParent)
+        assert(_G["TesseraMicroMenuRow1"]:GetAttribute("macrotext") == "/click CharacterMicroButton", "row opens Blizzard's button")
+        ns:ToggleMicroMenuList(UIParent)
         LegacyMicroButton = MicroButton(true)
-        assert(not legacy.isEmpty(), "unlocked later: the block appears")
+        assert(m.update() == "", "all unlocked: no count")
         LegacyMicroButton = MicroButton(false)
     end,
     -- the new blocks of 1.0.5: tracking, hunter pet, weapon enchant, long buffs, session XP and gold

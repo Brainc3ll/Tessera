@@ -4,7 +4,7 @@ Gold, bags, FPS, Legacy points... each in its own little block. Put a block anyw
 
 Made by a player who can't code and an AI that can't play (yet). So I test it a lot.
 
-I made it for WoW Forever, so you also get blocks for Forever's own stuff: Legacy points and the next reward, Comprehension and the scrolls in your bags, camping buffs and your campfire kit, honor, weapon skills. Since 1.1 there's also minimap tracking, your hunter pet's mood, poisons and sharpening stones, Well Fed and other long buffs, XP per hour, your DPS after each fight, an arrow to your corpse when you die, and Blizzard's micro-menu buttons as blocks (the ones you haven't unlocked yet stay grey).
+I made it for WoW Forever, so you also get blocks for Forever's own stuff: Legacy points and the next reward, Comprehension and the scrolls in your bags, camping buffs and your campfire kit, honor, weapon skills. Since 1.1 there's also minimap tracking, your hunter pet's mood, poisons and sharpening stones, Well Fed and other long buffs, XP per hour, your DPS after each fight, an arrow to your corpse when you die, and Blizzard's micro menu in one block (the menus you haven't unlocked yet stay grey).
 
 Most blocks let you choose what they show: played time this level or in total, honor out of its cap, completed quests, and so on.
 
@@ -48,7 +48,7 @@ Type **/tessera bug**, copy the report and post it on [GitHub](https://github.co
 
 ## Every block and command
 
-**All the blocks**: gold (with a 7-day history and your characters' gold; forget a deleted character from its menu), bags (with junk value), durability, FPS and latency (with graphs), local and server time, date, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, a personal goal, mana regeneration, character stats, group loot, streamer mode, micro-menu (one block per button), minimap tracking, hunter pet, weapon enchant, long buffs, XP per hour, gold this session, DPS, corpse, game mode, weather... plus the WoW Forever blocks above.
+**All the blocks**: gold (with a 7-day history and your characters' gold; forget a deleted character from its menu), bags (with junk value), durability, FPS and latency (with graphs), local and server time, date, XP and rested XP, coordinates, zone and subzone, friends, guild, group, quests, reputation, currencies, one block per profession (plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, a personal goal, mana regeneration, character stats, group loot, streamer mode, micro-menu, minimap tracking, hunter pet, weapon enchant, long buffs, XP per hour, gold this session, DPS, corpse, game mode, weather... plus the WoW Forever blocks above.
 
 | Command | Effect |
 |---|---|
@@ -115,7 +115,7 @@ Tape **/tessera bug**, copie le rapport et poste-le sur [GitHub](https://github.
 
 ## Tous les blocs et commandes
 
-**Tous les blocs** : or (avec l'historique sur 7 jours et l'or de tes personnages ; un personnage supprimé s'oublie depuis son menu), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, date, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, réinitialisation quotidienne et hebdomadaire, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe, mode streamer, micro-menu (un bloc par bouton), pistage, familier du chasseur, enchantement d'arme, buffs longs, XP par heure, or de la session, DPS, corps, mode de jeu, météo... en plus des blocs WoW Forever ci-dessus.
+**Tous les blocs** : or (avec l'historique sur 7 jours et l'or de tes personnages ; un personnage supprimé s'oublie depuis son menu), sacs (avec la valeur des objets gris), durabilité, FPS et latence (avec graphiques), heure locale, heure du serveur, date, XP et XP de repos, coordonnées, zone et sous-zone, amis, guilde, groupe, quêtes, réputation, monnaies, un bloc par métier (plus cuisine, secourisme et pêche), points de talent, pierre de foyer, courrier, chuchotements, composants de classe, munitions, niveau d'objet, vitesse, volume, mémoire des addons, instances, réinitialisation quotidienne et hebdomadaire, temps de jeu, objectif personnel, régénération de mana, statistiques, butin du groupe, mode streamer, micro-menu, pistage, familier du chasseur, enchantement d'arme, buffs longs, XP par heure, or de la session, DPS, corps, mode de jeu, météo... en plus des blocs WoW Forever ci-dessus.
 
 | Commande | Effet |
 |---|---|

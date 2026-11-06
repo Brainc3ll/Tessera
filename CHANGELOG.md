@@ -5,11 +5,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.1.0 — 
 
-- Your first big Tessera update on WoW Forever: 21 new blocks, a choice of display on 14 more, pinned tooltips and names of your own.
+- Your first big Tessera update on WoW Forever: 11 new blocks, a choice of display on 14 more, pinned tooltips and names of your own.
 
 ### New
 
-- Micro-menu: Blizzard's micro-menu buttons (character, spellbook, talents, professions, quests, guild, Legacy...) as blocks you place anywhere. A menu you have not unlocked yet stays grey until you reach it.
+- Micro-menu: Blizzard's micro menu in one block. Its tooltip lists the menus (character, spellbook, talents, professions, quests, guild, Legacy...); a click opens the list. A menu you have not unlocked yet stays grey until you reach it.
 - Tracking: your active minimap tracking (herbs, minerals...); click for the tracking menu.
 - Hunter pet: your pet's happiness, with its damage and loyalty; a warning when it loses loyalty.
 - Weapon enchant: time left on your poisons, sharpening stones or shaman imbues.
@@ -30,7 +30,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Friends: you can leave out your Battle.net friends.
 - Bags: the tooltip lists profession bags (herb bag...) apart. Durability: the tooltip also lists worn items in your bags, under their own title.
 - Comprehension reads your skill directly and shows its description; Honor shows yesterday's kills and honor when the game gives them.
-- The demo mode shows the new blocks, with a Micro-menu column.
+- The demo mode shows the new blocks.
 
 ### Fixes
 

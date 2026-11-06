@@ -152,11 +152,6 @@ local ALIASES = {
     MEMORY = { "memory", "mémoire" }, WEAPON_SKILLS = { "weapon skills", "compétences d'armes" },
     LEGACY = { "legacy", "héritage" }, RESET = { "reset", "réinitialisation" },
 }
--- the micro-menu blocks are named together ("micro-menu")
-for _, label in ipairs({ "CHARACTER", "SPELLBOOK", "TALENTS", "PROFESSIONS", "QUESTS", "GUILD", "GROUP_FINDER",
-                         "JOURNAL", "COLLECTIONS", "LEGACY", "GAME_MENU" }) do
-    ALIASES["MICRO_" .. label] = { "micro-menu", "micro-menu" }
-end
 local out = run("TESSERA_LIST_MODULES=1 lua5.1 tools/mock_run.lua . enUS")
 local count = 0
 for key, label in out:gmatch("MODULE (%S+) (%S+)") do

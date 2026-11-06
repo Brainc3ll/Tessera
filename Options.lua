@@ -1866,7 +1866,7 @@ function ns:SkinWindow(frame, title)
     -- window takes the style's plain frame in the same colors
     local small = (frame:GetHeight() or 0) < ATLAS_MIN_HEIGHT
     if t.borderAtlas and not small and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(t.borderAtlas) then
-        self:ApplySkin(frame, { kind = "atlas", borderAtlas = t.borderAtlas, bgAtlas = t.bgAtlas, bg = t.bg, bgInset = t.bgInset })
+        self:ApplySkin(frame, { kind = "atlas", borderAtlas = t.borderAtlas, bgAtlas = t.bgAtlas, bg = t.atlasBg or t.bg, bgInset = t.bgInset })
     elseif t.nineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
         self:ApplySkin(frame, { kind = "modern", layout = t.nineSlice, border = t.border, bg = t.bg, desaturate = t.desaturate })
         -- the tooltip layout keeps its center a few pixels inside the border (made for small

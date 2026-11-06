@@ -610,7 +610,9 @@ local function ExpansionStyle(key, name, kit, bg, edge, text)
         t.borderAtlas = "ui-frame-" .. kit .. "-border"
         t.bgAtlas = "ui-frame-" .. kit .. "-backgroundtile"
         t.bgInset = 10
-        t.bg = { 1, 1, 1, 1 }
+        -- the art tile keeps its own colors (white tint); t.bg stays the plain frame's dark
+        -- color, used by small windows (placement banner) that take the plain frame
+        t.atlasBg = { 1, 1, 1, 1 }
         t.title = text
         return t
     end

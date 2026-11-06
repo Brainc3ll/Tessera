@@ -1581,6 +1581,9 @@ for _, step in ipairs({
         small:SetSize(500, 110)
         ns:SkinWindow(small)
         assert(small.skinKind ~= "atlas", "small window: plain frame (" .. tostring(small.skinKind) .. ")")
+        -- ...in the style's dark color, not the art's white tint (the banner came out white)
+        local bg = ns:GetThemeInfo("warWithin").window().bg
+        assert(bg and (bg[1] or bg.r) < 0.5, "small window: dark background")
         C_Texture, ns.db.theme = oldTex, oldTheme
     end,
     -- the bags block counts only bags that hold anything, not a herb bag's free slots

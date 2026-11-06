@@ -672,6 +672,7 @@ local BLOCK_DEFAULTS = {
     hideInVehicle = false,
     hideWhenResting = false, -- in an inn or a capital city
     classColorText = false,
+    textShadow = false,      -- a soft black shadow under the text (with or without the outline)
     classColorBorder = false,
     classColorBg = false,        -- background in the class color (keeps its own opacity)
     classColorIcon = false,      -- icon frame in the class color
@@ -711,7 +712,7 @@ local BLOCK_DEFAULTS = {
 
 -- Appearance settings copied by "Copy this style to all blocks"
 local STYLE_KEYS = {
-    "height", "justify", "strata", "font", "fontSize", "outline", "textColor",
+    "height", "justify", "strata", "font", "fontSize", "outline", "textShadow", "textColor",
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "classColorBg", "classColorIcon",
     "classColorSeparator", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
@@ -1664,6 +1665,12 @@ function ns:SkinBlockFrame(f, cfg)
     local size = math.max(cfg.fontSize + (font.sizeBoost or 0), sv.minFontSize or 0)
     if not f.text:SetFont(font.file, size, flags) then
         f.text:SetFont(STANDARD_TEXT_FONT, size, flags)
+    end
+    if cfg.textShadow then
+        f.text:SetShadowColor(0, 0, 0, 0.9)
+        f.text:SetShadowOffset(1, -1)
+    else
+        f.text:SetShadowOffset(0, 0)
     end
     local tc = (cfg.classColorText and self:GetClassColor()) or cfg.textColor
     -- the style's text color, unless the block has a text color of its own

@@ -1595,6 +1595,7 @@ for _, step in ipairs({
         ns:ApplyStyle("fps"); ns:UpdateBlock("fps")
         assert(tostring(ns.frames.fps.lastText):find(ns:GetBlockName("fps"), 1, true), "name when no icon: " .. tostring(ns.frames.fps.lastText))
         fcfg.showValue, fcfg.showIcon = true, true
+        fcfg.textShadow = true; ns:UpdateBlock("fps"); fcfg.textShadow = false; ns:UpdateBlock("fps") -- text shadow on, off
         ns:ApplyStyle("fps"); ns:UpdateBlock("fps")
         -- micro-menu count: hidden when every menu is open, unless "always"
         if m.microMenu then

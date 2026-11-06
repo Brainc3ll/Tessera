@@ -952,6 +952,7 @@ local function BuildBlockPage(page)
             { key = "OUTLINE", name = L.OUTLINE_THIN },
             { key = "THICKOUTLINE", name = L.OUTLINE_THICK },
         }, "outline", L.TIP_OUTLINE), 1)
+        P.Place(Check(sub, L.TEXT_SHADOW, "textShadow", L.TIP_TEXT_SHADOW), 1)
 
         P.Place(CreateHeader(sub, L.SECTION_LAYOUT_TEXT), 2)
         P.Place(Dropdown(sub, L.JUSTIFY, {

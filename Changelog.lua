@@ -91,6 +91,7 @@ ns.CHANGELOG = {
                     .. "weekly reset; the last whisper's name; speed in meters per second; Tessera's own memory.",
                 "Volume: choose the volume the block shows and your mouse wheel changes (music, effects...).",
                 "Friends: you can leave out your Battle.net friends.",
+                "Text: a shadow under the text, with or without the outline (Text tab).",
                 "Any block can show its icon alone (Display, \"Show the value\"); the tooltip and the clicks stay.",
                 "Options window: a list of pages on the left, a short hint on each page, more room, and a first "
                     .. "\"This block\" tab with everything a block has of its own (right-click a block to open it). "
@@ -114,6 +115,7 @@ ns.CHANGELOG = {
                     .. "Tessera seul.",
                 "Volume : choisis le volume que le bloc affiche et que ta molette change (musique, effets...).",
                 "Amis : tu peux laisser de côté tes amis Battle.net.",
+                "Texte : une ombre sous le texte, avec ou sans le contour (onglet Texte).",
                 "Chaque bloc peut n'afficher que son icône (Affichage, « Afficher la valeur ») ; l'infobulle et les clics restent.",
                 "Fenêtre des options : la liste des pages à gauche, une courte aide sur chaque page, plus d'air, "
                     .. "et un premier onglet « Ce bloc » avec tout ce qui est propre à un bloc (clic droit sur un "

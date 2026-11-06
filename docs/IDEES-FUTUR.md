@@ -92,7 +92,7 @@ Blocs validés par Braincell1980 pour la 1.1 :
   - Infobulle du bloc DPS : durée du combat en cours et plus long combat de la session (`GetSessionDurationSeconds`), comme le faisait StatBlock_TimeInFight de Funkeh (comparaison avec les plugins StatBlock, 25/10 : Tessera couvre déjà tous les autres sauf DPS et DPS de raid, ce dernier écarté).
 - **Corps** (`C_DeathInfo.GetCorpseMapPosition(mapID)`) : en fantôme, distance et direction du corps (vu : 0,491 ; 0,561) ; bloc caché une fois ressuscité ; clic : repère sur la carte.
 - **Mode de jeu : abandonné le 6/11** (le jeu ne donne pas le type de royaume PvE/PvP/RP aux addons ; Braincell1980 a retiré le bloc). Ancienne note : (`C_GameRules` : `IsHardcoreActive`, `IsSelfFoundAllowed`, `IsStandard`, `GetActiveGameMode`) : Standard vu en jeu ; à revérifier sur un royaume Hardcore.
-- **Météo** (`C_Weather.GetCurrentWeather` : type Clair, Pluie, Neige, Tempête de sable, Divers ; intensité) : gadget.
+- **Météo : retirée le 6/11** (Braincell1980 : « ça sert à rien »). Ancienne note : (`C_Weather.GetCurrentWeather` : type Clair, Pluie, Neige, Tempête de sable, Divers ; intensité) : gadget.
 
 Améliorations notées :
 - **Compréhension** : `C_SkillInfo.GetSkillLineInfoByID(3012)` au lieu de parcourir la liste (marche même catégorie repliée) ; sa `description` pour l'infobulle.

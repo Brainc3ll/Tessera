@@ -1909,6 +1909,19 @@ function ns:UpdateBlock(key)
     end
     f.lastLevel = level
     self:UpdateBar(f, cfg, mod, level)
+    -- live secret value (DPS in combat): handed straight to the FontString. The game forbids
+    -- reading, comparing or changing it, so no colors, no width check, no "same text" test.
+    if mod.liveText and not self.previewMode then
+        local okLive, live = pcall(mod.liveText, cfg)
+        if okLive and live ~= nil and pcall(function()
+            local t = live
+            if cfg.showLabel then t = L.LABEL_FORMAT:format(self:GetBlockName(key), live) end
+            f.text:SetText(t)
+        end) then
+            f.lastText = nil -- the next normal value redraws
+            return
+        end
+    end
     if value == nil then value = L.NA end
     value = tostring(value)
     if cfg.monochrome then

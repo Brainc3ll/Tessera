@@ -20,7 +20,7 @@ local CATEGORIES = {
         "talents", "itemLevel", "pet", "weaponEnchant", "longBuffs", "dps", "corpse" } },
     { title = "DEMO_CAT_SOCIAL", keys = { "friends", "guild", "group", "whispers", "mail", "loot" } },
     { title = "DEMO_CAT_WORLD", keys = { "zone", "subzone", "coords", "time", "serverTime", "date", "hearthstone", "instances",
-        "reset", "tracking", "weather" } },
+        "reset", "tracking" } },
     { title = "DEMO_CAT_PROGRESS", keys = { "reputation", "currency", "quests", "goal", "profession1", "profession2",
         "cooking", "firstAid", "fishing", "ammo", "reagents", "xpRate", "goldSession" } },
     { title = "DEMO_CAT_SYSTEM", keys = { "fps", "latency", "memory", "volume", "played", "streamer", "microMenu" } },

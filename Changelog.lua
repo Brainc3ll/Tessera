@@ -42,11 +42,11 @@ ns.CHANGELOG = {
         sections = {
             { kind = "intro",
               en = {
-                "Your first big Tessera update on WoW Forever: 10 new blocks, a choice of display on 14 more, pinned tooltips "
+                "Your first big Tessera update on WoW Forever: 9 new blocks, a choice of display on 14 more, pinned tooltips "
                     .. "and names of your own.",
               },
               fr = {
-                "La première grosse mise à jour de Tessera sur WoW Forever : 10 nouveaux blocs, un choix "
+                "La première grosse mise à jour de Tessera sur WoW Forever : 9 nouveaux blocs, un choix "
                     .. "d'affichage sur 14 autres, des infobulles épinglées et des noms à toi.",
               } },
             { kind = "new",
@@ -60,9 +60,8 @@ ns.CHANGELOG = {
                 "Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.",
                 "XP per hour, or the time to your next level at your pace.",
                 "Gold this session: what you earned or spent since you logged in, and per hour.",
-                "DPS: your damage per second in the last fight, with the longest fight of the session.",
+                "DPS: your damage per second, live during a fight, then for the last fight, with the longest fight of the session.",
                 "Corpse: while you are a ghost, the distance and an arrow toward your body; click for a map pin.",
-                "Weather (rain, snow, sandstorm, and how strong).",
                 "Pin a tooltip: it stays open next to its block and updates every second (quick menu, or a "
                     .. "Shift / middle click).",
                 "Custom name: rename any block, for example a launcher that shows \"SomeAddonMinimapButton\".",
@@ -79,10 +78,9 @@ ns.CHANGELOG = {
                 "Buffs longs : Bien nourri, élixirs et buffs mondiaux de 10 minutes ou plus, le plus court en premier.",
                 "XP par heure, ou le temps avant ton niveau suivant à ton rythme.",
                 "Or de la session : ce que tu as gagné ou dépensé depuis ta connexion, et par heure.",
-                "DPS : tes dégâts par seconde du dernier combat, avec le plus long combat de la session.",
+                "DPS : tes dégâts par seconde, en direct pendant un combat puis sur le dernier combat, avec le plus long combat de la session.",
                 "Corps : quand tu es un fantôme, la distance et une flèche vers ton corps ; clic pour un repère "
                     .. "sur la carte.",
-                "Météo (pluie, neige, tempête de sable, et son intensité).",
                 "Épingle une infobulle : elle reste ouverte à côté de son bloc et se met à jour chaque seconde "
                     .. "(menu rapide, ou Maj + clic / clic milieu).",
                 "Nom personnalisé : renomme n'importe quel bloc, par exemple un lanceur qui affiche "

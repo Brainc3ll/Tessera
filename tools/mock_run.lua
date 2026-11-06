@@ -276,7 +276,6 @@ HasPetUI = function() return true, true end
 C_DamageMeter = { GetCombatSessionSourceFromType = function() return { totalAmount = 1200, maxAmount = 300 } end,
                   GetSessionDurationSeconds = function() return 60 end }
 C_GameRules = { IsHardcoreActive = function() return false end, IsSelfFoundAllowed = function() return false end }
-C_Weather = { GetCurrentWeather = function() return { type = 1, intensity = 0.4 } end }
 UnitIsGhost = function() return false end
 C_Container.GetContainerItemDurability = function(bag, slot) if bag == 0 and slot == 1 then return 30, 60 end end
 C_PetInfo = { GetPetHappiness = function() return 3, 125, 20 end, GetPetLoyalty = function() return "Loyalty level 3" end }
@@ -1528,13 +1527,25 @@ for _, step in ipairs({
         -- DPS of the last fight: 1200 / 60 s = 20
         assert(m.dps.update() == ns.L.DPS_FORMAT:format("20"), "dps: " .. tostring(m.dps.update()))
         m.dps.tooltip(GameTooltip)
-        local oldSecret = issecretvalue
-        issecretvalue = function(v) return v == 1200 end
-        -- (the block reads issecretvalue when it loads; the "In combat" path is checked through FightDPS)
-        issecretvalue = oldSecret
+        -- in combat: a readable 0 gives "In combat", never "0 DPS"
+        local oldDM, oldSecret, oldAbbr = C_DamageMeter.GetCombatSessionSourceFromType, issecretvalue, AbbreviateLargeNumbers
+        ns.state.inCombat = true
+        C_DamageMeter.GetCombatSessionSourceFromType = function() return { totalAmount = 0, amountPerSecond = 0 } end
+        assert(m.dps.update() == ns.L.DPS_IN_COMBAT, "no 0 DPS in combat")
+        assert(m.dps.liveText() == nil, "a readable value is not live")
+        -- secret values: shown live, shortened, through the block
+        C_DamageMeter.GetCombatSessionSourceFromType = function() return { totalAmount = 99999, amountPerSecond = 12345 } end
+        issecretvalue = function(v) return v == 99999 or v == 12345 end
+        AbbreviateLargeNumbers = function(v) return v == 12345 and "12.3K" or tostring(v) end
+        assert(m.dps.update() == ns.L.DPS_IN_COMBAT, "secret total")
+        assert(m.dps.liveText() == ns.L.DPS_FORMAT:format("12.3K"), "live dps: " .. tostring(m.dps.liveText()))
+        if ns.frames.dps then
+            ns.db.blocks.dps.enabled = true; ns.frames.dps:Show(); ns:UpdateBlock("dps")
+        end
+        ns.state.inCombat = false
+        C_DamageMeter.GetCombatSessionSourceFromType, issecretvalue, AbbreviateLargeNumbers = oldDM, oldSecret, oldAbbr
         -- corpse: hidden while alive
         assert(m.corpse.isEmpty(), "corpse hidden while alive")
-        assert(m.weather.update() == ns.L.WEATHER_RAIN .. " 40%", "weather: " .. tostring(m.weather.update()))
         m.durability.tooltip(GameTooltip, ns.db.blocks.durability)
         -- bags tooltip with a herb bag listed apart
         local oldC = C_Container

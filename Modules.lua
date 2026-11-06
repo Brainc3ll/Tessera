@@ -3320,11 +3320,15 @@ ns:RegisterModule("longBuffs", {
 
 ---------------------------------------------------------------------------
 -- DPS: your damage per second in the current or last fight (Blizzard's damage meter).
--- During a fight the game keeps these values "secret": an addon may not read or
--- compute them, so the block says "In combat" and shows the DPS once the fight ends.
+-- During a fight the game keeps these values "secret": an addon may not read or compute
+-- them, but it may show them as they are (Blizzard's own meter does). So in combat the
+-- block shows Blizzard's live DPS through liveText; "In combat" only when even that fails.
 ---------------------------------------------------------------------------
 local DM_CURRENT, DM_DAMAGE = 1, 0 -- Enum.DamageMeterSessionType.Current, Enum.DamageMeterType.DamageDone
-local IsSecret = _G["issecretvalue"] or function() return false end
+local function IsSecret(v)
+    local check = _G["issecretvalue"]
+    return check and check(v) or false
+end
 local fights = { longest = 0 }
 
 local function FightDPS()
@@ -3347,10 +3351,19 @@ ns:RegisterModule("dps", {
     defaultEnabled = false,
     update = function()
         local dps, secret = FightDPS()
-        if secret or (ns.state.inCombat and not dps) then return L.DPS_IN_COMBAT end
+        -- in combat, a readable 0 is only the meter starting or resetting: no "0 DPS" flash
+        if secret or (ns.state.inCombat and (not dps or dps == 0)) then return L.DPS_IN_COMBAT end
         if not dps then return L.NA end
         local fmt = BreakUpLargeNumbers or tostring
         return L.DPS_FORMAT:format(fmt(math.floor(dps + 0.5)))
+    end,
+    -- in combat: Blizzard's secret DPS, shortened and shown as it is (never read or compared)
+    liveText = function()
+        if not ns.state.inCombat or not AbbreviateLargeNumbers then return nil end
+        local source = Try(C_DamageMeter.GetCombatSessionSourceFromType, DM_CURRENT, DM_DAMAGE, Try(UnitGUID, "player"))
+        local perSecond = type(source) == "table" and source.amountPerSecond
+        if perSecond == nil or perSecond == false or not IsSecret(perSecond) then return nil end
+        return L.DPS_FORMAT:format(AbbreviateLargeNumbers(perSecond))
     end,
     tooltip = function(tt)
         local dps, secret, total, duration = FightDPS()
@@ -3425,40 +3438,6 @@ ns:RegisterModule("corpse", {
 })
 
 ---------------------------------------------------------------------------
--- Weather where you stand (clear, rain, snow, sandstorm...), with its strength
----------------------------------------------------------------------------
-local WEATHER_NAMES = { [0] = "WEATHER_CLEAR", "WEATHER_RAIN", "WEATHER_SNOW", "WEATHER_SANDSTORM", "WEATHER_OTHER" }
-local WEATHER_ICONS = { [0] = "Interface\\Icons\\Spell_Holy_SurgeOfLight", "Interface\\Icons\\Spell_Frost_SummonWaterElemental",
-    "Interface\\Icons\\Spell_Frost_FrostShock", "Interface\\Icons\\Spell_Nature_Cyclone", "Interface\\Icons\\Spell_Nature_StormReach" }
--- C_Weather exists on WoW Forever only (not in Blizzard's documentation of Retail), hence _G
-local WeatherAPI = _G["C_Weather"]
-local function Weather()
-    local info = WeatherAPI and WeatherAPI.GetCurrentWeather and Try(WeatherAPI.GetCurrentWeather)
-    if type(info) ~= "table" then return nil end
-    return tonumber(info.type) or 0, tonumber(info.intensity) or 0
-end
-
-if WeatherAPI and WeatherAPI.GetCurrentWeather then
-ns:RegisterModule("weather", {
-    label = "WEATHER",
-    icon = "Interface\\Icons\\Spell_Nature_StormReach",
-    getIcon = function()
-        local kind = Weather()
-        return WEATHER_ICONS[kind or 0] or WEATHER_ICONS[0]
-    end,
-    events = { "WEATHER_CHANGED", "ZONE_CHANGED_NEW_AREA" },
-    interval = 30,
-    defaultEnabled = false,
-    update = function()
-        local kind, intensity = Weather()
-        if not kind then return L.NA end
-        local name = L[WEATHER_NAMES[kind] or "WEATHER_OTHER"]
-        if kind == 0 or intensity <= 0 then return name end
-        return ("%s %d%%"):format(name, math.floor(math.min(1, intensity) * 100 + 0.5))
-    end,
-})
-end
-
 ---------------------------------------------------------------------------
 -- Session: XP per hour and time to the next level; gold earned since you logged in
 ---------------------------------------------------------------------------
@@ -3611,7 +3590,6 @@ local MORE_SAMPLES = {
     goldSession  = function() return "+" .. ns.FormatMoney(1234567), GOOD end,
     dps          = function() return L.DPS_FORMAT:format("142") end,
     corpse       = function() return L.CORPSE_FORMAT:format(84) .. " ↗", WARN end,
-    weather      = function() return L.WEATHER_RAIN .. " 40%" end,
 }
 for key, sample in pairs(MORE_SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

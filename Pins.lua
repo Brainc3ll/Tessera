@@ -41,6 +41,9 @@ local function Fill(key)
     p:AddLine(ns:GetBlockName(key), 1, 0.82, 0)
     pcall(mod.tooltip, p, cfg)
     p:Show()
+    -- never over the options window: a pinned tooltip under it waits until it closes
+    local o = _G["TesseraOptions"]
+    if o and o:IsShown() and ns.FramesOverlap and ns.FramesOverlap(p, o) then p:Hide() end
 end
 
 -- Shows, refreshes or hides every pinned tooltip; one shared timer runs while any is pinned

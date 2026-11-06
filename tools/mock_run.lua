@@ -413,8 +413,10 @@ local ok, err = xpcall(function() ns:ToggleOptions() end, debug.traceback)
 if not ok then print("OPTIONS ERROR: " .. tostring(err)) end
 for i = 1, 8 do local ok2, err2 = xpcall(function() ns.ShowOptionsPage(i) end, debug.traceback) if not ok2 then print("PAGE ERROR " .. i .. ": " .. tostring(err2)) end end
 -- every options page must fit in the window (pages start 98 px below its top)
-if -(ns.optionsLowestY or 0) > TesseraOptions:GetHeight() - 98 - 12 then
-    print("STEP ERROR: options page too tall: " .. -ns.optionsLowestY .. " px for " .. (TesseraOptions:GetHeight() - 110))
+-- (every page keeps the 40 px of the bottom buttons free: nothing may ever cover them)
+local pageRoom = TesseraOptions:GetHeight() + ns.OPTIONS_PAGE_TOP - 12 - 40
+if -(ns.optionsLowestY or 0) > pageRoom then
+    print("STEP ERROR: options page too tall: " .. -ns.optionsLowestY .. " px for " .. pageRoom)
 end
 for _, key in ipairs(ns:GetBlockKeys()) do
     local ok3, err3 = pcall(function() ns:OpenOptionsFor(key); ns:UpdateBlock(key) end)
@@ -616,10 +618,10 @@ for _, step in ipairs({
         local k = ns:AddSpacer()
         ns.db.blocks[k].spacerMode = "line"
         ns:OpenOptionsFor(k)
-        ns.ShowBlockSub(4)
+        ns.ShowBlockSub(5)
         ns.optionsLowestY = 0
         ns:RefreshOptions()
-        local limit = TesseraOptions:GetHeight() - 98 - 12 - 40 -- the bottom buttons take 40 px
+        local limit = TesseraOptions:GetHeight() + ns.OPTIONS_PAGE_TOP - 12 - 40 -- the bottom buttons take 40 px
         assert(-ns.optionsLowestY <= limit, "spacer options overlap the buttons: " .. -ns.optionsLowestY .. " > " .. limit)
         ns:RemoveSpacer(k)
     end,
@@ -1823,6 +1825,21 @@ for _, step in ipairs({
         StaticPopup_Show = realShow
         ns:ResetProfile("top")
         RunTimers()
+    end,
+    -- no window over another: a side window closes the other one and docks beside the options
+    function()
+        ns:OpenOptions()
+        ns:BugReport()
+        assert(TesseraDebugCopy:IsShown(), "text window shown")
+        ns:StartTutorial()
+        assert(TesseraTutorial:IsShown() and not TesseraDebugCopy:IsShown(), "one side window at a time")
+        TesseraTutorial:Hide()
+        local a = { GetEffectiveScale = function() return 1 end, GetLeft = function() return 0 end,
+            GetRight = function() return 100 end, GetTop = function() return 100 end, GetBottom = function() return 0 end }
+        local b = setmetatable({ GetLeft = function() return 50 end, GetRight = function() return 150 end }, { __index = a })
+        local c = setmetatable({ GetLeft = function() return 108 end, GetRight = function() return 200 end }, { __index = a })
+        assert(ns.FramesOverlap(a, b) and not ns.FramesOverlap(a, c), "overlap test")
+        TesseraOptions:Hide()
     end,
     -- quick tour
     function()

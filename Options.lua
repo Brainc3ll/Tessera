@@ -44,11 +44,16 @@ local pages, tabs, currentPage = {}, {}, PAGE_BLOCKS
 
 -- Layout: 720 px window, two 300 px columns, 40 px margins (scaled down on small
 -- screens, see FitPanelToScreen)
-local PANEL_W, PANEL_H = 720, 735
+-- The window: a navigation list on the left (like the game's own settings), the page on the
+-- right. Pages keep their own coordinates (COL_X): only their frame moves.
+local NAV_W = 176            -- navigation list, on the left
+local PAGE_TOP = -64         -- top of the pages, under the title
+ns.OPTIONS_PAGE_TOP = PAGE_TOP
+local PANEL_W, PANEL_H = 720 + NAV_W, 780
 local COL_W = 300
 local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
-local SPACING = 9 -- vertical space between two settings
+local SPACING = 11 -- vertical space between two settings (room to breathe)
 
 local ALL = "*all"            -- selection value "All blocks"
 local LAUNCHERS = "*launchers" -- selection value "All launchers"
@@ -795,7 +800,7 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
     return hasOptions
 end
 
-local blockSub = 1 -- open sub-tab: 1 Display, 2 Text, 3 Frame
+local blockSub = 5 -- open sub-tab: 5 This block (first), 1 Display, 2 Text, 3 Frame, 4 Behaviour
 
 -- Builds the "Blocks" tab: selection dropdown, three sub-tabs and single-block actions
 local function BuildBlockPage(page)
@@ -822,13 +827,13 @@ local function BuildBlockPage(page)
 
     -- Block selection, full width
     local top = NewLayout(page)
-    local ShowSub -- defined below (sub-tabs); a spacer's settings are in the Behaviour tab
+    local ShowSub -- defined below (sub-tabs); a spacer's settings are in "This block"
     local REPLACE_W = 140
     local selection = CreateDropdown(page, L.SELECTION, SelectionOptions,
         function() return selected end,
         function(v)
             selected = v
-            if ns.IsSpacerKey(v) and ShowSub then ShowSub(4) end
+            if ns.IsSpacerKey(v) and ShowSub then ShowSub(5) end
             ns:RefreshOptions()
         end, nil, FULL_W - REPLACE_W, L.TIP_SELECTION)
     top.Place(selection, 1)
@@ -850,12 +855,17 @@ local function BuildBlockPage(page)
             buttons[i]:SetEnabled(i ~= index)
         end
     end
-    local subNames = { L.SUB_DISPLAY, L.SUB_TEXT, L.SUB_FRAME, L.SUB_BEHAVIOUR }
+    -- index = what the code refers to (saved in blockSub); order = where the button sits:
+    -- "This block" (5) comes first, everything the selected block has of its own
+    local subNames = { L.SUB_DISPLAY, L.SUB_TEXT, L.SUB_FRAME, L.SUB_BEHAVIOUR, L.SUB_THIS_BLOCK }
+    local SUB_ORDER = { 5, 1, 2, 3, 4 }
     local subW = (FULL_W - 6 * (#subNames - 1)) / #subNames
     for i, text in ipairs(subNames) do
+        local slot = 1
+        for n, index in ipairs(SUB_ORDER) do if index == i then slot = n end end
         local b = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
         b:SetSize(subW, 22)
-        b:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1] + (i - 1) * (subW + 6), subY)
+        b:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1] + (slot - 1) * (subW + 6), subY)
         b:SetText(text)
         b:SetScript("OnClick", function() ShowSub(i) end)
         buttons[i] = b
@@ -880,12 +890,7 @@ local function BuildBlockPage(page)
         spacerNote.isShown = function() return ns.IsSpacerKey(selected) end
         P.Place(Check(sub, L.ENABLED, "enabled", L.TIP_ENABLED), 1)
         P.Place(Check(sub, L.SHOW_LABEL, "showLabel", L.TIP_SHOW_LABEL), 1)
-        -- a name of your own (a launcher shows "SomeAddonMinimapButton": rename it)
-        local getN = Field("customName")
-        P.Place(CreateEditBox(sub, L.CUSTOM_NAME, getN, function(v)
-            v = type(v) == "string" and strtrim(v) or ""
-            SetField("customName", v ~= "" and v or nil)
-        end, function() return not IsGroup() and not ns.IsSpacerKey(selected) end, L.TIP_CUSTOM_NAME), 1)
+        P.Place(Check(sub, L.SHOW_VALUE, "showValue", L.TIP_SHOW_VALUE), 1)
         P.Place(Check(sub, L.SHOW_ICON, "showIcon", L.TIP_SHOW_ICON), 1)
         P.Place(Check(sub, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP), 1)
         P.Place(Check(sub, L.COLORIZE, "colorize", L.TIP_COLORIZE), 1)
@@ -909,8 +914,6 @@ local function BuildBlockPage(page)
         }, "strata", L.TIP_STRATA), 1)
 
         P.Place(CreateHeader(sub, L.SECTION_SIZE), 2)
-        -- (with the size: the icon alone makes the block as small as it gets)
-        P.Place(Check(sub, L.SHOW_VALUE, "showValue", L.TIP_SHOW_VALUE), 2)
         P.Place(Check(sub, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP), 2)
         local sizeNote = P.Place(CreateNote(sub, L.SIZE_GROUP_HINT), 2)
         sizeNote.isShown = IsGroup
@@ -950,14 +953,6 @@ local function BuildBlockPage(page)
         P.Place(Color(sub, L.TEXT_COLOR, false, "textColor", L.TIP_TEXT_COLOR), 2)
         P.Place(Check(sub, L.CLASS_COLOR_TEXT, "classColorText", L.TIP_CLASS_COLOR_TEXT), 2)
 
-        -- how the selected block shows its value (gold format, clock, decimals...)
-        P.Gap(1, 6)
-        local header = P.Place(CreateHeader(sub, L.SECTION_VALUE), 1)
-        local textOptions = BuildModuleOptions(sub, P, 1, ns.order, nil, function(opt) return opt.tab == "text" end)
-        header.isShown = function()
-            local key = SelectedModuleKey()
-            return key ~= nil and textOptions[key] == true
-        end
     end
 
     -- 3. Frame: background on the left, border on the right
@@ -1055,21 +1050,6 @@ local function BuildBlockPage(page)
         P.Place(Check(sub, L.HIDE_INSTANCE, "hideInInstance", L.TIP_HIDE_INSTANCE), 1)
         P.Place(Check(sub, L.HIDE_VEHICLE, "hideInVehicle", L.TIP_HIDE_VEHICLE), 1)
         P.Place(Check(sub, L.HIDE_RESTING, "hideWhenResting", L.TIP_HIDE_RESTING), 1)
-        P.Gap(1, 6)
-        P.Place(CreateHeader(sub, L.SECTION_THIS_BLOCK), 1)
-        local none = P.Place(CreateNote(sub, L.NO_BLOCK_OPTIONS), 1)
-        P.Gap(1, -(none.layoutHeight + SPACING))
-
-        -- the selected block's own options (left column; a spacer's go to the right
-        -- column, in place of the clicks, alert and tooltip settings it has no use for)
-        local keys = {}
-        for _, key in ipairs(ns.order) do table.insert(keys, key) end
-        local hasOptions = BuildModuleOptions(sub, P, 1, keys)
-        none.isShown = function()
-            local key = SelectedModuleKey()
-            return not (key and (hasOptions[key] or key == "spacer"))
-        end
-
         -- right column: hover fade, clicks, alerts, tooltip
         P.Place(CreateHeader(sub, L.SECTION_FADE), 2)
         local getF, setF = Field("fadeOut")
@@ -1087,7 +1067,47 @@ local function BuildBlockPage(page)
 
         P.Gap(2, 6)
         local notSpacer = function() return not ns.IsSpacerKey(selected) end
-        BuildModuleOptions(sub, P, 2, { "spacer" }) -- (stacked here, the clicks below are hidden for a spacer)
+        P.Place(Check(sub, L.ALERT, "alert", L.TIP_ALERT), 2).isShown = notSpacer
+        P.Place(Dropdown(sub, L.TOOLTIP_ANCHOR, {
+            { key = "auto", name = L.TOOLTIP_AUTO },
+            { key = "top", name = L.TOOLTIP_TOP },
+            { key = "bottom", name = L.TOOLTIP_BOTTOM },
+        }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR), 2).isShown = notSpacer
+    end
+
+    -- 5. This block (first button): everything the selected block has of its own: what it
+    -- shows and its settings (left), its name, its clicks and its pinned tooltip (right).
+    -- A group selection ("All blocks") gets a note: these settings belong to one block.
+    do
+        local sub = subs[5]
+        local P = NewLayout(sub)
+        local notSpacer = function() return not ns.IsSpacerKey(selected) end
+        P.Place(CreateHeader(sub, L.SECTION_THIS_BLOCK), 1)
+        local pick = P.Place(CreateNote(sub, L.THIS_BLOCK_PICK), 1)
+        pick.isShown = IsGroup
+        local none = P.Place(CreateNote(sub, L.NO_BLOCK_OPTIONS), 1)
+        P.Gap(1, -(pick.layoutHeight + none.layoutHeight + 2 * SPACING))
+        -- what the value looks like (gold format, clock...), then the block's own settings
+        local keys = {}
+        for _, key in ipairs(ns.order) do table.insert(keys, key) end
+        local textOptions = BuildModuleOptions(sub, P, 1, keys, nil, function(opt) return opt.tab == "text" end)
+        local hasOptions = BuildModuleOptions(sub, P, 1, keys)
+        none.isShown = function()
+            local key = SelectedModuleKey()
+            return not IsGroup() and not (key and (hasOptions[key] or textOptions[key] or key == "spacer"))
+        end
+        -- a spacer's settings (type, text, line): right column, in place of the clicks
+        BuildModuleOptions(sub, P, 2, { "spacer" })
+
+        -- right column: the name, the clicks, the pinned tooltip
+        local named = function() return not IsGroup() and notSpacer() end
+        P.Place(CreateHeader(sub, L.CUSTOM_NAME), 2).isShown = named
+        local getN = Field("customName")
+        P.Place(CreateEditBox(sub, L.CUSTOM_NAME, getN, function(v)
+            v = type(v) == "string" and strtrim(v) or ""
+            SetField("customName", v ~= "" and v or nil)
+        end, named, L.TIP_CUSTOM_NAME), 2)
+        P.Gap(2, 6)
         P.Place(CreateHeader(sub, L.SECTION_CLICKS), 2).isShown = notSpacer
         local clickShown = function() return not ns.IsForwardingKey(selected) and notSpacer() end
         local getS, setS = Field("shiftClick")
@@ -1113,12 +1133,15 @@ local function BuildBlockPage(page)
             setM(v)
             ns:RequestOverlaySync() -- the secure button listens to middle clicks only for "open"
         end, clickShown, nil, L.TIP_MIDDLE_CLICK), 2)
-        P.Place(Check(sub, L.ALERT, "alert", L.TIP_ALERT), 2).isShown = notSpacer
-        P.Place(Dropdown(sub, L.TOOLTIP_ANCHOR, {
-            { key = "auto", name = L.TOOLTIP_AUTO },
-            { key = "top", name = L.TOOLTIP_TOP },
-            { key = "bottom", name = L.TOOLTIP_BOTTOM },
-        }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR), 2).isShown = notSpacer
+        P.Gap(2, 6)
+        local pin = P.Place(CreateButton(sub, L.MENU_PIN, function()
+            ns:TogglePin(selected)
+            ns:RefreshOptions()
+        end, function() return named() and ns.CanPinTooltip and ns.CanPinTooltip(selected) or false end,
+            COL_W - 8, L.TIP_PIN_BUTTON), 2)
+        pin.Refresh = function(self)
+            self:SetText(ns.IsPinned and ns:IsPinned(selected) and L.MENU_UNPIN or L.MENU_PIN)
+        end
     end
 
     ShowSub(blockSub)
@@ -1157,7 +1180,7 @@ local function BuildBlockPage(page)
     local addSpacer = CreateButton(page, L.ADD_SPACER, function()
         selected = ns:AddSpacer()
         ns:PlaceNearOptions(selected)
-        ShowSub(4) -- the spacer's settings (type, text, line) are in the Behaviour tab
+        ShowSub(5) -- the spacer's settings (type, text, line) are in "This block"
         if ns.db.locked then ns:SetLocked(false) end
         ns:RefreshOptions()
     end, function() return not ns.IsForwardingKey(selected) and not isSpacer() end, bw, L.TIP_ADD_SPACER)
@@ -1966,7 +1989,7 @@ local function BuildTopicPage(page, getSections)
     divider:SetPoint("BOTTOMLEFT", topicList, "BOTTOMRIGHT", 6, 0)
 
     local textX = COL_X[1] - 12 + TOPIC_W + 18
-    local textW = PANEL_W - textX - 48
+    local textW = PANEL_W - NAV_W - textX - 48
     local ok, scroll = pcall(CreateFrame, "ScrollFrame", nil, page, "ScrollFrameTemplate")
     if not ok then scroll = CreateFrame("ScrollFrame", nil, page, "UIPanelScrollFrameTemplate") end
     scroll:SetPoint("TOPLEFT", page, "TOPLEFT", textX, -6)
@@ -2169,6 +2192,60 @@ end
 -- Small screens: the window shrinks so a column of blocks still fits on each side
 -- of it (blocks shown from the options appear left and right of the window), and
 -- it never gets taller than the screen. Full size on large screens.
+---------------------------------------------------------------------------
+-- No window over another: Tessera's other windows (quick tour, text / import window,
+-- style offer) open one at a time, and beside the options window, never on it.
+---------------------------------------------------------------------------
+local sideWindows = {}
+
+-- true when two frames cover a common part of the screen (any scales)
+function ns.FramesOverlap(a, b)
+    local sa, sb = a:GetEffectiveScale(), b:GetEffectiveScale()
+    local al, ar, at, ab = a:GetLeft(), a:GetRight(), a:GetTop(), a:GetBottom()
+    local bl, br, bt, bb = b:GetLeft(), b:GetRight(), b:GetTop(), b:GetBottom()
+    if not (al and ar and at and ab and bl and br and bt and bb) then return false end
+    return al * sa < br * sb and bl * sb < ar * sa and ab * sa < bt * sb and bb * sb < at * sa
+end
+
+-- Puts a side window next to the options window (right, else left; with no room on either
+-- side the options window moves to the screen's left edge first)
+function ns:DockBesidePanel(frame)
+    if not (panel and panel:IsShown() and frame and frame:IsShown()) then return end
+    local screenW = UIParent:GetWidth() * UIParent:GetEffectiveScale()
+    local ps, fs = panel:GetEffectiveScale(), frame:GetEffectiveScale()
+    local left, right = (panel:GetLeft() or 0) * ps, (panel:GetRight() or 0) * ps
+    local need = (frame:GetWidth() + 12) * fs
+    frame:ClearAllPoints()
+    if screenW - right >= need then
+        frame:SetPoint("TOPLEFT", panel, "TOPRIGHT", 8, 0)
+    elseif left >= need then
+        frame:SetPoint("TOPRIGHT", panel, "TOPLEFT", -8, 0)
+    else
+        panel:ClearAllPoints()
+        panel:SetPoint("LEFT", UIParent, "LEFT", 0, 0)
+        frame:SetPoint("TOPLEFT", panel, "TOPRIGHT", 8, 0)
+    end
+end
+
+-- Shows a side window: the other side windows close, and it docks beside the options
+function ns:ShowSideWindow(frame)
+    if not frame then return end
+    local known = false
+    for _, f in ipairs(sideWindows) do
+        if f == frame then known = true elseif f:IsShown() then f:Hide() end
+    end
+    if not known then table.insert(sideWindows, frame) end
+    frame:Show()
+    self:DockBesidePanel(frame)
+end
+
+-- The options window opens or moves: the open side window follows it
+local function DockSideWindows()
+    for _, f in ipairs(sideWindows) do
+        if f:IsShown() then ns:DockBesidePanel(f) end
+    end
+end
+
 local SIDE_ROOM = 200 -- UI units kept free on each side
 local function FitPanelToScreen()
     local w, h = UIParent:GetWidth(), UIParent:GetHeight()
@@ -2190,21 +2267,36 @@ local function BuildPanel()
     panel:EnableMouse(true)
     panel:RegisterForDrag("LeftButton")
     panel:SetScript("OnDragStart", panel.StartMoving)
-    panel:SetScript("OnDragStop", panel.StopMovingOrSizing)
+    panel:SetScript("OnDragStop", function(self)
+        self:StopMovingOrSizing()
+        DockSideWindows()
+    end)
     table.insert(UISpecialFrames, panel:GetName()) -- close with Escape
     -- the placement banner steps aside while this window is open
     panel:HookScript("OnShow", function()
         FitPanelToScreen()
         ns:UpdatePlacementBanner()
+        DockSideWindows()
+        if ns.HideMicroMenuList then ns:HideMicroMenuList() end
+        if ns.RefreshPins then ns:RefreshPins() end -- a pinned tooltip under the window steps aside
     end)
     panel:HookScript("OnHide", function()
+        if ns.RefreshPins then ns:RefreshPins() end -- the pinned tooltips it covered come back
         ns:UpdatePlacementBanner()
         ns:CleanMemorySoon() -- the memory the window used is freed once it is closed
     end)
 
     panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    panel.title:SetPoint("TOPLEFT", COL_X[1], -24)
+    panel.title:SetPoint("TOPLEFT", 24, -24)
     panel.title:SetText(L.OPTIONS_TITLE)
+    -- one plain sentence on what the open page is for, next to the title
+    panel.hint = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    panel.hint:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, -20)
+    panel.hint:SetPoint("RIGHT", panel, "RIGHT", -230, 0)
+    panel.hint:SetHeight(30)
+    panel.hint:SetJustifyH("LEFT")
+    panel.hint:SetJustifyV("MIDDLE")
+    panel.hint:SetTextColor(0.85, 0.8, 0.68)
 
     local close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -8, -8)
@@ -2225,24 +2317,59 @@ local function BuildPanel()
         -- the DataBroker tab edits a data block: pick one if the selection is something else
         if index == PAGE_BROKER and not ns.modules[selected] then selected = DataModuleKeys()[1] or ALL end
         currentPage = index
+        panel.hint:SetText(L["PAGE_HINT_" .. index] or "")
         for i, p in ipairs(pages) do
             p:SetShown(i == index)
-            tabs[i]:SetEnabled(i ~= index)
+            tabs[i]:SetSelected(i == index)
         end
         ns:RefreshOptions()
     end
 
     local names = { L.TAB_BLOCK, L.TAB_LOOK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.PROFILES, L.TAB_HELP,
         L.TAB_ABOUT }
+    -- the navigation list: a thin frame, one line per page, the open one marked by a gold
+    -- bar and white text (also a shape, not only a color: the bar)
+    local nav = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+    nav:SetPoint("TOPLEFT", panel, "TOPLEFT", 16, PAGE_TOP)
+    nav:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 16, 16)
+    nav:SetWidth(NAV_W - 24)
+    if nav.SetBackdrop then
+        nav:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
+        nav:SetBackdropColor(1, 1, 1, 0.03)
+        nav:SetBackdropBorderColor(0.55, 0.43, 0.2, 0.6)
+    end
+    panel.nav = nav
+    local NAV_LINE = 30
     for i, text in ipairs(names) do
-        local tab = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-        tab:SetHeight(24)
-        tab:SetText(text)
+        local tab = CreateFrame("Button", nil, nav)
+        tab:SetSize(NAV_W - 32, NAV_LINE - 4)
+        tab.bar = tab:CreateTexture(nil, "BACKGROUND")
+        tab.bar:SetAllPoints()
+        tab.bar:SetColorTexture(1, 0.82, 0, 0.18)
+        tab.edge = tab:CreateTexture(nil, "ARTWORK")
+        tab.edge:SetPoint("TOPLEFT"); tab.edge:SetPoint("BOTTOMLEFT")
+        tab.edge:SetWidth(3)
+        tab.edge:SetColorTexture(1, 0.82, 0, 1)
+        local hover = tab:CreateTexture(nil, "HIGHLIGHT") -- shown by the game while hovered
+        hover:SetAllPoints()
+        hover:SetColorTexture(1, 1, 1, 0.07)
+        tab.label = tab:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        tab.label:SetPoint("LEFT", 12, 0)
+        tab.label:SetPoint("RIGHT", -4, 0)
+        tab.label:SetJustifyH("LEFT")
+        tab.label:SetWordWrap(false)
+        tab.label:SetText(text)
+        function tab:SetSelected(on)
+            self.bar:SetShown(on)
+            self.edge:SetShown(on)
+            self.label:SetTextColor(on and 1 or 0.88, on and 1 or 0.84, on and 1 or 0.75)
+        end
+        tab:SetSelected(false)
         tab:SetScript("OnClick", function() ShowPage(i) end)
         tabs[i] = tab
 
         local page = CreateFrame("Frame", nil, panel)
-        page:SetPoint("TOPLEFT", panel, "TOPLEFT", 0, -98)
+        page:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, PAGE_TOP)
         page:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", 0, 0)
         pages[i] = page
     end
@@ -2272,13 +2399,14 @@ function ns:ApplyOptionsMode()
         tab:SetShown(shown)
         if shown then table.insert(visible, i) end
     end
-    local gap = 6
-    local tabW = (FULL_W - gap * (#visible - 1)) / #visible
-    for n, i in ipairs(visible) do
-        tabs[i]:SetWidth(tabW)
-        FitButtonText(tabs[i])
+    -- one line per visible page; a small gap before Profiles and before Help (three groups:
+    -- the blocks, your profiles, help)
+    local y = -8
+    for _, i in ipairs(visible) do
+        if i == PAGE_PROFILES or i == PAGE_HELP then y = y - 12 end
         tabs[i]:ClearAllPoints()
-        tabs[i]:SetPoint("TOPLEFT", panel, "TOPLEFT", COL_X[1] + (n - 1) * (tabW + gap), -58)
+        tabs[i]:SetPoint("TOPLEFT", tabs[i]:GetParent(), "TOPLEFT", 4, y)
+        y = y - 30
     end
     -- leaves a tab that this mode hides
     if ns.ShowOptionsPage and ns.brokerModeActive and HIDDEN_IN_BROKER_MODE[currentPage] then
@@ -2291,7 +2419,7 @@ function ns:OpenOptions(pageIndex, blockKey)
     if not panel then BuildPanel() end
     if blockKey and ns.db.blocks[blockKey] then
         selected = blockKey
-        if ns.IsSpacerKey(blockKey) and ns.ShowBlockSub then ns.ShowBlockSub(4) end
+        if ns.IsSpacerKey(blockKey) and ns.ShowBlockSub then ns.ShowBlockSub(5) end
     end
     ns:SkinOptions()
     panel:Show()
@@ -2809,7 +2937,7 @@ function ns:StartTutorial()
     self:SkinWindow(tutorial, tutorial.title)
     if panel and panel:IsShown() then panel:Hide() end -- the blocks must be visible
     ShowTutorialStep(1)
-    tutorial:Show()
+    ns:ShowSideWindow(tutorial)
 end
 
 -- After an update: offers to read what's new (About tab, Changelog topic), once per version
@@ -2999,7 +3127,7 @@ function ns:ShowStyleOffer(list)
     offer.note:SetPoint("TOP", offer, "TOP", 0, y - 50)
     offer:SetHeight(-y + 50 + 30 + 60)
     UpdateOffer()
-    offer:Show()
+    ns:ShowSideWindow(offer)
 end
 
 -- Offers the style of a newly detected interface (not in DataBroker mode: Tessera then
@@ -3068,7 +3196,7 @@ function ns:ShowTextWindow(title, text, onAccept, acceptLabel)
     copyFrame.accept:SetShown(onAccept ~= nil)
     copyFrame.accept:SetText(acceptLabel or ACCEPT)
     copyFrame.box:SetText(text or "")
-    copyFrame:Show()
+    ns:ShowSideWindow(copyFrame)
     copyFrame.box:SetFocus()
     copyFrame.box:HighlightText()
 end

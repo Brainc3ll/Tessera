@@ -125,6 +125,11 @@ function ns:ToggleMicroMenuList(owner)
     list:Show()
 end
 
+-- the options window opens: the list closes (no window over another)
+function ns:HideMicroMenuList()
+    if list and list:IsShown() and not InCombatLockdown() then list:Hide() end
+end
+
 local listCloser = CreateFrame("Frame")
 listCloser:RegisterEvent("PLAYER_REGEN_DISABLED")
 listCloser:SetScript("OnEvent", function()

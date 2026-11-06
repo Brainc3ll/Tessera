@@ -97,7 +97,7 @@ ns.CHANGELOG = {
                     .. "Nothing was removed: settings only moved.",
                 "Tessera's windows no longer cover each other: the tour and the text windows open beside the options.",
                 "Translations now live on GitHub: send yours as a pull request or a \"Translation\" issue.",
-                "Quick tour: two new steps, a block's own settings and the quick menu.",
+                "Quick tour: two new steps, a block's own settings and the quick menu. Demo mode: \"Keep this style\".",
                 "Weapon enchant: watch both hands, the main hand or the off hand. Micro-menu: its count can stay on.",
                 "Bags: the tooltip lists profession bags (herb bag...) apart. Durability: the tooltip also lists "
                     .. "worn items in your bags, under their own title.",
@@ -120,7 +120,7 @@ ns.CHANGELOG = {
                     .. "bloc pour l'ouvrir). Rien n'a été retiré : les réglages ont seulement changé de place.",
                 "Les fenêtres de Tessera ne se recouvrent plus : la visite guidée et les fenêtres de texte s'ouvrent à côté des options.",
                 "Les traductions passent sur GitHub : envoie la tienne en pull request ou dans une issue « Translation ».",
-                "Visite guidée : deux nouvelles étapes, les réglages d'un bloc et le menu rapide.",
+                "Visite guidée : deux nouvelles étapes, les réglages d'un bloc et le menu rapide. Mode démo : « Garder ce style ».",
                 "Enchantement d'arme : surveille les deux mains, la main droite ou la main gauche. Micro-menu : son compteur peut rester affiché.",
                 "Sacs : l'infobulle liste les sacs de métier (sac d'herbes...) à part. Durabilité : l'infobulle "
                     .. "liste aussi les pièces abîmées de tes sacs, sous leur propre titre.",

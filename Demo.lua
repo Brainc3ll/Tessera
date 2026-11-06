@@ -188,7 +188,7 @@ end
 
 local function CreateBanner(self)
     local b = CreateFrame("Frame", "TesseraDemoBanner", UIParent, "BackdropTemplate")
-    b:SetSize(760, 92)
+    b:SetSize(880, 92)
     b:SetPoint("TOP", UIParent, "TOP", 0, -18)
     b:SetFrameStrata("DIALOG")
     b:SetClampedToScreen(true)
@@ -203,7 +203,7 @@ local function CreateBanner(self)
     b.title:SetText(L.DEMO_TITLE)
     b.sub = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     b.sub:SetPoint("TOPLEFT", b.title, "BOTTOMLEFT", 0, -4)
-    b.sub:SetWidth(728)
+    b.sub:SetWidth(848)
     b.sub:SetJustifyH("LEFT")
     b.sub:SetText(L.DEMO_SUBTITLE)
 
@@ -231,16 +231,26 @@ local function CreateBanner(self)
 
     local quit = Button(L.DEMO_QUIT, 120, function() self:StopDemo() end)
     quit:SetPoint("BOTTOMRIGHT", -14, 12)
+    -- ends the demo and keeps the style it shows (the first column's in a mixed step)
+    local keep = Button(L.DEMO_KEEP_STYLE, 150, function() self:StopDemo(true) end)
+    keep:SetPoint("RIGHT", quit, "LEFT", -8, 0)
+    keep:SetScript("OnEnter", function(btn)
+        GameTooltip:SetOwner(btn, "ANCHOR_BOTTOM")
+        GameTooltip:SetText(L.DEMO_KEEP_STYLE, 1, 1, 1)
+        GameTooltip:AddLine(L.TIP_DEMO_KEEP_STYLE, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    keep:SetScript("OnLeave", function() GameTooltip:Hide() end)
     b.hideUI = CreateFrame("CheckButton", nil, b, "UICheckButtonTemplate")
     b.hideUI:SetSize(24, 24)
     b.hideUI:SetPoint("LEFT", nextStyle, "RIGHT", 14, 0)
     b.hideUI.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     b.hideUI.label:SetPoint("LEFT", b.hideUI, "RIGHT", 2, 0)
-    b.hideUI.label:SetPoint("RIGHT", quit, "LEFT", -8, 0)
+    b.hideUI.label:SetPoint("RIGHT", keep, "LEFT", -8, 0)
     b.hideUI.label:SetJustifyH("LEFT")
     b.hideUI.label:SetText(L.DEMO_HIDE_UI)
     b.hideUI:SetScript("OnClick", function(btn) self:SetDemoHideUI(btn:GetChecked() and true or false) end)
-    b.prev, b.nextStyle, b.quit = prev, nextStyle, quit
+    b.prev, b.nextStyle, b.quit, b.keep = prev, nextStyle, quit, keep
 
     -- a fight ends the demo (once it is over: blocks cannot move during one)
     b:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -285,8 +295,9 @@ function ns:StartDemo()
     self.Print(L.DEMO_STARTED)
 end
 
--- Gives the player's profile back (also called at login if the demo was left open)
-function ns:StopDemo()
+-- Gives the player's profile back (also called at login if the demo was left open);
+-- keepStyle: the player's profile takes the style the demo shows
+function ns:StopDemo(keepStyle)
     local backup = self.sv and self.sv.demoBackup
     if not backup then return end
     if InCombatLockdown() then
@@ -294,6 +305,7 @@ function ns:StopDemo()
         return
     end
     self:SetDemoHideUI(false)
+    local shown = keepStyle and self.demoTheme
     self.sv.demoBackup = nil
     if type(backup.profile) == "string" and type(backup.data) == "table" then
         self.sv.profiles[backup.profile] = backup.data
@@ -305,10 +317,14 @@ function ns:StopDemo()
         if f.text then f.text:SetText("") end
     end
     self:LoadProfile()
+    if shown then
+        self.db.theme = shown
+        self:ApplyTheme(shown)
+    end
     self:ReanchorAll()
     self:UpdateAllVisibility()
     self:UpdateAll()
-    self.Print(L.DEMO_ENDED)
+    self.Print(shown and L.DEMO_ENDED_KEPT or L.DEMO_ENDED)
 end
 
 -- At login, before the profile is loaded: a demo left open (reload, logout, crash)

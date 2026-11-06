@@ -1203,3 +1203,7 @@ L["HELP_BLOCKS_16"] = "- Ce bloc (premier onglet) : tout ce qui est propre au bl
 L["TUTORIAL_10"] = "Alt + clic droit sur un bloc ouvre son menu rapide : épingle son infobulle pour la garder ouverte, renomme-le, ajoute un espace. Décocher « Afficher la valeur » ne garde que son icône."
 L["TUTORIAL_9"] = "Chaque bloc a ses propres réglages : fais un clic droit dessus, les options s'ouvrent sur « Ce bloc » : ce qu'il affiche, ses réglages, son nom, ses clics."
 L["TUTORIAL_DO_BLOCK"] = "Montre-moi"
+L["DEMO_ENDED_KEPT"] = "Démo terminée : tes blocs sont revenus, avec le style choisi."
+L["DEMO_KEEP_STYLE"] = "Garder ce style"
+L["HELP_LOOK_15"] = "- Dans la démo, « Garder ce style » la termine et donne à tes blocs le style affiché ; ta disposition ne change pas."
+L["TIP_DEMO_KEEP_STYLE"] = "Termine la démo et donne à tes blocs le style affiché. Ta disposition ne change pas."

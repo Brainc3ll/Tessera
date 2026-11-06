@@ -713,6 +713,10 @@ end
 -- (options marked tab = "text", how the value is shown, are in the Text tab)
 local function BuildModuleOptions(sub, P, col, keys, condition, filter)
     filter = filter or function(opt) return opt.tab ~= "text" end
+    -- two stacks in one column of one page draw over each other: the mock run refuses it
+    ns.optionStacks = ns.optionStacks or {}
+    local slot = tostring(sub) .. col
+    ns.optionStacks[slot] = (ns.optionStacks[slot] or 0) + 1
     local function ModuleOf(key)
         return key == "spacer" and ns.spacerModule or ns.modules[key]
     end
@@ -1095,11 +1099,11 @@ local function BuildBlockPage(page)
         -- what the value looks like (gold format, clock...), then the block's own settings
         local keys = {}
         for _, key in ipairs(ns.order) do table.insert(keys, key) end
-        local textOptions = BuildModuleOptions(sub, P, 1, keys, nil, function(opt) return opt.tab == "text" end)
-        local hasOptions = BuildModuleOptions(sub, P, 1, keys)
+        -- (one stack per block: two builds in the same column would draw over each other)
+        local hasOptions = BuildModuleOptions(sub, P, 1, keys, nil, function() return true end)
         none.isShown = function()
             local key = SelectedModuleKey()
-            return not IsGroup() and not (key and (hasOptions[key] or textOptions[key] or key == "spacer"))
+            return not IsGroup() and not (key and (hasOptions[key] or key == "spacer"))
         end
         -- a spacer's settings (type, text, line): right column, in place of the clicks
         BuildModuleOptions(sub, P, 2, { "spacer" })

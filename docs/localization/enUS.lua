@@ -1203,3 +1203,7 @@ L["HELP_BLOCKS_16"] = "- This block (first tab): everything the selected block h
 L["TUTORIAL_10"] = "Alt + right-click a block for its quick menu: pin its tooltip so it stays open, rename it, add a spacer. Unchecking \"Show the value\" keeps only its icon."
 L["TUTORIAL_9"] = "Each block has its own settings: right-click it, and the options open on \"This block\": what it shows, its settings, its name, its clicks."
 L["TUTORIAL_DO_BLOCK"] = "Show me"
+L["DEMO_ENDED_KEPT"] = "Demo ended: your blocks are back, with the style you picked."
+L["DEMO_KEEP_STYLE"] = "Keep this style"
+L["HELP_LOOK_15"] = "- In the demo, \"Keep this style\" ends it and gives your blocks the style it shows; your layout stays as it was."
+L["TIP_DEMO_KEEP_STYLE"] = "Ends the demo and gives your blocks the style shown now. Your layout stays as it was."

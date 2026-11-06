@@ -6,7 +6,7 @@ Tessera: little info blocks you put anywhere (CurseForge and Wago, chosen by Bra
 
 ## CurseForge summary (one line, English)
 
-Little info blocks you put anywhere, or stick together into a panel. Made for WoW Forever. Works with Titan Panel, Bazooka and Arcana: DataBroker plugins become blocks, and blocks go into your Data Broker display. Matches EllesmereUI, FlareUI and others. Like StatBlock Core.
+Little info blocks you put anywhere, or stick together into a panel. Made for WoW Forever. Works with Titan Panel, Bazooka, Arcana: DataBroker plugins become blocks, blocks go into your Data Broker display. Fits EllesmereUI, FlareUI. Like StatBlock Core. (max 256 characters on CurseForge)
 
 ## GitHub "About" (repository description)
 

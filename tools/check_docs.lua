@@ -196,6 +196,20 @@ for key, text in pairs(EN) do
         fail(("text %s is %d characters long (max %d): split it into several keys"):format(key, #text, MAX_LENGTH))
     end
 end
+-- arrows and other symbols the game's fonts do not draw (they show as a box)
+local NO_GLYPH = { "\226\134\144", "\226\134\145", "\226\134\146", "\226\134\147", -- arrows
+    "\226\134\150", "\226\134\151", "\226\134\152", "\226\134\153" }
+for code, strings in pairs({ enUS = EN, frFR = FR }) do
+    for key, text in pairs(strings) do
+        if type(text) == "string" then
+            for _, glyph in ipairs(NO_GLYPH) do
+                if text:find(glyph, 1, true) then
+                    fail(("%s %s holds an arrow character: the game's fonts show a box"):format(code, key))
+                end
+            end
+        end
+    end
+end
 -- every help line exists in French too (a missing one would show in English)
 for _, layout in ipairs({ enNS.HELP_LAYOUT or {}, enNS.HELP_LAYOUT_BROKER or {} }) do
     for _, topic in ipairs(layout) do

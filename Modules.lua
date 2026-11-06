@@ -3655,7 +3655,7 @@ local MORE_SAMPLES = {
     longBuffs    = function() return L.LONG_BUFFS_FORMAT:format(3, "42:15"), GOOD end,
     xpRate       = function() return L.XP_RATE_FORMAT:format("18 450") end,
     goldSession  = function() return "+" .. ns.FormatMoney(1234567), GOOD end,
-    corpse       = function() return L.CORPSE_FORMAT:format(84) .. " ↗", WARN end,
+    corpse       = function() return L.CORPSE_FORMAT:format(84), WARN end,
 }
 for key, sample in pairs(MORE_SAMPLES) do
     if ns.modules[key] then ns.modules[key].sample = sample end

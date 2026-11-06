@@ -42,11 +42,11 @@ ns.CHANGELOG = {
         sections = {
             { kind = "intro",
               en = {
-                "Your first big Tessera update on WoW Forever: 9 new blocks, a choice of display on 14 more, pinned tooltips "
+                "Your first big Tessera update on WoW Forever: 8 new blocks, a choice of display on 14 more, pinned tooltips "
                     .. "and names of your own.",
               },
               fr = {
-                "La première grosse mise à jour de Tessera sur WoW Forever : 9 nouveaux blocs, un choix "
+                "La première grosse mise à jour de Tessera sur WoW Forever : 8 nouveaux blocs, un choix "
                     .. "d'affichage sur 14 autres, des infobulles épinglées et des noms à toi.",
               } },
             { kind = "new",
@@ -54,7 +54,6 @@ ns.CHANGELOG = {
                 "Micro-menu: Blizzard's micro menu in one block. Its tooltip lists the menus (character, spellbook, "
                     .. "talents, professions, quests, guild, Legacy...); a click opens the list. A menu you have not "
                     .. "unlocked yet stays grey until you reach it.",
-                "Tracking: your active minimap tracking (herbs, minerals...); click for the tracking menu.",
                 "Hunter pet: your pet's happiness, with its damage and loyalty; a warning when it loses loyalty.",
                 "Weapon enchant: time left on your poisons, sharpening stones or shaman imbues.",
                 "Long buffs: Well Fed, elixirs and world buffs of 10 minutes or more, the shortest first.",
@@ -71,7 +70,6 @@ ns.CHANGELOG = {
                 "Micro-menu : le micro-menu de Blizzard en un seul bloc. Son infobulle liste les menus (personnage, "
                     .. "grimoire, talents, métiers, quêtes, guilde, Héritage...) ; un clic ouvre la liste. Un menu pas "
                     .. "encore débloqué reste gris jusqu'à ce que tu l'atteignes.",
-                "Pistage : ton pistage actif de la minicarte (herbes, minerais...) ; clic pour le menu du pistage.",
                 "Familier du chasseur : l'humeur de ton familier, avec ses dégâts et sa fidélité ; une alerte "
                     .. "quand il perd de la fidélité.",
                 "Enchantement d'arme : temps restant de tes poisons, pierres à aiguiser ou imprégnations du chaman.",

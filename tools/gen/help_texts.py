@@ -776,9 +776,6 @@ NEW_EN = [
 ('MICRO_GAME_MENU','Game menu'),
 ('MICRO_LOCKED','Not unlocked yet.'),
 ('HINT_MICRO','Click: the menu list'),
-('TRACKING','Tracking'),
-('TRACKING_MORE','%s +%d'),
-('HINT_TRACKING','Click: tracking menu'),
 ('PET','Hunter pet'),
 ('TT_NO_PET','No hunter pet out.'),
 ('TT_PET_DAMAGE','Damage'),
@@ -833,8 +830,6 @@ NEW_EN = [
 ('HINT_CORPSE','Click: map pin on your body'),
 ('MICRO_MENU','Micro-menu'),
 ('MICRO_IN_COMBAT','Tessera: the micro-menu list opens out of combat.'),
-('TT_NO_TRACKING','No tracking spell on (Find Herbs, Find Minerals...).'),
-('TT_TRACKING_OTHERS','Also shown on the minimap'),
 ]
 NEW_FR = {
 "THEME_FLARE_SQUARE":"FlareUI carré",
@@ -1610,9 +1605,6 @@ NEW_FR = {
 'MICRO_GAME_MENU':'Menu du jeu',
 'MICRO_LOCKED':'Pas encore débloqué.',
 'HINT_MICRO':'Clic : la liste des menus',
-'TRACKING':'Pistage',
-'TRACKING_MORE':'%s +%d',
-'HINT_TRACKING':'Clic : menu du pistage',
 'PET':'Familier du chasseur',
 'TT_NO_PET':'Aucun familier de chasseur sorti.',
 'TT_PET_DAMAGE':'Dégâts',
@@ -1667,6 +1659,4 @@ NEW_FR = {
 'HINT_CORPSE':'Clic : repère sur ton corps',
 'MICRO_MENU':'Micro-menu',
 'MICRO_IN_COMBAT':"Tessera : la liste du micro-menu s'ouvre hors combat.",
-'TT_NO_TRACKING':"Aucun sort de pistage actif (Découverte d'herbes, Découverte de gisements...).",
-'TT_TRACKING_OTHERS':'Aussi affichés sur la minicarte',
 }

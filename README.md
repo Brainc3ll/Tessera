@@ -24,7 +24,7 @@ LibDataBroker to exchange data with DataBroker addons.
 ## What makes it different?
 
 - **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
-- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills, minimap tracking, your hunter pet's happiness, poisons and sharpening stones, Well Fed and other long buffs.
+- **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills, your hunter pet's happiness, poisons and sharpening stones, Well Fed and other long buffs.
 - **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level: most blocks give you a choice.
 - **Pin a tooltip, rename a block.** Keep a block's tooltip open next to it, updated every second, and give any block a name of your own.
 - **A micro-menu that grows with you.** Blizzard's micro menu in one block: its tooltip lists the menus, a click opens them; a menu you have not unlocked yet stays grey until you reach it.
@@ -152,7 +152,7 @@ Help tab inside the game explains everything.
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
   reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, goal, mana
   regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode,
-  micro-menu (the menus in its tooltip, grey until unlocked), minimap tracking, hunter pet, weapon enchant,
+  micro-menu (the menus in its tooltip, grey until unlocked), hunter pet, weapon enchant,
   long buffs, XP per hour, gold this session, DPS, corpse...
 - Streamer mode (General tab, a key binding or its block): for streams and videos, other players' names,
   your other characters, your guild's name and your gold show as `***`.

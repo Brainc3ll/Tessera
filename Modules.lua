@@ -3109,73 +3109,6 @@ local function PerMoment(read)
 end
 
 ---------------------------------------------------------------------------
--- Minimap tracking (herbs, minerals, beasts...): the active one; click = the tracking menu
----------------------------------------------------------------------------
--- Your tracking spells first (Find Herbs, Find Minerals...); the minimap's other filters
--- (flight master, innkeeper...) are on by default and only go in the tooltip
-local function ReadTracking()
-    local M, list = C_Minimap, {}
-    if not (M and M.GetNumTrackingTypes and M.GetTrackingInfo) then return list end
-    for i = 1, tonumber((Try(M.GetNumTrackingTypes))) or 0 do
-        local info = Try(M.GetTrackingInfo, i)
-        if type(info) == "table" and info.active and info.name then table.insert(list, info) end
-    end
-    return list
-end
--- the minimap's townsfolk filters (flight master, innkeeper...: Blizzard's subType 2) are on
--- by default; the block shows the other kinds (Find Herbs, hunter tracking...)
-local TOWNSFOLK = 2
-local ActiveTracking = PerMoment(ReadTracking)
-local function TrackingSpells()
-    local spells = {}
-    for _, info in ipairs(ActiveTracking()) do
-        if info.subType ~= TOWNSFOLK then table.insert(spells, info) end
-    end
-    return spells
-end
-
-if C_Minimap and C_Minimap.GetTrackingInfo then
-ns:RegisterModule("tracking", {
-    label = "TRACKING",
-    icon = "Interface\\Icons\\INV_Misc_Map_01",
-    getIcon = function()
-        local first = TrackingSpells()[1]
-        return first and first.texture or "Interface\\Icons\\INV_Misc_Map_01"
-    end,
-    events = { "MINIMAP_UPDATE_TRACKING" },
-    defaultEnabled = false,
-    isEmpty = function() return #TrackingSpells() == 0 end,
-    -- the block shows your tracking spell (two at once: "Find Herbs +1")
-    update = function()
-        local spells = TrackingSpells()
-        if #spells == 0 then return L.NONE, WARN end
-        if #spells > 1 then return L.TRACKING_MORE:format(spells[1].name, #spells - 1) end
-        return spells[1].name
-    end,
-    tooltip = function(tt)
-        local spells, others = TrackingSpells(), {}
-        for _, info in ipairs(ActiveTracking()) do
-            if info.subType == TOWNSFOLK then table.insert(others, info) end
-        end
-        if #spells == 0 then tt:AddLine(L.TT_NO_TRACKING, 0.8, 0.8, 0.8, true) end
-        for _, info in ipairs(spells) do tt:AddLine(info.name, 1, 1, 1) end
-        if #others > 0 then
-            tt:AddLine(" ")
-            tt:AddLine(L.TT_TRACKING_OTHERS, 1, 0.82, 0)
-            for _, info in ipairs(others) do tt:AddLine(info.name, 0.8, 0.8, 0.8) end
-        end
-    end,
-    -- click: Blizzard's tracking menu, opened from the minimap's own button
-    onClick = function(_, button)
-        if button ~= "LeftButton" then return end
-        local b = MinimapCluster and MinimapCluster.Tracking and MinimapCluster.Tracking.Button
-        if b and b.OpenMenu then pcall(b.OpenMenu, b) end
-    end,
-    clickHint = L.HINT_TRACKING,
-})
-end
-
----------------------------------------------------------------------------
 -- Hunter pet: happiness (Mad / Neutral / Happy, the game's own names) and loyalty
 ---------------------------------------------------------------------------
 local PET_COLORS = { [1] = BAD, [2] = WARN, [3] = GOOD }
@@ -3582,7 +3515,6 @@ local MORE_SAMPLES = {
     camping      = function() return L.CAMP_BUFFS_LEFT:format("52m"), GOOD end,
     honor        = function() return "3 250" end,
     streamer     = function() return L.STREAMER_ON, WARN end,
-    tracking     = function() return L.TRACKING end,
     pet          = function() return _G["PET_HAPPINESS3"] or "Happy", GOOD end,
     weaponEnchant = function() return "24:10", GOOD end,
     longBuffs    = function() return L.LONG_BUFFS_FORMAT:format(3, "42:15"), GOOD end,

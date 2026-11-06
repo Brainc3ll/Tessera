@@ -1471,12 +1471,11 @@ for _, step in ipairs({
     -- the new blocks of 1.0.5: tracking, hunter pet, weapon enchant, long buffs, session XP and gold
     function()
         local m = ns.modules
-        assert(m.tracking.update() == "Find Herbs", "tracking: " .. tostring(m.tracking.update()))
         assert(m.pet.update() == (PET_HAPPINESS3 or "3"), "pet happiness")
         local text, level = m.weaponEnchant.update()
         assert(text == "25:00" and level == 1, "poison time left: " .. tostring(text))
         assert(m.longBuffs.update() == "20:00", "long buffs: only Well Fed, 20 minutes left: " .. tostring(m.longBuffs.update()))
-        for _, key in ipairs({ "tracking", "pet", "weaponEnchant", "longBuffs", "xpRate", "goldSession" }) do
+        for _, key in ipairs({ "pet", "weaponEnchant", "longBuffs", "xpRate", "goldSession" }) do
             m[key].tooltip(GameTooltip, ns.db.blocks[key])
             assert(m[key].sample, key .. " has a demo sample")
         end

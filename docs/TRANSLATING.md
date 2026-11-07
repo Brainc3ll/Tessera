@@ -1,7 +1,8 @@
 # Translating Tessera
 
 Tessera is written in English and French. Every other language lives in this repository, in
-`Locales/` (one file per language: `deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`...). A text
+`Locales/` (one file per language: `deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`...). Only the
+languages WoW Forever offers have a file: it has no Italian, for one. A text
 missing from a file shows in English in the game.
 
 ## What to translate

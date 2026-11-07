@@ -1,7 +1,7 @@
 # À reprendre (état au 7 novembre 2026)
 
 ## Où on en est
-- **Maintenant (7/11)** : 1.1.1 en ligne. Branches : `main` (la 1.1.2 en cours : correctifs), `prochaine-1.2` (nouveautés : bloc Compétences), `accessibilite-manette` (suit `main`). Prochain zip de test : test81.
+- **Maintenant (7/11)** : 1.1.2 en ligne. Branches : `main` (correctifs 1.1.x), `prochaine-1.2` (nouveautés : bloc Compétences), `accessibilite-manette` (suit `main`). Prochain zip de test : test81.
 - **1.1.2 publiée le 7/11** (+ styles FlareUI qui suivent la police, le contour et l'ombre de FlareUI 4.0 au chargement ; nouveaux cadres FlareUI). Ancienne note : : notes de forever-lint (outil de JoseArgento, `pip install forever-lint`, MIT) : fonctions de discussion ChatFrameUtil en premier (Maj + clic, réponse aux chuchotements), niveau max de Forever via GetMaxPlayerLevel. Pas publiée.
 - **En réserve pour une prochaine 1.1.x** (si Braincell1980 trouve un autre correctif à publier, ça part avec) : « Retirer » au lieu de « masquer » (voir la note 1.2 sur la branche `prochaine-1.2`, décisions du 6/11) : croix = le bloc sort de la barre ; « Remplacer par » sort le bloc remplacé ; blocs déjà masqués rangés en silence ; ajout depuis les options en haut à droite de la fenêtre, empilés sans être collés ; les blocs retirés continuent de tourner en fond ; le mot « masquer » disparaît. T2 : procédure renforcée. Pas commencé.
 - **1.1.1 publiée le 6/11 (urgence)** : « Remplacer par » un bloc masqué encore placé dans une barre cassait la barre (boucle de chaînage) ; le bloc quitte d'abord son ancienne place. Reproduit avec l'export de Braincell1980 (non versionné), validé en jeu. Prochain test : test81.

@@ -38,6 +38,14 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 - Recherche dans les options, avec sous chaque résultat l'endroit du réglage (« Blocs › Tous les blocs › Cadre »), comme la fenêtre de réglages de FlareUI. Plutôt en 1.1.
 - Style « Forever » fait de l'anneau bronze et de la plaque des cadres d'unité du jeu (atlas `UI-HUD-UnitFrame-*-PortraitOn`), avec les icônes en médaillon. FlareUI découpe déjà une image en rond sur Forever (masque) : la question des masques (voir « Formes de blocs ») a sa réponse. Avec la version « look ».
 
+### FlareUI 4.0 (7 novembre 2026)
+- Charge sur Forever (Interface 16001). **Licence MIT** désormais (fichier LICENSE.txt, Malkkav) : code et données réutilisables en le créditant.
+- Réglages dans `FlareUI2_DB` (l'ancien `FlareUI_DB` est importé une fois) : Tessera lisait déjà les deux.
+- Police de la barre d'XP : toujours `profile.actionbars.hotkeyFont` (Arial Narrow, OUTLINE par défaut), avec maintenant une **ombre** (`enableShadow`, active par défaut) : les styles FlareUI de Tessera suivent cette ombre (1.1.2).
+- Médias toujours là : « FlareUI Forever » (barres), « FlareUI Thin / Thick / Frames » (bordures).
+- Tous les cadres connus de Tessera existent encore ; nouveaux cadres repérés dans son code : `FlareUI_UF_TargetOfTarget`, `FlareUI_UF_TargetOfFocus`, `FlareUI_Party`, `FlareUI_Raid`, `FlareUI_Boss` (ajoutés à `ns.KNOWN_UI_FRAMES`).
+- Nouveautés à suivre : mode manette (`GamepadMode.lua` : bascule le CVar InputDeviceInterfaceStyle, proposée à la première pression d'une manette) et menu radial (`RadialMenu.lua`) : utile pour la 1.3 de Tessera (navigation à la manette). Un module DamageMeter. Son sac de minicarte (`FlareUI_MinimapBag`) utilise LibDataBroker / LibDBIcon : Tessera le connaissait déjà.
+
 ### Ce qu'on a appris d'EllesmereUI 9.6.1 (21 octobre 2026)
 Licence « tous droits réservés » : idées seulement, aucun code ni donnée repris.
 - Son style « moderne » des barres de données : fond 0.067 à 95 %, comme notre style EllesmereUI (rien à changer).

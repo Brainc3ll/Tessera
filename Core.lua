@@ -153,6 +153,9 @@ ns.KNOWN_UI_FRAMES = {
         Debuffs = { label = "EM_BUFFS" }, ObjectiveTracker = { label = "EM_OBJECTIVES" },
         UF_Player = { label = "EM_UNIT_FRAMES" }, UF_Target = { label = "EM_UNIT_FRAMES" },
         UF_Focus = { label = "EM_UNIT_FRAMES" }, UF_Pet = { label = "EM_UNIT_FRAMES" },
+        -- FlareUI 4.0: target of target and of focus, party, raid and boss frames
+        UF_TargetOfTarget = { label = "EM_UNIT_FRAMES" }, UF_TargetOfFocus = { label = "EM_UNIT_FRAMES" },
+        Party = { label = "EM_UNIT_FRAMES" }, Raid = { label = "EM_UNIT_FRAMES" }, Boss = { label = "EM_UNIT_FRAMES" },
         UF_PlayerCastBar = { label = "EM_CAST_BAR" }, Totems = { label = "EM_TOTEMS" },
         Toasts = { label = "EM_TOASTS" }, LootRolls = { label = "EM_LOOT_ROLLS" },
     } },

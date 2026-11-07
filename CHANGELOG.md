@@ -12,6 +12,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.1.2 — 
 
+### Improvements
+
+- FlareUI styles follow FlareUI 4.0's text shadow, and Tessera knows its new frames (party, raid, boss, target of target) when it places blocks around them.
+
 ### Fixes
 
 - Shift + click to copy a value into the chat, and replying to a whisper, use the game's current chat functions: they keep working when Blizzard removes the old ones.

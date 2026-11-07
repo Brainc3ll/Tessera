@@ -9,6 +9,13 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your ranged weapon's while you shoot), or a skill you pick (This block).
 
+## 1.1.2 — 
+
+### Fixes
+
+- Shift + click to copy a value into the chat, and replying to a whisper, use the game's current chat functions: they keep working when Blizzard removes the old ones.
+- XP: Forever's max level is read from the game, so the block knows when you reach it.
+
 ## 1.1.1 — 2026-11-06
 
 ### Fixes

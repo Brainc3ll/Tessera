@@ -40,6 +40,25 @@ ns.CHANGELOG = {
         version = "1.2.0",
         date = "",
         sections = {
+            { kind = "improved",
+              en = {
+                "Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your "
+                    .. "ranged weapon's while you shoot), or a skill you pick (This block).",
+                "Friends: the count takes the color of your status (available, away, busy, appear offline), "
+                    .. "and the tooltip lists your Battle.net friends online too, with their character in WoW.",
+              },
+              fr = {
+                "Compétences d'armes devient Compétences : affiche la compétence de l'arme en main, suit le "
+                    .. "combat (celle de l'arme à distance pendant que tu tires), ou une compétence que tu choisis (Ce bloc).",
+                "Amis : le chiffre prend la couleur de ton statut (disponible, absence, ne pas déranger, apparaître "
+                    .. "hors ligne), et l'infobulle liste aussi tes amis Battle.net en ligne, avec leur personnage dans WoW.",
+              } },
+        },
+    },
+    {
+        version = "1.1.3",
+        date = "",
+        sections = {
             { kind = "new",
               en = {
                 "Style a whole group at once: each bar of merged blocks has its entry in the Blocks tab list, "
@@ -53,19 +72,6 @@ ns.CHANGELOG = {
                     .. "et aux rangées en dessous. « Copier sur le groupe » (à côté de « Copier sur tous », et dans le "
                     .. "menu rapide) donne l'apparence d'un bloc au reste de son groupe. Tu peux annuler l'une ou "
                     .. "l'autre copie (Ctrl + Z en mode placement).",
-              } },
-            { kind = "improved",
-              en = {
-                "Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your "
-                    .. "ranged weapon's while you shoot), or a skill you pick (This block).",
-                "Friends: the count takes the color of your status (available, away, busy, appear offline), "
-                    .. "and the tooltip lists your Battle.net friends online too, with their character in WoW.",
-              },
-              fr = {
-                "Compétences d'armes devient Compétences : affiche la compétence de l'arme en main, suit le "
-                    .. "combat (celle de l'arme à distance pendant que tu tires), ou une compétence que tu choisis (Ce bloc).",
-                "Amis : le chiffre prend la couleur de ton statut (disponible, absence, ne pas déranger, apparaître "
-                    .. "hors ligne), et l'infobulle liste aussi tes amis Battle.net en ligne, avec leur personnage dans WoW.",
               } },
         },
     },

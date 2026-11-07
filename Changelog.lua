@@ -61,12 +61,16 @@ ns.CHANGELOG = {
         sections = {
             { kind = "improved",
               en = {
-                "FlareUI styles follow FlareUI 4.0's text shadow, and Tessera knows its new frames (party, raid, "
-                    .. "boss, target of target) when it places blocks around them.",
+                "FlareUI styles follow FlareUI 4.0's text shadow, and its font, outline and shadow by themselves: "
+                    .. "a change made in FlareUI reaches the blocks at the next /reload, with no need to apply the "
+                    .. "style again. A font you set on a block stays. Tessera also knows FlareUI's new frames (party, "
+                    .. "raid, boss, target of target) when it places blocks around them.",
               },
               fr = {
-                "Les styles FlareUI suivent l'ombre du texte de FlareUI 4.0, et Tessera connaît ses nouveaux cadres "
-                    .. "(groupe, raid, boss, cible de la cible) quand il place les blocs autour.",
+                "Les styles FlareUI suivent l'ombre du texte de FlareUI 4.0, et sa police, son contour et son ombre "
+                    .. "tout seuls : un changement fait dans FlareUI arrive sur les blocs au /reload suivant, sans "
+                    .. "réappliquer le style. Une police que tu as choisie pour un bloc reste. Tessera connaît aussi les "
+                    .. "nouveaux cadres de FlareUI (groupe, raid, boss, cible de la cible) quand il place les blocs autour.",
               } },
             { kind = "fixed",
               en = {

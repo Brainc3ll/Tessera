@@ -748,6 +748,10 @@ end
 function ns:ApplyTheme(key)
     if not byKey[key] or not byKey[key].available() then return false end
     self.db.theme = key
+    if key == "flareui" or key == "flareui2" then
+        local font, outline, shadow = FlareFont()
+        self.db.flareFontSeen = { font = font, outline = outline, shadow = shadow }
+    end
     self:ApplyLevelPalette() -- the automatic palette follows the style
     RestyleProfile(self, key, true)
     if self.UpdateAll then self:UpdateAll() end -- values in the new threshold colors
@@ -797,6 +801,30 @@ function ns:SyncAutoTheme()
         RestyleProfile(self, key, false)
         db.autoThemeMissing = db.autoThemeMissing or applied
     end
+end
+
+-- FlareUI styles follow FlareUI's XP bar font (face, outline, shadow) by themselves: at each
+-- load, a change made in FlareUI is carried to the blocks that still had FlareUI's previous
+-- font. A font, outline or shadow the player set on a block stays. (FlareUI's own XP bar
+-- takes the new font after a /reload: Tessera follows at that same reload.)
+function ns:FollowFlareFont()
+    local db = self.db
+    local key = db and self:GetTheme()
+    if not (key == "flareui" or key == "flareui2") then return end
+    local font, outline, shadow = FlareFont()
+    local seen = db.flareFontSeen
+    db.flareFontSeen = { font = font, outline = outline, shadow = shadow }
+    if type(seen) ~= "table" then return end -- first time: nothing to carry over
+    if seen.font == font and seen.outline == outline and seen.shadow == shadow then return end
+    local function Carry(cfg)
+        if type(cfg) ~= "table" then return end
+        if cfg.font == seen.font then cfg.font = font end
+        if cfg.outline == seen.outline then cfg.outline = outline end
+        if (cfg.textShadow or false) == (seen.shadow or false) then cfg.textShadow = shadow end
+    end
+    for _, cfg in pairs(db.blocks or {}) do Carry(cfg) end
+    Carry(db.groupDefaults)
+    Carry(db.launcherDefaults)
 end
 
 -- Styles of the UIs installed now (FlareUI in its installed version), by priority

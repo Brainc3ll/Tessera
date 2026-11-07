@@ -1211,6 +1211,21 @@ for _, step in ipairs({
         cfg.textShadow = true
         ns:ApplyThemeToCfg(cfg, "blizzard")
         assert(cfg.textShadow == false, "another style starts without shadow")
+        -- a change in FlareUI reaches the blocks at the next load, without applying the style again;
+        -- a font the player set on one block stays
+        _G.FlareUI2_DB.profiles.Perso.actionbars.hotkeyFont.enableShadow = true
+        local themeBefore = ns.db.theme
+        if ns:ApplyTheme("flareui2") then
+            ns.db.blocks.bags.font = "arial"
+            _G.FlareUI2_DB.profiles.Perso.actionbars.hotkeyFont.enableShadow = false
+            _G.FlareUI2_DB.profiles.Perso.actionbars.hotkeyFont.flags = "THICKOUTLINE"
+            ns:FollowFlareFont()
+            assert(ns.db.blocks.gold.textShadow == false and ns.db.blocks.gold.outline == "THICKOUTLINE", "followed at load")
+            assert(ns.db.blocks.bags.font == "arial", "the player's own font stays")
+            ns:FollowFlareFont()
+            assert(ns.db.blocks.gold.outline == "THICKOUTLINE", "a second load changes nothing")
+            if themeBefore then ns:ApplyTheme(themeBefore) end
+        end
         _G.FlareUI2_DB = nil
         ns.sv.charProfiles[key], ns.sv.chars[key], ns.sv.goldHistory[key] = nil, nil, nil
         ns.sv.chars["Ellen Kempton"], ns.sv.chars["Bob-Classic Beta PvE"], ns.sv.goldHistory["Tobin Harrow"] = nil, nil, nil

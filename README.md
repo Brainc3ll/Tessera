@@ -443,7 +443,12 @@ lua5.1 tools/fuzz_blocks.lua .   # WoW Forever's blocks survive missing or chang
 lua5.1 tools/check_docs.lua .    # README, help, descriptions, changelog, strings: up to date?
 python3 tools/api_audit.py <lua-language-server> <vscode-wow-api folder>
 python3 tools/forever_api_check.py <BlizzardInterfaceResources folder, branch forever>
+forever-lint --fail-on warning .  # pip install forever-lint: what Forever changed for addons
 ```
+
+`forever-lint` ([JoseArgento/forever-lint](https://github.com/JoseArgento/forever-lint), MIT) knows
+Forever's own rules: functions that only survive as Blizzard's deprecated fallbacks, values that
+can be secret, events that no longer fire, TOC versions. GitHub runs it on every push.
 
 `tools/api_audit.py` runs the audit addon reviewers use: the Lua Language Server with Ketho's
 WoW API annotations ([vscode-wow-api](https://github.com/Ketho/vscode-wow-api)). It fails on

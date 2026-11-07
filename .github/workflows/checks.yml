@@ -2,7 +2,8 @@
 # in English, French and DataBroker mode (tools/mock_run.lua, with a dungeon + combat
 # scenario), the robustness test of the blocks (tools/fuzz_blocks.lua), the WoW API audit
 # (tools/api_audit.py, Ketho's annotations), the WoW Forever API check (tools/forever_api_check.py,
-# the function list of the real client), and the documentation check
+# the function list of the real client), forever-lint (Forever's rules: moved or fallback-only
+# functions, secret values, events, TOC), and the documentation check
 # (tools/check_docs.lua: README, in-game help, descriptions, changelog and CurseForge strings
 # must follow the code). A red cross on a commit means one of them found a problem.
 name: Checks
@@ -23,6 +24,13 @@ jobs:
 
       - name: Static checks
         run: luacheck .
+
+      # forever-lint (JoseArgento, MIT): what Forever 1.60.1 changed for addons. Pinned version;
+      # stops on a warning or worse (notes, like the old chat names kept as fallbacks, pass)
+      - name: forever-lint
+        run: |
+          pip install -q forever-lint==0.2.0
+          forever-lint --no-color --fail-on warning .
 
       - name: Translations (Locales/ against the English strings)
         run: |

@@ -7,7 +7,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
-- FlareUI styles follow FlareUI 4.0's text shadow, and Tessera knows its new frames (party, raid, boss, target of target) when it places blocks around them.
+- FlareUI styles follow FlareUI 4.0's text shadow, and its font, outline and shadow by themselves: a change made in FlareUI reaches the blocks at the next /reload, with no need to apply the style again. A font you set on a block stays. Tessera also knows FlareUI's new frames (party, raid, boss, target of target) when it places blocks around them.
 
 ### Fixes
 

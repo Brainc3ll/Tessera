@@ -1047,6 +1047,7 @@ function ns:LoadProfile()
     end
     -- the automatic style follows the installed UI (e.g. FlareUI 1.x updated to 2.x)
     if self.SyncAutoTheme then pcall(self.SyncAutoTheme, self) end
+    if self.FollowFlareFont then pcall(self.FollowFlareFont, self) end
     self:ApplyLevelPalette() -- the automatic palette follows the profile's style
     if self.ClearUndo then self:ClearUndo() end
     if self.built then

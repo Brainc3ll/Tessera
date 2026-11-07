@@ -1,5 +1,5 @@
 TIPS_EN = {
-"TIP_SELECTION":"Choose what the settings below apply to: all blocks, all launchers or a single block (information, launcher, DataBroker or spacer).",
+"TIP_SELECTION":"Choose what the settings below apply to: all blocks, all launchers, one group (a bar and its rows) or a single block (information, launcher, DataBroker or spacer).",
 "TIP_ENABLED":"Shows or hides the block.",
 "TIP_SHOW_LABEL":"Adds the block name before its value.",
 "TIP_SHOW_ICON":"Adds an icon on the left of the block. Its size, frame and black and white look are in the Frame tab, Icon section.",
@@ -36,9 +36,10 @@ TIPS_EN = {
 "TIP_RESET_PROFILE":"Erases all of Tessera's saved data and reloads the interface, as on a first install (asks for confirmation).",
 "LOCK_BUTTON":"Lock blocks","UNLOCK_BUTTON":"Unlock blocks",
 "TIP_LOCK_BUTTON":"Unlocked blocks can be moved with the left mouse button. Lock them again to click on them.",
+"TIP_COPY_STYLE_GROUP":"Copies the look of this block (text, background, border, height, icon) to the other blocks of its bar and of the rows below it. You can undo it (Ctrl + Z in placement mode).",
 }
 TIPS_FR = {
-"TIP_SELECTION":"Choisis à quoi s'appliquent les réglages ci-dessous : tous les blocs, tous les lanceurs ou un seul bloc (information, lanceur, DataBroker ou espace).",
+"TIP_SELECTION":"Choisis à quoi s'appliquent les réglages ci-dessous : tous les blocs, tous les lanceurs, un groupe (une barre et ses rangées) ou un seul bloc (information, lanceur, DataBroker ou espace).",
 "TIP_ENABLED":"Affiche ou masque le bloc.",
 "TIP_SHOW_LABEL":"Ajoute le nom du bloc devant sa valeur.",
 "TIP_SHOW_ICON":"Ajoute une icône à gauche du bloc. Sa taille, son cadre et le noir et blanc se règlent dans l'onglet Cadre, section Icône.",
@@ -75,4 +76,5 @@ TIPS_FR = {
 "TIP_RESET_PROFILE":"Efface toutes les données de Tessera et recharge l'interface, comme à la première installation (avec confirmation).",
 "LOCK_BUTTON":"Verrouiller les blocs","UNLOCK_BUTTON":"Déverrouiller les blocs",
 "TIP_LOCK_BUTTON":"Déverrouillés, les blocs se déplacent au clic gauche. Reverrouille-les pour pouvoir cliquer dessus.",
+"TIP_COPY_STYLE_GROUP":"Copie l'apparence de ce bloc (texte, fond, bordure, hauteur, icône) sur les autres blocs de sa barre et des rangées en dessous. Tu peux l'annuler (Ctrl + Z en mode placement).",
 }

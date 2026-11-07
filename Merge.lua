@@ -230,6 +230,40 @@ function ns:GetDragSet(key)
     return set
 end
 
+-- Blocks that share one look ("Copy to group", group entries of the Blocks tab):
+-- the whole visual group, i.e. the bar and every row hanging below it, the same set
+-- that moves when the bar is dragged. Head block first, then the order of
+-- GetBlockKeys. A block on its own gives an empty list.
+function ns:GetStyleGroup(key)
+    if not (self.db and self.db.blocks[key]) then return {} end
+    local head = self:GetVisualRoot(key)
+    local set = self:GetDragSet(head)
+    local list = { head }
+    for _, k in ipairs(self:GetBlockKeys()) do
+        if set[k] and k ~= head then table.insert(list, k) end
+    end
+    if #list < 2 then return {} end
+    return list
+end
+
+-- Every group with at least two blocks that are not spacers, as
+-- { head = key, keys = { ... } }, in no particular order (the options sort them)
+function ns:ListStyleGroups()
+    local groups, seen = {}, {}
+    for _, key in ipairs(self:GetBlockKeys()) do
+        local head = self:GetVisualRoot(key)
+        if not seen[head] then
+            seen[head] = true
+            local members, count = self:GetStyleGroup(head), 0
+            for _, k in ipairs(members) do
+                if not ns.IsSpacerKey(k) then count = count + 1 end
+            end
+            if count >= 2 then table.insert(groups, { head = head, keys = members }) end
+        end
+    end
+    return groups
+end
+
 -- Is side "side" of the target already taken by another block? This is true
 -- either if a block is docked there, or if the target itself is docked through
 -- that side. Blocks in "ignore" do not count.

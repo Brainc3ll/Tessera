@@ -35,7 +35,7 @@ EN = [
 ("TOOLTIP_IN_COMBAT_TIP","Checked: block tooltips appear in combat.\nUnchecked: no tooltip while you are in combat."),
 ("ALL_LAUNCHERS","All launchers"),("ALL_BLOCKS","All blocks"),("DATA_BLOCKS","Data blocks"),
 ("SELECTION","Blocks to configure"),
-("GROUP_HINT","With \"All blocks\" or \"All launchers\", every setting below applies to the whole selection (sizes stay per block)."),
+("GROUP_HINT","With \"All blocks\", \"All launchers\" or a group, every setting below applies to the whole selection (sizes stay per block)."),
 ("SECTION_DISPLAY","Display"),("SECTION_VISIBILITY","Visibility"),("SECTION_SIZE","Size"),("SECTION_TEXT","Text"),
 ("SECTION_THEME","Style"),("THEME","Style of blocks and window"),
 ("THEME_FLAT","Clean"),("THEME_BLIZZARD_MODERN","Blizzard Retail"),("THEME_BLIZZARD_CLASSIC","Blizzard Classic"),

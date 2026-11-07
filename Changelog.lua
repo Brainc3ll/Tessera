@@ -37,6 +37,26 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.1.3",
+        date = "",
+        sections = {
+            { kind = "new",
+              en = {
+                "Style a whole group at once: each bar of merged blocks has its entry in the Blocks tab list, "
+                    .. "named after its first block, and every setting then applies to the bar and the rows below it. "
+                    .. "\"Copy style to group\" (next to \"Copy style to all\", and in the quick menu) gives one "
+                    .. "block's look to the rest of its group. You can undo either copy (Ctrl + Z in placement mode).",
+              },
+              fr = {
+                "Régler tout un groupe d'un coup : chaque barre de blocs fusionnés a son entrée dans la liste de "
+                    .. "l'onglet Blocs, nommée d'après son premier bloc, et chaque réglage s'applique alors à la barre "
+                    .. "et aux rangées en dessous. « Copier sur le groupe » (à côté de « Copier sur tous », et dans le "
+                    .. "menu rapide) donne l'apparence d'un bloc au reste de son groupe. Tu peux annuler l'une ou "
+                    .. "l'autre copie (Ctrl + Z en mode placement).",
+              } },
+        },
+    },
+    {
         version = "1.1.2",
         date = "2026-11-07",
         sections = {

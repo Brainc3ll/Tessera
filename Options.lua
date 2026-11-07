@@ -57,6 +57,7 @@ local SPACING = 11 -- vertical space between two settings (room to breathe)
 
 local ALL = "*all"            -- selection value "All blocks"
 local LAUNCHERS = "*launchers" -- selection value "All launchers"
+local GROUP_PREFIX = "*group:" -- selection value of a group: the prefix, then its head block
 local selected = ALL
 
 ---------------------------------------------------------------------------
@@ -71,8 +72,25 @@ local function LauncherKeys()
     return keys
 end
 
--- True when the selection is a group (all blocks / all launchers) rather than one block
-local function IsGroup() return selected == ALL or selected == LAUNCHERS end
+-- Head block of the selected group of blocks (a bar and its rows), nil otherwise
+local function GroupHead()
+    if type(selected) == "string" and selected:sub(1, #GROUP_PREFIX) == GROUP_PREFIX then
+        return selected:sub(#GROUP_PREFIX + 1)
+    end
+end
+
+-- Members of a group that "All blocks"-like settings change: spacers keep their own look
+local function GroupStyleKeys(head)
+    local keys = {}
+    for _, key in ipairs(ns:GetStyleGroup(head)) do
+        if not ns.IsSpacerKey(key) then table.insert(keys, key) end
+    end
+    return keys
+end
+
+-- True when the selection is several blocks (all blocks, all launchers, one group)
+-- rather than one block
+local function IsGroup() return selected == ALL or selected == LAUNCHERS or GroupHead() ~= nil end
 
 -- Blocks affected by a setting change
 local function Targets()
@@ -86,6 +104,8 @@ local function Targets()
         return keys
     end
     if selected == LAUNCHERS then return LauncherKeys() end
+    local head = GroupHead()
+    if head then return GroupStyleKeys(head) end
     return { selected }
 end
 
@@ -100,6 +120,13 @@ local function ValidateSelection()
     if selected == ALL then return end
     if selected == LAUNCHERS then
         if #LauncherKeys() == 0 then selected = ALL end
+        return
+    end
+    local head = GroupHead()
+    if head then
+        -- the group keeps its entry when its head changes (a block merged on its left)
+        if ns.db.blocks[head] then head = ns:GetVisualRoot(head) end
+        selected = (ns.db.blocks[head] and #GroupStyleKeys(head) >= 2) and (GROUP_PREFIX .. head) or ALL
         return
     end
     if not ns.db.blocks[selected] then selected = ALL end
@@ -265,8 +292,9 @@ local function SetField(name, value)
         end
         ns:ApplyStyle(key)
     end
-    if selected == ALL and SPACER_SHARED_FIELDS[name] then
-        for _, key in ipairs(ns:GetBlockKeys()) do
+    if (selected == ALL or GroupHead()) and SPACER_SHARED_FIELDS[name] then
+        local all = GroupHead() and ns:GetStyleGroup(GroupHead()) or ns:GetBlockKeys()
+        for _, key in ipairs(all) do
             if ns.IsSpacerKey(key) then
                 ns.db.blocks[key][name] = ns.DeepCopy(value)
                 ns:ApplyStyle(key)
@@ -648,6 +676,30 @@ local function SelectionOptions()
     local list = { { key = ALL, name = L.ALL_BLOCKS } }
     if #LauncherKeys() > 0 then
         table.insert(list, { key = LAUNCHERS, name = L.ALL_LAUNCHERS })
+    end
+    -- groups (a bar and its rows), named after their first block that is not a spacer;
+    -- a green dot when one of their blocks is shown
+    local groups = {}
+    for _, g in ipairs(ns:ListStyleGroups()) do
+        local first, shown = nil, false
+        for _, key in ipairs(g.keys) do
+            if not first and not ns.IsSpacerKey(key) then first = key end
+            if ns.db.blocks[key].enabled then shown = true end
+        end
+        table.insert(groups, { key = GROUP_PREFIX .. g.head, label = ns:GetBlockName(first), shown = shown })
+    end
+    if #groups > 0 then
+        table.sort(groups, function(a, b) return SortKey(a.label) < SortKey(b.label) end)
+        table.insert(list, { isTitle = true, name = L.GROUPS_TITLE })
+        for _, g in ipairs(groups) do
+            local name = L.GROUP_ENTRY:format(g.label)
+            if g.shown then
+                name = "|TInterface\\COMMON\\Indicator-Green:14:14|t " .. name
+            else
+                name = "|cff8c8c8c" .. name .. "|r"
+            end
+            table.insert(list, { key = g.key, name = name })
+        end
     end
     table.insert(list, { isTitle = true, name = L.DATA_BLOCKS })
     -- data blocks in alphabetical order of their (translated) name, whatever the
@@ -1157,8 +1209,9 @@ local function BuildBlockPage(page)
     ShowSub(blockSub)
     ns.ShowBlockSub = ShowSub
 
-    -- Single-block actions, at the bottom
-    local bw = math.floor((FULL_W - 2 * 12) / 3)
+    -- Single-block actions, at the bottom (four slots; "Copy to group" only for a
+    -- block in a group, the fourth button takes its slot otherwise)
+    local bw = math.floor((FULL_W - 3 * 12) / 4)
     local reset = CreateButton(page, L.RESET_BLOCK, function()
         ns:ResetBlock(selected)
         ns:RefreshOptions()
@@ -1170,23 +1223,30 @@ local function BuildBlockPage(page)
     end, single, bw, L.TIP_COPY_STYLE)
     copy:SetPoint("LEFT", reset, "RIGHT", 12, 0)
 
+    local inGroup = function() return single() and #ns:GetStyleGroup(selected) >= 2 end
+    local copyGroup = CreateButton(page, L.COPY_STYLE_GROUP, function()
+        ns:CopyStyleToGroup(selected)
+    end, inGroup, bw, L.TIP_COPY_STYLE_GROUP)
+    copyGroup:SetPoint("LEFT", copy, "RIGHT", 12, 0)
+    local lastSlot = {} -- buttons of the last slot, placed after "Copy to group" when it is shown
+
     -- third slot: remove the launcher / the spacer, or add a spacer
     local isSpacer = function() return ns.IsSpacerKey(selected) end
     local remove = CreateButton(page, L.REMOVE_LAUNCHER, function()
         ns:RemoveLauncher(selected)
         ns:RefreshOptions()
     end, isLauncher, bw, L.TIP_REMOVE_LAUNCHER)
-    remove:SetPoint("LEFT", copy, "RIGHT", 12, 0)
+    table.insert(lastSlot, remove)
     local removeSpacer = CreateButton(page, L.REMOVE_SPACER, function()
         ns:RemoveSpacer(selected)
         ns:RefreshOptions()
     end, isSpacer, bw, L.TIP_REMOVE_SPACER)
-    removeSpacer:SetPoint("LEFT", copy, "RIGHT", 12, 0)
+    table.insert(lastSlot, removeSpacer)
     local removeBroker = CreateButton(page, L.REMOVE_BROKER, function()
         ns:RemoveBroker(selected)
         ns:RefreshOptions()
     end, function() return ns.IsBrokerKey(selected) end, bw, L.TIP_REMOVE_BROKER)
-    removeBroker:SetPoint("LEFT", copy, "RIGHT", 12, 0)
+    table.insert(lastSlot, removeBroker)
     local addSpacer = CreateButton(page, L.ADD_SPACER, function()
         selected = ns:AddSpacer()
         ns:PlaceNearOptions(selected)
@@ -1194,7 +1254,15 @@ local function BuildBlockPage(page)
         if ns.db.locked then ns:SetLocked(false) end
         ns:RefreshOptions()
     end, function() return not ns.IsForwardingKey(selected) and not isSpacer() end, bw, L.TIP_ADD_SPACER)
-    addSpacer:SetPoint("LEFT", copy, "RIGHT", 12, 0)
+    table.insert(lastSlot, addSpacer)
+    copyGroup.Refresh = function(self)
+        local after = self:IsShown() and self or copy
+        for _, b in ipairs(lastSlot) do
+            b:ClearAllPoints()
+            b:SetPoint("LEFT", after, "RIGHT", 12, 0)
+        end
+    end
+    copyGroup:Refresh()
 end
 
 ---------------------------------------------------------------------------
@@ -2451,6 +2519,9 @@ function ns:OpenOptions(pageIndex, blockKey)
     if blockKey and ns.db.blocks[blockKey] then
         selected = blockKey
         if ns.IsSpacerKey(blockKey) and ns.ShowBlockSub then ns.ShowBlockSub(5) end
+    elseif type(blockKey) == "string" and blockKey:sub(1, #GROUP_PREFIX) == GROUP_PREFIX then
+        selected = blockKey -- a group ("*group:" and its head block), checked by ValidateSelection
+        ValidateSelection()
     end
     ns:SkinOptions()
     panel:Show()

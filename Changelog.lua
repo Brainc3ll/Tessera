@@ -37,6 +37,24 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.1.2",
+        date = "",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "Shift + click to copy a value into the chat, and replying to a whisper, use the game's "
+                    .. "current chat functions: they keep working when Blizzard removes the old ones.",
+                "XP: Forever's max level is read from the game, so the block knows when you reach it.",
+              },
+              fr = {
+                "Maj + clic pour copier une valeur dans la discussion, et la réponse à un chuchotement, "
+                    .. "utilisent les fonctions de discussion actuelles du jeu : elles marcheront encore quand "
+                    .. "Blizzard retirera les anciennes.",
+                "XP : le niveau maximum de Forever est lu dans le jeu, le bloc sait quand tu l'atteins.",
+              } },
+        },
+    },
+    {
         version = "1.1.1",
         date = "2026-11-06",
         sections = {

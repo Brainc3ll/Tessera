@@ -410,12 +410,17 @@ end
 
 -- Puts text in the chat input box (opens it if needed)
 local function InsertInChat(text)
-    local active = ChatEdit_GetActiveWindow and ChatEdit_GetActiveWindow()
-    if active and ChatEdit_InsertLink then
-        ChatEdit_InsertLink(text)
+    -- ChatFrameUtil first: the ChatEdit_* / ChatFrame_* names are Blizzard's old fallbacks
+    -- (loaded only while the loadDeprecationFallbacks setting is on), due to go
+    local util = ChatFrameUtil
+    local getActive = (util and util.GetActiveWindow) or ChatEdit_GetActiveWindow
+    local insert = (util and util.InsertLink) or ChatEdit_InsertLink
+    local active = getActive and getActive()
+    if active and insert then
+        insert(text)
         return
     end
-    local open = (ChatFrameUtil and ChatFrameUtil.OpenChat) or ChatFrame_OpenChat
+    local open = (util and util.OpenChat) or ChatFrame_OpenChat
     if open then pcall(open, text) end
 end
 ns.InsertInChat = InsertInChat

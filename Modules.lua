@@ -898,6 +898,9 @@ ns:RegisterModule("date", {
 local function AtMaxLevel()
     local level = UnitLevel("player")
     if IsLevelAtEffectiveMaxLevel then return IsLevelAtEffectiveMaxLevel(level) end
+    -- WoW Forever has no IsLevelAtEffectiveMaxLevel: its max level comes from GetMaxPlayerLevel
+    local cap = GetMaxPlayerLevel and GetMaxPlayerLevel()
+    if type(cap) == "number" and cap > 0 then return level >= cap end
     local max = UnitXPMax("player")
     return not max or max == 0
 end
@@ -2965,8 +2968,10 @@ ns:RegisterModule("whispers", {
         if button ~= "LeftButton" then return end
         local w = whispers[#whispers]
         if not w then return end
-        local tell = w.bnet and (ChatFrame_SendBNetTell or (ChatFrameUtil and ChatFrameUtil.SendBNetTell))
-            or (ChatFrame_SendTell or (ChatFrameUtil and ChatFrameUtil.SendTell))
+        -- ChatFrameUtil first: the ChatFrame_* names are Blizzard's old fallbacks, due to go
+        local util = ChatFrameUtil
+        local tell = w.bnet and ((util and util.SendBNetTell) or ChatFrame_SendBNetTell)
+            or ((util and util.SendTell) or ChatFrame_SendTell)
         if tell then pcall(tell, w.name) end
         table.remove(whispers)
     end,

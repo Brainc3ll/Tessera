@@ -196,6 +196,39 @@ for key, text in pairs(EN) do
         fail(("text %s is %d characters long (max %d): split it into several keys"):format(key, #text, MAX_LENGTH))
     end
 end
+-- every English text is used: named in the code, or built from a known prefix
+-- (L["PRESET_" .. key]...). A text nothing uses any more is dead weight for translators.
+do
+    local code = {}
+    local files = { "Locales/enUS.lua" }
+    local ls = io.popen("cd " .. dir .. " && ls *.lua")
+    for file in ls:lines() do
+        if file ~= "Changelog.lua" then table.insert(files, file) end
+    end
+    ls:close()
+    for _, file in ipairs(files) do
+        local fh = io.open(dir .. "/" .. file)
+        if fh then
+            local text = fh:read("*a"); fh:close()
+            -- (enUS.lua: only HELP_LAYOUT names keys; its L.X = lines define them)
+            if file == "Locales/enUS.lua" then text = text:match("HELP_LAYOUT.*") or "" end
+            table.insert(code, text)
+        end
+    end
+    code = table.concat(code, "\n")
+    local BUILT = { "HELP_", "TUTORIAL_", "PAGE_HINT_", "PRESET_", "TIP_PRESET_", "EDGE_STRETCH_", "SPACER_SIDE_",
+        "COIN_", "ABOUT_" }
+    for key in pairs(EN) do
+        local built = false
+        for _, prefix in ipairs(BUILT) do
+            if key:sub(1, #prefix) == prefix then built = true end
+        end
+        if not built and not code:find("%f[%w_]" .. key .. "%f[^%w_]") then
+            fail(("text %s is not used anywhere: remove it (and its translations)"):format(key))
+        end
+    end
+end
+
 -- arrows and other symbols the game's fonts do not draw (they show as a box)
 local NO_GLYPH = { "\226\134\144", "\226\134\145", "\226\134\146", "\226\134\147", -- arrows
     "\226\134\150", "\226\134\151", "\226\134\152", "\226\134\153" }

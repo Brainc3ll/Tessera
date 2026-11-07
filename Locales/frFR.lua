@@ -559,7 +559,6 @@ L.DATE_MONTHS_SHORT = "janv.,févr.,mars,avr.,mai,juin,juil.,août,sept.,oct.,no
 L.DATE_PATTERN_SHORT = "{wd} {d} {mon}"
 L.DATE_PATTERN_LONG = "{wd} {d} {mon}"
 L.DEMO_COLUMN_STYLE = "%s : %s"
-L.SECTION_VALUE = "Valeur affichée"
 L.COIN_GOLD = "po"
 L.COIN_SILVER = "pa"
 L.COIN_COPPER = "pc"

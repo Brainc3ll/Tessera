@@ -2,6 +2,7 @@
 
 ## Où on en est
 - **Semaine du 4/11 : maintenance seulement** (décision de Braincell1980) : rien de neuf, uniquement des corrections de bugs.
+- **En réserve pour une 1.1.2** (si Braincell1980 trouve un autre correctif à publier, ça part avec) : « Retirer » au lieu de « masquer » (voir la note 1.2 sur la branche `prochaine-1.2`, décisions du 6/11) : croix = le bloc sort de la barre ; « Remplacer par » sort le bloc remplacé ; blocs déjà masqués rangés en silence ; ajout depuis les options en haut à droite de la fenêtre, empilés sans être collés ; les blocs retirés continuent de tourner en fond ; le mot « masquer » disparaît. T2 : procédure renforcée. Pas commencé.
 - **1.1.1 publiée le 6/11 (urgence)** : « Remplacer par » un bloc masqué encore placé dans une barre cassait la barre (boucle de chaînage) ; le bloc quitte d'abord son ancienne place. Reproduit avec l'export de Braincell1980 (non versionné), validé en jeu. Prochain test : test81.
 - **1.1.0 publiée le 6/11** (GitHub, CurseForge, Wago ; traductions de, es, mx, pt dans le dépôt, plus d'outil CurseForge). Retour en mode maintenance : corrections en 1.1.x, puis 1.2 (vol, bateaux), 1.3 (fin de la refonte : manette, contraste, texte agrandi).
 - **1.2 en préparation (branche `prochaine-1.2`)** : bloc Compétences (ex-Compétences d'armes) : arme en main / suit le combat (arme à distance pendant le tir automatique, START/STOP_AUTOREPEAT_SPELL) / compétence choisie (Ce bloc). Les corrections de la 1.1.x se font sur `main`.

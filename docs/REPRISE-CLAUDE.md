@@ -3,7 +3,7 @@
 But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-1.1.1 publiée le 6/11 (1.1.0 : 7 nouveaux blocs, options d'affichage, fenêtre d'options avec pages à gauche et onglet « Ce bloc », traductions dans le dépôt ; 1.1.1 : correctif « Remplacer par »). Branches : `main` (1.1.2 en cours), `prochaine-1.2` (nouveautés), `accessibilite-manette` (suit `main`). Lister les branches avec `gh api repos/Brainc3ll/Tessera/branches`.
+1.1.2 publiée le 7/11 (1.1.1 le 6/11) (1.1.0 : 7 nouveaux blocs, options d'affichage, fenêtre d'options avec pages à gauche et onglet « Ce bloc », traductions dans le dépôt ; 1.1.1 : correctif « Remplacer par »). Branches : `main` (correctifs 1.1.x), `prochaine-1.2` (nouveautés), `accessibilite-manette` (suit `main`). Lister les branches avec `gh api repos/Brainc3ll/Tessera/branches`.
 
 ## Avant chaque publication
 - Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).

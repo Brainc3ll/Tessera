@@ -2301,6 +2301,8 @@ end
 -- Copies the appearance settings (STYLE_KEYS) of one block to all others
 function ns:CopyStyleToAll(sourceKey)
     local src = self.db.blocks[sourceKey]
+    if not src then return end
+    if self.PushUndo then self:PushUndo(true) end -- Undo brings the old looks back
     for _, key in ipairs(self:GetBlockKeys()) do
         if key ~= sourceKey then
             local cfg = self.db.blocks[key]
@@ -2308,6 +2310,24 @@ function ns:CopyStyleToAll(sourceKey)
             self:ApplyStyle(key)
         end
     end
+end
+
+-- Same, limited to the block's group (GetStyleGroup: the bar and its rows, spacers
+-- included so they keep blending in). Returns false when the block is alone.
+function ns:CopyStyleToGroup(sourceKey)
+    local src = self.db.blocks[sourceKey]
+    local members = self:GetStyleGroup(sourceKey)
+    if not src or #members < 2 then return false end
+    if self.PushUndo then self:PushUndo(true) end
+    for _, key in ipairs(members) do
+        if key ~= sourceKey then
+            local cfg = self.db.blocks[key]
+            for _, k in ipairs(STYLE_KEYS) do cfg[k] = DeepCopy(src[k]) end
+            self:ApplyStyle(key)
+        end
+    end
+    if self.RequestLayout then self:RequestLayout() end
+    return true
 end
 
 ---------------------------------------------------------------------------

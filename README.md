@@ -163,6 +163,9 @@ Help tab inside the game explains everything.
 - Replace a block in place: the arrows on a hovered block (placement mode) put another block
   exactly there, with the same look, without moving anything else; a shown block swaps places,
   and the spacers of the ready-made layouts can be filled this way. A cross hides the block.
+- Groups: each bar of merged blocks has its entry in the Blocks tab, so its settings apply to the
+  whole bar and its rows; "Copy style to group" (options or quick menu) gives one block's look to
+  the rest of its group.
 - Per-block style, icons (same size, square or round frame, black and white), opacity, scale,
   progress bar, thresholds, show on hover, alerts, click actions, and how the value is shown
   (gold format, coin icons, rounding; bag slots; XP; durability; latency; seconds; decimals...).

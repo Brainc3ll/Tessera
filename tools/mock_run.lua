@@ -47,7 +47,12 @@ local methods = {
     GetName = function(self) return self.__name end,
     CreateTexture = function() return NewObject("Texture") end,
     CreateMaskTexture = function() return NewObject("MaskTexture") end,
-    CreateFontString = function() return NewObject("FontString") end,
+    CreateFontString = function(self)
+        local fs = NewObject("FontString")
+        self.__fontStrings = self.__fontStrings or {}
+        table.insert(self.__fontStrings, fs)
+        return fs
+    end,
     CreateAnimationGroup = function() return NewObject("AnimGroup") end,
     CreateAnimation = function() return NewObject("Anim") end,
     -- text width: 40, except very long texts (over 40 letters, icons and colour codes
@@ -199,7 +204,13 @@ EditModeManagerFrame = { IsEditModeActive = function() return false end,
     GetRegisteredSystemFrame = function(_, system, index)
         return EM_FRAMES[tostring(system) .. (index and ("." .. index) or "")]
     end }
-CreateFrame = function(kind, name) local f = NewObject(kind); f.__name = name; if name then _G[name] = f end return f end
+-- MOCK_FRAMES: every frame made, so a test can find an options widget by its text
+MOCK_FRAMES = {}
+CreateFrame = function(kind, name)
+    local f = NewObject(kind); f.__name = name; if name then _G[name] = f end
+    table.insert(MOCK_FRAMES, f)
+    return f
+end
 C_Timer = { After = function(_, fn) table.insert(_G.__timers, fn) end, NewTicker = function(_, fn) table.insert(_G.__tickers, fn); return NewObject("Ticker") end }
 __timers, __tickers = {}, {}
 GetLocale = function() return arg[2] or "frFR" end
@@ -1763,6 +1774,103 @@ for _, step in ipairs({
         ns:UpdateLayout()
         ns:SetGroupOwnLook(a, nil)
         assert(ns.db.blocks[a].look == nil, "back to the Look tab's choice")
+        ns:ResetProfile("top")
+    end,
+    -- one group's style at once (1.2): group entries in "Blocks to set up",
+    -- "Copy style to group" (options and quick menu), undo
+    function()
+        ns:ResetProfile("top")
+        local L = ns.L
+        -- a shown option widget: a button by its text, or a check box by its label
+        local function Widget(kind, text)
+            for _, f in ipairs(MOCK_FRAMES) do
+                if f.__kind == kind and f.__shown and f.__text == text then return f end
+            end
+        end
+        -- (a check box's label is a font string it made: the mock keeps them)
+        local function Check(label)
+            for _, f in ipairs(MOCK_FRAMES) do
+                if f.__kind == "CheckButton" and f.__shown then
+                    for _, fs in ipairs(f.__fontStrings or {}) do
+                        if fs.__text == label then return f end
+                    end
+                end
+            end
+        end
+        local groups = ns:ListStyleGroups()
+        assert(#groups >= 1, "the ready-made bar is a group")
+        local g = groups[1]
+        assert(g.keys[1] == g.head and ns:GetVisualRoot(g.keys[2]) == g.head, "head block first")
+        local members, inGroup = {}, {}
+        for _, k in ipairs(g.keys) do
+            inGroup[k] = true
+            if not ns.IsSpacerKey(k) then table.insert(members, k) end
+        end
+        local outside
+        for _, k in ipairs(ns:GetBlockKeys()) do
+            if not inGroup[k] and not ns.IsSpacerKey(k) then outside = k break end
+        end
+        assert(outside, "a block outside the group")
+        for _, k in ipairs(ns:GetBlockKeys()) do ns.db.blocks[k].showIcon = true end
+        -- the group selected in the options: a setting changes its blocks only
+        ns:OpenOptionsFor("*group:" .. g.head)
+        ns:RefreshOptions()
+        local icon = Check(L.SHOW_ICON)
+        assert(icon, "the Display settings are offered for a group")
+        icon:GetScript("OnClick")(icon) -- the mock's check box reads unchecked
+        for _, k in ipairs(members) do assert(ns.db.blocks[k].showIcon == false, "group member changed: " .. k) end
+        assert(ns.db.blocks[outside].showIcon == true, "a block outside the group keeps its setting")
+        assert(L.GROUP_ENTRY:format("x") ~= "" and L.GROUPS_TITLE, "group texts exist")
+        -- "Copy style to group" next to "Copy style to all", for a block in a group
+        local src = members[2]
+        local before = {}
+        for i, k in ipairs(g.keys) do
+            ns.db.blocks[k].fontSize = 8 + i
+            before[k] = ns.db.blocks[k].fontSize
+        end
+        ns.db.blocks[src].fontSize, ns.db.blocks[outside].fontSize = 19, 11
+        before[src] = 19
+        ns:OpenOptionsFor(src)
+        ns:RefreshOptions()
+        local copyGroup = Widget("Button", L.COPY_STYLE_GROUP)
+        assert(copyGroup, "Copy style to group shown for a block in a group")
+        copyGroup:GetScript("OnClick")(copyGroup)
+        for _, k in ipairs(g.keys) do assert(ns.db.blocks[k].fontSize == 19, "style copied to " .. k) end
+        assert(ns.db.blocks[outside].fontSize == 11, "a block outside the group keeps its look")
+        ns:Undo()
+        for _, k in ipairs(g.keys) do
+            assert(ns.db.blocks[k].fontSize == before[k], "undo gives the old look back: " .. k)
+        end
+        -- a block on its own: no button, nothing copied
+        ns:Detach(outside)
+        ns.db.blocks[outside].anchor = nil
+        assert(#ns:GetStyleGroup(outside) == 0, "a detached block is alone")
+        do
+            assert(ns:CopyStyleToGroup(outside) == false, "nothing to copy to")
+            ns:OpenOptionsFor(outside)
+            ns:RefreshOptions()
+            assert(not Widget("Button", L.COPY_STYLE_GROUP), "no group button for a lone block")
+        end
+        -- the quick menu offers the same action
+        local oldMenu, items = MenuUtil, {}
+        local function Node()
+            local n = {}
+            local function Add(text, fn) items[text] = fn or true return Node() end
+            n.CreateTitle, n.CreateDivider = function() end, function() end
+            n.CreateButton = function(_, text, fn) return Add(text, fn) end
+            n.CreateRadio = function(_, text) return Add(text) end
+            n.CreateCheckbox = function(_, text) return Add(text) end
+            n.SetScrollMode = function() end
+            return n
+        end
+        MenuUtil = { CreateContextMenu = function(owner, gen) gen(owner, Node()) end }
+        ns:OpenQuickMenu(src)
+        MenuUtil = oldMenu
+        assert(type(items[L.MENU_COPY_STYLE_GROUP]) == "function", "quick menu: copy this style to the group")
+        -- the group entry follows its group, and goes when the group does
+        ns:OpenOptionsFor("*group:" .. g.head)
+        for _, k in ipairs(g.keys) do if k ~= g.head then ns:Detach(k) end end
+        ns:RefreshOptions() -- falls back to "All blocks" without an error
         ns:ResetProfile("top")
     end,
     -- sharing a style or a layout: export, missing parts, import

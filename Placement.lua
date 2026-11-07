@@ -166,12 +166,17 @@ local UNDO_LIMIT = 30
 local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look", "scale", "frozen" }
 
 -- Remembers the position of every block, before a move / merge / detach / hide
-function ns:PushUndo()
+-- withStyle: also the look of every block (STYLE_KEYS), before "Copy style"
+function ns:PushUndo(withStyle)
     self.undoStack = self.undoStack or {}
     local snap = {}
     for key, cfg in pairs(self.db.blocks) do
         local s = {}
         for _, field in ipairs(POSITION_FIELDS) do s[field] = self.DeepCopy(cfg[field]) end
+        if withStyle then
+            s.style = {}
+            for _, field in ipairs(ns.STYLE_KEYS) do s.style[field] = self.DeepCopy(cfg[field]) end
+        end
         -- a spacer may be deleted (replaced by a block): keep all of it
         if ns.IsSpacerKey(key) then s.spacer = self.DeepCopy(cfg) end
         snap[key] = s
@@ -197,6 +202,10 @@ function ns:Undo()
             revived = true
         elseif cfg then
             for _, field in ipairs(POSITION_FIELDS) do cfg[field] = self.DeepCopy(s[field]) end
+            if s.style then
+                for _, field in ipairs(ns.STYLE_KEYS) do cfg[field] = self.DeepCopy(s.style[field]) end
+                revived = true -- every block is drawn again with its old look
+            end
         end
     end
     -- spacers added since (a bar stretched over the screen width) go away
@@ -541,6 +550,10 @@ function ns:OpenQuickMenu(key)
                 sub:CreateRadio(L["GROUP_LOOK_" .. look:upper()], function() return Own() == look end,
                     function() self:PushUndo(); self:SetGroupOwnLook(key, look) end)
             end
+        end
+        -- this block's look on the rest of its group (the bar and its rows)
+        if #self:GetStyleGroup(key) >= 2 then
+            root:CreateButton(L.MENU_COPY_STYLE_GROUP, function() self:CopyStyleToGroup(key) end)
         end
         -- Goal block: its items (add from the bags, change, remove)
         if key == "goal" and self.FillGoalMenu then

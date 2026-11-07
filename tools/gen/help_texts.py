@@ -876,6 +876,10 @@ NEW_EN = [
 ('HINT_CORPSE','Click: map pin on your body'),
 ('MICRO_MENU','Micro-menu'),
 ('MICRO_IN_COMBAT','Tessera: the micro-menu list opens out of combat.'),
+('GROUPS_TITLE','Groups'),
+('GROUP_ENTRY','Group: %s'),
+('COPY_STYLE_GROUP','Copy style to group'),
+('MENU_COPY_STYLE_GROUP','Copy this style to the group'),
 ]
 NEW_FR = {
 "THEME_FLARE_SQUARE":"FlareUI carré",
@@ -1751,4 +1755,8 @@ NEW_FR = {
 'HINT_CORPSE':'Clic : repère sur ton corps',
 'MICRO_MENU':'Micro-menu',
 'MICRO_IN_COMBAT':"Tessera : la liste du micro-menu s'ouvre hors combat.",
+'GROUPS_TITLE':'Groupes',
+'GROUP_ENTRY':'Groupe : %s',
+'COPY_STYLE_GROUP':'Copier sur le groupe',
+'MENU_COPY_STYLE_GROUP':'Copier ce style sur le groupe',
 }

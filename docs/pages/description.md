@@ -14,6 +14,7 @@ Other things you might like:
 - Streamer mode hides other players' names, your other characters, your guild and your gold.
 - DataBroker works both ways: your other addons' Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 - Pin a block's tooltip so it stays open, and give any block a name of your own.
+- Style a whole bar at once: pick its group in the options, or copy one block's look to the rest of the bar.
 - English and French, plus German, Spanish and Brazilian Portuguese.
 
 Over 50 blocks, plus launchers for your minimap buttons. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
@@ -81,6 +82,7 @@ D'autres choses qui pourraient te plaire :
 - Le mode streamer cache les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
 - DataBroker dans les deux sens : les objets Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (anciennement ChocolateBar).
 - Épingle l'infobulle d'un bloc pour qu'elle reste ouverte, et donne à n'importe quel bloc le nom que tu veux.
+- Règle toute une barre d'un coup : choisis son groupe dans les options, ou copie l'apparence d'un bloc sur le reste de la barre.
 - Anglais et français, plus l'allemand, l'espagnol et le portugais du Brésil.
 
 Plus de 50 blocs, et des lanceurs pour les boutons de ta minicarte. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.

@@ -3,18 +3,16 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.2.0 — 
+## 1.2.0 — 2026-11-07
+
+### New
+
+- Style a whole group at once: each bar of merged blocks has its entry in the Blocks tab list, named after its first block, and every setting then applies to the bar and the rows below it. "Copy style to group" (next to "Copy style to all", and in the quick menu) gives one block's look to the rest of its group. You can undo either copy (Ctrl + Z in placement mode).
 
 ### Improvements
 
 - Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your ranged weapon's while you shoot), or a skill you pick (This block).
 - Friends: the count takes the color of your status (available, away, busy, appear offline), and the tooltip lists your Battle.net friends online too, with their character in WoW.
-
-## 1.1.3 — 
-
-### New
-
-- Style a whole group at once: each bar of merged blocks has its entry in the Blocks tab list, named after its first block, and every setting then applies to the bar and the rows below it. "Copy style to group" (next to "Copy style to all", and in the quick menu) gives one block's look to the rest of its group. You can undo either copy (Ctrl + Z in placement mode).
 
 ## 1.1.2 — 2026-11-07
 

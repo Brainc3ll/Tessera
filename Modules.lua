@@ -1081,10 +1081,46 @@ local MAX_LINES = 20
 local COUNT_OPTION = { kind = "dropdown", field = "countFormat", tab = "text", label = "COUNT_SHOWN", tip = "TIP_COUNT_SHOWN",
     values = { { key = "online", label = "COUNT_ONLINE" }, { key = "onlineTotal", label = "COUNT_ONLINE_TOTAL" } } }
 
+-- Your own Battle.net status, as the game's friends window shows it: online, away, busy, or
+-- "appear offline". (BNGetInfo: ..., isAFK, isBusy, isRealIDEnabled, isAppearOffline)
+local STATUS_COLORS = { online = "ff4ce64c", away = "ffff9933", busy = "ffff4040", offline = "ff9a9a9a" }
+local function MyStatus()
+    if not BNGetInfo then return "online" end
+    local _, _, _, _, afk, busy, _, appearOffline = BNGetInfo()
+    if appearOffline == true then return "offline" end
+    if busy == true then return "busy" end
+    if afk == true or (UnitIsAFK and UnitIsAFK("player")) then return "away" end
+    if UnitIsDND and UnitIsDND("player") then return "busy" end
+    return "online"
+end
+local STATUS_TEXT = { online = "STATUS_ONLINE", away = "STATUS_AWAY", busy = "STATUS_BUSY", offline = "STATUS_APPEAR_OFFLINE" }
+
+-- " <Away>" / " <Busy>" after a friend's name
+local function StatusTag(afk, dnd)
+    if dnd then return " " .. L.TT_DND_TAG end
+    if afk then return " " .. L.TT_AFK_TAG end
+    return ""
+end
+
+-- The Battle.net friends online: playing WoW (character, level, zone) or elsewhere (the game or app)
+local function BNetFriendsOnline()
+    local list = {}
+    local getInfo = C_BattleNet and C_BattleNet.GetFriendAccountInfo
+    if not (BNGetNumFriends and getInfo) then return list end
+    local total = BNGetNumFriends() or 0
+    for i = 1, total do
+        local ok, account = pcall(getInfo, i)
+        local game = ok and type(account) == "table" and account.gameAccountInfo
+        if game and game.isOnline then table.insert(list, { account = account, game = game }) end
+    end
+    return list
+end
+
 ns:RegisterModule("friends", {
     label = "FRIENDS",
     icon = "Interface\\Icons\\INV_Misc_GroupNeedMore",
-    events = { "FRIENDLIST_UPDATE", "BN_FRIEND_ACCOUNT_ONLINE", "BN_FRIEND_ACCOUNT_OFFLINE", "BN_CONNECTED" },
+    events = { "FRIENDLIST_UPDATE", "BN_FRIEND_ACCOUNT_ONLINE", "BN_FRIEND_ACCOUNT_OFFLINE", "BN_CONNECTED",
+               "BN_INFO_CHANGED", "BN_FRIEND_INFO_CHANGED", "PLAYER_FLAGS_CHANGED" },
     defaultEnabled = false,
     -- nobody online: block hidden ("Hide when empty" option)
     isEmpty = function(cfg)
@@ -1095,6 +1131,7 @@ ns:RegisterModule("friends", {
         end
         return online == 0
     end,
+    -- the count, in the color of your own status (option "statusColor")
     update = function(cfg)
         local online = C_FriendList.GetNumOnlineFriends() or 0
         local total = C_FriendList.GetNumFriends() or 0
@@ -1103,32 +1140,55 @@ ns:RegisterModule("friends", {
             online = online + (bnOnline or 0)
             total = total + (bnTotal or 0)
         end
-        if cfg and cfg.countFormat == "onlineTotal" then return ("%d / %d"):format(online, total) end
-        return tostring(online)
+        local text = tostring(online)
+        if cfg and cfg.countFormat == "onlineTotal" then text = ("%d / %d"):format(online, total) end
+        if not (cfg and cfg.statusColor == false) then
+            text = ("|c%s%s|r"):format(STATUS_COLORS[MyStatus()], text)
+        end
+        return text
     end,
-    defaults = { countFormat = "online" },
+    defaults = { countFormat = "online", statusColor = true },
     options = { COUNT_OPTION, { kind = "check", field = "noBNetFriends", tab = "text", label = "NO_BNET_FRIENDS",
-                                tip = "TIP_NO_BNET_FRIENDS" } },
-    tooltip = function(tt)
+                                tip = "TIP_NO_BNET_FRIENDS" },
+                { kind = "check", field = "statusColor", tab = "text", label = "STATUS_COLOR", tip = "TIP_STATUS_COLOR" } },
+    tooltip = function(tt, cfg)
+        -- your status, in words as well as in color
+        local status = MyStatus()
+        local c = STATUS_COLORS[status]
+        tt:AddDoubleLine(L.TT_MY_STATUS, ("|c%s%s|r"):format(c, L[STATUS_TEXT[status]]), 0.8, 0.8, 0.8, 1, 1, 1)
         local shown = 0
+        local function Line(left, right, r, g, b)
+            shown = shown + 1
+            if shown <= MAX_LINES then tt:AddDoubleLine(left, right, r, g, b, 0.8, 0.8, 0.8) end
+        end
+        -- friends of this game (your WoW friends list)
         local count = C_FriendList.GetNumFriends() or 0
         for i = 1, count do
             local info = C_FriendList.GetFriendInfoByIndex(i)
             if info and info.connected then
-                shown = shown + 1
-                if shown <= MAX_LINES then
-                    local r, g, b = ClassColor(info.className and info.className:upper())
-                    tt:AddDoubleLine(("%s (%d)"):format(Masked(info.name or "?"), info.level or 0), Masked(info.area or ""), r, g, b, 0.8, 0.8, 0.8)
+                local r, g, b = ClassColor(info.className and info.className:upper())
+                Line(("%s (%d)%s"):format(Masked(info.name or "?"), info.level or 0, StatusTag(info.afk, info.dnd)),
+                    Masked(info.area or ""), r, g, b)
+            end
+        end
+        -- Battle.net friends: in WoW, their character, level and zone; elsewhere, where they are
+        if not (cfg and cfg.noBNetFriends) then
+            local bnet = BNetFriendsOnline()
+            if #bnet > 0 then tt:AddLine(L.TT_BNET_ONLINE, 0.3, 0.75, 1) end
+            for _, f in ipairs(bnet) do
+                local account, game = f.account, f.game
+                local name = Masked(account.accountName or account.battleTag or "?")
+                local tag = StatusTag(account.isAFK or game.isGameAFK, account.isDND or game.isGameBusy)
+                if game.clientProgram == BNET_CLIENT_WOW and game.characterName then
+                    Line(("%s : %s (%d)%s"):format(name, Masked(game.characterName), game.characterLevel or 0, tag),
+                        Masked(game.areaName or ""), 0.3, 0.75, 1)
+                else
+                    Line(name .. tag, game.richPresence or game.clientProgram or "", 0.3, 0.75, 1)
                 end
             end
         end
         if shown > MAX_LINES then tt:AddLine(L.TT_MORE:format(shown - MAX_LINES), 0.8, 0.8, 0.8) end
-        if BNGetNumFriends then
-            local _, bnOnline = BNGetNumFriends()
-            tt:AddDoubleLine(L.TT_BNET_ONLINE, tostring(bnOnline or 0), 0.3, 0.75, 1, 1, 1, 1)
-        elseif shown == 0 then
-            tt:AddLine(L.TT_NO_FRIEND, 0.8, 0.8, 0.8)
-        end
+        if shown == 0 then tt:AddLine(L.TT_NO_FRIEND, 0.8, 0.8, 0.8) end
     end,
     secureMacro = "/run ToggleFriendsFrame(1)",
     clickHint = L.HINT_FRIENDS,

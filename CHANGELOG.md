@@ -8,6 +8,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Improvements
 
 - Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your ranged weapon's while you shoot), or a skill you pick (This block).
+- Friends: the count takes the color of your status (available, away, busy, appear offline), and the tooltip lists your Battle.net friends online too, with their character in WoW.
 
 ## 1.1.2 — 
 

@@ -44,10 +44,14 @@ ns.CHANGELOG = {
               en = {
                 "Weapon skills becomes Skills: show your main-hand weapon's skill, follow the fight (your "
                     .. "ranged weapon's while you shoot), or a skill you pick (This block).",
+                "Friends: the count takes the color of your status (available, away, busy, appear offline), "
+                    .. "and the tooltip lists your Battle.net friends online too, with their character in WoW.",
               },
               fr = {
                 "Compétences d'armes devient Compétences : affiche la compétence de l'arme en main, suit le "
                     .. "combat (celle de l'arme à distance pendant que tu tires), ou une compétence que tu choisis (Ce bloc).",
+                "Amis : le chiffre prend la couleur de ton statut (disponible, absence, ne pas déranger, apparaître "
+                    .. "hors ligne), et l'infobulle liste aussi tes amis Battle.net en ligne, avec leur personnage dans WoW.",
               } },
         },
     },

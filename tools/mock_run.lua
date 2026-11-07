@@ -1893,6 +1893,48 @@ for _, step in ipairs({
         ns:ResetProfile("top")
         RunTimers()
     end,
+    -- friends: the count in the color of your status; WoW and Battle.net friends in the tooltip
+    function()
+        local oldFL, oldBN, oldInfo, oldC = C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet
+        C_FriendList = { GetNumOnlineFriends = function() return 1 end, GetNumFriends = function() return 2 end,
+            GetFriendInfoByIndex = function(i)
+                return i == 1 and { connected = true, name = "Tilda", level = 30, className = "Mage", area = "Orgrimmar", afk = true }
+                    or { connected = false, name = "Away" }
+            end }
+        BNGetNumFriends = function() return 2, 2 end
+        _G.BNET_CLIENT_WOW = "WoW"
+        C_BattleNet = { GetFriendAccountInfo = function(i)
+            if i == 1 then
+                return { accountName = "Kaz", isAFK = false, isDND = true, gameAccountInfo = { isOnline = true,
+                    clientProgram = "WoW", characterName = "Zug", characterLevel = 42, areaName = "Tanaris" } }
+            end
+            return { accountName = "Mo", gameAccountInfo = { isOnline = true, clientProgram = "App", richPresence = "In the app" } }
+        end }
+        local m = ns.modules.friends
+        BNGetInfo = function() return 1, "Me#1", 1, "", false, false, true, false end
+        assert(m.update({}):find("^|cff4ce64c3|r$"), "available: green 3 -> " .. m.update({}))
+        BNGetInfo = function() return 1, "Me#1", 1, "", true, false, true, false end
+        assert(m.update({}):find("ffff9933"), "away: orange")
+        BNGetInfo = function() return 1, "Me#1", 1, "", false, true, true, false end
+        assert(m.update({}):find("ffff4040"), "busy: red")
+        BNGetInfo = function() return 1, "Me#1", 1, "", false, false, true, true end
+        assert(m.update({}):find("ff9a9a9a"), "appear offline: gray")
+        assert(m.update({ statusColor = false }) == "3", "status color off")
+        local lines = {}
+        local tt = setmetatable({ AddLine = function(_, t) table.insert(lines, tostring(t)) end,
+            AddDoubleLine = function(_, a, b) table.insert(lines, tostring(a) .. " | " .. tostring(b)) end },
+            { __index = function() return function() end end })
+        m.tooltip(tt, {})
+        local all = table.concat(lines, "\n")
+        assert(all:find(ns.L.TT_MY_STATUS, 1, true), "status in words")
+        assert(all:find("Tilda (30) " .. ns.L.TT_AFK_TAG, 1, true), "WoW friend with away tag")
+        assert(all:find("Kaz : Zug (42) " .. ns.L.TT_DND_TAG, 1, true) and all:find("Tanaris", 1, true), "BNet friend in WoW")
+        assert(all:find("Mo", 1, true) and all:find("In the app", 1, true), "BNet friend elsewhere")
+        lines = {}
+        m.tooltip(tt, { noBNetFriends = true })
+        assert(not table.concat(lines, "\n"):find("Kaz", 1, true), "no Battle.net friends when left out")
+        C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet = oldFL, oldBN, oldInfo, oldC
+    end,
     -- launchers: a pool of numbered map pins on the minimap is not offered (QuestieFrame10...)
     function()
         local function Btn(name)

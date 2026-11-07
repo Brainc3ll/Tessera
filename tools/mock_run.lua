@@ -1201,6 +1201,16 @@ for _, step in ipairs({
             profiles = { Perso = { actionbars = { hotkeyFont = { face = "Friz Quadrata TT", flags = "NONE" } } } } }
         local theme = ns:GetThemeInfo("flareui2")
         assert(theme, "FlareUI style")
+        -- its text shadow follows FlareUI's (4.0: enableShadow, on by default); other styles: none
+        local cfg = {}
+        ns:ApplyThemeToCfg(cfg, "flareui2")
+        assert(cfg.textShadow == true, "FlareUI style: shadow by default")
+        _G.FlareUI2_DB.profiles.Perso.actionbars.hotkeyFont.enableShadow = false
+        ns:ApplyThemeToCfg(cfg, "flareui2")
+        assert(cfg.textShadow == false, "FlareUI style: shadow turned off in FlareUI")
+        cfg.textShadow = true
+        ns:ApplyThemeToCfg(cfg, "blizzard")
+        assert(cfg.textShadow == false, "another style starts without shadow")
         _G.FlareUI2_DB = nil
         ns.sv.charProfiles[key], ns.sv.chars[key], ns.sv.goldHistory[key] = nil, nil, nil
         ns.sv.chars["Ellen Kempton"], ns.sv.chars["Bob-Classic Beta PvE"], ns.sv.goldHistory["Tobin Harrow"] = nil, nil, nil

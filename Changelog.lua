@@ -40,6 +40,15 @@ ns.CHANGELOG = {
         version = "1.1.2",
         date = "",
         sections = {
+            { kind = "improved",
+              en = {
+                "FlareUI styles follow FlareUI 4.0's text shadow, and Tessera knows its new frames (party, raid, "
+                    .. "boss, target of target) when it places blocks around them.",
+              },
+              fr = {
+                "Les styles FlareUI suivent l'ombre du texte de FlareUI 4.0, et Tessera connaît ses nouveaux cadres "
+                    .. "(groupe, raid, boss, cible de la cible) quand il place les blocs autour.",
+              } },
             { kind = "fixed",
               en = {
                 "Shift + click to copy a value into the chat, and replying to a whisper, use the game's "

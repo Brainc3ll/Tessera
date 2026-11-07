@@ -53,10 +53,11 @@ end
 -- Font of FlareUI's XP bar: FlareUI writes it with its action bar key bind font (Arial Narrow
 -- with an outline by default, in 1.x and 2.x). Read from FlareUI's saved settings (AceDB:
 -- only the values the player changed are saved), so a font picked in FlareUI is followed.
--- Returns a Tessera font key and an outline.
+-- Returns a Tessera font key, an outline and the text shadow (FlareUI 4.0: enableShadow, on
+-- by default).
 local OUTLINES = { OUTLINE = true, THICKOUTLINE = true, NONE = true }
 local function FlareFont()
-    local face, flags = "Arial Narrow", "OUTLINE"
+    local face, flags, shadow = "Arial Narrow", "OUTLINE", true
     for _, name in ipairs({ "FlareUI2_DB", "FlareUI_DB" }) do
         local db = _G[name]
         if type(db) == "table" and type(db.profiles) == "table" then
@@ -72,11 +73,12 @@ local function FlareFont()
             if type(font) == "table" then
                 if type(font.face) == "string" then face = font.face end
                 if OUTLINES[font.flags] then flags = font.flags end
+                if type(font.enableShadow) == "boolean" then shadow = font.enableShadow end
             end
             break
         end
     end
-    return LSMFont(face) or "arial", flags
+    return LSMFont(face) or "arial", flags, shadow
 end
 
 -- ElvUI's main engine object (ElvUI[1]), or nil if ElvUI is not loaded
@@ -135,7 +137,7 @@ ns.themes = {
             cfg.border = thin and "lsm:FlareUI Thin" or "solid"
             cfg.borderSize = thin and 8 or 1
             cfg.borderColor = { r = 0.80, g = 0.60, b = 0.34, a = 1 }
-            cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
+            cfg.font, cfg.outline, cfg.textShadow = FlareFont() -- like FlareUI's XP bar
             -- lines between merged blocks in the muted bronze of FlareUI's settings panel (#9C7A4A)
             cfg.separators = true
             cfg.separatorColor = { r = 0.61, g = 0.48, b = 0.29, a = 0.9 }
@@ -168,7 +170,7 @@ ns.themes = {
             cfg.border = thin and "lsm:FlareUI Thin" or "solid"
             cfg.borderSize = thin and 8 or 1
             cfg.borderColor = { r = 0.65, g = 0.49, b = 0.27, a = 1 }
-            cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
+            cfg.font, cfg.outline, cfg.textShadow = FlareFont() -- like FlareUI's XP bar
         end,
         window = function()
             local LSM = ns:GetLSM()
@@ -322,7 +324,7 @@ ns.themes = {
             cfg.borderColor = { r = 0.48, g = 0.35, b = 0.19, a = 1 } -- dark bronze
             cfg.separators = true
             cfg.separatorColor = { r = 0.62, g = 0.46, b = 0.25, a = 0.5 }
-            cfg.font, cfg.outline = FlareFont() -- like FlareUI's XP bar
+            cfg.font, cfg.outline, cfg.textShadow = FlareFont() -- like FlareUI's XP bar
         end,
         window = function()
             return FlatWindow({ 0.055, 0.047, 0.04, 0.96 }, { 0.80, 0.60, 0.34, 1 }, { 0.80, 0.60, 0.34 })
@@ -718,6 +720,7 @@ function ns:ApplyThemeToCfg(cfg, key)
     -- text only, black and white, the style's text color: only some styles
     cfg.hideIcons, cfg.monochrome, cfg.inkColors = false, false, false
     cfg.textTint = { r = 1, g = 1, b = 1, a = 0 }
+    cfg.textShadow = false -- the FlareUI styles follow FlareUI's shadow
     theme.block(cfg)
 end
 
@@ -727,7 +730,8 @@ local function RestyleProfile(self, key, restyle)
     for _, field in ipairs({ "bg", "bgColor", "border", "borderSize", "borderColor", "font", "outline",
                              "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor",
                              "barTexture", "classColorText", "classColorBorder", "classColorBg",
-                             "classColorIcon", "classColorSeparator", "hideIcons", "monochrome", "textTint", "inkColors" }) do
+                             "classColorIcon", "classColorSeparator", "hideIcons", "monochrome", "textTint", "inkColors",
+                             "textShadow" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end

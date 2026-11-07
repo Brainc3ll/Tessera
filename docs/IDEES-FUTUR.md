@@ -334,3 +334,4 @@ Idée de Braincell1980 : une base et des modules de blocs par catégorie (Foreve
 - Recharges de métier (`C_Spell.GetSpellCooldown`, secret en combat), pour tous les personnages.
 - Mal de résurrection (`C_UnitAuras.GetPlayerAuraBySpellID`, peut être secret).
 - Écarté : totems du chaman (`GetTotemInfo` secret en combat).
+- **Pour la 1.3 (vu dans FlareUI 4.0, MIT)** : son mode manette propose de basculer l'interface en mode manette à la première pression d'une manette (CVar InputDeviceInterfaceStyle), et son menu radial ; à étudier avant la navigation à la manette de Tessera. Règle : suivre les réglages du jeu, ne rien recoder.

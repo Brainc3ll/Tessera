@@ -31,7 +31,7 @@ Fait avec Braincell1980 après la review du code (22/10), les sondes de l'API de
 - Améliorations des blocs vues dans la sonde : Compréhension par numéro et sa description, honneur d'hier, durabilité dans les sacs (à sonder une fois).
 - Audit de l'API avec la doc de Forever.
 - Bloc « Batterie de la manette » (`C_GamePad.GetPowerLevel`), à sonder, pour la 2.0.
-- Les 4 nouveaux blocs (DPS, Corps, Mode de jeu, Météo) ; la disposition « Portable » après la 2.0.
+- Les 4 nouveaux blocs (Corps fait dans la 1.1.0 ; DPS, Mode de jeu et Météo abandonnés le 6/11) ; la disposition « Portable » après la 2.0.
 
 **Bof**
 - Modules par catégorie : environ 2 à 3 % de mémoire en moins ; vrais atouts : listes plus courtes, code rangé. À décider (plan prêt).
@@ -48,7 +48,7 @@ Fait avec Braincell1980 après la review du code (22/10), les sondes de l'API de
 - LibSharedMedia embarquée : Tessera l'utilise déjà quand un autre addon la charge.
 - Bloc Batterie (de l'ordinateur) : impossible, les addons n'ont pas accès au système.
 - Événements du monde, saison JcJ : coupés sur Forever, seulement si Blizzard les active.
-- Compteur de dégâts complet (classement du groupe) : le DPS du joueur suffit.
+- Compteur de dégâts complet (classement du groupe) : non ; même le DPS du joueur a été retiré (chiffres secrets en combat).
 - Rouvrir le moteur des rangées : seulement si des joueurs le réclament (`archive/refonte-rangees` du dépôt privé Tessera-dev).
 
 Licences à vérifier avant d'embarquer une bibliothèque (Ace3, LibDeflate en zlib et LibSerialize en MIT semblent compatibles avec la licence MIT de Tessera, sans vérification).
@@ -279,7 +279,7 @@ Forever a une prise en charge native de la manette (annoncée à la BlizzCon, «
 Décidé avec Braincell1980 :
 - **Termes du jeu** : prendre les textes officiels de Blizzard (liste de Ketho, branche `forever`, `Resources/GlobalStrings/*.lua`, 11 langues) pour le vocabulaire : noms des blocs, mots courants. Là où un texte de Blizzard correspond exactement, Tessera peut même le lire en jeu (zéro traduction). Attention aux abréviations de Blizzard (« Репут. » en russe).
 - **Phrases** (aide, infobulles, environ 1 000 textes) : traduites par Claude avec ce vocabulaire. Allemand, espagnol, portugais, russe d'abord, puis italien ; chinois et coréen seulement avec un relecteur natif.
-- **Pas dans le dépôt** (règle de CLAUDE.md : anglais et français seulement) : Claude génère un fichier `.lua` par langue au format de `docs/localization/`, l'envoie à Braincell1980, qui l'**importe à la main** dans l'outil de traduction de CurseForge. Les traducteurs restent libres de tout corriger. Vérifier d'abord sur CurseForge qu'aucun traducteur n'a déjà commencé une langue : ne jamais écraser son travail.
+- (dépassé depuis la 1.1.0 : toutes les langues sont dans le dépôt) **Pas dans le dépôt** (ancienne règle) : Claude génère un fichier `.lua` par langue au format de `docs/localization/`, l'envoie à Braincell1980, qui l'**importe à la main** dans l'outil de traduction de CurseForge. Les traducteurs restent libres de tout corriger. Vérifier d'abord sur CurseForge qu'aucun traducteur n'a déjà commencé une langue : ne jamais écraser son travail.
 - **Rien ne dépasse des boutons** : l'allemand et le russe sont environ 30 % plus longs que l'anglais. Avant d'envoyer une langue, tester les fenêtres avec des textes allongés : une commande de dev (pseudo-langue qui rallonge chaque texte de 40 %, dans `TesseraDev.lua`) montre les débordements sans attendre les traductions ; corriger la mise en page (boutons qui s'élargissent, texte qui passe à la ligne) plutôt que raccourcir à l'excès.
 - **Avertissement** : une nouvelle clé (par exemple `ABOUT_TRANSLATION_NOTE`), vide en anglais et en français. Dans nos traductions : « Traduction générée par Claude (IA), pas encore relue. Tu peux la corriger sur CurseForge. » dans la langue concernée, affichée dans l'onglet À propos (et peut-être une fois au premier lancement). Le traducteur qui relit sa langue vide ce texte.
 - **Crédit** : la clé `ABOUT_TRANSLATORS` existe déjà (onglet À propos, ligne « Traduction ») ; le traducteur y met son nom. L'expliquer dans le texte d'appel aux traducteurs.
@@ -301,7 +301,7 @@ Une liste « Langue » (onglet Général) : « Comme le jeu » par défaut, puis
 - **Quand** : après la 1.0.0 (1.0.1 ou 1.1), car il touche au chargement de tous les textes ; à vérifier avec le mock dans chaque langue. Accessibilité et manette : une liste déroulante ordinaire, déjà utilisable au clavier.
 - **Langues non officielles (idée de Braincell1980, 25/10)** : des communautés traduisent WoW Forever par addon, au-dessus du client anglais (relevé du 25/10 sur CurseForge) : ukrainien (UALL Forever de Pekelnyj, très complet, mis à jour le 13/10 ; UA_Forever), polonais (Polish Forever, ForeverPL, Forever Translated), tchèque (Azeroth česky, Czech Quests), hongrois (ForeverHUN).
   - Le client reste en anglais (`GetLocale()` = enUS) : seul le sélecteur permet de choisir ces langues. Piste : quand un de ces addons est chargé, proposer une fois la langue de Tessera qui va avec.
-  - L'outil de CurseForge ne connaît que les langues de WoW (deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW) : ces traductions devraient vivre ailleurs, ce qui demande une exception à la règle « anglais et français seulement dans le dépôt » (décision de Braincell1980), ou un petit addon à part par langue.
+  - (dépassé : plus d'outil CurseForge ; Forever n'a pas d'italien, fichier itIT retiré le 7/11) L'outil de CurseForge ne connaissait que les langues de WoW (deDE, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW) : ces traductions devraient vivre ailleurs, ce qui demande une exception à la règle « anglais et français seulement dans le dépôt » (décision de Braincell1980), ou un petit addon à part par langue.
   - Polices : les polices occidentales du jeu n'ont pas l'alphabet cyrillique, et peut-être pas toutes les lettres tchèques, polonaises ou hongroises (ř, ł, ő) : à vérifier en jeu ; ces addons apportent sans doute leurs propres polices, que Tessera pourrait proposer via LibSharedMedia s'ils les y enregistrent.
   - Contacter leurs équipes (Discord, Reddit) le moment venu : ce sont les mieux placées pour traduire Tessera dans leur langue. Décision du 25/10 : attendre de voir si Tessera « prend » avant de leur poser la question.
 
@@ -317,12 +317,20 @@ Idée de Braincell1980 : une base et des modules de blocs par catégorie (Foreve
 - GSF garde tout dans son espace privé (pas d'API publique, pas de DataBroker) et n'a pas de licence : ne pas lire ses fichiers de sauvegarde, ne rien reprendre de son code.
 - Voie retenue : si Braincell1980 s'intègre à la guilde, il proposera à l'auteur un flux DataBroker (code + doc) ; Tessera l'affichera alors sans rien ajouter.
 
-## Bloc Temps de jeu : choisir ce qui est affiché (demandé le 5/11) : fait dans la 1.0.5
+## Bloc Temps de jeu : choisir ce qui est affiché (demandé le 5/11) : fait dans la 1.1.0
 - Aujourd'hui le bloc affiche le temps passé à ce niveau ; la bulle montre session, niveau et total.
 - Option dans l'onglet Texte du bloc : « Affiché : ce niveau / au total / cette session », « ce niveau » par défaut (rien ne change pour ceux qui ont déjà le bloc). Nouveaux textes : traductions de, es, mx, pt à faire importer avant la publication.
 
-## Idées du 6/11 : faites dans la 1.0.5 (sauf le familier : humeur et fidélité seulement)
+## Idées du 6/11 : faites dans la 1.1.0 (sauf le familier : humeur et fidélité seulement ; Pistage retiré ensuite)
 - **Bloc Micro-menu** (idée de Braincell1980) : les boutons du micro-menu de Blizzard (personnage, sorts, talents, métiers, quêtes, guilde, Héritage, collections, donjons...) en petites icônes dans un bloc ; évolutif : un menu pas encore débloqué (niveau trop bas) est grisé ou caché, et apparaît quand il se débloque.
 - **Options d'affichage par bloc** (liste proposée le 6/11, à trier avec lui) : Temps de jeu (session / niveau / total), Heure et Heure du serveur (12 h / 24 h), Amis et Guilde (« 5 » ou « 5 / 20 », amis Battle.net ou non), Quêtes (« 13 / 40 », « 13 », quêtes terminées), Monnaies (choisir la monnaie), Vitesse (% ou mètres/s), Volume (général, musique, effets), Repos (% ou bulles), Honneur (actuel, actuel / max, %), Héritage (points ou prochaine récompense), Compréhension (rang ou parchemins), Réinitialisation (quotidienne, hebdomadaire, les deux), Chuchotements (nombre ou dernier nom), Mémoire (total ou Tessera seul), Zone (zone, sous-zone ou les deux).
 - **Nouveaux blocs proposés** : Pistage (le pistage actif de la minicarte, clic pour changer : herbes, minerais...), Familier du chasseur (humeur, fidélité), Enchantement d'arme temporaire (poisons, pierres à aiguiser, imprégnations du chaman : temps restant), Buffs longs (Bien nourri, élixirs, buffs mondiaux : temps restant), XP par heure et temps avant le niveau suivant, Or gagné pendant la session.
 - **1.3, options visibles (6/11)** : Braincell1980 n'a pas trouvé « Échelle de tous les blocs » (page Apparence, section Style). Dans la refonte, les réglages les plus utilisés (échelle globale, style, verrouiller) doivent se voir au premier coup d'œil.
+
+## Idées de blocs du 7/11 (vérifiées avec forever-lint, pas choisies)
+- File d'attente (donjon / champ de bataille : temps écoulé et estimé ; `GetLFGQueueStats`, `GetBattlefieldStatus`).
+- Calendrier : prochain événement (`C_Calendar`).
+- Chrono de combat : durée du combat en cours et du dernier (minuteur de Tessera, aucune donnée secrète).
+- Recharges de métier (`C_Spell.GetSpellCooldown`, secret en combat), pour tous les personnages.
+- Mal de résurrection (`C_UnitAuras.GetPlayerAuraBySpellID`, peut être secret).
+- Écarté : totems du chaman (`GetTotemInfo` secret en combat).

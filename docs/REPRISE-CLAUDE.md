@@ -3,9 +3,9 @@
 But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-1.0.3 publiée le 5/11 (styles + correctifs du lancement : Secourisme 1.0.1, bloc sous un Courrier masqué 1.0.2, clic sur les métiers de récolte 1.0.3). Branches : `main` et `accessibilite-manette` seulement. Semaine du lancement : correctifs seulement ; à chaque nouveau texte, fichiers de traduction (de, es, mx, pt) des seules clés nouvelles, importés à la main avant de publier.
+1.1.1 publiée le 6/11 (1.1.0 : 7 nouveaux blocs, options d'affichage, fenêtre d'options avec pages à gauche et onglet « Ce bloc », traductions dans le dépôt ; 1.1.1 : correctif « Remplacer par »). Branches : `main` (1.1.2 en cours), `prochaine-1.2` (nouveautés), `accessibilite-manette` (suit `main`). Lister les branches avec `gh api repos/Brainc3ll/Tessera/branches`.
 
-## Avant la publication de la 1.0.0 (4/11)
+## Avant chaque publication
 - Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).
 
 ## Travailler avec Braincell1980
@@ -76,4 +76,4 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - 25/10 : sources lues (code de Blizzard et liste de Ketho pour Forever, fils Reddit, forever-addon-kit) dans `docs/etudes/SOURCES.md` ; test `tools/forever_api_check.py` (aussi sur GitHub) ; accroche des descriptions ; skills report-triage, refactor, gate2 ; dossier `docs/` réorganisé (`pages/`, `etudes/`, IDEES-FUTUR par thème) ; nouvelle icône et logo texte (Outfit) dans la 1.0.0.
 - 25/10 (soir) : traductions allemande, espagnoles et portugaise finies (dépôt privé `Tessera-dev/traductions-1.0.0/`, 1031 textes, 0 erreur) ; page CurseForge/Wago réécrite avec l'histoire de Braincell1980 (un seul fichier `docs/pages/description.md`) ; ACR.md (E4d) et AI-DECLARATION.md ; merci à Funkeh (StatBlock Core) ; Arcana (ex-ChocolateBar) reconnu ; mode streamer (option, raccourci, bloc) ; clé de personnage = nom complet seul sur Forever (conseil de Funkeh, relecture indépendante faite, test `tools/fixtures/sv-rc9-forever.lua` en CI) ; zip test49. Pause jusqu'au mardi 27/10.
 - 6/11 : 1.1.0 publiée (7 nouveaux blocs, options d'affichage, fenêtre d'options avec pages à gauche et onglet « Ce bloc », traductions sur GitHub). Mode maintenance.
-- Branches (6/11) : il ne reste que `main` et `accessibilite-manette` (qui suit `main` ; la pousser à jour après chaque publication). `prochaine-1.0.1` et `refonte-rangees` sont fusionnées et supprimées : ne plus proposer de les supprimer. Lister les branches avec `gh api repos/Brainc3ll/Tessera/branches`, pas avec les références locales (elles peuvent être périmées).
+- Branches (7/11) : `main`, `prochaine-1.2`, `accessibilite-manette` (la pousser à jour depuis `main` après chaque publication) ; fusionner `main` dans `prochaine-1.2` après chaque correctif. Lister avec `gh api repos/Brainc3ll/Tessera/branches` : les références locales peuvent être périmées.

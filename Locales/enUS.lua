@@ -549,7 +549,6 @@ local L = {
     DATE_PATTERN_SHORT = "{wd} {d} {mon}",
     DATE_PATTERN_LONG = "{wd} {d} {mon}",
     DEMO_COLUMN_STYLE = "%s: %s",
-    SECTION_VALUE = "Value shown",
     COIN_GOLD = "g",
     COIN_SILVER = "s",
     COIN_COPPER = "c",

@@ -1,15 +1,9 @@
 # À reprendre (état au 7 novembre 2026)
 
 ## Où on en est
-<<<<<<< HEAD
-- **Maintenant (7/11)** : 1.1.1 en ligne. Branches : `main` (la 1.1.2 en cours : correctifs), `prochaine-1.2` (nouveautés : bloc Compétences), `accessibilite-manette` (suit `main`). Prochain zip de test : test82.
-- **1.1.2 commencée sur `main` (7/11)** : notes de forever-lint (outil de JoseArgento, `pip install forever-lint`, MIT) : fonctions de discussion ChatFrameUtil en premier (Maj + clic, réponse aux chuchotements), niveau max de Forever via GetMaxPlayerLevel. Pas publiée.
-- **En réserve pour une 1.1.2** (si Braincell1980 trouve un autre correctif à publier, ça part avec) : « Retirer » au lieu de « masquer » (voir la note 1.2 sur la branche `prochaine-1.2`, décisions du 6/11) : croix = le bloc sort de la barre ; « Remplacer par » sort le bloc remplacé ; blocs déjà masqués rangés en silence ; ajout depuis les options en haut à droite de la fenêtre, empilés sans être collés ; les blocs retirés continuent de tourner en fond ; le mot « masquer » disparaît. T2 : procédure renforcée. Pas commencé.
-=======
-- **Maintenant (7/11)** : 1.1.1 en ligne. Branches : `main` (la 1.1.2 en cours : correctifs), `prochaine-1.2` (nouveautés : bloc Compétences), `accessibilite-manette` (suit `main`). Prochain zip de test : test81.
+- **Maintenant (7/11)** : 1.1.2 en ligne. Branches : `main` (correctifs 1.1.x), `prochaine-1.2` (nouveautés : blocs Compétences et Amis), `accessibilite-manette` (suit `main`). Prochain zip de test : test84.
 - **1.1.2 publiée le 7/11** (+ styles FlareUI qui suivent la police, le contour et l'ombre de FlareUI 4.0 au chargement ; nouveaux cadres FlareUI). Ancienne note : : notes de forever-lint (outil de JoseArgento, `pip install forever-lint`, MIT) : fonctions de discussion ChatFrameUtil en premier (Maj + clic, réponse aux chuchotements), niveau max de Forever via GetMaxPlayerLevel. Pas publiée.
 - **En réserve pour une prochaine 1.1.x** (si Braincell1980 trouve un autre correctif à publier, ça part avec) : « Retirer » au lieu de « masquer » (voir la note 1.2 sur la branche `prochaine-1.2`, décisions du 6/11) : croix = le bloc sort de la barre ; « Remplacer par » sort le bloc remplacé ; blocs déjà masqués rangés en silence ; ajout depuis les options en haut à droite de la fenêtre, empilés sans être collés ; les blocs retirés continuent de tourner en fond ; le mot « masquer » disparaît. T2 : procédure renforcée. Pas commencé.
->>>>>>> main
 - **1.1.1 publiée le 6/11 (urgence)** : « Remplacer par » un bloc masqué encore placé dans une barre cassait la barre (boucle de chaînage) ; le bloc quitte d'abord son ancienne place. Reproduit avec l'export de Braincell1980 (non versionné), validé en jeu. Prochain test : test81.
 - **1.1.0 publiée le 6/11** (GitHub, CurseForge, Wago ; traductions de, es, mx, pt dans le dépôt, plus d'outil CurseForge). Retour en mode maintenance : corrections en 1.1.x, puis 1.2 (vol, bateaux), 1.3 (fin de la refonte : manette, contraste, texte agrandi).
 - **1.2 en préparation (branche `prochaine-1.2`)** : bloc Compétences (ex-Compétences d'armes) : arme en main / suit le combat (arme à distance pendant le tir automatique, START/STOP_AUTOREPEAT_SPELL) / compétence choisie (Ce bloc). Les corrections de la 1.1.x se font sur `main`.

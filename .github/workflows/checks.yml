@@ -62,7 +62,8 @@ jobs:
       # annotations. Fails on unknown globals and deprecated functions (tools/api_audit.py).
       - name: WoW API audit (Ketho's annotations)
         run: |
-          curl -sSL -o luals.tgz https://github.com/LuaLS/lua-language-server/releases/download/3.19.2/lua-language-server-3.19.2-linux-x64.tar.gz
+          # GitHub sometimes answers the download with an error page: fail on it and try again.
+          curl -fsSL --retry 5 --retry-delay 10 --retry-all-errors -o luals.tgz https://github.com/LuaLS/lua-language-server/releases/download/3.19.2/lua-language-server-3.19.2-linux-x64.tar.gz
           mkdir -p "$RUNNER_TEMP/luals" && tar xzf luals.tgz -C "$RUNNER_TEMP/luals" && rm luals.tgz
           git clone -q --depth 1 https://github.com/Ketho/vscode-wow-api.git "$RUNNER_TEMP/wowapi"
           python3 tools/api_audit.py "$RUNNER_TEMP/luals/bin/lua-language-server" "$RUNNER_TEMP/wowapi"

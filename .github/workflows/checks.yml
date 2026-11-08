@@ -60,11 +60,20 @@ jobs:
 
       # The audit addon reviewers use (e.g. r/WoWUI): Lua Language Server + Ketho's WoW API
       # annotations. Fails on unknown globals and deprecated functions (tools/api_audit.py).
+      # Keep the Lua Language Server between runs: GitHub's download server sometimes answers 504 for a while.
+      - name: Cache the Lua Language Server
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/luals
+          key: luals-3.19.2-linux-x64
+
       - name: WoW API audit (Ketho's annotations)
         run: |
-          # GitHub sometimes answers the download with an error page: fail on it and try again.
-          curl -fsSL --retry 5 --retry-delay 10 --retry-all-errors -o luals.tgz https://github.com/LuaLS/lua-language-server/releases/download/3.19.2/lua-language-server-3.19.2-linux-x64.tar.gz
-          mkdir -p "$RUNNER_TEMP/luals" && tar xzf luals.tgz -C "$RUNNER_TEMP/luals" && rm luals.tgz
+          if [ ! -x "$RUNNER_TEMP/luals/bin/lua-language-server" ]; then
+            # GitHub sometimes answers the download with an error page: fail on it and try again.
+            curl -fsSL --retry 5 --retry-delay 10 --retry-all-errors -o luals.tgz https://github.com/LuaLS/lua-language-server/releases/download/3.19.2/lua-language-server-3.19.2-linux-x64.tar.gz
+            mkdir -p "$RUNNER_TEMP/luals" && tar xzf luals.tgz -C "$RUNNER_TEMP/luals" && rm luals.tgz
+          fi
           git clone -q --depth 1 https://github.com/Ketho/vscode-wow-api.git "$RUNNER_TEMP/wowapi"
           python3 tools/api_audit.py "$RUNNER_TEMP/luals/bin/lua-language-server" "$RUNNER_TEMP/wowapi"
 

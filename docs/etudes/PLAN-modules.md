@@ -156,7 +156,7 @@ Les modules pourraient être marqués `## LoadOnDemand: 1` : la base chargerait 
 
 **Moment (mis à jour le 24/10, feuille de route dans A-REPRENDRE) :** la décision de faire les modules reste à prendre (« bof » pour la mémoire, utile pour le confort). Si on les fait, c'est dans la 1.2, juste avant les 4 nouveaux blocs, pour qu'ils aillent directement dans leur module. La 1.1 (nettoyage et optimisation) prépare le terrain sans engager les modules : catalogue et blocs fantômes (étape 1), pas de cadres de blocs en mode DataBroker, profils allégés faits maison.
 
-Ensuite, reprendre depuis `next` (la branche `accessibilite-manette` n'existe plus, décision du 10/11), avant d'y commencer l'accessibilité. Les modules touchent surtout les blocs, les profils et les dispositions ; l'accessibilité, surtout l'affichage et les options : peu de conflits si on les fait l'un après l'autre.
+Ensuite, reprendre depuis `next`, avant d'y commencer l'accessibilité. Les modules touchent surtout les blocs, les profils et les dispositions ; l'accessibilité, surtout l'affichage et les options : peu de conflits si on les fait l'un après l'autre.
 
 ---
 

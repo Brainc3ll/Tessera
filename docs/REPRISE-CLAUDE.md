@@ -3,7 +3,7 @@
 But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-1.2.0 publiée le 7/11 (style de groupe, Compétences, Amis). Une seule branche : `main` (décision du 7/11). Une conversation par version : handoff dès la publication.
+1.2.0 publiée le 7/11 (style de groupe, Compétences, Amis). Deux branches depuis le 10/11 : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes (1.3, 2.0…), jamais renommée. Chaque correctif sur `main` est reporté dans `next`. Une conversation par version : handoff dès la publication.
 
 ## Avant chaque publication
 - Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).
@@ -79,7 +79,8 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - 6/11 : 1.1.0 publiée (7 nouveaux blocs, options d'affichage, fenêtre d'options avec pages à gauche et onglet « Ce bloc », traductions sur GitHub). Mode maintenance.
 - 7/11 : 1.2, régler le style d'un groupe d'un coup (entrées « Groupe : … », « Copier sur le groupe » options + menu rapide, copies annulables) ; test84 à tester en jeu.
 - 7/11 : test84 validé en jeu (style d'un groupe d'un coup, aide comprise). Reste pour la 1.2 : voir A-REPRENDRE, feuille de route, point 4.
-- Branches (7/11, après la 1.2.0) : `main` seule. Les skills tessera-sync-branches et tessera-lean-start parlent encore des anciennes branches : les ignorer sur ce point.
+- Branches (10/11) : `main` et `next` (voir le haut du fichier). Les skills tessera-sync-branches et tessera-lean-start parlent encore des anciennes branches (prochaine-1.2, accessibilite-manette) : ne pas les suivre sur ce point.
 - **Correctif d'urgence** (une nouvelle conversation par urgence) : sur `main`, skill tessera-bug-fix (cause, reproduction dans le faux jeu, test qui échoue sans la correction, changelog, vérifications, zip de test), puis pousser `main` vers `accessibilite-manette` et fusionner `main` dans `prochaine-1.2`. Publication seulement à « on publie ». Sans cause sûre : demander capture, vidéo ou export du profil.
 - 7/11 : décision de Braincell1980 : le style d'un groupe d'un coup (validé test84) part en 1.1.3 sur `main` (repris de `prochaine-1.2`, traduit de/es/mx/pt par Claude, non relu) ; zip test85 ; publication sur son « on publie ». Le reste reste en 1.2.
-- 7/11 : 1.2.0 publiée (tout test84 ; la 1.1.3 prévue est fondue dedans). Décision : une seule branche `main`, une conversation par version, handoff à chaque publication.
+- 7/11 : 1.2.0 publiée (tout test84 ; la 1.1.3 prévue est fondue dedans). Décision : une conversation par version, handoff à chaque publication.
+- 10/11 : branche `next` créée depuis `main` ; deux branches (`main` correctifs, `next` versions suivantes) ; chaque commit et note indique la version du modèle utilisé (ex. Haiku 5.5).

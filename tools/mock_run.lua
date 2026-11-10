@@ -1488,6 +1488,90 @@ for _, step in ipairs({
         cfg.fadeOut = false
         ns:ResetProfile("top")
     end,
+    -- two columns stuck to the bottom-right corner: a wider text in the right column makes the
+    -- group grow to the left (it stays on the screen edge), nothing overlaps
+    function()
+        MOCK_GEOMETRY = true
+        ns:ResetProfile("left")
+        ns:UpdateLayout()
+        local b = ns.db.blocks
+        local root = ns:GetRoot("bags")
+        local col = {}
+        for k in pairs(ns:GetSubtree(root)) do
+            if b[k].enabled and ns.frames[k] and ns.frames[k]:IsShown() and not ns.IsSpacerKey(k) then col[#col + 1] = k end
+        end
+        table.sort(col, function(x, y) return select(2, ns:GetRectUI(ns.frames[x])) > select(2, ns:GetRectUI(ns.frames[y])) end)
+        assert(#col >= 3, "left layout: a column of blocks")
+        local used = {}
+        for _, k in ipairs(col) do used[k] = true end
+        local right = {}
+        for _, k in ipairs({ "fps", "latency", "memory", "zone", "coords" }) do
+            if not used[k] and #right < 2 and b[k] then right[#right + 1] = k end
+        end
+        for i, k in ipairs(right) do
+            b[k].enabled, b[k].anchor, b[k].point = true, nil, nil
+            b[k].dock = { to = col[i], side = "RIGHT" }
+        end
+        ns:RefreshAllBlocks()
+        ns:UpdateLayout()
+        ns:StickToEdges(ns:GetRoot(col[1]), { RIGHT = true, BOTTOM = true })
+        ns:UpdateLayout()
+        local function Overlaps()
+            local n = 0
+            local keys = {}
+            for _, k in ipairs(col) do keys[#keys + 1] = k end
+            for _, k in ipairs(right) do keys[#keys + 1] = k end
+            for i = 1, #keys do
+                for j = i + 1, #keys do
+                    local l1, b1, r1, t1 = ns:GetRectUI(ns.frames[keys[i]])
+                    local l2, b2, r2, t2 = ns:GetRectUI(ns.frames[keys[j]])
+                    if math.min(r1, r2) - math.max(l1, l2) > 1 and math.min(t1, t2) - math.max(b1, b2) > 1 then n = n + 1 end
+                end
+            end
+            return n
+        end
+        assert(#right == 2, "two blocks for the right column")
+        assert(Overlaps() == 0, "columns overlap before the wider text")
+        ns:SetPreview(true)
+        ns:UpdateLayout()
+        for _, k in ipairs(right) do ns.frames[k].text:SetText(string.rep("W", 60)); ns.frames[k].lastText = nil end
+        ns:UpdateLayout()
+        local _, _, rr = ns:GetRectUI(ns.frames[right[1]])
+        local n = Overlaps()
+        ns:SetPreview(false)
+        MOCK_GEOMETRY = false
+        assert(n == 0, n .. " overlapping block pair(s) after a wider text")
+        assert(rr <= UIParent.__w + 1, "the group goes off the right edge")
+        ns:ResetProfile("top")
+    end,
+    -- a spacer in a column of blocks draws the line under it (not between two spacers)
+    function()
+        MOCK_GEOMETRY = true
+        ns:ResetProfile("left")
+        ns:UpdateLayout()
+        local b = ns.db.blocks
+        local root = ns:GetRoot("bags")
+        local col = {}
+        for k in pairs(ns:GetSubtree(root)) do
+            if b[k].enabled and ns.frames[k] and ns.frames[k]:IsShown() and not ns.IsSpacerKey(k) then col[#col + 1] = k end
+        end
+        table.sort(col, function(x, y) return select(2, ns:GetRectUI(ns.frames[x])) > select(2, ns:GetRectUI(ns.frames[y])) end)
+        for _, k in ipairs(col) do b[k].separators = true end
+        local sp = ns:InsertSpacer(col[1], "RIGHT")
+        assert(sp, "a spacer right of the first block")
+        sp = b[col[1]] and (function() for k, c in pairs(b) do if ns.IsSpacerKey(k) and c.dock and c.dock.to == col[1] then return k end end end)()
+        assert(sp, "spacer docked to the first block")
+        local below = "memory"
+        b[below].enabled, b[below].anchor, b[below].point = true, nil, nil
+        b[below].dock = { to = sp, side = "BOTTOM" }
+        ns:RefreshAllBlocks()
+        ns:UpdateLayout()
+        local shown = 0
+        for _, tex in ipairs(ns.frames[sp].separatorPool or {}) do if tex:IsShown() then shown = shown + 1 end end
+        MOCK_GEOMETRY = false
+        assert(shown == 1, "the spacer draws one line, under it (" .. shown .. ")")
+        ns:ResetProfile("top")
+    end,
     -- separators: drawn between blocks only, never along a stuck screen edge
     function()
         MOCK_GEOMETRY = true

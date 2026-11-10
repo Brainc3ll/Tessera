@@ -880,28 +880,35 @@ function ns:UpdateSeams(active)
             -- vA..vB: vertical overlap, measured downward from my top edge.
             -- "separate" look: every block keeps its whole frame
             local fused = self:GetGroupLook(key) ~= "separate"
+            -- the sides where a separator line goes: touched by another block of the group
+            -- (not the screen edges a group is stuck to)
+            local between = { RIGHT = {}, BOTTOM = {} }
             for other, o in pairs(rects) do
                 if fused and other ~= key and o.root == me.root then
                     local hA, hB = math.max(o.l, me.l) - me.l, math.min(o.r, me.r) - me.l
                     local vA, vB = me.t - math.min(o.t, me.t), me.t - math.max(o.b, me.b)
+                    -- separator lines: between two blocks, never between two spacers
+                    local line = not (ns.IsSpacerKey(key) and ns.IsSpacerKey(other))
                     if hB - hA > SEAM_TOL then
                         if math.abs(o.b - me.t) <= SEAM_TOL then table.insert(cov.TOP, { hA, hB }) end
-                        if math.abs(o.t - me.b) <= SEAM_TOL then table.insert(cov.BOTTOM, { hA, hB }) end
+                        if math.abs(o.t - me.b) <= SEAM_TOL then
+                            table.insert(cov.BOTTOM, { hA, hB })
+                            if line then table.insert(between.BOTTOM, { hA, hB }) end
+                        end
                     end
                     if vB - vA > SEAM_TOL then
                         if math.abs(o.r - me.l) <= SEAM_TOL then table.insert(cov.LEFT, { vA, vB }) end
-                        if math.abs(o.l - me.r) <= SEAM_TOL then table.insert(cov.RIGHT, { vA, vB }) end
+                        if math.abs(o.l - me.r) <= SEAM_TOL then
+                            table.insert(cov.RIGHT, { vA, vB })
+                            if line then table.insert(between.RIGHT, { vA, vB }) end
+                        end
                     end
                 end
             end
             -- screen size in this block's units, for the stuck edges
             local k = UIParent:GetEffectiveScale() / f:GetEffectiveScale()
             local sw, sh = UIParent:GetWidth() * k, UIParent:GetHeight() * k
-            -- separators go only where another block touches: copy those portions
-            -- before the stuck screen edges count as covered too
-            local between = { RIGHT = {}, BOTTOM = {} }
             for side, len in pairs({ RIGHT = H, BOTTOM = W }) do
-                for _, iv in ipairs(cov[side]) do table.insert(between[side], { iv[1], iv[2] }) end
                 between[side] = MergeIntervals(between[side], len)
             end
             cov.between = between
@@ -1106,7 +1113,14 @@ function ns:DrawSeparators(f, cov)
     local cfg = self.db.blocks[f.key]
     f.separatorPool = f.separatorPool or {}
     local used = 0
-    if cfg and cfg.separators and not ns.IsSpacerKey(f.key) then
+    -- a spacer only draws the line under it, so a column does not look cut at the spacer;
+    -- it takes the line settings of the block it is docked to (a spacer keeps its own look)
+    local spacer = ns.IsSpacerKey(f.key)
+    if spacer then
+        local target = self:GetDockTarget(f.key)
+        if target and not ns.IsSpacerKey(target) and self.db.blocks[target] then cfg = self.db.blocks[target] end
+    end
+    if cfg and cfg.separators then
         local c = cfg.separatorColor or { r = 1, g = 1, b = 1, a = 0.4 }
         if cfg.classColorSeparator then c = self:GetClassColor(c.a) or c end
         local thick = self:PixelSize(1, f)
@@ -1133,7 +1147,9 @@ function ns:DrawSeparators(f, cov)
             tex:Show()
         end
         local between = cov.between or cov
-        for _, iv in ipairs(between.RIGHT or {}) do Line("RIGHT", iv[1], iv[2]) end
+        if not spacer then
+            for _, iv in ipairs(between.RIGHT or {}) do Line("RIGHT", iv[1], iv[2]) end
+        end
         for _, iv in ipairs(between.BOTTOM or {}) do Line("BOTTOM", iv[1], iv[2]) end
     end
     for i = used + 1, #f.separatorPool do f.separatorPool[i]:Hide() end
@@ -1354,18 +1370,38 @@ end
 -- A free group dropped in the middle third of the screen keeps its center when its
 -- blocks grow or shrink: its saved point belongs to the head block, so the head moves
 -- by the change of the group's center relative to it. Decided once per saved point
--- (drop, profile, undo); a group stuck to a side edge or stretched is left alone.
+-- (drop, profile, undo). A group stuck to a side edge keeps that edge instead (see below);
+-- a stretched one is left alone.
 -- cfg.keepCenter (saved, so the blocks' first short texts after a login do not move
 -- the center): x = head offset last applied, center = wanted center. Not exported:
 -- an imported group decides again.
 local function KeepCentered(self, key, cfg, f, width, groupWidth, headX)
     local p = cfg.point
     if not (p and p[1] and p[3]) or self.dragging or InCombatLockdown() then return end
+    -- a group stuck to a side edge of the screen keeps its outer edge on that edge when
+    -- its blocks grow (otherwise it runs off the screen and the game pushes the blocks
+    -- back over their neighbours): the head's offset follows the group's extent
+    local edges = cfg.edges
+    if edges and not cfg.stretch then
+        local x
+        if edges.RIGHT and tostring(p[1]):find("RIGHT") then
+            x = -math.floor(groupWidth - headX - (width[key] or 0) + 0.5)
+        elseif edges.LEFT and tostring(p[1]):find("LEFT") then
+            x = math.floor(headX + 0.5)
+        end
+        if x then
+            if x ~= p[3] then
+                p[3] = x
+                f:ClearAllPoints()
+                f:SetPoint(p[1], UIParent, p[2], p[3], p[4])
+            end
+            return
+        end
+    end
     local shift = groupWidth / 2 - headX - (width[key] or 0) / 2   -- group center - head center
     local sig = tostring(p[1]) .. tostring(p[2]) .. tostring(p[4])
     local k = cfg.keepCenter
     if not (k and k.x == p[3] and k.sig == sig) then
-        local edges = cfg.edges
         local free = not cfg.stretch and not (edges and (edges.LEFT or edges.RIGHT))
         local ratio = f:GetEffectiveScale() / UIParent:GetEffectiveScale()
         local l, _, r = self:PointToRect(p, width[key] or 0, f:GetHeight(), ratio)

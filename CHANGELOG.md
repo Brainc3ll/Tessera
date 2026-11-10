@@ -13,6 +13,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - A group you stick to a screen edge gets no separator line along that edge.
 - A group you place in the middle of the screen stays centered when its blocks get wider or narrower.
+- A group stuck to the left or right edge of the screen keeps that edge when a block gets wider, so its columns no longer overlap.
+- A spacer in a column draws the separator line under it, like the blocks around it.
 
 ## 1.2.0 — 2026-11-07
 

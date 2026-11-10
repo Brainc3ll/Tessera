@@ -52,10 +52,14 @@ ns.CHANGELOG = {
               en = {
                 "A group you stick to a screen edge gets no separator line along that edge.",
                 "A group you place in the middle of the screen stays centered when its blocks get wider or narrower.",
+                "A group stuck to the left or right edge of the screen keeps that edge when a block gets wider, so its columns no longer overlap.",
+                "A spacer in a column draws the separator line under it, like the blocks around it.",
               },
               fr = {
                 "Un groupe que vous collez à un bord de l'écran n'a plus de ligne de séparation contre ce bord.",
                 "Un groupe que vous placez au milieu de l'écran reste centré quand ses blocs s'élargissent ou rétrécissent.",
+                "Un groupe collé au bord gauche ou droit de l'écran garde ce bord quand un bloc s'élargit : ses colonnes ne se chevauchent plus.",
+                "Un espace dans une colonne trace la ligne de séparation en dessous de lui, comme les blocs voisins.",
               },
             },
         },

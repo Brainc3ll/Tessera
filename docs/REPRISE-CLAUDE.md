@@ -13,6 +13,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
 - Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (prochain numéro : voir A-REPRENDRE, « Outils »), qu'il teste avant tout commit de publication.
 - Proposer avant de coder une nouveauté ; corriger directement un bug.
+- Systématique (10/11), avant de lancer le code : demander si c'est une correction de bug (`main`) ou une nouveauté (`next`), dire s'il doit changer de modèle, détailler ce qu'il faut installer, poser les questions, puis attendre son « go ».
 - Ne jamais publier sans « on publie » (ou un « go » clair en réponse à la question).
 - Signaler ses biais quand ils apparaissent ; ne rien inventer (lire le code ou la source, sinon le dire).
 - Textes anglais pour les joueurs : skill `stop-slop` ; français : mêmes principes.

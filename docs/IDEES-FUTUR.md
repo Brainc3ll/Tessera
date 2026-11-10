@@ -335,3 +335,16 @@ Idée de Braincell1980 : une base et des modules de blocs par catégorie (Foreve
 - Mal de résurrection (`C_UnitAuras.GetPlayerAuraBySpellID`, peut être secret).
 - Écarté : totems du chaman (`GetTotemInfo` secret en combat).
 - **Pour la 1.3 (vu dans FlareUI 4.0, MIT)** : son mode manette propose de basculer l'interface en mode manette à la première pression d'une manette (CVar InputDeviceInterfaceStyle), et son menu radial ; à étudier avant la navigation à la manette de Tessera. Règle : suivre les réglages du jeu, ne rien recoder.
+
+## Idées tirées de Broker_Everything (10/11, à étudier une par une, rien codé)
+Broker_Everything 5.0.0 est sous GPL v3 et Tessera sous MIT : on reprend seulement les idées, on n'en copie ni code ni textes. Vérifié le 10/11 : les fonctions de lecture existent sur Forever (`ns`, forever-lint pas encore lancé).
+- **Ensembles d'équipement** : le bloc affiche l'ensemble porté ; un clic en équipe un autre, Maj ou Ctrl pour enregistrer ou supprimer (`C_EquipmentSet.UseEquipmentSet`).
+- **Titres** : le bloc affiche le titre actuel ; une liste permet de le changer (`SetCurrentTitle`, `GetNumTitles`, `GetTitleName`).
+- **Difficulté** : le bloc affiche la difficulté de donjon et de raid ; un clic la change (`SetDungeonDifficultyID`, `SetRaidDifficultyID`).
+- **Pistage** : le bloc affiche le pistage actif ; un clic le change (`C_Minimap.SetTracking`).
+- **Calendrier** : invitations, événements de guilde et de communauté, fêtes du jeu (déjà dans les idées du 7/11).
+- **Canaux de discussion** : liste des canaux actifs et de leurs membres.
+- **Journal de guilde** : filtres par action (invitation, départ, promotion, renvoi).
+- **Bloc-notes** : par personnage ou pour tout le compte. Demande une fenêtre de saisie.
+- **Réglage « nombre seul »** : afficher seulement le nombre, sans texte (« Shorter Broker »).
+- **Clic réglable** : actions de clic configurables par bloc (Tessera a déjà Maj + clic ; clic simple, droit et Ctrl à vérifier).

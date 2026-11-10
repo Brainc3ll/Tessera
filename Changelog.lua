@@ -38,7 +38,7 @@ end
 ns.CHANGELOG = {
     {
         version = "1.2.1",
-        date = "",
+        date = "2026-11-10",
         sections = {
             { kind = "improved",
               en = {

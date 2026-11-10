@@ -897,6 +897,14 @@ function ns:UpdateSeams(active)
             -- screen size in this block's units, for the stuck edges
             local k = UIParent:GetEffectiveScale() / f:GetEffectiveScale()
             local sw, sh = UIParent:GetWidth() * k, UIParent:GetHeight() * k
+            -- separators go only where another block touches: copy those portions
+            -- before the stuck screen edges count as covered too
+            local between = { RIGHT = {}, BOTTOM = {} }
+            for side, len in pairs({ RIGHT = H, BOTTOM = W }) do
+                for _, iv in ipairs(cov[side]) do table.insert(between[side], { iv[1], iv[2] }) end
+                between[side] = MergeIntervals(between[side], len)
+            end
+            cov.between = between
             local edges = edgesOf[me.root]
             if edges then
                 if edges.TOP and math.abs(me.t - sh) <= SEAM_TOL then table.insert(cov.TOP, { 0, W }) end
@@ -1124,8 +1132,9 @@ function ns:DrawSeparators(f, cov)
             end
             tex:Show()
         end
-        for _, iv in ipairs(cov.RIGHT or {}) do Line("RIGHT", iv[1], iv[2]) end
-        for _, iv in ipairs(cov.BOTTOM or {}) do Line("BOTTOM", iv[1], iv[2]) end
+        local between = cov.between or cov
+        for _, iv in ipairs(between.RIGHT or {}) do Line("RIGHT", iv[1], iv[2]) end
+        for _, iv in ipairs(between.BOTTOM or {}) do Line("BOTTOM", iv[1], iv[2]) end
     end
     for i = used + 1, #f.separatorPool do f.separatorPool[i]:Hide() end
 end
@@ -1342,6 +1351,38 @@ end
 -- (propagated along effective dock links until nothing changes; vertical docks
 -- share their target's x because they are left-aligned).
 -- Returns the group's total width and the head's x offset from the group's left edge.
+-- A free group dropped in the middle third of the screen keeps its center when its
+-- blocks grow or shrink: its saved point belongs to the head block, so the head moves
+-- by the change of the group's center relative to it. Decided once per saved point
+-- (drop, profile, undo); a group stuck to a side edge or stretched is left alone.
+-- cfg.keepCenter (saved, so the blocks' first short texts after a login do not move
+-- the center): x = head offset last applied, center = wanted center. Not exported:
+-- an imported group decides again.
+local function KeepCentered(self, key, cfg, f, width, groupWidth, headX)
+    local p = cfg.point
+    if not (p and p[1] and p[3]) or self.dragging or InCombatLockdown() then return end
+    local shift = groupWidth / 2 - headX - (width[key] or 0) / 2   -- group center - head center
+    local sig = tostring(p[1]) .. tostring(p[2]) .. tostring(p[4])
+    local k = cfg.keepCenter
+    if not (k and k.x == p[3] and k.sig == sig) then
+        local edges = cfg.edges
+        local free = not cfg.stretch and not (edges and (edges.LEFT or edges.RIGHT))
+        local ratio = f:GetEffectiveScale() / UIParent:GetEffectiveScale()
+        local l, _, r = self:PointToRect(p, width[key] or 0, f:GetHeight(), ratio)
+        local cx, W = (l + r) / 2 + shift * ratio, UIParent:GetWidth()
+        cfg.keepCenter = { x = p[3], sig = sig,
+            center = free and cx >= W / 3 and cx <= W * 2 / 3 and p[3] + shift or nil }
+        return
+    end
+    if not k.center then return end
+    local x = math.floor(k.center - shift + 0.5)
+    if x ~= p[3] then
+        p[3], k.x = x, x
+        f:ClearAllPoints()
+        f:SetPoint(p[1], UIParent, p[2], p[3], p[4])
+    end
+end
+
 local function GroupExtent(self, head, width)
     local x = { [head] = 0 }
     local g = self:JointGap(head)
@@ -1464,6 +1505,8 @@ function ns:CenterAnchoredGroups(width)
                 f:ClearAllPoints()
                 self:AnchorToFrame(f, cfg)
             end
+        elseif not cfg.anchor and cfg.point and f and not self:GetDockTarget(key) then
+            KeepCentered(self, key, cfg, f, width, GroupExtent(self, key, width))
         end
     end
 end

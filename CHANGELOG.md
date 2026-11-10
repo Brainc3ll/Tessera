@@ -3,6 +3,17 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.2.1 — 
+
+### Improvements
+
+- Show only on hover: blocks fade in and out without visible steps.
+
+### Fixes
+
+- A group you stick to a screen edge gets no separator line along that edge.
+- A group you place in the middle of the screen stays centered when its blocks get wider or narrower.
+
 ## 1.2.0 — 2026-11-07
 
 ### New

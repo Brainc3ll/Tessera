@@ -3,7 +3,7 @@
 But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-1.2.0 publiée le 7/11 (style de groupe, Compétences, Amis). Deux branches depuis le 10/11 : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes (1.3, 2.0…), jamais renommée. Chaque correctif sur `main` est reporté dans `next`. Une conversation par version : handoff dès la publication.
+1.2.0 publiée le 7/11 (style de groupe, Compétences, Amis) ; 1.2.1 publiée le 10/11 (correctifs : séparateurs, centrage, groupe collé au bord, fondu). Deux branches depuis le 10/11 : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes (1.3, 2.0…), jamais renommée. Chaque correctif sur `main` est reporté dans `next`. Une conversation par version : handoff dès la publication.
 
 ## Avant chaque publication
 - Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).
@@ -85,3 +85,4 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - 7/11 : décision de Braincell1980 : le style d'un groupe d'un coup (validé test84) part en 1.1.3 sur `main` (traduit de/es/mx/pt par Claude, non relu) ; zip test85 ; publication sur son « on publie ». Le reste reste en 1.2.
 - 7/11 : 1.2.0 publiée (tout test84 ; la 1.1.3 prévue est fondue dedans). Décision : une conversation par version, handoff à chaque publication.
 - 10/11 : branche `next` créée depuis `main` ; deux branches (`main` correctifs, `next` versions suivantes) ; chaque commit et note indique la version du modèle utilisé (ex. Haiku 5.5).
+- 10/11 : 1.2.1 publiée sur « on publie » (Sonnet 5.5) : correctifs de la 1.2.0 (ligne de séparation contre un bord, groupe centré qui reste centré, groupe collé au bord gauche/droit qui garde son bord quand un bloc s'élargit, ligne sous un espace, fondu fluide). Cause du chevauchement : cadres `SetClampedToScreen` repoussés sur la colonne voisine. Pas de ligne `Claude-Session` dans les commits (règle de Braincell1980).

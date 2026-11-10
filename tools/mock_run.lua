@@ -1428,6 +1428,97 @@ for _, step in ipairs({
         assert(b.date.enabled and b.date.dock and b.date.dock.to == "time", "date next to the clock")
         ns:ResetProfile("top")
     end,
+    -- a free group in the middle of the screen keeps its center when a block grows,
+    -- a group on the left keeps its left edge
+    function()
+        MOCK_GEOMETRY = true
+        ns:ResetProfile("top")
+        ns:UpdateLayout()
+        ns:FreezeAnchoredGroups()
+        ns:UpdateLayout()
+        local b = ns.db.blocks
+        local root = ns:GetRoot("bags")
+        assert(not b[root].anchor and b[root].point, "top bar: a free position after the first layout")
+        local function Center()
+            local l, _, r = ns:GroupRectUI(root)
+            return (l + r) / 2, l
+        end
+        local c0 = Center()
+        b.time.autoWidth, b.time.width = false, (ns.frames.time:GetWidth() + 100)
+        ns:UpdateLayout()
+        local c1 = Center()
+        b.time.width = 20
+        ns:UpdateLayout()
+        local c2 = Center()
+        -- moved to the left third: no centering, the left edge stays
+        local l = ns:GroupRectUI(root)
+        local f = ns.frames[root]
+        local hl, hb, hr, ht = ns:GetRectUI(f)
+        b[root].point = ns:MakeRelativePoint(hl - l + 10, hb, hr - l + 10, ht, 1)
+        ns:ApplyStyle(root)
+        ns:UpdateLayout()
+        local _, left0 = Center()
+        b.time.width = 300
+        ns:UpdateLayout()
+        local _, left1 = Center()
+        MOCK_GEOMETRY = false
+        assert(math.abs(c1 - c0) <= 1 and math.abs(c2 - c0) <= 1,
+            string.format("centered bar moved: %.1f, %.1f, %.1f", c0, c1, c2))
+        assert(math.abs(left1 - left0) <= 1, string.format("bar on the left moved: %.1f, %.1f", left0, left1))
+        ns:ResetProfile("top")
+    end,
+    -- hover fade: the alpha moves a little every drawn frame, not in four jumps
+    function()
+        ns:ResetProfile("top")
+        ns:SetLocked(true)
+        local cfg, f = ns.db.blocks.gold, ns.frames.gold
+        cfg.fadeOut, cfg.fadeAlpha = true, 0
+        f.fade = 1
+        ns:UpdateFades()
+        local drive = ns.fadeDriver and ns.fadeDriver:GetScript("OnUpdate")
+        assert(drive, "fade: no per-frame driver")
+        drive(ns.fadeDriver, 1 / 60)
+        assert(f.fade > 0.9 and f.fade < 1, "fade: small first step, got " .. f.fade)
+        for _ = 1, 60 do
+            drive = ns.fadeDriver:GetScript("OnUpdate")
+            if not drive then break end
+            drive(ns.fadeDriver, 1 / 60)
+        end
+        assert(f.fade == 0 and not ns.fadeDriver:GetScript("OnUpdate"), "fade: reaches its target and stops")
+        cfg.fadeOut = false
+        ns:ResetProfile("top")
+    end,
+    -- separators: drawn between blocks only, never along a stuck screen edge
+    function()
+        MOCK_GEOMETRY = true
+        ns:ResetProfile("top")
+        local b = ns.db.blocks
+        for _, c in pairs(b) do c.separators = true end
+        ns:UpdateLayout()
+        local root = ns:GetRoot("bags")
+        b[root].anchor = nil   -- dragged by the player: a free position
+        ns:StickToEdges(root, { RIGHT = true, TOP = true })
+        ns:UpdateLayout()
+        local inner, onEdge = 0, 0
+        for key, f in pairs(ns.frames) do
+            if ns:GetRoot(key) == root and f:IsShown() then
+                for _, tex in ipairs(f.separatorPool or {}) do
+                    if tex:IsShown() then
+                        local l, b2, w, h = MockRect(tex)
+                        if l + w >= UIParent.__w - 1 or b2 + h >= UIParent.__h - 1 and w > h then
+                            onEdge = onEdge + 1
+                        else
+                            inner = inner + 1
+                        end
+                    end
+                end
+            end
+        end
+        MOCK_GEOMETRY = false
+        assert(inner > 0, "separators between the blocks of the bar")
+        assert(onEdge == 0, onEdge .. " separator(s) drawn along the screen edge")
+        ns:ResetProfile("top")
+    end,
     -- insert an empty spacer next to a block, in between if needed
     function()
         ns:ResetProfile("top")

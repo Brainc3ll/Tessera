@@ -2090,14 +2090,36 @@ end
 -- Hover fade: blocks with "fade out" stay faint until the mouse is over their
 -- group (a merged group, plus its second row, reacts as one), and show in combat
 -- if asked. Always fully shown while placing blocks.
-local FADE_STEP = 0.25
+local FADE_TIME = 0.3 -- seconds from shown to faint (or back), alpha changed every frame
 local hovered = {} -- reused: UpdateFades runs 10 times a second
+local fader -- frame whose OnUpdate moves every block's alpha toward its target
+
+-- One step of the fade: each block's alpha moves toward f.fadeTarget at a steady
+-- speed, every drawn frame, so it looks smooth; stops when every block is there
+local function StepFades(_, elapsed)
+    local step, busy = math.min(1, (elapsed or 0) / FADE_TIME), false
+    for _, f in pairs(ns.frames) do
+        local target, current = f.fadeTarget, f.fade or 1
+        if target and math.abs(current - target) > 0.001 then
+            if current < target then
+                f.fade = math.min(target, current + step)
+            else
+                f.fade = math.max(target, current - step)
+            end
+            ns:ApplyAlpha(f)
+            if math.abs(f.fade - target) > 0.001 then busy = true end
+        end
+    end
+    if not busy then fader:SetScript("OnUpdate", nil) end
+end
+
 function ns:UpdateFades()
     wipe(hovered)
     for key, f in pairs(self.frames) do
         if f:IsShown() and f:IsMouseOver() then hovered[self:GetVisualRoot(key)] = true end
     end
     local locked = self:IsLocked()
+    local moving = false
     for key, f in pairs(self.frames) do
         local cfg = self.db.blocks[key]
         if cfg and f:IsShown() then
@@ -2106,16 +2128,14 @@ function ns:UpdateFades()
                 and not (cfg.fadeShowCombat and self.state.inCombat) then
                 target = cfg.fadeAlpha or 0
             end
-            local current = f.fade or 1
-            if math.abs(current - target) > 0.001 then
-                if current < target then
-                    f.fade = math.min(target, current + FADE_STEP)
-                else
-                    f.fade = math.max(target, current - FADE_STEP)
-                end
-                self:ApplyAlpha(f)
-            end
+            f.fadeTarget = target
+            if math.abs((f.fade or 1) - target) > 0.001 then moving = true end
         end
+    end
+    if moving then
+        fader = fader or CreateFrame("Frame")
+        self.fadeDriver = fader -- (read by the tests)
+        if not fader:GetScript("OnUpdate") then fader:SetScript("OnUpdate", StepFades) end
     end
 end
 

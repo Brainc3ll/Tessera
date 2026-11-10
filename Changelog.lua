@@ -37,6 +37,30 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.3.0",
+        date = "",
+        sections = {
+            { kind = "improved",
+              en = {
+                "Show only on hover: blocks fade in and out without visible steps.",
+              },
+              fr = {
+                "Afficher seulement au survol : les blocs apparaissent et disparaissent sans à-coups.",
+              },
+            },
+            { kind = "fixed",
+              en = {
+                "A group you stick to a screen edge gets no separator line along that edge.",
+                "A group you place in the middle of the screen stays centered when its blocks get wider or narrower.",
+              },
+              fr = {
+                "Un groupe que vous collez à un bord de l'écran n'a plus de ligne de séparation contre ce bord.",
+                "Un groupe que vous placez au milieu de l'écran reste centré quand ses blocs s'élargissent ou rétrécissent.",
+              },
+            },
+        },
+    },
+    {
         version = "1.2.0",
         date = "2026-11-07",
         sections = {

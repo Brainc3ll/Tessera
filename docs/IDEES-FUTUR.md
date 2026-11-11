@@ -374,3 +374,6 @@ Bugs de la fenêtre d'options de FlareUI, corrigés chez lui (changelogs 1.1 à 
 - Ouvrir la fenêtre depuis Options > Addons qui ferme celle de Blizzard et peut perdre des changements de touches (2.0).
 À reprendre de FlareUI : recherche qui ignore les accents et trouve les anciens noms (utile quand « Afficher » devient « Sur l'écran »), réglages du même sujet regroupés, Maj + molette pour agrandir la fenêtre (70 % à 130 %), fermeture avec « Recharger maintenant / Plus tard » quand un rechargement attend.
 
+## Échelle « Pixel perfect » (reportée de la 1.3, 11/11)
+- Choix dans Apparence : échelle du jeu, pixel perfect, personnalisée. Une unité de Tessera = un pixel de l'écran ; Tessera ne touche pas à l'échelle du jeu, seulement à celle de ses blocs. Formule à vérifier en jeu avec `GetPhysicalScreenSize` (`ns:PixelInUI`, Placement.lua, donne déjà la taille d'un pixel). Recalcul au changement de résolution ou d'échelle du jeu. Nouveau champ de profil : T2 (tessera-gate2).
+- Décisions déjà prises : sous 50 % permis en pixel perfect, avec une phrase qui le dit ; l'échelle propre d'un groupe s'ajoute par-dessus. Attention : blocs environ deux fois plus petits en 1440p.

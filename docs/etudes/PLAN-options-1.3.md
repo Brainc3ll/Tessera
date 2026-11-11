@@ -85,7 +85,7 @@ Le curseur d'échelle générale existe (`GLOBAL_SCALE`). « Pixel perfect » se
 | 2 | « Sur l'écran » / « Retirer » : plan, relecture indépendante, anciens fichiers, puis zip | Élevé (T2) | Opus 5.5 |
 | 3 | Lignes, mise en page, cadre de la fenêtre (logo, réduire, aide, recherche). Coupé en 3a (lignes, une colonne, défilement : test92, fait le 11/11) et 3b (cadre : test93, fait le 11/11) | Moyen | Opus 5.5 |
 | 4 | Rangement des pages, onglet Accessibilité, sections repliées, style par bloc (fait le 11/11 : test96) | Moyen | Opus 5.5 |
-| 5 | Placement au pixel (bandeau, pad, flèches, message de première fois), échelle pixel perfect | Moyen | Opus 5.5 |
+| 5 | Placement au pixel (bandeau, pad, flèches, message de première fois) : fait (test102 à test105). Échelle pixel perfect : reportée après la 1.3 (11/11) | Moyen | Opus 5.5 |
 | 6 | Sélecteur de langue ; revoir la première expérience du joueur (bienvenue, visite guidée, premiers pas, mode démo) avec la nouvelle fenêtre et le placement au pixel (demande du 11/11) | Faible si la voie A marche | Sonnet 5.5 |
 | 7 | Aide, infobulles, README, pages, traductions, visite guidée ; vérifications ; publication sur « on publie » | Faible | Sonnet 5.5 |
 

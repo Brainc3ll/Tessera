@@ -49,7 +49,11 @@ jobs:
       # failure stops the release here, before any tag or upload
       - name: Check the documentation
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 >/dev/null
+          # the package servers sometimes fail for a few minutes: try three times
+          for try in 1 2 3; do
+            sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 >/dev/null && break
+            echo "apt failed (try $try of 3), waiting"; sleep 30
+          done
           lua5.1 tools/check_docs.lua . release
 
       # "Run workflow": create the tag of the version written in Tessera.toc

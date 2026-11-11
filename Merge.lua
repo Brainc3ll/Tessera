@@ -1367,15 +1367,11 @@ end
 -- (propagated along effective dock links until nothing changes; vertical docks
 -- share their target's x because they are left-aligned).
 -- Returns the group's total width and the head's x offset from the group's left edge.
--- A free group dropped in the middle third of the screen keeps its center when its
--- blocks grow or shrink: its saved point belongs to the head block, so the head moves
--- by the change of the group's center relative to it. Decided once per saved point
--- (drop, profile, undo). A group stuck to a side edge keeps that edge instead (see below);
--- a stretched one is left alone.
--- cfg.keepCenter (saved, so the blocks' first short texts after a login do not move
--- the center): x = head offset last applied, center = wanted center. Not exported:
--- an imported group decides again.
-local function KeepCentered(self, key, cfg, f, width, groupWidth, headX)
+-- A group stuck to a side edge of the screen keeps that edge instead (see below); a free
+-- group keeps its place (head block) and a stretched one is left alone. Since 1.3 Tessera
+-- no longer keeps the center of a free group (1.2.1 did, for groups dropped in the middle
+-- third of the screen: a bar that came and went, like a whisper, left it off-center).
+local function KeepEdges(self, key, cfg, f, width, groupWidth, headX)
     local p = cfg.point
     if not (p and p[1] and p[3]) or self.dragging or InCombatLockdown() then return end
     -- a group stuck to a side edge of the screen keeps its outer edge on that edge when
@@ -1398,28 +1394,9 @@ local function KeepCentered(self, key, cfg, f, width, groupWidth, headX)
             return
         end
     end
-    local shift = groupWidth / 2 - headX - (width[key] or 0) / 2   -- group center - head center
-    local sig = tostring(p[1]) .. tostring(p[2]) .. tostring(p[4])
-    local k = cfg.keepCenter
-    if not (k and k.x == p[3] and k.sig == sig) then
-        local free = not cfg.stretch and not (edges and (edges.LEFT or edges.RIGHT))
-        local ratio = f:GetEffectiveScale() / UIParent:GetEffectiveScale()
-        local l, _, r = self:PointToRect(p, width[key] or 0, f:GetHeight(), ratio)
-        local cx, W = (l + r) / 2 + shift * ratio, UIParent:GetWidth()
-        cfg.keepCenter = { x = p[3], sig = sig,
-            center = free and cx >= W / 3 and cx <= W * 2 / 3 and p[3] + shift or nil }
-        return
-    end
-    if not k.center then return end
-    -- a group placed to the pixel ("Place") keeps its decimals: rounding to whole units
-    -- would undo steps smaller than one unit
-    local x = p[3] % 1 ~= 0 and math.floor((k.center - shift) * 1000 + 0.5) / 1000
-        or math.floor(k.center - shift + 0.5)
-    if x ~= p[3] then
-        p[3], k.x = x, x
-        f:ClearAllPoints()
-        f:SetPoint(p[1], UIParent, p[2], p[3], p[4])
-    end
+    -- any other free group keeps the place the player gave it: its head stays where it is
+    -- (the group grows to the right when a block widens). Tessera does not re-center it.
+    cfg.keepCenter = nil -- (saved by 1.2.1 and the first 1.3 tests: not used any more)
 end
 
 local function GroupExtent(self, head, width)
@@ -1428,33 +1405,9 @@ local function GroupExtent(self, head, width)
     -- a hidden block that others still hang from (e.g. a hidden block under the bar
     -- with a block on its right) is a zero-width link: its dependents must be placed
     -- too. Only for this computation: the width table itself is not changed.
-    -- A hidden block keeps its place only for what comes after it: when nothing that
-    -- is turned on and docked after it takes room, its place would be an invisible gap
-    -- at the end of the bar, and a bar kept centered would sit off-center by half of it
-    -- (a whisper came and went). Blocks turned off do not count: the ready-made bars
-    -- keep the chain of their blocks docked one to the next, turned off or not.
-    local roomCache = {}
-    local function TakesRoom(key, seen)
-        if roomCache[key] ~= nil then return roomCache[key] end
-        local f = self.frames[key]
-        if f and f:IsShown() then roomCache[key] = true return true end
-        seen = seen or {}
-        if seen[key] then return false end
-        seen[key] = true
-        for k, c in pairs(self.db.blocks) do
-            if c.enabled and ((c.dock and c.dock.to == key) or ns.HangTarget(c.anchor) == key)
-                and TakesRoom(k, seen) then
-                roomCache[key] = true
-                return true
-            end
-        end
-        roomCache[key] = false
-        return false
-    end
     local function W(key)
-        local f = self.frames[key]
-        if f and not f:IsShown() and not TakesRoom(key) then return 0 end
         if width[key] then return width[key] end
+        local f = self.frames[key]
         if f and not f:IsShown() then return 0 end
     end
     local changed = true
@@ -1569,7 +1522,7 @@ function ns:CenterAnchoredGroups(width)
                 self:AnchorToFrame(f, cfg)
             end
         elseif not cfg.anchor and cfg.point and f and not self:GetDockTarget(key) then
-            KeepCentered(self, key, cfg, f, width, GroupExtent(self, key, width))
+            KeepEdges(self, key, cfg, f, width, GroupExtent(self, key, width))
         end
     end
 end

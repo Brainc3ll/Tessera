@@ -81,7 +81,8 @@ ns.CHANGELOG = {
                 "Streamer mode block: \"Hide when empty\" is off by default, so the block stays on screen to switch the mode on.",
                 "Welcome window and quick tour: they follow the new options window (\"On screen\", placing to the pixel, search, help, Accessibility).",
                 "\"Place by pixel\" is wider and its text is gold, so it is easy to find.",
-                "A hidden block at the end of a bar no longer leaves an empty place: a centered bar stays centered when a whisper comes and goes.",
+                "A bar you placed no longer re-centers itself when a block grows or shrinks (a whisper arriving, for one):"
+                    .. " it stays where you put it, and grows to the right.",
                 "Export, import and report windows open in front of the options, in the middle of the screen.",
                 "The options window opens in the middle of the screen each time, and comes back there when a window that pushed it aside is closed.",
                 "Help tab: topics in groups that go together (getting started, placing, the settings tabs, other addons, help),"
@@ -110,7 +111,8 @@ ns.CHANGELOG = {
                 "Fenêtre de bienvenue et visite rapide : elles suivent la nouvelle fenêtre d'options"
                     .. " (« Sur l'écran », placement au pixel, recherche, aide, Accessibilité).",
                 "« Placer au pixel » est plus large et son texte est doré : on le trouve plus vite.",
-                "Un bloc masqué au bout d'une barre ne laisse plus de place vide : une barre centrée reste centrée quand un chuchotement arrive puis part.",
+                "Une barre que vous avez placée ne se recentre plus quand un bloc s'élargit ou rétrécit (un chuchotement qui arrive,"
+                    .. " par exemple) : elle reste où vous l'avez mise, et s'agrandit vers la droite.",
                 "Les fenêtres d'export, d'import et de rapport s'ouvrent devant les options, au milieu de l'écran.",
                 "La fenêtre d'options s'ouvre chaque fois au milieu de l'écran, et y revient quand une fenêtre qui l'avait poussée se ferme.",
                 "Onglet Aide : sujets rangés en groupes qui vont ensemble (prise en main, placement, onglets de réglages,"

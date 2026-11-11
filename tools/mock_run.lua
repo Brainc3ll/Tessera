@@ -1601,7 +1601,7 @@ for _, step in ipairs({
         assert(not b[root].anchor and b[root].point, "top bar: a free position after the first layout")
         local function Center()
             local l, _, r = ns:GroupRectUI(root)
-            return (l + r) / 2, l
+            return l, l
         end
         local c0 = Center()
         b.time.autoWidth, b.time.width = false, (ns.frames.time:GetWidth() + 100)
@@ -1622,13 +1622,14 @@ for _, step in ipairs({
         ns:UpdateLayout()
         local _, left1 = Center()
         MOCK_GEOMETRY = false
+        -- (1.3: a free group keeps its place, it is no longer re-centered when a block grows)
         assert(math.abs(c1 - c0) <= 1 and math.abs(c2 - c0) <= 1,
-            string.format("centered bar moved: %.1f, %.1f, %.1f", c0, c1, c2))
+            string.format("free bar moved when a block changed: %.1f, %.1f, %.1f", c0, c1, c2))
         assert(math.abs(left1 - left0) <= 1, string.format("bar on the left moved: %.1f, %.1f", left0, left1))
         ns:ResetProfile("top")
     end,
-    -- a block that shows up in a centered bar (a whisper arrives) and goes away again:
-    -- the bar keeps its center, and its saved center stays the same
+    -- a block that shows up at the end of a free bar (a whisper arrives) and goes away again:
+    -- the bar keeps its place (its left edge), in placement mode as well
     function()
         MOCK_GEOMETRY = true
         ns:ResetProfile("top")
@@ -1638,52 +1639,39 @@ for _, step in ipairs({
         ns:UpdateLayout()
         local b = ns.db.blocks
         local root = ns:GetRoot("bags")
-        -- the whispers block at the right end of the bar, hidden while empty
-        local last = root
-        local found = true
-        while found do
-            found = false
-            for k, c in pairs(b) do
-                if k ~= "whispers" and c.dock and c.dock.to == last and c.dock.side == "RIGHT" and c.enabled then
-                    last, found = k, true
-                    break
-                end
-            end
-        end
         b.whispers.enabled, b.whispers.hideEmpty = true, true
-        b.whispers.dock = { to = last, side = "RIGHT" }
+        b.whispers.dock = { to = "time", side = "RIGHT" }
         ns:UpdateAll()
         ns:UpdateLayout()
-        local function Visible()
-            local l, r
+        local function Left()
+            local l
             for k, f in pairs(ns.frames) do
                 if f:IsShown() and ns:GetRoot(k) == root then
-                    local fl, _, fr = ns:GetRectUI(f)
+                    local fl = ns:GetRectUI(f)
                     l = l and math.min(l, fl) or fl
-                    r = r and math.max(r, fr) or fr
                 end
             end
-            return (l + r) / 2
+            return l
         end
-        -- the first appearance settles the saved center, then it comes and goes
-        local c0 = Visible()
-        local saved = b[root].keepCenter and b[root].keepCenter.center
+        local l0 = Left()
         local mod = ns.modules.whispers
         local originalEmpty = mod.isEmpty
         mod.isEmpty = function() return false end
         ns:UpdateVisibility("whispers", true)
         ns:UpdateLayout()
-        local c1 = Visible()
+        local l1 = Left()
         mod.isEmpty = originalEmpty
         ns:UpdateVisibility("whispers", true)
         ns:UpdateLayout()
-        local c2 = Visible()
-        local saved2 = b[root].keepCenter and b[root].keepCenter.center
+        local l2 = Left()
+        ns:SetLocked(false, true)
+        ns:UpdateAllVisibility()
+        ns:UpdateLayout()
+        local l3 = Left()
         MOCK_GEOMETRY = false
         ns:ResetProfile("top")
-        assert(math.abs(c1 - c0) <= 1 and math.abs(c2 - c0) <= 1,
-            string.format("bar off-center after a block came and went: %.1f, %.1f, %.1f", c0, c1, c2))
-        assert(saved == saved2, "the saved center changed when a block came and went")
+        assert(math.abs(l1 - l0) <= 1 and math.abs(l2 - l0) <= 1 and math.abs(l3 - l0) <= 1,
+            string.format("bar moved when a block came and went: %.1f, %.1f, %.1f, %.1f", l0, l1, l2, l3))
     end,
     -- hover fade: the alpha moves a little every drawn frame, not in four jumps
     function()

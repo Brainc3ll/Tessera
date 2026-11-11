@@ -27,7 +27,7 @@ local L = ns.L
 --   Blocks     selection (all blocks, all launchers or a single block) and its settings
 --   Look       style, how groups look, ready-made layouts, screen edges
 --   General    moving, tooltips, combat, chat, minimap
---   Accessibility  colors of levels, high contrast, text sizes, fewer animations (1.3)
+--   Accessibility  colors of levels, high contrast, fewer animations, text size (1.3)
 --   Launchers  add and edit launcher blocks and DataBroker blocks
 --   Broker     share Tessera's blocks with DataBroker addons, DataBroker mode
 --   Profiles   profiles and reset
@@ -58,41 +58,9 @@ local NAV_W = 176            -- navigation list, on the left
 local PAGE_TOP = -64         -- top of the pages, under the title
 ns.OPTIONS_PAGE_TOP = PAGE_TOP
 local SEARCH_W = 200         -- search box, in the top bar
+local TOPBAR_RIGHT = 134     -- top bar, right of the lock button: the size (%), fold, close
 local HELP_W = 260           -- help panel, on the right (1.3): explains the setting under the mouse
 local PANEL_W, PANEL_H = 720 + NAV_W + HELP_W, 780
--- Bigger text (Accessibility tab, 1.3): the text of Tessera's windows at 100, 150 or 200 %,
--- read when the window is built (a change asks for a reload). From 150 % the help panel
--- moves under the page and the window loses its right part: the page keeps its width.
-local HELP_BELOW_H = 170     -- help panel under the page
-local textScale, helpBelow = 1, false
-local PAGE_RIGHT = HELP_W    -- room right of the page (help panel, or the margin)
-
--- Text size of Tessera's windows, read once per session (ns.sv.optionsTextScale)
-local scaleRead = false
-local function TextScale()
-    if not scaleRead and ns.sv then
-        local v = tonumber(ns.sv.optionsTextScale)
-        textScale = (v == 1.5 or v == 2) and v or 1
-        scaleRead = true
-    end
-    return textScale
-end
--- The game's font objects at the chosen size: a copy of each, made once ("GameFontNormal"
--- stays the game's own; the window uses "TesseraOpt_GameFontNormal" when bigger)
-local function OptFont(name)
-    local scale = TextScale()
-    if scale == 1 or not CreateFont then return name end
-    local copyName = "TesseraOpt_" .. name
-    if not _G[copyName] then
-        local base = _G[name]
-        local font = CreateFont(copyName)
-        if not (font and base) then return name end
-        font:CopyFontObject(base)
-        local path, size, flags = font:GetFont()
-        if path and size then font:SetFont(path, math.floor(size * scale + 0.5), flags or "") end
-    end
-    return copyName
-end
 local COL_W = 300
 local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
@@ -441,7 +409,7 @@ end
 
 -- Small title label at the top-left of a widget holder
 local function AddTitle(holder, text)
-    local title = holder:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalSmall"))
+    local title = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     title:SetPoint("TOPLEFT")
     title:SetText(text)
     return title
@@ -512,7 +480,7 @@ end
 
 -- Label on the left of a row; owner (default: the row) makes the font string
 local function RowLabel(row, text, owner)
-    local fs = (owner or row):CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+    local fs = (owner or row):CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     fs:SetPoint("LEFT", row, "LEFT", 0, 0)
     fs:SetWidth(ROW_LABEL_W)
     fs:SetJustifyH("LEFT")
@@ -538,7 +506,7 @@ end
 -- Section header: gold text with a thin line underneath
 local function CreateHeader(parent, text)
     local holder = CreateFrame("Frame", nil, parent)
-    local fs = holder:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
+    local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     fs:SetPoint("BOTTOMLEFT", 0, 5)
     fs:SetText(text)
     -- room above the text: sections stand apart (more with bigger text)
@@ -564,13 +532,11 @@ local function CreateSection(parent, text, folded)
     local sign = b:CreateTexture(nil, "ARTWORK")
     sign:SetSize(16, 16)
     sign:SetPoint("BOTTOMLEFT", 0, 5)
-    local fs = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
+    local fs = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     fs:SetPoint("LEFT", sign, "RIGHT", 6, 0)
     fs:SetText(text)
     local h = math.max(30, (fs:GetStringHeight() or 0) + 16) -- (bigger text: taller)
     b:SetSize(FULL_W, h)
-    local size = math.max(16, math.floor(16 * TextScale()))
-    sign:SetSize(size, size)
     local line = b:CreateTexture(nil, "ARTWORK")
     line:SetColorTexture(1, 0.82, 0, 0.4)
     line:SetHeight(1)
@@ -601,7 +567,7 @@ end
 -- Multi-line help text (default width: the whole page)
 local function CreateNote(parent, text, width)
     local holder = CreateFrame("Frame", nil, parent)
-    local fs = holder:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
+    local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     fs:SetPoint("TOPLEFT")
     fs:SetWidth(width or FULL_W)
     fs:SetJustifyH("LEFT")
@@ -650,7 +616,7 @@ local SWITCH_W = 150
 local function CreateSwitch(parent, label, getter, setter, isShown, tip)
     local b = CreateFrame("Button", nil, parent)
     b:SetSize(SWITCH_W, 44)
-    local title = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalSmall"))
+    local title = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     title:SetPoint("TOPLEFT")
     title:SetWidth(SWITCH_W)
     title:SetJustifyH("LEFT")
@@ -668,7 +634,7 @@ local function CreateSwitch(parent, label, getter, setter, isShown, tip)
     local knob = b:CreateTexture(nil, "ARTWORK", nil, 2)
     knob:SetPoint("TOPLEFT", knobEdge, "TOPLEFT", 1, -1)
     knob:SetPoint("BOTTOMRIGHT", knobEdge, "BOTTOMRIGHT", -1, 1)
-    local state = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+    local state = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     state:SetPoint("LEFT", edge, "RIGHT", 8, 0)
     b.hover = b:CreateTexture(nil, "HIGHLIGHT")
     b.hover:SetAllPoints(edge)
@@ -1912,7 +1878,6 @@ end
 -- (account-wide: they concern the player, not a layout). The game's settings are not
 -- redone here: a note points to them.
 ---------------------------------------------------------------------------
-local TEXT_SCALES = { { key = "100", name = "100 %" }, { key = "150", name = "150 %" }, { key = "200", name = "200 %" } }
 local function BuildAccessPage(page)
     page = ScrollArea(page, 16)
     local P = NewLayout(page)
@@ -1957,17 +1922,6 @@ local function BuildAccessPage(page)
             ns.sv.minFontSize = v > 0 and v or nil
             ns:RefreshAllBlocks()
         end, nil, L.TIP_MIN_FONT_SIZE), 1)
-    Place(CreateDropdown(page, L.WINDOW_TEXT_SIZE, TEXT_SCALES,
-        function() return tostring(math.floor((ns.sv.optionsTextScale or 1) * 100 + 0.5)) end,
-        function(v)
-            local scale = (tonumber(v) or 100) / 100
-            ns.sv.optionsTextScale = scale ~= 1 and scale or nil
-            ns:RefreshOptions()
-        end, nil, nil, L.TIP_WINDOW_TEXT_SIZE), 1)
-    -- the new size is used once the interface is reloaded
-    local waiting = function() return (ns.sv.optionsTextScale or 1) ~= TextScale() end
-    Place(CreateNote(page, L.WINDOW_TEXT_RELOAD), 1).isShown = waiting
-    Place(CreateButton(page, L.RELOAD_SHORT, function() ReloadUI() end, waiting, nil, L.TIP_WINDOW_TEXT_RELOAD), 1)
 end
 
 ---------------------------------------------------------------------------
@@ -2568,6 +2522,7 @@ end
 
 -- Skins a Tessera window with the chosen theme (options window, placement banner, ...)
 function ns:SkinWindow(frame, title)
+    self:FollowWindowSize(frame) -- Shift + mouse wheel: the size of Tessera's windows
     local t = self:GetThemeInfo(self:GetTheme()).window()
     if title then title:SetTextColor(unpack(t.title)) end
     -- the expansion frames (The War Within, Midnight) are drawn for large windows: on a small
@@ -2674,7 +2629,7 @@ local function BuildTopicPage(page, getSections, bottomRoom)
     divider:SetPoint("BOTTOMLEFT", topicList, "BOTTOMRIGHT", 6, 0)
 
     local textX = COL_X[1] - 12 + TOPIC_W + 18
-    local textW = PANEL_W - NAV_W - PAGE_RIGHT - textX - 48
+    local textW = PANEL_W - NAV_W - HELP_W - textX - 48
     local ok, scroll = pcall(CreateFrame, "ScrollFrame", nil, page, "ScrollFrameTemplate")
     if not ok then scroll = CreateFrame("ScrollFrame", nil, page, "UIPanelScrollFrameTemplate") end
     scroll:SetPoint("TOPLEFT", page, "TOPLEFT", textX, -6)
@@ -2685,12 +2640,12 @@ local function BuildTopicPage(page, getSections, bottomRoom)
     content:SetSize(textW, 10)
     scroll:SetScrollChild(content)
 
-    local title = content:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalLarge"))
+    local title = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT")
     title:SetWidth(textW)
     title:SetJustifyH("LEFT")
 
-    local text = content:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+    local text = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     text:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
     text:SetWidth(textW)
     text:SetJustifyH("LEFT")
@@ -2728,7 +2683,7 @@ local function BuildTopicPage(page, getSections, bottomRoom)
         b.mark:SetColorTexture(1, 0.82, 0, 0.9)
         b.mark:SetSize(3, TOPIC_H - 6)
         b.mark:SetPoint("LEFT", b, "LEFT", 0, 0)
-        b.label = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+        b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         b.label:SetPoint("LEFT", b, "LEFT", 10, 0)
         b.label:SetPoint("RIGHT", b, "RIGHT", -4, 0)
         b.label:SetJustifyH("LEFT")
@@ -2892,14 +2847,14 @@ local function CopyBox(parent, width, getText)
     return box
 end
 local function BuildAboutLinks(page)
-    local title = page:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
+    local title = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     title:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 88)
     title:SetText(L.ABOUT_LINKS)
     -- Tessera's links: a button puts its link in the shared box
     local current = ""
     local box = CopyBox(page, FULL_W - 150, function() return current end)
     box:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + 6, 26)
-    local hint = page:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
+    local hint = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     hint:SetPoint("LEFT", box, "RIGHT", 10, 0)
     hint:SetText(L.ABOUT_COPY_HINT)
     local w = math.floor((FULL_W - 3 * 6) / #ABOUT_LINKS)
@@ -3032,32 +2987,21 @@ local function BuildHelpPanel()
     local help = CreateFrame("Frame", nil, panel)
     local line = help:CreateTexture(nil, "ARTWORK")
     line:SetColorTexture(1, 0.82, 0, 0.25)
-    local textW
-    if helpBelow then
-        -- bigger text: under the page, as wide as it, a line above it
-        help:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W + COL_X[1], -(PANEL_H - HELP_BELOW_H) - 8)
-        help:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 16)
-        line:SetHeight(1)
-        line:SetPoint("TOPLEFT", 0, 6)
-        line:SetPoint("TOPRIGHT", 0, 6)
-        textW = PANEL_W - NAV_W - COL_X[1] - 40
-    else
-        help:SetPoint("TOPLEFT", panel, "TOPLEFT", PANEL_W - HELP_W, PAGE_TOP)
-        help:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 16)
-        line:SetWidth(1)
-        line:SetPoint("TOPLEFT", -10, 0)
-        line:SetPoint("BOTTOMLEFT", -10, 0)
-        textW = HELP_W - 32
-    end
+    help:SetPoint("TOPLEFT", panel, "TOPLEFT", PANEL_W - HELP_W, PAGE_TOP)
+    help:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 16)
+    line:SetWidth(1)
+    line:SetPoint("TOPLEFT", -10, 0)
+    line:SetPoint("BOTTOMLEFT", -10, 0)
+    local textW = HELP_W - 32
     local logo = help:CreateTexture(nil, "ARTWORK")
     logo:SetSize(96, 96)
     logo:SetPoint("TOP", help, "TOP", -8, -24)
     logo:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
-    local title = help:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalLarge"))
+    local title = help:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetWidth(textW)
     title:SetJustifyH("LEFT")
     if title.SetWordWrap then title:SetWordWrap(true) end
-    local body = help:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+    local body = help:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     body:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
     body:SetWidth(textW)
     body:SetJustifyH("LEFT")
@@ -3078,18 +3022,11 @@ local function BuildHelpPanel()
             title:SetText(name)
             body:SetText(tip)
         else
-            -- at rest: what the page is for (bigger text: not in the top bar), then the hints
+            -- at rest: the hints (on the Blocks tab, what a group selection does first)
             local text = L.HELP_PANEL_REST .. "\n\n" .. L.HELP_PANEL_ZOOM
             if currentPage == PAGE_BLOCKS then text = L.GROUP_HINT .. "\n\n" .. text end
-            if helpBelow then
-                -- no room for the logo under the page
-                logo:Hide()
-                title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -6)
-                text = (L["PAGE_HINT_" .. currentPage] or "") .. "\n\n" .. text
-            else
-                logo:Show()
-                title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -136)
-            end
+            logo:Show()
+            title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -136)
             title:SetText(L.OPTIONS_TITLE)
             body:SetText(text)
         end
@@ -3137,10 +3074,15 @@ local function BuildFoldButton()
     panel.fold = b
 end
 
--- Size of the window: Shift + mouse wheel anywhere on it, 70 % to 130 %, saved for
--- the account (on top of the automatic fit to small screens)
+-- Size of the windows: Shift + mouse wheel on any Tessera window, 70 % to 130 %, saved
+-- for the account. The options window takes it on top of its fit to small screens; the
+-- other windows (placement banner, tour, copy window...) follow it (ns:FollowWindowSize).
+local zoomWindows = {}
 local function ApplyZoom()
     FitPanelToScreen()
+    local zoom = ns.sv and ns.sv.optionsZoom or 1
+    for frame in pairs(zoomWindows) do frame:SetScale(zoom) end
+    if panel and panel.zoomText then panel.zoomText:Refresh() end
 end
 local function Zoom(delta)
     local z = (ns.sv.optionsZoom or 1) + (delta > 0 and ZOOM_STEP or -ZOOM_STEP)
@@ -3158,6 +3100,33 @@ local function ZoomOnShiftWheel(frame)
     end)
 end
 ns.OptionsZoomOnShiftWheel = ZoomOnShiftWheel
+
+-- A Tessera window other than the options: takes the windows' size and changes it
+-- with Shift + mouse wheel (called by SkinWindow)
+function ns:FollowWindowSize(frame)
+    if not frame or frame == panel then return end
+    if not zoomWindows[frame] then
+        zoomWindows[frame] = true
+        ZoomOnShiftWheel(frame)
+    end
+    frame:SetScale(self.sv and self.sv.optionsZoom or 1)
+end
+
+-- The size in the top bar, next to the fold arrow ("100 %"); its tooltip says how to change it
+local function BuildZoomText()
+    local f = CreateFrame("Frame", nil, panel)
+    f:SetSize(52, 22)
+    f:SetPoint("RIGHT", panel.fold, "LEFT", -6, 0)
+    local fs = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    fs:SetPoint("CENTER")
+    f.Refresh = function()
+        fs:SetText(math.floor((ns.sv.optionsZoom or 1) * 100 + 0.5) .. " %")
+    end
+    f:EnableMouse(true)
+    AttachTip(f, L.WINDOW_ZOOM, L.TIP_WINDOW_ZOOM)
+    f:Refresh()
+    panel.zoomText = f
+end
 
 ---------------------------------------------------------------------------
 -- Search (1.3): finds a setting by its name, its tooltip, its section or an old
@@ -3252,7 +3221,7 @@ local function BuildSearch(showPage)
     local ok, box = pcall(CreateFrame, "EditBox", nil, panel, "SearchBoxTemplate")
     if not ok then box = CreateFrame("EditBox", nil, panel, "InputBoxTemplate") end
     box:SetSize(SEARCH_W, 20)
-    box:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -(76 + 170 + 12), -21)
+    box:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -(TOPBAR_RIGHT + 170 + 12), -21)
     box:SetAutoFocus(false)
     if type(box.Instructions) == "table" then box.Instructions:SetText(L.SEARCH) end
     AttachTip(box, L.SEARCH, L.TIP_SEARCH)
@@ -3271,7 +3240,7 @@ local function BuildSearch(showPage)
     results:Hide()
     panel.results = results
     local lines, list, chosen = {}, {}, 1
-    local empty = results:CreateFontString(nil, "OVERLAY", OptFont("GameFontDisable"))
+    local empty = results:CreateFontString(nil, "OVERLAY", "GameFontDisable")
     empty:SetPoint("TOPLEFT", 10, -8)
     empty:SetText(L.SEARCH_NONE)
 
@@ -3302,12 +3271,12 @@ local function BuildSearch(showPage)
         b.bar:SetWidth(3)
         b.bar:SetColorTexture(1, 0.82, 0, 1)
         b:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-        b.name = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+        b.name = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         b.name:SetPoint("TOPLEFT", 10, -3)
         b.name:SetPoint("RIGHT", -6, 0)
         b.name:SetJustifyH("LEFT")
         if b.name.SetWordWrap then b.name:SetWordWrap(false) end
-        b.place = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontDisableSmall"))
+        b.place = b:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
         b.place:SetPoint("TOPLEFT", b.name, "BOTTOMLEFT", 0, -2)
         b.place:SetPoint("RIGHT", -6, 0)
         b.place:SetJustifyH("LEFT")
@@ -3363,6 +3332,7 @@ end
 local function BuildWindowFrame(showPage)
     BuildHelpPanel()
     BuildFoldButton()
+    BuildZoomText()
     BuildSearch(showPage)
     -- Shift + wheel over the window: its size
     ZoomOnShiftWheel(panel)
@@ -3407,14 +3377,6 @@ ns.ListenForUndo = ListenForUndo
 -- Creates the main options window, its tabs and pages (called once, lazily)
 local function BuildPanel()
     ValidateSelection()
-    -- bigger text: the help panel goes under the page, the list of pages gets wider
-    -- (read once: a change needs a reload)
-    if TextScale() >= 1.5 and not helpBelow then
-        helpBelow = true
-        PAGE_RIGHT = 16
-        NAV_W = math.floor(176 * (1 + (TextScale() - 1) * 0.5))
-        PANEL_W = 720 + NAV_W + PAGE_RIGHT
-    end
 
     panel = CreateFrame("Frame", "TesseraOptions", UIParent, "BackdropTemplate")
     panel:SetSize(PANEL_W, PANEL_H)
@@ -3451,13 +3413,13 @@ local function BuildPanel()
     logo:SetPoint("TOPLEFT", 18, -16)
     logo:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
     panel.logo = logo
-    panel.title = panel:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalLarge"))
+    panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     panel.title:SetPoint("LEFT", logo, "RIGHT", 8, 0)
     panel.title:SetText(L.OPTIONS_TITLE)
     -- one plain sentence on what the open page is for, next to the title
-    panel.hint = panel:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
+    panel.hint = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     panel.hint:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, -20)
-    panel.hint:SetPoint("RIGHT", panel, "RIGHT", -(SEARCH_W + 170 + 76 + 16), 0)
+    panel.hint:SetPoint("RIGHT", panel, "RIGHT", -(SEARCH_W + 170 + TOPBAR_RIGHT + 16), 0)
     panel.hint:SetHeight(30)
     panel.hint:SetJustifyH("LEFT")
     panel.hint:SetJustifyV("MIDDLE")
@@ -3468,7 +3430,7 @@ local function BuildPanel()
 
     local lockButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     lockButton:SetSize(170, 22)
-    lockButton:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -76, -20)
+    lockButton:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -TOPBAR_RIGHT, -20)
     lockButton:SetScript("OnClick", function() ns:SetLocked(not ns.db.locked) end)
     lockButton.Refresh = function(self)
         self:SetText(ns.db.locked and L.UNLOCK_BUTTON or L.LOCK_BUTTON)
@@ -3483,7 +3445,6 @@ local function BuildPanel()
         if index == PAGE_BROKER and not ns.modules[selected] then selected = DataModuleKeys()[1] or ALL end
         currentPage = index
         panel.hint:SetText(L["PAGE_HINT_" .. index] or "")
-        panel.hint:SetShown(TextScale() == 1) -- bigger text: in the help panel instead
         if ns.ShowOptionHelp then ns:ShowOptionHelp() end -- help panel back to rest
         for i, p in ipairs(pages) do
             p:SetShown(i == index)
@@ -3520,7 +3481,7 @@ local function BuildPanel()
         local hover = tab:CreateTexture(nil, "HIGHLIGHT") -- shown by the game while hovered
         hover:SetAllPoints()
         hover:SetColorTexture(1, 1, 1, 0.07)
-        tab.label = tab:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+        tab.label = tab:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         tab.label:SetPoint("LEFT", 12, 0)
         tab.label:SetPoint("RIGHT", -4, 0)
         tab.label:SetJustifyH("LEFT")
@@ -3537,7 +3498,7 @@ local function BuildPanel()
 
         local page = CreateFrame("Frame", nil, panel)
         page:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, PAGE_TOP)
-        page:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -PAGE_RIGHT, helpBelow and HELP_BELOW_H or 0)
+        page:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -HELP_W, 0)
         page.pageIndex = i
         pages[i] = page
     end
@@ -3639,16 +3600,16 @@ local function RegisterBlizzardSettings()
 
     local canvas = CreateFrame("Frame")
 
-    local title = canvas:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalHuge"))
+    local title = canvas:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText(L.OPTIONS_TITLE)
 
     local version = C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(ADDON, "Version")
-    local sub = canvas:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
+    local sub = canvas:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
     sub:SetText(version and ("Version " .. version) or "")
 
-    local desc = canvas:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+    local desc = canvas:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     desc:SetPoint("TOPLEFT", sub, "BOTTOMLEFT", 0, -16)
     desc:SetWidth(560)
     desc:SetJustifyH("LEFT")
@@ -3751,7 +3712,7 @@ function ns:UpdatePlacementBanner()
             ns.sv.bannerPoint = { "CENTER", math.floor(x * k - cx + 0.5), math.floor(y * k - cy + 0.5) }
         end)
 
-        b.text = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
+        b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         b.text:SetPoint("TOPLEFT", 14, -11)
         b.text:SetText(L.PLACEMENT_TITLE)
 
@@ -3762,7 +3723,7 @@ function ns:UpdatePlacementBanner()
         b.layer:SetScript("OnClick", function() ns:ToggleTempLayer() end)
         AttachTip(b.layer, L.LAYER_TOGGLE, L.TIP_LAYER_TOGGLE)
 
-        b.hint = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
+        b.hint = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         b.hint:SetPoint("TOPLEFT", 14, -30)
         b.hint:SetWidth(372)
         b.hint:SetJustifyH("LEFT")
@@ -3818,11 +3779,11 @@ function ns:ShowPlacementInfo(lines, title)
         info:RegisterForDrag("LeftButton")
         info:SetScript("OnDragStart", function() b:StartMoving() end)
         info:SetScript("OnDragStop", function() b:GetScript("OnDragStop")(b) end)
-        info.title = info:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
+        info.title = info:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         info.title:SetPoint("TOPLEFT", 14, -10)
         info.title:SetWidth(b:GetWidth() - 28)
         info.title:SetJustifyH("LEFT")
-        info.text = info:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
+        info.text = info:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         info.text:SetWidth(b:GetWidth() - 28)
         info.text:SetJustifyH("LEFT")
         info.text:SetSpacing(3)
@@ -4031,9 +3992,9 @@ function ns:StartTutorial()
         tutorial:RegisterForDrag("LeftButton")
         tutorial:SetScript("OnDragStart", tutorial.StartMoving)
         tutorial:SetScript("OnDragStop", tutorial.StopMovingOrSizing)
-        tutorial.title = tutorial:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
+        tutorial.title = tutorial:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         tutorial.title:SetPoint("TOPLEFT", 16, -14)
-        tutorial.text = tutorial:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+        tutorial.text = tutorial:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         tutorial.text:SetPoint("TOPLEFT", 16, -38)
         tutorial.text:SetWidth(348)
         tutorial.text:SetJustifyH("LEFT")
@@ -4070,10 +4031,10 @@ function ns:StartTutorial()
         nextLayout:SetSize(28, 22)
         nextLayout:ClearAllPoints()
         nextLayout:SetPoint("TOPRIGHT", row, "TOPRIGHT", 0, 0)
-        row.name = row:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
+        row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         row.name:SetPoint("LEFT", prev, "RIGHT", 6, 0)
         row.name:SetPoint("RIGHT", nextLayout, "LEFT", -6, 0)
-        row.desc = row:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
+        row.desc = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.desc:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -8)
         row.desc:SetWidth(348)
         row.desc:SetJustifyH("LEFT")
@@ -4207,10 +4168,10 @@ local function BuildOffer()
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
     table.insert(UISpecialFrames, f:GetName()) -- Escape = keep the current style
 
-    f.title = f:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalLarge"))
+    f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     f.title:SetPoint("TOP", 0, -18)
     f.title:SetText("Tessera")
-    f.text = f:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+    f.text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     f.text:SetPoint("TOP", f.title, "BOTTOM", 0, -10)
     f.text:SetWidth(420)
     f.choices = {}
@@ -4218,7 +4179,7 @@ local function BuildOffer()
     f.preview:SetHeight(30)
     f.blocks = {}
     for i = 1, #PREVIEW_SAMPLES do f.blocks[i] = PreviewBlock(f.preview) end
-    f.note = f:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
+    f.note = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     f.note:SetWidth(420)
     f.note:SetText(L.STYLE_OFFER_NOTE)
 
@@ -4320,7 +4281,7 @@ function ns:ShowTextWindow(title, text, onAccept, acceptLabel)
         copyFrame:SetScript("OnDragStart", copyFrame.StartMoving)
         copyFrame:SetScript("OnDragStop", copyFrame.StopMovingOrSizing)
         table.insert(UISpecialFrames, "TesseraDebugCopy")
-        copyFrame.title = copyFrame:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
+        copyFrame.title = copyFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         copyFrame.title:SetPoint("TOPLEFT", 16, -14)
         local close = CreateFrame("Button", nil, copyFrame, "UIPanelCloseButton")
         close:SetPoint("TOPRIGHT", -4, -4)

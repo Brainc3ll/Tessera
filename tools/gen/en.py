@@ -65,7 +65,7 @@ EN = [
 ("SEARCH_NONE","No setting found"),
 ("SEARCH_OLD_ENABLED","Show, Hide, Enabled"),
 ("HELP_PANEL_REST","Point at a setting: its explanation shows here."),
-("HELP_PANEL_ZOOM","Shift + mouse wheel on the window: its size."),
+("HELP_PANEL_ZOOM","Shift + mouse wheel on a Tessera window: the size of all of them, shown at the top."),
 ("FOLD_WINDOW","Fold the window"),
 ("ABOUT_LINKS","Links"),
 ("ABOUT_LINK_ISSUES","Bugs and ideas"),

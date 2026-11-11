@@ -52,16 +52,14 @@ ns.CHANGELOG = {
               en = {
                 "Icon size goes up to 200 pixels. The block grows with its icon.",
                 "Blocks tab: give a style to one block, to its group or to every block. Ctrl + Z undoes it.",
-                "New Accessibility tab: threshold colors, high contrast, minimum text size, and two new settings.",
+                "New Accessibility tab: threshold colors, high contrast, minimum text size, and fewer animations.",
                 "Fewer animations: blocks fade at once, and a block that wants your attention lights up without flashing.",
-                "Text of Tessera's windows at 150 or 200 %. From 150 %, the help goes under the page.",
               },
               fr = {
                 "La taille de l'icône monte jusqu'à 200 pixels. Le bloc grandit avec son icône.",
                 "Onglet Blocs : donnez un style à un bloc, à son groupe ou à tous les blocs. Ctrl + Z l'annule.",
-                "Nouvel onglet Accessibilité : couleurs des seuils, contraste renforcé, taille minimale du texte, et deux nouveaux réglages.",
+                "Nouvel onglet Accessibilité : couleurs des seuils, contraste renforcé, taille minimale du texte, et moins d'animations.",
                 "Moins d'animations : les blocs s'estompent d'un coup, et un bloc qui veut votre attention s'éclaire sans clignoter.",
-                "Texte des fenêtres de Tessera à 150 ou 200 %. Dès 150 %, l'aide passe sous la page.",
               },
             },
             { kind = "improved",
@@ -77,7 +75,8 @@ ns.CHANGELOG = {
                 "Pages taller than the window scroll with the mouse wheel.",
                 "Search a setting from the top of the options window: Enter or a click opens its page and makes it blink. Old names work too.",
                 "A help panel on the right of the options window explains the setting under the mouse, in place of its tooltip.",
-                "The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %).",
+                "The arrow next to the cross folds the options window to its top bar."
+                    .. " Shift + mouse wheel changes its size (70 to 130 %), shown at the top; Tessera's other windows follow.",
                 "About tab: the links sit in boxes, ready to copy (the game opens no browser).",
                 "Blocks tab: one page in place of five sub-tabs. The \"On screen\" switch sits left of the block's name.",
                 "The essentials and the block's own settings come first; its look, when to show it, and its name and clicks fold into sections.",
@@ -97,7 +96,8 @@ ns.CHANGELOG = {
                 "Les pages plus hautes que la fenêtre défilent à la molette.",
                 "Cherchez un réglage en haut de la fenêtre d'options : Entrée ou un clic ouvre sa page et le fait clignoter. Les anciens noms marchent aussi.",
                 "Un panneau d'aide, à droite de la fenêtre d'options, explique le réglage sous la souris, à la place de son infobulle.",
-                "La flèche à côté de la croix réduit la fenêtre d'options à sa barre du haut. Maj + molette change sa taille (de 70 à 130 %).",
+                "La flèche à côté de la croix réduit la fenêtre d'options à sa barre du haut."
+                    .. " Maj + molette change sa taille (de 70 à 130 %), affichée en haut ; les autres fenêtres de Tessera suivent.",
                 "Onglet À propos : les liens sont dans des cases, prêts à copier (le jeu n'ouvre pas de navigateur).",
                 "Onglet Blocs : une seule page au lieu de cinq sous-onglets. L'interrupteur « Sur l'écran » se trouve à gauche du nom du bloc.",
                 "L'essentiel et les réglages propres au bloc viennent d'abord ; son apparence, quand l'afficher, son nom et ses clics se replient en sections.",

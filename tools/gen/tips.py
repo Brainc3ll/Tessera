@@ -46,8 +46,7 @@ TIPS_EN = {
 "TIP_STYLE_TO_GROUP":"Gives the style picked above to every block of the group (the bar and its rows), spacers included.",
 "TIP_STYLE_TO_ALL":"Gives the style picked above to every block. The window keeps its style.",
 "TIP_REDUCE_MOTION":"Blocks fade at once instead of slowly. A block that wants your attention, or a search result, lights up for a moment without flashing.",
-"TIP_WINDOW_TEXT_SIZE":"Size of the text in the options window and Tessera's other windows. From 150 %, the help goes under the page. You see the new size after a reload.",
-"TIP_WINDOW_TEXT_RELOAD":"Reloads the interface to use the new text size.",
+"TIP_WINDOW_ZOOM":"Shift + mouse wheel on a Tessera window changes this size, from 70 to 130 %. The options window, the placement banner, the tour and the copy window follow it.",
 }
 TIPS_FR = {
 "TIP_SELECTION":"Choisis à quoi s'appliquent les réglages ci-dessous : tous les blocs, tous les lanceurs, un groupe (une barre et ses rangées) ou un seul bloc (information, lanceur, DataBroker ou espace).",
@@ -97,6 +96,5 @@ TIPS_FR = {
 "TIP_STYLE_TO_GROUP":"Donne le style choisi au-dessus à tous les blocs du groupe (la barre et ses rangées), espaces compris.",
 "TIP_STYLE_TO_ALL":"Donne le style choisi au-dessus à tous les blocs. La fenêtre garde son style.",
 "TIP_REDUCE_MOTION":"Les blocs s'estompent d'un coup au lieu de lentement. Un bloc qui veut ton attention, ou un résultat de recherche, s'éclaire un instant sans clignoter.",
-"TIP_WINDOW_TEXT_SIZE":"Taille du texte de la fenêtre d'options et des autres fenêtres de Tessera. Dès 150 %, l'aide passe sous la page. Tu vois la nouvelle taille après un rechargement.",
-"TIP_WINDOW_TEXT_RELOAD":"Recharge l'interface pour utiliser la nouvelle taille du texte.",
+"TIP_WINDOW_ZOOM":"Maj + molette sur une fenêtre de Tessera change cette taille, de 70 à 130 %. La fenêtre d'options, le bandeau de placement, la visite et la fenêtre de copie la suivent.",
 }

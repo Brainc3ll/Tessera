@@ -890,9 +890,8 @@ NEW_EN = [
 ("SECTION_ACCESS_SEE","Colors and animations"),
 ("SECTION_ACCESS_TEXT","Text size"),
 ("REDUCE_MOTION","Fewer animations"),
-("WINDOW_TEXT_SIZE","Text of Tessera's windows"),
-("WINDOW_TEXT_RELOAD","Reload the interface to see the new text size."),
 ("ACCESS_GAME_NOTE","The game has its own accessibility settings (colorblind mode, motion sickness, camera shake): Esc, Options, Accessibility. Tessera adds what its blocks and windows need."),
+("WINDOW_ZOOM","Size of Tessera's windows"),
 ]
 NEW_FR = {
 "THEME_FLARE_SQUARE":"FlareUI carré",
@@ -1782,7 +1781,6 @@ NEW_FR = {
 "SECTION_ACCESS_SEE":"Couleurs et animations",
 "SECTION_ACCESS_TEXT":"Taille du texte",
 "REDUCE_MOTION":"Moins d'animations",
-"WINDOW_TEXT_SIZE":"Texte des fenêtres de Tessera",
-"WINDOW_TEXT_RELOAD":"Recharge l'interface pour voir la nouvelle taille du texte.",
 "ACCESS_GAME_NOTE":"Le jeu a ses propres réglages d'accessibilité (mode daltonien, mal des transports, tremblements de la caméra) : Échap, Options, Accessibilité. Tessera ajoute ce dont ses blocs et ses fenêtres ont besoin.",
+"WINDOW_ZOOM":"Taille des fenêtres de Tessera",
 }

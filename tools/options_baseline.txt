@@ -155,7 +155,6 @@ Target (gold or level)
 Text alignment
 Text color
 Text in class color
-Text of Tessera's windows
 Text of all blocks...
 Text shadow
 Text to show

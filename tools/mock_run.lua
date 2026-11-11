@@ -218,13 +218,6 @@ CreateFrame = function(kind, name, _, template)
     end
     return f
 end
--- font objects (bigger text of Tessera's windows, Accessibility tab)
-CreateFont = function(name)
-    local o = NewObject("Font")
-    o.GetFont = function() return "Fonts\\FRIZQT__.TTF", 12, "" end
-    if name then _G[name] = o end
-    return o
-end
 C_Timer = { After = function(_, fn) table.insert(_G.__timers, fn) end, NewTicker = function(_, fn) table.insert(_G.__tickers, fn); return NewObject("Ticker") end }
 __timers, __tickers = {}, {}
 GetLocale = function() return arg[2] or "frFR" end

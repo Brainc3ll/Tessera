@@ -13,9 +13,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Icon size goes up to 200 pixels. The block grows with its icon.
 - Blocks tab: give a style to one block, to its group or to every block. Ctrl + Z undoes it.
-- New Accessibility tab: threshold colors, high contrast, minimum text size, and two new settings.
+- New Accessibility tab: threshold colors, high contrast, minimum text size, and fewer animations.
 - Fewer animations: blocks fade at once, and a block that wants your attention lights up without flashing.
-- Text of Tessera's windows at 150 or 200 %. From 150 %, the help goes under the page.
 
 ### Improvements
 
@@ -29,7 +28,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Pages taller than the window scroll with the mouse wheel.
 - Search a setting from the top of the options window: Enter or a click opens its page and makes it blink. Old names work too.
 - A help panel on the right of the options window explains the setting under the mouse, in place of its tooltip.
-- The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %).
+- The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %), shown at the top; Tessera's other windows follow.
 - About tab: the links sit in boxes, ready to copy (the game opens no browser).
 - Blocks tab: one page in place of five sub-tabs. The "On screen" switch sits left of the block's name.
 - The essentials and the block's own settings come first; its look, when to show it, and its name and clicks fold into sections.

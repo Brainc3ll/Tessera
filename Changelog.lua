@@ -42,13 +42,13 @@ ns.CHANGELOG = {
         sections = {
             { kind = "new",
               en = {
-                "New style: Bronze and gold, after the settings window of FlareUI 6. Darker bronze edges and gold text;"
+                "New style: Bronze and gold, after the settings window of FlareUI 6. Bronze edges like its frames and gold text;"
                     .. " on the options window, a rock background and gold rows under the mouse."
                     .. " With FlareUI 6 installed, new profiles start with it."
                     .. " A profile on Bronze keeps its style, and Tessera offers the new one.",
               },
               fr = {
-                "Nouveau style : Bronze et or, d'après la fenêtre de réglages de FlareUI 6. Bords bronze plus sombres et texte or ;"
+                "Nouveau style : Bronze et or, d'après la fenêtre de réglages de FlareUI 6. Bords bronze comme ses cadres et texte or ;"
                     .. " sur la fenêtre d'options, un fond de roche et des lignes dorées sous la souris."
                     .. " Avec FlareUI 6 installé, les nouveaux profils commencent avec lui."
                     .. " Un profil en Bronze garde son style, et Tessera te propose le nouveau.",
@@ -57,11 +57,15 @@ ns.CHANGELOG = {
             { kind = "improved",
               en = {
                 "The styles that follow another interface get their own names: Bronze, Bronze (old) and Bronze square (FlareUI),"
-                    .. " Elven (ElvUI) and Emerald (EllesmereUI). Your blocks look the same; only the name changes.",
+                    .. " Elven (ElvUI) and Emerald (EllesmereUI). Your blocks look the same; only the name changes."
+                    .. " Without its addon, a style says which one it lacks: \"Elven (without ElvUI)\"."
+                    .. " Bronze (old), the FlareUI 1.x style, is back in the list.",
               },
               fr = {
                 "Les styles qui suivent une autre interface prennent leur propre nom : Bronze, Bronze ancien et Bronze carré (FlareUI),"
-                    .. " Elfique (ElvUI) et Émeraude (EllesmereUI). Tes blocs ne changent pas ; seul le nom change.",
+                    .. " Elfique (ElvUI) et Émeraude (EllesmereUI). Tes blocs ne changent pas ; seul le nom change."
+                    .. " Sans son addon, un style dit lequel lui manque : « Elfique (sans ElvUI) »."
+                    .. " Bronze ancien, le style de FlareUI 1.x, revient dans la liste.",
               },
             },
         },

@@ -182,7 +182,7 @@ Help tab inside the game explains everything.
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- 25 styles: matching FlareUI (Bronze, Bronze and gold), ElvUI (Elven), EllesmereUI (Emerald) (also without that addon, as an imitation) or
+- 26 styles: matching FlareUI (Bronze, Bronze and gold), ElvUI (Elven), EllesmereUI (Emerald) (also without that addon, as an imitation) or
   Blizzard's look (Blizzard Retail in silver, Blizzard Forever in gold, Blizzard Classic), Square
   styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
   Parchment; Arcane), styles made of the game's own frames (Royal seal, Ironforge, Runeblade,

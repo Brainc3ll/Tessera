@@ -1095,9 +1095,12 @@ for _, step in ipairs({
         ns.db.theme = "flareui2"
         assert(ns:WindowAccents().lit[2] == 0.82, "default accents changed for other styles")
         assert(ns:GetUIName("elvui") == "ElvUI" and ns:GetUIName("ellesmere") == "EllesmereUI", "UI names after renaming")
+        for _, t in ipairs(ns:GetAvailableThemes()) do
+            if t.key == "elvui" then assert(t.name:find("ElvUI", 1, true), "imitation does not name its addon: " .. t.name) end
+        end
         local cfg = {}
         ns:ApplyThemeToCfg(cfg, "flareui6")
-        assert(math.abs(cfg.borderColor.r - 0.55) < 0.01 and cfg.textTint, "Bronze and gold block style")
+        assert(math.abs(cfg.borderColor.r - 0.65) < 0.01 and cfg.textTint, "Bronze and gold block style")
         C_AddOns.GetAddOnMetadata, ns.HasFlareUIMedia = meta, has
         ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing = theme, auto, missing
     end,

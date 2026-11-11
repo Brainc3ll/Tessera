@@ -8,8 +8,8 @@ local L = ns.L
 --                 settings panel (tooltip border in that bronze over Blizzard's Collections tile)
 --   FlareUI 1.x : dark dialog background, bronze "FlareUI Thin" border (#A67D45),
 --                 the XP bar's font (Arial Narrow, outlined, unless changed in FlareUI)
---   The FlareUI style matching the installed version is the default. FlareUI 1.x is only
---   listed with FlareUI 1.x installed, or for a profile that already uses it.
+--   FlareUI 6.0 : Bronze and gold, its settings window (see the flareui6 entry)
+--   The FlareUI style matching the installed version is the default.
 --   EllesmereUI : very dark flat grey background (0.067, 0.95 opacity), 1 px black border
 --                 at 80%, EllesmereUI's global font (Expressway by default), as on its data bars,
 --                 and its accent color (#0CD29F) on the lines between merged blocks
@@ -173,8 +173,7 @@ ns.themes = {
         name = L.THEME_BRONZE_OLD, -- (FlareUI 1.x)
         uiName = "FlareUI",
         installed = function() return ns:HasFlareUIMedia() end,
-        -- no longer in the list, except for FlareUI 1.x itself or a profile that uses it
-        hidden = function() return FlareUIMajor() ~= 1 end,
+        -- listed again from 1.3.1: under its own name (Bronze (old)) it no longer looks like a duplicate
         available = function() return true end,
         missingNote = "THEME_NOTE_FLAREUI",
         block = function(cfg)
@@ -203,7 +202,7 @@ ns.themes = {
         -- FlareUI 6.0's settings window (Settings/Panel.lua): bronze edges (0.55, 0.42, 0.24),
         -- hover (0.79, 0.65, 0.35 at 12%, its list highlight), selection (1, 0.84, 0.5), gold
         -- text (0.91, 0.77, 0.42), natural rock under a brown wash (0.05, 0.038, 0.026 at 35%).
-        -- Its XP bar did not change in 6.0: the blocks take the window's colors (Tessera's choice)
+        -- Its XP bar did not change in 6.0: the blocks take its frames' bronze and the window's gold
         key = "flareui6",
         name = L.THEME_BRONZE_GOLD,
         uiName = "FlareUI",
@@ -216,7 +215,9 @@ ns.themes = {
             local thin = ns:HasFlareUIMedia()
             cfg.border = thin and "lsm:FlareUI Thin" or "solid"
             cfg.borderSize = thin and 8 or 1
-            cfg.borderColor = { r = 0.55, g = 0.42, b = 0.24, a = 1 }
+            -- the bronze of FlareUI's frames in game (quest tracker, minimap: #A67D45); its
+            -- window's inner boxes (0.55, 0.42, 0.24) look too dark on a bar (seen in game, 11-11)
+            cfg.borderColor = { r = 0.65, g = 0.49, b = 0.27, a = 1 }
             cfg.font, cfg.outline, cfg.textShadow = FlareFont()
             cfg.textTint = { r = 0.91, g = 0.77, b = 0.42, a = 1 }
             cfg.separators = true
@@ -725,7 +726,9 @@ function ns:GetAvailableThemes()
     local current = self:GetTheme()
     for _, t in ipairs(self.themes) do
         if t.available() and not (t.hidden and t.hidden() and t.key ~= current) then
-            local name = IsInstalled(t) and t.name or (t.name .. " " .. L.THEME_NOT_INSTALLED)
+            -- an imitation names the addon it lacks: "Elven (without ElvUI)"
+            local missing = t.uiName and L.THEME_WITHOUT:format(t.uiName) or L.THEME_NOT_INSTALLED
+            local name = IsInstalled(t) and t.name or (t.name .. " " .. missing)
             table.insert(list, { key = t.key, name = name })
         end
     end

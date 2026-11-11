@@ -59,5 +59,5 @@ FR = {
 "HELP_PANEL_REST":"Survole un réglage : son explication s'affiche ici.",
 "HELP_PANEL_ZOOM":"Maj + molette sur la fenêtre : sa taille.",
 "FOLD_WINDOW":"Réduire la fenêtre","ABOUT_LINKS":"Liens","ABOUT_LINK_ISSUES":"Bugs et idées",
-"ABOUT_COPY_HINT":"Ctrl + C pour copier","ABOUT_LINK_FLAREUI":"FlareUI, de Malkkav",
+"ABOUT_COPY_HINT":"Ctrl + C pour copier",
 }

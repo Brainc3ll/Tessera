@@ -71,5 +71,4 @@ EN = [
 ("ABOUT_LINKS","Links"),
 ("ABOUT_LINK_ISSUES","Bugs and ideas"),
 ("ABOUT_COPY_HINT","Ctrl + C to copy"),
-("ABOUT_LINK_FLAREUI","FlareUI, by Malkkav"),
 ]

@@ -2688,7 +2688,6 @@ local ABOUT_LINKS = {
     { "CurseForge", "https://www.curseforge.com/wow/addons/tessera" },
     { "Wago", "https://addons.wago.io/addons/tessera" },
 }
-local FLAREUI_URL = "https://www.curseforge.com/wow/addons/flareui"
 
 -- A copy box: shows a link, selected on focus; typing changes nothing
 local function CopyBox(parent, width, getText)
@@ -2708,12 +2707,12 @@ local function CopyBox(parent, width, getText)
 end
 local function BuildAboutLinks(page)
     local title = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    title:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 114)
+    title:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 88)
     title:SetText(L.ABOUT_LINKS)
     -- Tessera's links: a button puts its link in the shared box
     local current = ""
     local box = CopyBox(page, FULL_W - 150, function() return current end)
-    box:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + 6, 52)
+    box:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + 6, 26)
     local hint = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     hint:SetPoint("LEFT", box, "RIGHT", 10, 0)
     hint:SetText(L.ABOUT_COPY_HINT)
@@ -2726,18 +2725,9 @@ local function BuildAboutLinks(page)
             box:SetFocus()
             box:HighlightText()
         end, nil, w, L.TIP_ABOUT_COPY)
-        b:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + (i - 1) * (w + 6), 80)
+        b:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + (i - 1) * (w + 6), 54)
     end
     AttachTip(box, L.ABOUT_LINKS, L.TIP_ABOUT_COPY)
-    -- FlareUI (credit): its link always in its own box
-    local label = page:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    label:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 26)
-    label:SetText(L.ABOUT_LINK_FLAREUI)
-    local flare = CopyBox(page, FULL_W - 300, function() return FLAREUI_URL end)
-    flare:SetPoint("LEFT", label, "RIGHT", 12, 0)
-    flare:SetText(FLAREUI_URL)
-    flare:SetCursorPosition(0)
-    AttachTip(flare, L.ABOUT_LINK_FLAREUI, L.TIP_ABOUT_COPY_BOX)
 end
 
 local function BuildAboutPage(page)
@@ -2748,7 +2738,7 @@ local function BuildAboutPage(page)
             { title = L.CHANGELOG_TITLE, body = ChangelogText(), raw = true },
         }
         return "about", sections
-    end, 114)
+    end, 88)
     BuildAboutLinks(page)
     -- the tab always opens on "About" (the "what's new" popup then asks for the changelog)
     page:HookScript("OnShow", function() aboutContent:ShowTopic(1) end)

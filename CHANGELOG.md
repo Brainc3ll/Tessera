@@ -11,6 +11,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
+- "Remove" replaces "Hide": a block you remove leaves its group, and the blocks around it close the gap.
+- A removed block keeps its settings. Check "On screen" (the old "Show") and it appears next to the options window.
+- Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.
+- Texts exported from older versions still import.
 - The arrow of the Corpse block is 1.5 times bigger.
 
 ## 1.2.1 — 2026-11-10

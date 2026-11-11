@@ -506,6 +506,159 @@ for _, step in ipairs({
         assert(ns:DuplicateProfile("Copy"))
         assert(not ns:DecodeProfile("garbage"))
     end,
+    -- 1.3, "Remove" instead of "Hide": a block that is turned off leaves its group in the
+    -- saved data; profiles and texts made before 1.3 are tidied, once
+    function()
+        local function Blocks(spec)
+            local t = {}
+            for k, v in pairs(spec) do t[k] = v end
+            return t
+        end
+        local function R(to) return { to = to, side = "RIGHT" } end
+        -- middle of a row: what followed it follows what it followed
+        local b = Blocks({ a = { enabled = true, point = { "CENTER", "CENTER", 0, 0 }, scale = 1.2 },
+            b = { enabled = true, dock = R("a") }, c = { enabled = true, dock = R("b") } })
+        assert(ns.LeaveGroupData(b, "b") and b.c.dock.to == "a" and not b.b.dock, "middle block: row not closed")
+        assert(not ns.LeaveGroupData(b, "b"), "leaving twice changes nothing")
+        -- head of a group: the first block docked to it takes the place and the group settings
+        assert(ns.LeaveGroupData(b, "a"))
+        assert(not b.c.dock and b.c.point[1] == "CENTER" and b.c.scale == 1.2, "head: heir did not take the place")
+        assert(b.a.point == nil and b.a.scale == nil, "head: the removed block kept a place")
+        -- elbow: c hangs under b; b leaves, c takes b's seat (the group keeps its shape)
+        b = Blocks({ a = { enabled = true, point = { "CENTER", "CENTER", 0, 0 } }, b = { enabled = true, dock = R("a") },
+            c = { enabled = true, dock = { to = "b", side = "BOTTOM" } }, d = { enabled = true, dock = { to = "a", side = "BOTTOM" } } })
+        ns.LeaveGroupData(b, "b")
+        assert(b.c.dock.to == "a" and b.c.dock.side == "RIGHT" and b.d.dock.to == "a", "elbow: heir did not take the seat")
+        -- 2 x 2 square (p, a under p, b right of a, c above b): b leaves, c must not land on p
+        b = Blocks({ p = { enabled = true, point = { "CENTER", "CENTER", 0, 0 } }, a = { enabled = true, dock = { to = "p", side = "BOTTOM" } },
+            b = { enabled = true, dock = R("a") }, c = { enabled = true, dock = { to = "b", side = "TOP" } } })
+        ns.LeaveGroupData(b, "b")
+        assert(b.c.dock.to == "a" and b.c.dock.side == "RIGHT", "square: a block landed on another one")
+        -- the block that carried on the row is the heir; the other one follows it
+        b = Blocks({ a = { enabled = true, point = { "CENTER", "CENTER", 0, 0 } }, b = { enabled = true, dock = R("a") },
+            c = { enabled = true, dock = { to = "b", side = "BOTTOM" } }, d = { enabled = true, dock = R("b") } })
+        ns.LeaveGroupData(b, "b")
+        assert(b.d.dock.to == "a" and b.d.dock.side == "RIGHT" and b.c.dock.to == "d" and b.c.dock.side == "BOTTOM", "row heir")
+        -- damaged data, a loop through hidden blocks: no block hangs on itself, and a
+        -- second pass changes nothing
+        b = Blocks({ a = { enabled = true, dock = { to = "b", side = "BOTTOM" } }, b = { enabled = false, dock = { to = "c", side = "BOTTOM" } },
+            c = { enabled = false, anchor = { below = "b" }, point = { "TOP", "TOP", 0, 0 } } })
+        ns.TidyRemovedBlocks(b)
+        assert(b.a.point or b.a.dock or b.a.anchor, "loop: the visible block lost its place")
+        assert(not (b.a.anchor and b.a.anchor.below == "a"), "loop: a block hangs on itself")
+        local snap = ns.DeepCopy(b.a)
+        assert(not ns.TidyRemovedBlocks(b), "loop: the second pass changed something")
+        assert((snap.point and b.a.point and snap.point[1] == b.a.point[1]) or (snap.dock and b.a.dock) or (snap.anchor and b.a.anchor),
+            "loop: the visible block lost its place the second time")
+        -- a lone bar block with a second row hanging on it: the row takes its place
+        b = Blocks({ a = { enabled = true, anchor = { top = true, fill = true } },
+            r = { enabled = true, anchor = { below = "a", fill = true, gap = 0 } }, s = { enabled = true, dock = R("r") } })
+        ns.LeaveGroupData(b, "a")
+        assert(b.r.anchor and b.r.anchor.top and not b.r.anchor.below and b.s.dock.to == "r", "hanging row lost")
+        -- old profile: hidden blocks inside a row and at its head, damaged entries
+        b = Blocks({ h = { enabled = false, point = { "TOP", "TOP", 0, -5 }, frozen = true },
+            x = { enabled = true, dock = R("h") }, y = { enabled = false, dock = R("x") }, z = { enabled = true, dock = R("y") },
+            lone = { enabled = false, point = { "CENTER", "CENTER", 9, 9 } }, odd = { enabled = false, dock = "bad", anchor = 3 },
+            self = { enabled = false, dock = R("self") }, far = { enabled = true, dock = R("nowhere") }, junk = 7 })
+        assert(ns.TidyRemovedBlocks(b), "old profile not tidied")
+        assert(not b.x.dock and b.x.point[1] == "TOP" and b.x.frozen == true, "old profile: head not replaced")
+        assert(b.z.dock.to == "x", "old profile: hidden block still in the row")
+        for _, k in ipairs({ "h", "y", "lone", "odd", "self" }) do
+            assert(b[k].point == nil and b[k].dock == nil and b[k].anchor == nil, k .. " kept a place")
+            assert(b[k].enabled == false, k .. " changed state")
+        end
+        assert(b.far.dock.to == "nowhere" and b.junk == 7, "tidy touched something else")
+        assert(not ns.TidyRemovedBlocks(b), "tidy must do nothing the second time")
+        assert(not ns.TidyRemovedBlocks(nil) and not ns.TidyRemovedBlocks({}), "tidy on nothing")
+
+        -- in the game: remove a block in the middle of a bar, then put it back
+        ns:ResetProfile("top")
+        b = ns.db.blocks
+        for _, k in ipairs({ "gold", "bags", "durability", "fps" }) do
+            b[k].enabled, b[k].anchor, b[k].point = true, nil, nil
+        end
+        b.gold.dock, b.gold.point = nil, { "CENTER", "CENTER", 0, 0 }
+        b.bags.dock, b.durability.dock, b.fps.dock = R("gold"), R("bags"), R("durability")
+        b.bags.fontSize = 17
+        ns:RefreshAllBlocks()
+        ns:PushUndo()
+        ns:HideBlock("bags")
+        assert(b.bags.enabled == false and not b.bags.dock and b.bags.fontSize == 17, "removed block: place kept or look lost")
+        assert(b.durability.dock.to == "gold" and b.fps.dock.to == "durability", "bar not closed after a removal")
+        assert(not ns.frames.bags:IsShown(), "removed block still on screen")
+        ns:Undo()
+        assert(b.bags.enabled == true and b.bags.dock.to == "gold" and b.durability.dock.to == "bags", "Ctrl + Z after a removal")
+        -- the head of the bar: the next block heads it, at the same spot
+        ns:PushUndo()
+        ns:HideBlock("gold")
+        assert(not b.bags.dock and b.bags.point and b.bags.point[1] == "CENTER", "head removed: bar lost its place")
+        ns:Undo()
+        -- a block that comes back from the options keeps its own look, and appears with no dock
+        ns:HideBlock("bags")
+        ns:SetBlocksOnScreen({ "bags" }, true)
+        assert(b.bags.enabled == true and b.bags.fontSize == 17 and not b.bags.dock and b.bags.point, "block back: look or place wrong")
+        -- a block that was never on screen takes the look of the blocks already there
+        b.zone.enabled, b.zone.point, b.zone.dock, b.zone.anchor, b.zone.keepLook = false, nil, nil, nil, false
+        b.gold.fontSize = 19
+        ns:SetBlocksOnScreen({ "zone" }, true)
+        assert(b.zone.fontSize == b[ns:GetReferenceBlock("zone")].fontSize, "new block: reference look not taken")
+        ns:SetBlocksOnScreen({ "zone", "bags" }, false)
+        assert(not b.zone.enabled and not b.bags.enabled and b.zone.keepLook and b.bags.keepLook, "several blocks removed")
+        ns:Undo()
+        assert(b.bags.enabled == true, "Ctrl + Z after removing several blocks")
+        b.bags.point, b.bags.dock = nil, R("gold")
+        b.durability.dock = R("bags")
+        ns:RefreshAllBlocks()
+        -- the "hide" click action can be undone too
+        ns:RunClickAction("bags", "hide")
+        assert(b.bags.enabled == false and b.durability.dock.to == "gold", "click action: block not removed")
+        ns:Undo()
+        assert(b.bags.enabled == true and b.bags.dock and b.bags.dock.to == "gold", "click action: Ctrl + Z")
+        -- the Gryphons layout keeps its shape when an inner block leaves
+        ns:ResetProfile("gryphons")
+        b = ns.db.blocks
+        local shape = {}
+        for k, c in pairs(b) do
+            if c.dock and c.dock.to == "comprehension" then shape[k] = true end
+        end
+        local seat = ns.DeepCopy(b.comprehension.dock)
+        if seat and next(shape) then
+            ns:PushUndo()
+            ns:HideBlock("comprehension")
+            local heirs = 0
+            for k in pairs(shape) do
+                if b[k].dock.to == seat.to and b[k].dock.side == seat.side then heirs = heirs + 1 end
+            end
+            assert(heirs == 1, "gryphons: no block took the seat of the one that left")
+            ns:Undo()
+        end
+        ns:ResetProfile("top")
+        b = ns.db.blocks
+        for _, k in ipairs({ "gold", "bags", "durability", "fps" }) do
+            b[k].enabled, b[k].anchor, b[k].point = true, nil, nil
+        end
+        b.gold.dock, b.gold.point = nil, { "CENTER", "CENTER", 0, 0 }
+        b.bags.dock, b.durability.dock, b.fps.dock = R("gold"), R("bags"), R("durability")
+        ns:RefreshAllBlocks()
+        -- prepared again (login, profile change): hidden blocks of an old profile leave their rows
+        b.bags.enabled = false
+        ns:PrepareProfile(ns.db)
+        assert(not b.bags.dock and b.durability.dock.to == "gold", "old profile not tidied when it loads")
+        local before = ns:ExportProfile()
+        ns:PrepareProfile(ns.db)
+        assert(before == ns:ExportProfile(), "a profile changes when it is prepared twice")
+        -- a text exported before 1.3 with a hidden block in a row
+        local old = ns.DeepCopy(ns.db)
+        old.blocks.bags.dock, old.blocks.durability.dock = R("gold"), R("bags")
+        local clean = ns:SanitizeProfile(old)
+        assert(not clean.blocks.bags.dock and clean.blocks.durability.dock.to == "gold", "old text not tidied on import")
+        -- every ready-made layout leaves no hidden block with a place
+        for _, preset in ipairs(ns.PRESETS) do
+            ns:ResetProfile(preset)
+            assert(not ns.TidyRemovedBlocks(ns.DeepCopy(ns.db.blocks)), "layout " .. preset .. " leaves a hidden block with a place")
+        end
+        ns:ResetProfile("top")
+    end,
     -- export texts: the compact format (TESSERA2) gives back exactly the same profile, and
     -- texts exported by earlier versions (TESSERA1, tools/fixtures/rc9-*.txt, made by the
     -- released 1.0.0-rc9) must always import

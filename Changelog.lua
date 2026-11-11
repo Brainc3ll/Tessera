@@ -50,9 +50,17 @@ ns.CHANGELOG = {
             },
             { kind = "improved",
               en = {
+                "\"Remove\" replaces \"Hide\": a block you remove leaves its group, and the blocks around it close the gap.",
+                "A removed block keeps its settings. Check \"On screen\" (the old \"Show\") and it appears next to the options window.",
+                "Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.",
+                "Texts exported from older versions still import.",
                 "The arrow of the Corpse block is 1.5 times bigger.",
               },
               fr = {
+                "« Retirer » remplace « Masquer » : un bloc que vous retirez sort de son groupe, et ses voisins se resserrent.",
+                "Un bloc retiré garde ses réglages. Cochez « Sur l'écran » (l'ancien « Afficher ») et il apparaît à côté des options.",
+                "Vos profils continuent de fonctionner. Les blocs masqués perdent la place invisible qu'ils gardaient dans une barre.",
+                "Les textes exportés d'anciennes versions s'importent toujours.",
                 "La flèche du bloc Cadavre est 1,5 fois plus grande.",
               },
             },

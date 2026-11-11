@@ -164,7 +164,7 @@ Help tab inside the game explains everything.
   fused, as tiles with joints, or separate.
 - Replace a block in place: the arrows on a hovered block (placement mode) put another block
   exactly there, with the same look, without moving anything else; a shown block swaps places,
-  and the spacers of the ready-made layouts can be filled this way. A cross hides the block.
+  and the spacers of the ready-made layouts can be filled this way. A cross removes the block: it leaves its group and the others close the gap.
 - Groups: each bar of merged blocks has its entry in the Blocks tab, so its settings apply to the
   whole bar and its rows; "Copy style to group" (options or quick menu) gives one block's look to
   the rest of its group.
@@ -216,7 +216,7 @@ Tessera category.
 
 When unlocked: drag a block to move it (or its whole group), drop it against another block to
 merge them, **Shift + drag** to detach it, the **cross** on a hovered block (or **Ctrl + click**)
-to hide it, its **arrows** to replace it with another block, **Ctrl + Z** to undo, **right-click**
+to remove it, its **arrows** to replace it with another block, **Ctrl + Z** to undo, **right-click**
 for the quick menu; a panel under the placement banner shows what you can do with the hovered
 block. When locked: hover for the tooltip, left-click to open
 the related game window, **Shift + click** to copy the value to the chat, right-click for the

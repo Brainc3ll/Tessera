@@ -465,6 +465,126 @@ function ns.HangTarget(anchor)
     return anchor and (anchor.below or anchor.above) or nil
 end
 
+-- What makes the place of a block: its position (free point, dock, anchor) and, for
+-- the first block of a group, the group's own settings (scale, frozen state, screen
+-- edges, stretch, group look).
+local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen", "edges", "stretch", "look" }
+
+-- Takes a block out of its group, in the saved data only (no frame is touched):
+--   * one of the blocks docked to it (its heir) takes its seat: the same dock, or the
+--     group's place and settings if it headed the group. The heir is the block that
+--     carried on its row, else the first one docked to it. The others follow the heir
+--     (at the end of the row if the heir already has a block on that side);
+--   * a row hanging on it hangs on the heir, or takes its place when it was alone;
+--   * the block itself keeps its look and settings but has no place left.
+-- Keys are walked in sorted order: the same data always gives the same result.
+-- Damaged data (loops, docks to nothing) raises no error. Returns true when something changed.
+-- Known limit: a block with several branches around it (three blocks docked to it on
+-- different sides) can make two of them meet; the player moves one with the mouse.
+function ns.LeaveGroupData(blocks, key)
+    local me = type(blocks) == "table" and blocks[key]
+    if type(me) ~= "table" then return false end
+    local function Dock(cfg) return type(cfg) == "table" and type(cfg.dock) == "table" and cfg.dock or nil end
+    local function Anchor(cfg) return type(cfg) == "table" and type(cfg.anchor) == "table" and cfg.anchor or nil end
+    local keys = {}
+    for k, cfg in pairs(blocks) do
+        if k ~= key and type(k) == "string" and type(cfg) == "table" then keys[#keys + 1] = k end
+    end
+    table.sort(keys)
+    -- the last block of the row that already leaves `to` on `side` (or `to` itself)
+    local function RowEnd(to, side, mover)
+        for _ = 1, #keys + 1 do
+            local nextKey
+            for _, k in ipairs(keys) do
+                local d = Dock(blocks[k])
+                if k ~= mover and d and d.to == to and d.side == side then nextKey = k break end
+            end
+            if not nextKey then break end
+            to = nextKey
+        end
+        return to
+    end
+    local changed = false
+    local myDock = Dock(me)
+    local upTo = myDock and myDock.to ~= key and type(blocks[myDock.to]) == "table" and myDock.to or nil
+    local dependents = {}
+    for _, k in ipairs(keys) do
+        local d = Dock(blocks[k])
+        if d and d.to == key then dependents[#dependents + 1] = k end
+    end
+    local heir = dependents[1]
+    if heir and upTo then
+        for _, k in ipairs(dependents) do
+            if blocks[k].dock.side == myDock.side then heir = k break end
+        end
+    end
+    if not heir and not upTo and (me.point ~= nil or Anchor(me)) then
+        -- alone in its row, but another row may hang on it: that row takes its place
+        for _, k in ipairs(keys) do
+            local a = Anchor(blocks[k])
+            if a and (a.below == key or a.above == key) and not Dock(blocks[k]) then heir = k break end
+        end
+        if heir then
+            for _, field in ipairs(PLACE_FIELDS) do blocks[heir][field] = ns.DeepCopy(me[field]) end
+            blocks[heir].dock = nil
+            changed = true
+        end
+    elseif heir then
+        if upTo then
+            blocks[heir].dock = { to = upTo, side = myDock.side }
+        else
+            for _, field in ipairs(PLACE_FIELDS) do blocks[heir][field] = ns.DeepCopy(me[field]) end
+            blocks[heir].dock = nil
+        end
+        changed = true
+        for _, k in ipairs(dependents) do
+            if k ~= heir then
+                blocks[k].dock.to = RowEnd(heir, blocks[k].dock.side, k)
+            end
+        end
+    end
+    if heir then
+        -- damaged data (a loop): the place it takes must not hang on itself
+        local a = Anchor(blocks[heir])
+        if a and a.below == heir then a.below = nil end
+        if a and a.above == heir then a.above = nil end
+    end
+    -- rows hanging on it now hang on the heir (never on themselves)
+    for _, k in ipairs(keys) do
+        local a = Anchor(blocks[k])
+        if a then
+            local target = heir or upTo
+            if target == k then target = nil end
+            if a.below == key then a.below = target changed = true end
+            if a.above == key then a.above = target changed = true end
+        end
+    end
+    for _, field in ipairs(PLACE_FIELDS) do
+        if me[field] ~= nil then me[field] = nil changed = true end
+    end
+    return changed
+end
+
+-- A block that is turned off has no place: profiles made before 1.3 (and texts exported
+-- from them) kept one, which left a gap in the bar. Does nothing the second time.
+function ns.TidyRemovedBlocks(blocks)
+    if type(blocks) ~= "table" then return false end
+    local keys = {}
+    for k, cfg in pairs(blocks) do
+        if type(k) == "string" and type(cfg) == "table" and cfg.enabled == false then keys[#keys + 1] = k end
+    end
+    table.sort(keys)
+    local changed = false
+    for _, k in ipairs(keys) do
+        -- it had a place, so the player has had it on screen: its look is the player's
+        if ns.LeaveGroupData(blocks, k) then
+            blocks[k].keepLook = true
+            changed = true
+        end
+    end
+    return changed
+end
+
 -- Spacer blocks (empty, separator line or free text) use keys like "spacer:<n>"
 local SPACER_PREFIX = "spacer:"
 ns.SPACER_PREFIX = SPACER_PREFIX
@@ -652,6 +772,7 @@ end
 -- Per-block settings (stored in profile.blocks[key])
 local BLOCK_DEFAULTS = {
     enabled = true,
+    keepLook = false, -- true once the block has been on screen: it keeps its own look when it comes back
     showLabel = false, -- icon + value, like the stock bar
     showIcon = true,
     showValue = true,       -- false: the icon alone (tooltip and clicks unchanged)
@@ -1004,6 +1125,8 @@ function ns:PrepareProfile(p)
         -- a block added by an update: shown in the second row if it belongs there
         for key in pairs(created) do self:AttachNewBlock(p, key) end
     end
+    -- since 1.3 a block that is turned off has left its group (see TidyRemovedBlocks)
+    ns.TidyRemovedBlocks(p.blocks)
     p.initialized = true
 end
 
@@ -2203,12 +2326,28 @@ function ns:SetBorderReach(borderKey, value)
 end
 
 -- Disables a block (Ctrl+click in placement mode); it can be re-enabled in the options
+-- Takes a block off the screen: it leaves its group (the blocks around it close the
+-- gap), keeps its look and settings, and goes on following the game in the background.
+-- The caller pushes the undo state.
+function ns:RemoveBlock(key)
+    local cfg = self.db.blocks[key]
+    if not cfg then return end
+    local regroup = ns.LeaveGroupData(self.db.blocks, key)
+    if cfg.enabled then cfg.keepLook = true end
+    cfg.enabled = false
+    if regroup then
+        self:RefreshAllBlocks()
+        self:RequestLayout()
+    else
+        self:ApplyStyle(key)
+    end
+end
+
 function ns:HideBlock(key)
     local cfg = self.db.blocks[key]
     if not cfg then return end
     GameTooltip:Hide()
-    cfg.enabled = false
-    self:ApplyStyle(key)
+    self:RemoveBlock(key)
     Print(L.BLOCK_HIDDEN:format(self:GetBlockName(key)))
     if self.RefreshOptions then self:RefreshOptions() end
 end
@@ -2230,7 +2369,6 @@ local KEEP_ON_RESET = { "point", "dock", "anchor", "enabled", "scale", "frozen",
 -- Undoable with Ctrl + Z in placement mode. Returns true when done.
 -- The group's own settings (screen edges, stretch, group look) are carried by its
 -- first block, so they move with the place too.
-local PLACE_FIELDS = { "point", "dock", "anchor", "scale", "frozen", "edges", "stretch", "look" }
 function ns:ReplaceBlock(oldKey, newKey)
     local blocks = self.db.blocks
     local old, new = blocks[oldKey], blocks[newKey]
@@ -2241,29 +2379,7 @@ function ns:ReplaceBlock(oldKey, newKey)
     -- on it). It leaves that chain first: what was docked or hung on it now follows what
     -- it followed. Otherwise, once it takes its new place, the old chain can loop back on
     -- it and the layout cuts the loop somewhere else: a whole bar came apart.
-    if not swap then
-        local heir
-        for key, cfg in pairs(blocks) do
-            if cfg.dock and cfg.dock.to == newKey then
-                if new.dock then
-                    cfg.dock.to = new.dock.to
-                elseif not heir then
-                    -- it headed its group: the first block on it heads it now
-                    heir = key
-                    cfg.dock = nil
-                    for _, field in ipairs(PLACE_FIELDS) do
-                        if field ~= "dock" then cfg[field] = DeepCopy(new[field]) end
-                    end
-                else
-                    cfg.dock.to = heir
-                end
-            end
-        end
-        for _, cfg in pairs(blocks) do
-            if cfg.anchor and cfg.anchor.below == newKey then cfg.anchor.below = heir or (new.dock and new.dock.to) end
-            if cfg.anchor and cfg.anchor.above == newKey then cfg.anchor.above = heir or (new.dock and new.dock.to) end
-        end
-    end
+    if not swap then ns.LeaveGroupData(blocks, newKey) end
     -- every reference to one of the two blocks now points to the other
     -- (a swap) or to the new one (a replacement)
     local function Relabel(k)
@@ -2291,6 +2407,7 @@ function ns:ReplaceBlock(oldKey, newKey)
     local spacer = not swap and ns.IsSpacerKey(oldKey)
     if not swap then
         old.enabled = false
+        old.keepLook = true
         -- the new block blends in: same size and look as the one it replaces
         -- (a spacer only gives its look: its size is just some room)
         for _, k in ipairs(STYLE_KEYS) do

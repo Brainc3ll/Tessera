@@ -1,6 +1,6 @@
 TIPS_EN = {
 "TIP_SELECTION":"Choose what the settings below apply to: all blocks, all launchers, one group (a bar and its rows) or a single block (information, launcher, DataBroker or spacer).",
-"TIP_ENABLED":"Shows or hides the block.",
+"TIP_ENABLED":"On: the block is on your screen. Off: it leaves its group, the blocks around it close the gap, and it keeps its settings. Turn it on again and it appears next to this window.",
 "TIP_SHOW_LABEL":"Adds the block name before its value.",
 "TIP_SHOW_ICON":"Adds an icon on the left of the block. Its size, frame and black and white look are in the Frame tab, Icon section.",
 "TIP_SHOW_TOOLTIP":"Shows details when the mouse is over the block.",
@@ -40,7 +40,7 @@ TIPS_EN = {
 }
 TIPS_FR = {
 "TIP_SELECTION":"Choisis à quoi s'appliquent les réglages ci-dessous : tous les blocs, tous les lanceurs, un groupe (une barre et ses rangées) ou un seul bloc (information, lanceur, DataBroker ou espace).",
-"TIP_ENABLED":"Affiche ou masque le bloc.",
+"TIP_ENABLED":"Coché : le bloc est sur ton écran. Décoché : il sort de son groupe, ses voisins se resserrent, et il garde ses réglages. Recoche et il apparaît à côté de cette fenêtre.",
 "TIP_SHOW_LABEL":"Ajoute le nom du bloc devant sa valeur.",
 "TIP_SHOW_ICON":"Ajoute une icône à gauche du bloc. Sa taille, son cadre et le noir et blanc se règlent dans l'onglet Cadre, section Icône.",
 "TIP_SHOW_TOOLTIP":"Affiche le détail quand la souris passe sur le bloc.",

@@ -452,6 +452,7 @@ function ns:RunClickAction(key, action, frame)
     elseif action == "options" then
         if self.OpenOptionsFor then self:OpenOptionsFor(key) end
     elseif action == "hide" then
+        self:PushUndo()
         self:HideBlock(key)
     elseif action == "pin" then
         if self.TogglePin then self:TogglePin(key) end

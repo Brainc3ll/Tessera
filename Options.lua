@@ -276,21 +276,68 @@ local SPACER_SHARED_FIELDS = {
     hideInCombat = true, hideInInstance = true, hideInVehicle = true, hideWhenResting = true,
 }
 
-local function SetField(name, value)
-    -- style template picked before the change: a block that is already visible
-    local refKey = name == "enabled" and value and ns:GetReferenceBlock()
-    if name == "enabled" then ns:PushUndo() end -- showing / hiding blocks can be undone
-    for _, key in ipairs(Targets()) do
-        local cfg = ns.db.blocks[key]
-        local appearing = name == "enabled" and value and not cfg.enabled
-        cfg[name] = ns.DeepCopy(value)
-        if appearing and not cfg.point and not cfg.dock and not cfg.anchor then
-            if refKey and refKey ~= key then ns:AdoptReferenceStyle(key, refKey) end
-            ns:PlaceNearOptions(key)
-        elseif appearing and not cfg.dock and not cfg.anchor and ns:OverlapsOtherBlock(key) then
-            ns:PlaceNearOptions(key) -- its old spot is taken: find a free one
+-- Puts blocks on the screen or takes them off it ("On screen" checkbox). Undoable.
+--   * off: each block leaves its group (the blocks around it close the gap) and keeps
+--     its look and settings;
+--   * on: a block with no place appears next to the options window; one that was never
+--     on screen takes the look of the reference block, one that comes back keeps its own.
+function ns:SetBlocksOnScreen(keys, on)
+    local refKey = on and self:GetReferenceBlock()
+    self:PushUndo()
+    local regroup = false
+    for _, key in ipairs(keys) do
+        local cfg = self.db.blocks[key]
+        if cfg then
+            if on and not cfg.enabled then
+                cfg.enabled = true
+                if not cfg.point and not cfg.dock and not cfg.anchor then
+                    if not cfg.keepLook and refKey and refKey ~= key then self:AdoptReferenceStyle(key, refKey) end
+                    self:PlaceNearOptions(key)
+                elseif not cfg.dock and not cfg.anchor and self:OverlapsOtherBlock(key) then
+                    self:PlaceNearOptions(key) -- its old spot is taken: find a free one
+                end
+            elseif not on and cfg.enabled then
+                if ns.LeaveGroupData(self.db.blocks, key) then regroup = true end
+                cfg.enabled = false
+                cfg.keepLook = true
+            end
+            self:ApplyStyle(key)
         end
-        ns:ApplyStyle(key)
+    end
+    if regroup then
+        self:RefreshAllBlocks()
+        self:RequestLayout()
+    end
+end
+
+-- Taking several blocks off the screen at once (a group, "All blocks") asks first
+StaticPopupDialogs["TESSERA_REMOVE_BLOCKS"] = {
+    text = L.REMOVE_BLOCKS_CONFIRM,
+    button1 = YES,
+    button2 = NO,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function(_, keys)
+        ns:SetBlocksOnScreen(keys, false)
+        if ns.RefreshOptions then ns:RefreshOptions() end
+    end,
+    OnCancel = function() if ns.RefreshOptions then ns:RefreshOptions() end end,
+}
+
+local function SetField(name, value)
+    if name == "enabled" then
+        local keys = Targets()
+        if not value and #keys > 1 then
+            StaticPopup_Show("TESSERA_REMOVE_BLOCKS", #keys, nil, keys)
+            return
+        end
+        ns:SetBlocksOnScreen(keys, value and true or false)
+    else
+        for _, key in ipairs(Targets()) do
+            ns.db.blocks[key][name] = ns.DeepCopy(value)
+            ns:ApplyStyle(key)
+        end
     end
     if (selected == ALL or GroupHead()) and SPACER_SHARED_FIELDS[name] then
         local all = GroupHead() and ns:GetStyleGroup(GroupHead()) or ns:GetBlockKeys()

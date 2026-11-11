@@ -15,7 +15,7 @@ FR = {
 "HINT_BAGS":"Clic : ouvrir les sacs","HINT_CHARACTER":"Clic : fiche du personnage","HINT_MAP":"Clic : carte du monde",
 "HINT_CALENDAR":"Clic : calendrier","HINT_FRIENDS":"Clic : liste d'amis","HINT_GUILD":"Clic : guilde",
 "OPTIONS_TITLE":"Tessera","TAB_BLOCK":"Blocs","TAB_GENERAL":"Général",
-"ENABLED":"Afficher","SHOW_LABEL":"Afficher l'étiquette","SHOW_ICON":"Afficher l'icône","SHOW_TOOLTIP":"Infobulle au survol",
+"ENABLED":"Sur l'écran","SHOW_LABEL":"Afficher l'étiquette","SHOW_ICON":"Afficher l'icône","SHOW_TOOLTIP":"Infobulle au survol",
 "COLORIZE":"Couleur selon le seuil","HIDE_COMBAT":"Masquer en combat","HIDE_INSTANCE":"Masquer en instance",
 "WIDTH":"Largeur minimale","HEIGHT":"Hauteur minimale","AUTO_WIDTH":"Ajuster la largeur au texte",
 "AUTO_WIDTH_TIP":"Coché : le bloc s'allonge quand son texte dépasse la largeur minimale.\nDécoché : la largeur reste fixe et un texte trop long est coupé.",

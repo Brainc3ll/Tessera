@@ -459,6 +459,8 @@ function ns:SanitizeProfile(profile)
         end
     end
     BreakLoops(clean.blocks)
+    -- texts exported before 1.3: a block that is turned off still had a place
+    self.TidyRemovedBlocks(clean.blocks)
     clean.initialized = true
     return clean
 end
@@ -646,6 +648,7 @@ function ns:ImportLayout(text)
     if self.PushUndo then self:PushUndo() end
     for key, cfg in pairs(self.db.blocks) do
         if not clean.blocks[key] then
+            if cfg.enabled then cfg.keepLook = true end
             cfg.enabled = false
             cfg.point, cfg.dock, cfg.anchor, cfg.edges, cfg.stretch, cfg.look = nil, nil, nil, nil, nil, nil
         end

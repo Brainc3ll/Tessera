@@ -255,7 +255,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Demo.lua` | Demo mode: every block by category with sample values, style switcher (also mixed styles, one per column), the player's profile put aside and given back. |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
-| `Options.lua` | Options window: a list of pages on the left (Blocks — with sub-tabs This block, Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About) and a hint per page; widgets, placement banner, text window (export / import / bug report), welcome popup and quick tour, side windows kept beside the options (never over them), Blizzard Settings page. |
+| `Options.lua` | Options window: a list of pages on the left (Blocks — with sub-tabs This block, Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About) and a hint per page; widgets (since 1.3 one row per setting, label on the left and control on the right, in one scrolling column; `ns.optionRows` lists every row with its page and section for the search, the help panel and the gamepad), placement banner, text window (export / import / bug report), welcome popup and quick tour, side windows kept beside the options (never over them), Blizzard Settings page. |
 
 The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the release guide
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions

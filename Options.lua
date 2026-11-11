@@ -53,7 +53,7 @@ local PANEL_W, PANEL_H = 720 + NAV_W, 780
 local COL_W = 300
 local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
-local SPACING = 11 -- vertical space between two settings (room to breathe)
+local SPACING = 4 -- vertical space between two rows (each row has its own air, ROW_PAD)
 
 local ALL = "*all"            -- selection value "All blocks"
 local LAUNCHERS = "*launchers" -- selection value "All launchers"
@@ -257,10 +257,15 @@ function ns:RefreshOptions()
     if not panel then return end
     ValidateSelection()
     for _, w in ipairs(widgets) do
-        if w.isShown then w:SetShown(w.isShown() and true or false) end
+        if w.isShown then
+            local shown = w.isShown() and true or false
+            w:SetShown(shown)
+            if w.check then w.check:SetShown(shown) end -- a check box follows its row
+        end
         if w.Refresh then w:Refresh() end
     end
     if ns.RelayoutBlockOptions then ns.RelayoutBlockOptions() end
+    if ns.ReflowOptionLayouts then ns.ReflowOptionLayouts() end -- folded sections, column 2
 end
 
 -- Per-block settings, never stored as defaults for other blocks
@@ -397,10 +402,98 @@ local function AddTitle(holder, text)
     return title
 end
 
+---------------------------------------------------------------------------
+-- Rows (1.3): one setting = one row across the page, the label on the left, the
+-- control on the right, like the game's own settings. The label wraps instead of
+-- being cut (long translations, bigger text) and the row grows with it. The whole
+-- row lights up under the mouse; in high contrast the light is stronger and a bar
+-- marks the row (a shape, not only a color).
+---------------------------------------------------------------------------
+local ROW_LABEL_W = 270                       -- label, on the left
+local ROW_CONTROL_X = 290                     -- control, from the row's left edge
+local ROW_CONTROL_W = FULL_W - ROW_CONTROL_X  -- room for the control
+local ROW_PAD = 4                             -- above and below the taller of label and control
+local STEPPER_MAX = 6                         -- lists up to 6 choices get ◄ ► arrows
+
+-- Every setting row of the window, in the order it was placed: label, tooltip,
+-- page, sub-tab and section. Read by the search, the help panel and the gamepad
+-- (focus order) to come, and by tools/mock_run.lua.
+ns.optionRows = ns.optionRows or {}
+
+-- Shows or hides a row (a check box follows its row: tools/mock_run.lua looks for
+-- the shown ones)
+local function SetRowShown(w, shown)
+    w:SetShown(shown and true or false)
+    if w.check then w.check:SetShown(shown and true or false) end
+end
+
+local function NewRow(parent, frameType)
+    local row = CreateFrame(frameType or "Frame", nil, parent)
+    row:SetSize(FULL_W, 28)
+    row.hover = row:CreateTexture(nil, "BACKGROUND")
+    row.hover:SetPoint("TOPLEFT", -6, 0)
+    row.hover:SetPoint("BOTTOMRIGHT", 4, 0)
+    row.hover:SetColorTexture(1, 1, 1, 0.1)
+    row.hover:Hide()
+    -- high contrast: a bar on the left of the row under the mouse
+    row.mark = row:CreateTexture(nil, "ARTWORK")
+    row.mark:SetPoint("TOPLEFT", -6, 0)
+    row.mark:SetPoint("BOTTOMLEFT", -6, 0)
+    row.mark:SetWidth(3)
+    row.mark:SetColorTexture(1, 0.82, 0, 1)
+    row.mark:Hide()
+    return row
+end
+
+-- The row lights up while the mouse is over it or over one of its controls
+local function RowHover(row, ...)
+    local function Enter()
+        local strong = ns.sv and ns.sv.highContrast
+        row.hover:SetAlpha(strong and 2.5 or 1)
+        row.hover:Show()
+        row.mark:SetShown(strong and true or false)
+    end
+    local function Leave()
+        if row:IsMouseOver() then return end -- moved onto one of its controls
+        row.hover:Hide()
+        row.mark:Hide()
+    end
+    row:EnableMouse(true)
+    for _, f in ipairs({ row, ... }) do
+        f:HookScript("OnEnter", Enter)
+        f:HookScript("OnLeave", Leave)
+    end
+end
+
+-- Label on the left of a row; owner (default: the row) makes the font string
+local function RowLabel(row, text, owner)
+    local fs = (owner or row):CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    fs:SetPoint("LEFT", row, "LEFT", 0, 0)
+    fs:SetWidth(ROW_LABEL_W)
+    fs:SetJustifyH("LEFT")
+    if fs.SetWordWrap then fs:SetWordWrap(true) end
+    fs:SetText(text)
+    row.label = fs
+    return fs
+end
+
+-- Row height: the taller of its label and its control, plus some air
+local function FitRow(row, controlHeight)
+    local h = math.max(controlHeight, row.label and row.label:GetStringHeight() or 0) + ROW_PAD
+    row:SetHeight(h)
+    row.layoutHeight = h
+end
+
+-- Marks a widget as a setting row (see ns.optionRows; filled in by Place)
+local function AsSetting(w, label, tip, kind)
+    w.optionLabel, w.optionTip, w.optionKind = label, tip, kind
+    return w
+end
+
 -- Section header: gold text with a thin line underneath
 local function CreateHeader(parent, text)
     local holder = CreateFrame("Frame", nil, parent)
-    holder:SetSize(COL_W, 30) -- room above the text: sections stand apart
+    holder:SetSize(FULL_W, 30) -- room above the text: sections stand apart
     local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     fs:SetPoint("BOTTOMLEFT", 0, 5)
     fs:SetText(text)
@@ -411,50 +504,101 @@ local function CreateHeader(parent, text)
     line:SetPoint("BOTTOMRIGHT")
     holder.Refresh = function() end
     holder.layoutHeight = 34
+    holder.isHeader, holder.headerText = true, text
     return Register(holder)
 end
 
--- Multi-line help text (default width: one column)
+-- Section that folds: a header with a + / - button (a shape, not only a color).
+-- The rows placed under it, up to the next header of the same column, hide when it
+-- is folded and the rows below move up (see NewLayout). Not saved: decided per page.
+local function CreateSection(parent, text, folded)
+    local b = CreateFrame("Button", nil, parent)
+    b:SetSize(FULL_W, 30)
+    local sign = b:CreateTexture(nil, "ARTWORK")
+    sign:SetSize(16, 16)
+    sign:SetPoint("BOTTOMLEFT", 0, 5)
+    local fs = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    fs:SetPoint("LEFT", sign, "RIGHT", 6, 0)
+    fs:SetText(text)
+    local line = b:CreateTexture(nil, "ARTWORK")
+    line:SetColorTexture(1, 0.82, 0, 0.4)
+    line:SetHeight(1)
+    line:SetPoint("BOTTOMLEFT")
+    line:SetPoint("BOTTOMRIGHT")
+    b.hover = b:CreateTexture(nil, "BACKGROUND")
+    b.hover:SetAllPoints()
+    b.hover:SetColorTexture(1, 1, 1, 0.08)
+    b.hover:Hide()
+    b:SetScript("OnEnter", function(self) self.hover:Show() end)
+    b:SetScript("OnLeave", function(self) self.hover:Hide() end)
+    b.folded = folded and true or false
+    b.Refresh = function(self)
+        sign:SetTexture(self.folded and "Interface\\Buttons\\UI-PlusButton-Up" or "Interface\\Buttons\\UI-MinusButton-Up")
+    end
+    -- what "confirm" does (mouse, keyboard or gamepad)
+    b.Activate = function(self)
+        self.folded = not self.folded
+        ns:RefreshOptions()
+    end
+    b:SetScript("OnClick", function(self) self:Activate() end)
+    b:Refresh()
+    b.layoutHeight = 34
+    b.isHeader, b.isSection, b.headerText = true, true, text
+    return Register(b)
+end
+
+-- Multi-line help text (default width: the whole page)
 local function CreateNote(parent, text, width)
     local holder = CreateFrame("Frame", nil, parent)
     local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     fs:SetPoint("TOPLEFT")
-    fs:SetWidth(width or COL_W)
+    fs:SetWidth(width or FULL_W)
     fs:SetJustifyH("LEFT")
     fs:SetText(text)
     holder.fs = fs
-    holder:SetSize(width or COL_W, math.max(14, fs:GetStringHeight()))
+    holder:SetSize(width or FULL_W, math.max(14, fs:GetStringHeight()))
     holder.Refresh = function() end
     holder.layoutHeight = holder:GetHeight() + 8
     return Register(holder)
 end
 
--- Checkbox bound to a getter/setter pair
+-- Check box bound to a getter/setter pair: the game's own check box on the right,
+-- the label on the left; a click anywhere on the row ticks it
 local function CreateCheck(parent, label, getter, setter, isShown, tip)
-    local cb = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
-    cb:SetSize(24, 24)
-    local fs = cb.text or cb.Text
-    if not fs then
-        fs = cb:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        fs:SetPoint("LEFT", cb, "RIGHT", 2, 0)
+    local row = NewRow(parent)
+    local ok, cb = pcall(CreateFrame, "CheckButton", nil, row, "SettingsCheckboxTemplate")
+    if not ok or not cb then
+        cb = CreateFrame("CheckButton", nil, row, "UICheckButtonTemplate")
+        cb:SetSize(24, 24)
     end
-    fs:SetText(label)
+    cb:SetPoint("LEFT", row, "LEFT", ROW_CONTROL_X, 0)
+    -- the template's own hover and tooltip use the game's settings tooltip: ours instead
+    cb:SetScript("OnEnter", nil)
+    cb:SetScript("OnLeave", nil)
+    -- (the label is made by the check box: tools/mock_run.lua finds a check box by it)
+    RowLabel(row, label, cb)
     cb:SetScript("OnClick", function(self) setter(self:GetChecked() and true or false) end)
+    row:SetScript("OnMouseUp", function(_, button)
+        if button == "LeftButton" and cb:IsEnabled() then cb:Click() end
+    end)
     AttachTip(cb, label, tip)
-    cb.Refresh = function(self) self:SetChecked(getter() and true or false) end
-    cb.layoutHeight = 26
-    return Register(cb, isShown)
+    AttachTip(row, label, tip)
+    RowHover(row, cb)
+    row.check = cb
+    row.Activate = function() cb:Click() end
+    row.Refresh = function() cb:SetChecked(getter() and true or false) end
+    FitRow(row, 29)
+    return Register(AsSetting(row, label, tip, "check"), isShown)
 end
 
--- Slider with stepper arrows; values are rounded to integers
+-- Slider with stepper arrows (the game's own); values are rounded to integers
 local function CreateSlider(parent, label, minV, maxV, step, getter, setter, isShown, tip)
-    local holder = CreateFrame("Frame", nil, parent)
-    holder:SetSize(COL_W, 40)
-    local title = AddTitle(holder, label)
+    local holder = NewRow(parent)
+    RowLabel(holder, label)
 
     local slider = CreateFrame("Frame", nil, holder, "MinimalSliderWithSteppersTemplate")
-    slider:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
-    slider:SetWidth(COL_W - 14)
+    slider:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
+    slider:SetWidth(ROW_CONTROL_W - 50) -- room for the value on the right
     slider:Init(getter() or minV, minV, maxV, (maxV - minV) / step, {
         [MinimalSliderWithSteppersMixin.Label.Right] = function(v)
             return tostring(math.floor(v + 0.5))
@@ -465,10 +609,15 @@ local function CreateSlider(parent, label, minV, maxV, step, getter, setter, isS
         setter(math.floor(value + 0.5))
     end, holder)
 
-    if tip then
-        holder:EnableMouse(true)
-        AttachTip(holder, label, tip)
-        AttachTip(slider.Slider, label, tip)
+    AttachTip(holder, label, tip)
+    if tip then AttachTip(slider.Slider, label, tip) end
+    RowHover(holder, slider.Slider)
+    holder.slider = slider
+    -- what left / right do (keyboard or gamepad, later)
+    holder.Step = function(_, dir)
+        local v = (getter() or minV) + dir * step
+        setter(math.max(minV, math.min(maxV, v)))
+        holder:Refresh()
     end
 
     holder.Refresh = function(self)
@@ -476,19 +625,12 @@ local function CreateSlider(parent, label, minV, maxV, step, getter, setter, isS
         slider:SetValue(getter() or minV)
         self.updating = false
     end
-    holder.layoutHeight = 46
-    return Register(holder, isShown)
+    FitRow(holder, 24)
+    return Register(AsSetting(holder, label, tip, "slider"), isShown)
 end
 
--- Single-choice dropdown; options = list of {key, name} or a function returning it
-local function CreateDropdown(parent, label, options, getter, setter, isShown, width, tip)
-    local holder = CreateFrame("Frame", nil, parent)
-    holder:SetSize(width or COL_W, 44)
-    local title = AddTitle(holder, label)
-
-    local dd = CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate")
-    dd:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
-    dd:SetWidth((width or COL_W) - 12)
+-- Fills a dropdown's menu: radio entries (and titles) from options
+local function SetupChoices(dd, label, options, getter, setter)
     dd:SetupMenu(function(_, root)
         -- an error here would stop the menu from opening: print it instead of swallowing it
         local ok, err = pcall(function()
@@ -507,27 +649,80 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
         end)
         if not ok then ns.Print("|cffff5555[debug]|r menu « " .. label .. " » : " .. tostring(err)) end
     end)
-
-    if tip then
-        holder:EnableMouse(true)
-        AttachTip(holder, label, tip)
-        AttachTip(dd, label, tip)
-    end
-
-    holder.Refresh = function() dd:GenerateMenu() end
-    holder.layoutHeight = 50
-    return Register(holder, isShown)
 end
 
--- Action dropdown (each entry is a button)
+-- Number of choices of a list (titles make it a long list: no arrows)
+local function CountChoices(options)
+    local ok, list = pcall(function() return type(options) == "function" and options() or options end)
+    if not ok or type(list) ~= "table" or list.mayGrow then return math.huge end
+    local n = 0
+    for _, opt in ipairs(list) do
+        if opt.isTitle then return math.huge end
+        n = n + 1
+    end
+    return n
+end
+
+-- Single-choice list; options = list of {key, name} or a function returning it.
+-- Up to STEPPER_MAX choices: the game's list with ◄ ► arrows on each side (a click on
+-- the value still opens the list); longer lists: a plain dropdown. With a width, the
+-- old stacked look (label above), for the block selection at the top of the Blocks tab.
+local function CreateDropdown(parent, label, options, getter, setter, isShown, width, tip)
+    local holder, dd
+    if width then
+        holder = CreateFrame("Frame", nil, parent)
+        holder:SetSize(width, 44)
+        local title = AddTitle(holder, label)
+        dd = CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate")
+        dd:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
+        dd:SetWidth(width - 12)
+        if tip then holder:EnableMouse(true) end
+        holder.layoutHeight = 50
+    else
+        holder = NewRow(parent)
+        RowLabel(holder, label)
+        local arrows
+        if CountChoices(options) <= STEPPER_MAX then
+            local ok, frame = pcall(CreateFrame, "Frame", nil, holder, "SettingsDropdownWithButtonsTemplate")
+            if ok and frame and type(frame.Dropdown) == "table" then arrows = frame end
+        end
+        if arrows then
+            arrows:SetSize(ROW_CONTROL_W - 10, 30)
+            arrows:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
+            if arrows.Label then arrows.Label:Hide() end -- our label is on the left
+            dd = arrows.Dropdown
+            dd:SetWidth(ROW_CONTROL_W - 70)
+            holder.arrows = arrows
+            holder.Step = function(_, dir)
+                if dir > 0 then arrows:Increment() else arrows:Decrement() end
+            end
+            RowHover(holder, dd, arrows.IncrementButton, arrows.DecrementButton)
+        else
+            dd = CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate")
+            dd:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
+            dd:SetWidth(ROW_CONTROL_W - 10)
+            RowHover(holder, dd)
+        end
+        FitRow(holder, 30)
+    end
+    SetupChoices(dd, label, options, getter, setter)
+    AttachTip(holder, label, tip)
+    if tip then AttachTip(dd, label, tip) end
+    holder.dropdown = dd
+    holder.Activate = function() if dd.OpenMenu then dd:OpenMenu() end end
+
+    holder.Refresh = function() dd:GenerateMenu() end
+    return Register(AsSetting(holder, label, tip, "dropdown"), isShown)
+end
+
+-- Action list (each entry is a button)
 local function CreateActionDropdown(parent, label, buildEntries, emptyText, tip)
-    local holder = CreateFrame("Frame", nil, parent)
-    holder:SetSize(COL_W, 44)
-    local title = AddTitle(holder, label)
+    local holder = NewRow(parent)
+    RowLabel(holder, label)
 
     local dd = CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate")
-    dd:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
-    dd:SetWidth(COL_W - 12)
+    dd:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
+    dd:SetWidth(ROW_CONTROL_W - 10)
     if dd.SetDefaultText then dd:SetDefaultText(L.CHOOSE) end
     dd:SetupMenu(function(_, root)
         if root.SetScrollMode then root:SetScrollMode(400) end
@@ -541,34 +736,32 @@ local function CreateActionDropdown(parent, label, buildEntries, emptyText, tip)
         end
     end)
 
-    if tip then
-        holder:EnableMouse(true)
-        AttachTip(holder, label, tip)
-        AttachTip(dd, label, tip)
-    end
+    AttachTip(holder, label, tip)
+    if tip then AttachTip(dd, label, tip) end
+    RowHover(holder, dd)
+    holder.dropdown = dd
+    holder.Activate = function() if dd.OpenMenu then dd:OpenMenu() end end
 
     holder.Refresh = function() dd:GenerateMenu() end
-    holder.layoutHeight = 50
-    return Register(holder)
+    FitRow(holder, 30)
+    return Register(AsSetting(holder, label, tip, "action"))
 end
 
--- Color swatch opening Blizzard's color picker (Cancel restores the previous color)
+-- Color swatch opening Blizzard's color picker (Cancel restores the previous color);
+-- the whole row is the button
 local function CreateColor(parent, label, hasAlpha, getter, setter, isShown, tip)
-    local b = CreateFrame("Button", nil, parent)
-    b:SetSize(COL_W, 22)
+    local b = NewRow(parent, "Button")
 
-    local edge = b:CreateTexture(nil, "BACKGROUND")
+    local edge = b:CreateTexture(nil, "BORDER")
     edge:SetSize(20, 20)
-    edge:SetPoint("LEFT")
+    edge:SetPoint("LEFT", b, "LEFT", ROW_CONTROL_X + 4, 0)
     edge:SetColorTexture(1, 1, 1, 1)
 
     local swatch = b:CreateTexture(nil, "ARTWORK")
     swatch:SetSize(16, 16)
     swatch:SetPoint("CENTER", edge)
 
-    local fs = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    fs:SetPoint("LEFT", edge, "RIGHT", 6, 0)
-    fs:SetText(label)
+    RowLabel(b, label)
 
     b.Refresh = function()
         local c = getter()
@@ -598,22 +791,23 @@ local function CreateColor(parent, label, hasAlpha, getter, setter, isShown, tip
             cancelFunc = function() Set(prev.r, prev.g, prev.b, prev.a) end,
         })
     end)
+    b.Activate = function(self) self:Click() end
 
     AttachTip(b, label, tip)
-    b.layoutHeight = 28
-    return Register(b, isShown)
+    RowHover(b)
+    FitRow(b, 22)
+    return Register(AsSetting(b, label, tip, "color"), isShown)
 end
 
 -- Plain push button
 -- Text box (free text, or numbers only); the value is saved on Enter or when
 -- the box loses focus, Escape restores the saved value
 local function CreateEditBox(parent, label, getter, setter, isShown, tip, numeric)
-    local holder = CreateFrame("Frame", nil, parent)
-    holder:SetSize(COL_W, 44)
-    local title = AddTitle(holder, label)
+    local holder = NewRow(parent)
+    RowLabel(holder, label)
     local box = CreateFrame("EditBox", nil, holder, "InputBoxTemplate")
-    box:SetSize(COL_W - 20, 20)
-    box:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 6, -4)
+    box:SetSize(ROW_CONTROL_W - 20, 20)
+    box:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X + 6, 0)
     box:SetAutoFocus(false)
     if numeric then box:SetNumeric(true) end
     local cancelling = false
@@ -638,14 +832,13 @@ local function CreateEditBox(parent, label, getter, setter, isShown, tip, numeri
             box:SetText(v ~= nil and tostring(v) or "")
         end
     end
-    if tip then
-        holder:EnableMouse(true)
-        AttachTip(holder, label, tip)
-        AttachTip(box, label, tip)
-    end
+    AttachTip(holder, label, tip)
+    if tip then AttachTip(box, label, tip) end
+    RowHover(holder, box)
     holder.box = box
-    holder.layoutHeight = 46
-    return Register(holder, isShown)
+    holder.Activate = function() box:SetFocus() end
+    FitRow(holder, 22)
+    return Register(AsSetting(holder, label, tip, "text"), isShown)
 end
 
 -- A button text longer than the button (translations can be long): smaller font,
@@ -672,9 +865,10 @@ local function CreateButton(parent, text, onClick, isShown, width, tip)
     FitButtonText(b)
     b:SetScript("OnClick", onClick)
     AttachTip(b, text, tip)
+    b.Activate = function(self) self:Click() end
     b.Refresh = function() end
     b.layoutHeight = 30
-    return Register(b, isShown)
+    return Register(AsSetting(b, text, tip, "button"), isShown)
 end
 
 -- getter/setter pair for a block field of the current selection
@@ -696,23 +890,157 @@ local function ColorField(name)
 end
 
 ---------------------------------------------------------------------------
--- Column layout
+-- Scrolling pages (1.3): one column of rows is taller than the window, and so is
+-- any page with a bigger text. ScrollArea(holder) fills holder with a scroll frame
+-- (mouse wheel, a scroll bar only when needed) and returns the frame to build the
+-- page in; its height follows the page (NewLayout).
 ---------------------------------------------------------------------------
--- Returns a layout helper for a page: Place(w, col) stacks a widget in column 1 or 2,
--- Gap(col, h) adds (or, if negative, removes) vertical space, Bottom(col) gives the current y.
+local SCROLL_W = 680 -- page content: rows from 40 to 680, the scroll bar on the right
+local function ScrollArea(holder, bottom)
+    local ok, scroll = pcall(CreateFrame, "ScrollFrame", nil, holder, "ScrollFrameTemplate")
+    if not ok then scroll = CreateFrame("ScrollFrame", nil, holder, "UIPanelScrollFrameTemplate") end
+    scroll:SetPoint("TOPLEFT", holder, "TOPLEFT", 0, 0)
+    scroll:SetPoint("BOTTOMRIGHT", holder, "BOTTOMRIGHT", -40, bottom or 0)
+    local content = CreateFrame("Frame", nil, scroll)
+    content:SetSize(SCROLL_W, 10)
+    scroll:SetScrollChild(content)
+    content.scroll = scroll
+    content.pageIndex, content.subIndex = holder.pageIndex, holder.subIndex
+    holder.content = content
+    return content
+end
+
+---------------------------------------------------------------------------
+-- Layout
+---------------------------------------------------------------------------
+-- Returns a layout helper for a page. The pages are still written in two columns
+-- (Place(w, col)), but since 1.3 they show as ONE column of rows: column 2 follows
+-- column 1, under it. Positions are kept "per column" (virtual), so the old tricks
+-- still work: Gap(col, h) adds (or, if negative, removes) vertical space, two
+-- widgets can share a slot, Bottom(col) gives the current virtual y. Column 2
+-- hangs from an anchor that sits under column 1 and moves when column 1 grows or
+-- shrinks (stacks of module options, folded sections).
+local COLUMN_GAP = 10
+local allLayouts = {}
 local function NewLayout(page, top)
-    local y = { top or -6, top or -6 }
+    local top0 = top or -6
+    local y = { top0, top0 }
+    local items = { {}, {} } -- placed widgets of each column and their virtual y
+    local packed = {}        -- lowest virtual y of the option stacks of a column (BuildModuleOptions)
+    local folded = { 0, 0 }  -- height hidden by folded sections in each column
+    local used = {}
+    local section = {}       -- current section title of each column
     local layout = {}
+    local anchor = CreateFrame("Frame", nil, page)
+    anchor:SetSize(1, 1)
+
+    local function Low(col) return math.min(y[col], packed[col] or y[col]) end
+
+    -- y of column 2's anchor; the lowest point of the page
+    local function Settle()
+        local ay = 0
+        if used[1] then ay = Low(1) + folded[1] - COLUMN_GAP - top0 end
+        anchor:ClearAllPoints()
+        anchor:SetPoint("TOPLEFT", page, "TOPLEFT", 0, ay)
+        local lowest = used[2] and (ay + Low(2) + folded[2]) or (Low(1) + folded[1])
+        if page.scroll then
+            page:SetHeight(math.max(10, -lowest + 12))
+        else
+            -- lowest point reached by any page (checked by tools/mock_run.lua: must fit the window)
+            ns.optionsLowestY = math.min(ns.optionsLowestY or 0, (page.layoutBase or 0) + lowest)
+        end
+        layout.lowest = lowest
+    end
+
+    function layout.Point(w, col, vy)
+        w:ClearAllPoints()
+        if col == 2 then
+            w:SetPoint("TOPLEFT", anchor, "TOPLEFT", COL_X[1], vy)
+        else
+            w:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1], vy)
+        end
+    end
+
     function layout.Place(w, col)
-        w:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[col], y[col])
+        col = col or 1
+        layout.Point(w, col, y[col])
+        if w.isHeader then section[col] = w.headerText end
+        if w.optionLabel then
+            table.insert(ns.optionRows, { frame = w, label = w.optionLabel, tip = w.optionTip,
+                kind = w.optionKind, page = page.pageIndex, sub = page.subIndex, section = section[col],
+                content = page })
+        end
+        if not layout.untracked then table.insert(items[col], { w = w, vy = y[col] }) end
+        used[col] = true
         y[col] = y[col] - w.layoutHeight - SPACING
-        -- lowest point reached by any page (checked by tools/mock_run.lua: must fit the window)
-        if not layout.untracked then ns.optionsLowestY = math.min(ns.optionsLowestY or 0, (page.layoutBase or 0) + y[col] + SPACING) end
+        Settle()
         return w
     end
-    function layout.Gap(col, h) y[col] = y[col] - h end
+    function layout.Gap(col, h)
+        y[col] = y[col] - h
+        Settle()
+    end
     function layout.Bottom(col) return y[col] end
+
+    -- height hidden by folded sections above virtual y (stacks of module options)
+    local foldedAbove = { {}, {} }
+    function layout.FoldedAbove(col, vy)
+        local h = 0
+        for _, f in ipairs(foldedAbove[col]) do
+            if f.vy > vy then h = h + f.h end
+        end
+        return h
+    end
+    -- lowest virtual y of the shown widgets of a column's option stacks
+    function layout.SetPacked(col, low)
+        packed[col] = low
+        Settle()
+    end
+
+    -- after every refresh: folded sections hide their rows, the rows below move up
+    function layout.Reflow()
+        for col = 1, 2 do
+            local list, shift, current = items[col], 0, nil
+            foldedAbove[col] = {}
+            for idx, it in ipairs(list) do
+                local w = it.w
+                if w.isHeader then
+                    layout.Point(w, col, it.vy + shift)
+                    current = nil
+                    if w.isSection and w.folded and w:IsShown() then
+                        local nextVy = Low(col)
+                        for j = idx + 1, #list do
+                            if list[j].w.isHeader then nextVy = list[j].vy break end
+                        end
+                        local hidden = (it.vy - w.layoutHeight - SPACING) - nextVy
+                        if hidden > 0 then
+                            current = w
+                            table.insert(foldedAbove[col], { vy = it.vy, h = hidden })
+                            shift = shift + hidden
+                        end
+                    end
+                elseif current then
+                    w.foldedAway = true
+                    SetRowShown(w, false)
+                else
+                    if w.foldedAway then
+                        w.foldedAway = nil
+                        SetRowShown(w, not w.isShown or w.isShown())
+                    end
+                    layout.Point(w, col, it.vy + shift)
+                end
+            end
+            folded[col] = shift
+        end
+        Settle()
+    end
+    table.insert(allLayouts, layout)
     return layout
+end
+-- (sections that fold are placed by the 1.3 page layout; tools/mock_run.lua tests them now)
+ns.CreateOptionsSection, ns.NewOptionsLayout, ns.CreateOptionsCheck = CreateSection, NewLayout, CreateCheck
+function ns.ReflowOptionLayouts()
+    for _, layout in ipairs(allLayouts) do layout.Reflow() end
 end
 
 ---------------------------------------------------------------------------
@@ -901,19 +1229,22 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
         P.Gap(col, P.Bottom(col) - stackTop) -- back to the top for the next module
         P.untracked = nil
     end
-    -- packs the visible widgets of each stack from the top (called after every refresh)
+    -- packs the visible widgets of each stack from the top (called after every refresh);
+    -- the rows under the stacks (column 2 since 1.3) follow its lowest point
     table.insert(relayouts, function()
+        local shift = P.FoldedAbove(col, stackTop)
+        local low = stackTop
         for _, stack in ipairs(stacks) do
             local y = stackTop
             for _, w in ipairs(stack) do
                 if w:IsShown() then
-                    w:ClearAllPoints()
-                    w:SetPoint("TOPLEFT", sub, "TOPLEFT", COL_X[col], y)
+                    P.Point(w, col, y + shift)
                     y = y - w.layoutHeight - SPACING
-                    ns.optionsLowestY = math.min(ns.optionsLowestY or 0, (sub.layoutBase or 0) + y + SPACING)
                 end
             end
+            low = math.min(low, y)
         end
+        P.SetPacked(col, low)
     end)
     return hasOptions
 end
@@ -965,7 +1296,7 @@ local function BuildBlockPage(page)
 
     -- Sub-tabs
     local subY = top.Bottom(1) - 4
-    local subs, buttons = {}, {}
+    local subs, buttons, contents = {}, {}, {}
     ShowSub = function(index)
         blockSub = index
         for i, sub in ipairs(subs) do
@@ -991,7 +1322,9 @@ local function BuildBlockPage(page)
         sub:SetPoint("TOPLEFT", page, "TOPLEFT", 0, subY - 36)
         sub.layoutBase = subY - 36
         sub:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", 0, 56)
+        sub.pageIndex, sub.subIndex = page.pageIndex, i
         subs[i] = sub
+        contents[i] = ScrollArea(sub) -- the sub-tab scrolls (one column of rows)
     end
     local line = page:CreateTexture(nil, "ARTWORK")
     line:SetColorTexture(1, 0.82, 0, 0.25)
@@ -1001,7 +1334,7 @@ local function BuildBlockPage(page)
 
     -- 1. Display: what is shown, and the size
     do
-        local sub = subs[1]
+        local sub = contents[1]
         local P = NewLayout(sub)
         P.Place(CreateHeader(sub, L.SECTION_DISPLAY), 1)
         local spacerNote = P.Place(CreateNote(sub, L.SPACER_SETTINGS_HINT), 1)
@@ -1051,7 +1384,7 @@ local function BuildBlockPage(page)
 
     -- 2. Text
     do
-        local sub = subs[2]
+        local sub = contents[2]
         local P = NewLayout(sub)
         P.Place(CreateHeader(sub, L.SECTION_TEXT), 1)
         P.Place(Dropdown(sub, L.FONT, function() return ns:GetMediaList("font") end, "font", L.TIP_FONT), 1)
@@ -1076,7 +1409,7 @@ local function BuildBlockPage(page)
 
     -- 3. Frame: background on the left, border on the right
     do
-        local sub = subs[3]
+        local sub = contents[3]
         local P = NewLayout(sub)
         P.Place(CreateHeader(sub, L.BACKGROUND), 1)
         P.Place(Dropdown(sub, L.BACKGROUND, function() return ns:GetMediaList("background") end, "bg", L.TIP_BACKGROUND), 1)
@@ -1132,7 +1465,8 @@ local function BuildBlockPage(page)
             end, HasCorners, L.TIP_CORNER_JOIN)
         local default = CreateFrame("Button", nil, corner, "UIPanelButtonTemplate")
         default:SetSize(64, 18)
-        default:SetPoint("TOPRIGHT", corner, "TOPRIGHT", -12, 2)
+        default:SetPoint("RIGHT", corner.slider, "LEFT", -8, 0) -- between the label and the slider
+        corner.label:SetWidth(ROW_LABEL_W - 80)
         default:SetText(L.DEFAULT_SHORT)
         default:SetScript("OnClick", function()
             local b = CurrentBorder()
@@ -1162,7 +1496,7 @@ local function BuildBlockPage(page)
     -- 4. Behaviour: settings specific to the selected block (left), visibility and
     -- clicks (right)
     do
-        local sub = subs[4]
+        local sub = contents[4]
         local P = NewLayout(sub)
         P.Place(CreateHeader(sub, L.SECTION_VISIBILITY), 1)
         P.Place(Check(sub, L.HIDE_COMBAT, "hideInCombat", L.TIP_HIDE_COMBAT), 1)
@@ -1198,7 +1532,7 @@ local function BuildBlockPage(page)
     -- shows and its settings (left), its name, its clicks and its pinned tooltip (right).
     -- A group selection ("All blocks") gets a note: these settings belong to one block.
     do
-        local sub = subs[5]
+        local sub = contents[5]
         local P = NewLayout(sub)
         local notSpacer = function() return not ns.IsSpacerKey(selected) end
         P.Place(CreateHeader(sub, L.SECTION_THIS_BLOCK), 1)
@@ -1327,6 +1661,7 @@ end
 ---------------------------------------------------------------------------
 -- Builds the "General" tab: global settings shared by all blocks
 local function BuildGeneralPage(page)
+    page = ScrollArea(page, 16)
     local P = NewLayout(page)
     local function Place(w, col) return P.Place(w, col) end
 
@@ -1432,6 +1767,7 @@ end
 ---------------------------------------------------------------------------
 -- Builds the "Launchers" tab; showBlockPage switches to the Blocks tab after a choice
 local function BuildLaunchersPage(page, showBlockPage)
+    page = ScrollArea(page, 16)
     local P = NewLayout(page)
     local function Place(w, col) return P.Place(w, col) end
 
@@ -1489,6 +1825,7 @@ end
 -- Other addons' DataBroker objects as Tessera blocks (Broker.lua): search, add, edit.
 -- First part of the DataBroker tab.
 local function BuildBrokerPlugins(page, showBlockPage)
+    page = ScrollArea(page, 16)
     local P = NewLayout(page)
     local function Place(w, col) return P.Place(w, col) end
     Place(CreateHeader(page, L.BROKERS), 1)
@@ -1589,6 +1926,7 @@ local function BuildBrokerPage(tabPage, showBlockPage)
         sub:SetPoint("TOPLEFT", tabPage, "TOPLEFT", 0, SUB_TOP)
         sub:SetPoint("BOTTOMRIGHT", tabPage, "BOTTOMRIGHT", 0, 0)
         sub.layoutBase = SUB_TOP
+        sub.pageIndex, sub.subIndex = tabPage.pageIndex, i
         subs[i] = sub
     end
     -- keeps the right part shown when DataBroker mode changes
@@ -1597,7 +1935,7 @@ local function BuildBrokerPage(tabPage, showBlockPage)
     Register(keeper)
 
     BuildBrokerPlugins(subs[1], showBlockPage)
-    local page = subs[2]
+    local page = ScrollArea(subs[2], 16)
     local P = NewLayout(page)
     local function Place(w, col) return P.Place(w, col) end
     local sharing = function() return ns:IsSharing() and true or false end
@@ -1831,6 +2169,7 @@ StaticPopupDialogs["TESSERA_RESET_PROFILE"] = {
 -- "Look" tab: style of the blocks, how groups look, ready-made layouts, screen edges
 ---------------------------------------------------------------------------
 local function BuildLookPage(page)
+    page = ScrollArea(page, 16)
     local P = NewLayout(page)
     local function Place(w, col) return P.Place(w, col) end
 
@@ -1946,6 +2285,7 @@ end
 
 -- Builds the "Profiles" tab
 local function BuildProfilesPage(page)
+    page = ScrollArea(page, 16)
     local P = NewLayout(page)
     local function Place(w, col) return P.Place(w, col) end
 
@@ -2531,6 +2871,7 @@ local function BuildPanel()
         local page = CreateFrame("Frame", nil, panel)
         page:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, PAGE_TOP)
         page:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", 0, 0)
+        page.pageIndex = i
         pages[i] = page
     end
 

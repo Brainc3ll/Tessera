@@ -206,9 +206,16 @@ EditModeManagerFrame = { IsEditModeActive = function() return false end,
     end }
 -- MOCK_FRAMES: every frame made, so a test can find an options widget by its text
 MOCK_FRAMES = {}
-CreateFrame = function(kind, name)
+CreateFrame = function(kind, name, _, template)
     local f = NewObject(kind); f.__name = name; if name then _G[name] = f end
     table.insert(MOCK_FRAMES, f)
+    -- the game's list with ◄ ► arrows (options rows, 1.3): its pieces
+    if template == "SettingsDropdownWithButtonsTemplate" then
+        f.Dropdown = CreateFrame("DropdownButton")
+        f.IncrementButton, f.DecrementButton = CreateFrame("Button"), CreateFrame("Button")
+        f.Label = f:CreateFontString()
+        f.__arrows = true
+    end
     return f
 end
 C_Timer = { After = function(_, fn) table.insert(_G.__timers, fn) end, NewTicker = function(_, fn) table.insert(_G.__tickers, fn); return NewObject("Ticker") end }
@@ -2631,6 +2638,83 @@ if os.getenv("TESSERA_LIST_MODULES") then
         for _, o in ipairs(ns.modules[key].options or {}) do fields[#fields + 1] = tostring(o.field) end
         print("MODULE " .. key .. " " .. tostring(ns.modules[key].label) .. " " .. table.concat(fields, ","))
     end
+end
+-- One column of rows (1.3): in each page and sub-tab, the shown rows never overlap,
+-- sit in one column (same left edge) and stay inside the page's scroll area; every
+-- row is listed with its page and has a tooltip; a section that folds hides its rows
+-- and the rows below move up. Checked with the anchor geometry, for every block.
+do
+    MOCK_GEOMETRY = true
+    local L = ns.L
+    local function Rect(f) local l, b, w, h = MockRect(f) return l, b, l + w, b + h end
+    local function CheckRows(what)
+        local groups = {}
+        for _, r in ipairs(ns.optionRows) do
+            if r.frame.__shown then
+                local id = tostring(r.content)
+                groups[id] = groups[id] or { content = r.content, rows = {} }
+                table.insert(groups[id].rows, r)
+            end
+        end
+        for _, g in pairs(groups) do
+            local _, cb, _, ct = Rect(g.content)
+            local x0
+            for i, a in ipairs(g.rows) do
+                local al, ab, _, at = Rect(a.frame)
+                x0 = x0 or al
+                if math.abs(al - x0) > 0.5 then print("STEP ERROR: row out of the column (" .. what .. "): " .. tostring(a.label)) end
+                if g.content.scroll and (ab < cb - 0.5 or at > ct + 0.5) then
+                    print("STEP ERROR: row outside its scroll area (" .. what .. "): " .. tostring(a.label))
+                end
+                for j = i + 1, #g.rows do
+                    local b2 = g.rows[j]
+                    local _, bb, _, bt = Rect(b2.frame)
+                    if math.min(at, bt) - math.max(ab, bb) > 0.5 then
+                        print("STEP ERROR: rows overlap (" .. what .. "): " .. tostring(a.label) .. " / " .. tostring(b2.label))
+                    end
+                end
+            end
+        end
+    end
+    for _, r in ipairs(ns.optionRows) do
+        if not r.page then print("STEP ERROR: row without a page: " .. tostring(r.label)) end
+        if not r.tip then print("STEP ERROR: row without a tooltip: " .. tostring(r.label)) end
+    end
+    ns:ResetProfile("top")
+    for _, key in ipairs({ "*all", ns:GetBlockKeys()[1], "gold", "clock", "durability" }) do
+        if key == "*all" or ns.db.blocks[key] then
+            pcall(function() ns:OpenOptionsFor(key) end)
+            for sub = 1, 5 do
+                ns.ShowBlockSub(sub)
+                ns:RefreshOptions()
+                CheckRows(key .. ", sub-tab " .. sub)
+            end
+        end
+    end
+    local spacer = ns:AddSpacer()
+    ns.db.blocks[spacer].spacerMode = "line"
+    ns:OpenOptionsFor(spacer)
+    ns:RefreshOptions()
+    CheckRows("spacer")
+    ns:RemoveSpacer(spacer)
+    -- a section that folds
+    local page = CreateFrame("Frame")
+    page.scroll = true
+    local P = ns.NewOptionsLayout(page)
+    local sec = P.Place(ns.CreateOptionsSection(page, "Section"), 1)
+    local inside = P.Place(ns.CreateOptionsCheck(page, "inside", function() return true end, function() end, nil, "tip"), 1)
+    local after = P.Place(ns.CreateOptionsCheck(page, "after", function() return true end, function() end, nil, "tip"), 2)
+    ns:RefreshOptions()
+    local _, _, _, topAfter = Rect(after)
+    local open = page:GetHeight()
+    sec:Activate()
+    local _, _, _, topFolded = Rect(after)
+    if inside.__shown or not (topFolded > topAfter) or not (page:GetHeight() < open) then
+        print("STEP ERROR: a folded section must hide its rows and pull the next ones up")
+    end
+    sec:Activate()
+    if not inside.__shown then print("STEP ERROR: an unfolded section shows its rows again") end
+    MOCK_GEOMETRY = nil
 end
 -- Options that must never get lost (rule: a rework takes nothing away). Dump with
 -- MOCK_WRITE_OPTIONS=1 on a version known good; then every run (enUS only) checks that each

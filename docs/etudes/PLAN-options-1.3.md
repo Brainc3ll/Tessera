@@ -83,7 +83,7 @@ Le curseur d'échelle générale existe (`GLOBAL_SCALE`). « Pixel perfect » se
 | 0 | Installer les outils ; test « aucun réglage perdu » ; essai de `LoadSavedVariablesFirst` et des modèles du jeu dans un zip sonde | Faible | Sonnet 5.5 |
 | 1 | Flèche du Corps × 1,5 ; icône jusqu'à 200 ; crédit à Malkkav dans « À propos » | Faible | Sonnet 5.5 |
 | 2 | « Sur l'écran » / « Retirer » : plan, relecture indépendante, anciens fichiers, puis zip | Élevé (T2) | Opus 5.5 |
-| 3 | Lignes, mise en page, cadre de la fenêtre (logo, réduire, aide, recherche) | Moyen | Opus 5.5 |
+| 3 | Lignes, mise en page, cadre de la fenêtre (logo, réduire, aide, recherche). Coupé en 3a (lignes, une colonne, défilement : test92, fait le 11/11) et 3b (cadre : test93) | Moyen | Opus 5.5 |
 | 4 | Rangement des pages, onglet Accessibilité, sections repliées, style par bloc | Moyen | Opus 5.5 |
 | 5 | Placement au pixel (bandeau, pad, flèches, message de première fois), échelle pixel perfect | Moyen | Opus 5.5 |
 | 6 | Sélecteur de langue | Faible si la voie A marche | Sonnet 5.5 |

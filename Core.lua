@@ -248,6 +248,8 @@ function ns:GetMediaList(kind)
             end
         end
     end
+    -- other addons can add media at any time: the options show it as a plain list, never ◄ ►
+    list.mayGrow = true
     return list
 end
 

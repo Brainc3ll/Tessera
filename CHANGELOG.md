@@ -16,6 +16,9 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.
 - Texts exported from older versions still import.
 - The arrow of the Corpse block is 1.5 times bigger.
+- Options window: one setting per row, its name on the left and its control on the right. Long names wrap instead of being cut.
+- Lists with a few choices get arrows on each side, like the game's settings. Check boxes are the game's own: click anywhere on the row to tick one.
+- Pages taller than the window scroll with the mouse wheel.
 
 ## 1.2.1 — 2026-11-10
 

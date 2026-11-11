@@ -1203,6 +1203,8 @@ end
 
 function ns:SetProfile(name)
     if not self.sv.profiles[name] then return end
+    -- placing to the pixel ends first: its group belongs to the profile being left
+    if self.nudge and self.FinishNudge then self:FinishNudge(true) end
     -- an explicit choice wins over the automatic profile until the next zone change
     self.profileOverride = nil
     if self.sv.useGlobal then

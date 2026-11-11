@@ -104,6 +104,7 @@ Opacity when hidden (%)
 Options
 Outline
 Pin the tooltip
+Place
 Profile in dungeons and raids
 Progress bar
 Quests shown
@@ -140,6 +141,7 @@ Show the unit
 Show the value
 Show tooltips in combat
 Shown
+Size of Tessera's windows
 Skill
 Skill shown
 Slots shown
@@ -173,3 +175,5 @@ Volume shown
 Wago
 Weapons
 Yellow threshold
+after
+inside

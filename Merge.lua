@@ -1411,7 +1411,10 @@ local function KeepCentered(self, key, cfg, f, width, groupWidth, headX)
         return
     end
     if not k.center then return end
-    local x = math.floor(k.center - shift + 0.5)
+    -- a group placed to the pixel ("Place") keeps its decimals: rounding to whole units
+    -- would undo steps smaller than one unit
+    local x = p[3] % 1 ~= 0 and math.floor((k.center - shift) * 1000 + 0.5) / 1000
+        or math.floor(k.center - shift + 0.5)
     if x ~= p[3] then
         p[3], k.x = x, x
         f:ClearAllPoints()

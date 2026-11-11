@@ -1444,7 +1444,7 @@ local function BuildBlockPage(page)
     -- Head, above the part that scrolls: the "On screen" switch, left of the block's
     -- name (the selection list), then "Replace with..."
     local top = NewLayout(page)
-    local REPLACE_W = 140
+    local REPLACE_W, PLACE_W = 140, 90
     local getE, setE = Field("enabled")
     local switch = top.Place(CreateSwitch(page, L.ENABLED, function() return getE() end, setE, nil, L.TIP_ENABLED), 1)
     ns.blockSwitch = switch -- (tools/mock_run.lua)
@@ -1454,7 +1454,7 @@ local function BuildBlockPage(page)
         function(v)
             selected = v
             ns:RefreshOptions()
-        end, nil, FULL_W - REPLACE_W - SWITCH_W - 10, L.TIP_SELECTION)
+        end, nil, FULL_W - REPLACE_W - PLACE_W - SWITCH_W - 10, L.TIP_SELECTION)
     selection:SetPoint("TOPLEFT", switch, "TOPRIGHT", 10, 0)
     -- "Replace with...": another block takes the selected block's place
     local replace = CreateButton(page, L.REPLACE_BLOCK, function(self)
@@ -1462,6 +1462,14 @@ local function BuildBlockPage(page)
         ns:OpenReplaceMenu(selected, self)
     end, function() return single() and ns.db.blocks[selected] ~= nil end, REPLACE_W - 8, L.TIP_REPLACE_BLOCK)
     replace:SetPoint("BOTTOMLEFT", selection, "BOTTOMRIGHT", 0, 1)
+    -- "Place": moves the block's group pixel by pixel (the window folds meanwhile)
+    local place = CreateButton(page, L.PLACE_BLOCK, function() ns:StartNudge(selected) end,
+        single, PLACE_W - 6, L.TIP_PLACE_BLOCK)
+    place:SetPoint("LEFT", replace, "RIGHT", 4, 0)
+    place.Refresh = function(self)
+        self:SetEnabled(ns:CanNudge(selected) and not InCombatLockdown() and true or false)
+    end
+    ns.placeButton = place -- (tools/mock_run.lua)
     top.Gap(1, 6)
 
     -- One page that scrolls (1.3, in place of five sub-tabs): what matters first, then
@@ -3374,11 +3382,17 @@ local function ListenForUndo(frame)
     end
     frame:SetScript("OnKeyDown", function(self, key)
         if InCombatLockdown() then return end
+        -- a frame may take other keys too (placing to the pixel: arrows, Enter, Escape)
+        if self.OnOwnKey and self:OnOwnKey(key) then
+            self:SetPropagateKeyboardInput(false)
+            return
+        end
         local undo = key == "Z" and IsControlKeyDown()
         self:SetPropagateKeyboardInput(not undo)
         if undo then ns:Undo() end
     end)
-    frame:SetScript("OnKeyUp", function(self)
+    frame:SetScript("OnKeyUp", function(self, key)
+        if self.OnOwnKeyUp then self:OnOwnKeyUp(key) end
         if not InCombatLockdown() then self:SetPropagateKeyboardInput(true) end
     end)
     frame:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -3685,8 +3699,9 @@ function ns:UpdatePlacementBanner()
         and not self.db.unlockedByEditMode and true or false
 
     -- the options window is tucked away during placement and comes back on lock
+    -- (placing to the pixel folds it to its bar instead: StartNudge)
     if placing and not self.placementActive then
-        if panel and panel:IsShown() then
+        if panel and panel:IsShown() and not self.nudge then
             panel:Hide()
             self.optionsTucked = true
         end
@@ -3701,9 +3716,16 @@ function ns:UpdatePlacementBanner()
         end
     end
     self.placementActive = placing
+    -- locked while placing to the pixel (the folded window's lock button): the move stays
+    if self.nudge and self.db and self.db.locked then
+        self.nudge.wasLocked = true
+        self:FinishNudge(true)
+        return
+    end
 
-    -- while the options window is open (it has its own lock button), the banner steps aside
-    local show = placing and not (panel and panel:IsShown())
+    -- while the options window is open (it has its own lock button), the banner steps
+    -- aside, except while placing to the pixel (the window is folded to its bar)
+    local show = placing and (self.nudge or not (panel and panel:IsShown()))
     if not show then
         if self.banner then self.banner:Hide() end
         return
@@ -3766,6 +3788,7 @@ function ns:UpdatePlacementBanner()
             btn:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 12 + (i - 1) * 94, 12)
         end
         b.undo = buttons[2]
+        b.buttons = buttons
 
         -- Ctrl + Z undoes while the banner is shown (see ListenForUndo)
         ListenForUndo(b)
@@ -3773,9 +3796,288 @@ function ns:UpdatePlacementBanner()
     end
     self:SkinWindow(b, b.text)
     b.layer:SetText(self:LayerShown() == "behind" and L.LAYER_BEHIND_STATE or L.LAYER_FRONT_STATE)
+    self:ShowNudgePad(b)
     b:Show()
     self:ClearPlacementInfo()
     self:UpdateUndoButton()
+end
+
+-- Placing to the pixel ("Place" in the Blocks tab): the banner shows a pad instead of
+-- its usual buttons. Arrows (keyboard or pad): 1 pixel, Shift: 10 pixels; held for
+-- 0.5 s, the group keeps moving 10 steps a second. Enter or the check button keeps the
+-- place, Escape or Cancel puts the group back (ns:FinishNudge). X and Y can be typed.
+-- Without a mouse: everything has a key. In combat the game stops frames from reading
+-- the keyboard and the blocks' click buttons cannot follow them: placing waits, and the
+-- banner says so.
+local NUDGE_DELAY, NUDGE_RATE = 0.5, 10
+local NUDGE_KEYS = { UP = { 0, 1 }, DOWN = { 0, -1 }, LEFT = { -1, 0 }, RIGHT = { 1, 0 } }
+local PAD_BUTTON = 30
+local NUDGE_NAMES = { UP = L.NUDGE_UP, DOWN = L.NUDGE_DOWN, LEFT = L.NUDGE_LEFT, RIGHT = L.NUDGE_RIGHT }
+
+local function NudgeOnce(dir, big)
+    local n = ns.nudge
+    if not n then return end
+    local step = big and 10 or 1
+    ns:NudgeBy(n.key, dir[1] * step, dir[2] * step)
+end
+
+local function StopHold(pad, name)
+    if pad.hold and (not name or pad.hold.name == name) then
+        if pad.arrows[pad.hold.name] then pad.arrows[pad.hold.name]:UnlockHighlight() end
+        pad.hold = nil
+    end
+end
+
+-- Holding an arrow (key or pad button): one step at once, then steps after NUDGE_DELAY
+local function StartHold(pad, name, big, fromKey)
+    local dir = NUDGE_KEYS[name]
+    if not dir then return end
+    if pad.hold and pad.hold.name == name then return end -- a key repeat of the same arrow
+    StopHold(pad) -- another arrow was held: only the last one moves
+    NudgeOnce(dir, big)
+    pad.hold = { name = name, dir = dir, big = big, key = fromKey, wait = NUDGE_DELAY, acc = 0 }
+    if pad.arrows[name] then pad.arrows[name]:LockHighlight() end
+end
+
+local function PadArrow(pad, name, texture, rotation)
+    local btn = CreateFrame("Button", nil, pad, "BackdropTemplate")
+    btn:SetSize(PAD_BUTTON, PAD_BUTTON)
+    btn:SetNormalTexture(texture .. "-Up")
+    btn:SetPushedTexture(texture .. "-Down")
+    btn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+    if rotation then
+        for _, t in ipairs({ btn:GetNormalTexture(), btn:GetPushedTexture() }) do
+            if t and t.SetRotation then t:SetRotation(rotation) end
+        end
+    end
+    -- a pressed button keeps moving, like a held key
+    btn:SetScript("OnMouseDown", function() StartHold(pad, name, IsShiftKeyDown()) end)
+    btn:SetScript("OnMouseUp", function() StopHold(pad, name) end)
+    btn:SetScript("OnHide", function() StopHold(pad, name) end)
+    AttachTip(btn, NUDGE_NAMES[name], L.TIP_NUDGE_ARROW)
+    pad.arrows[name] = btn
+    return btn
+end
+
+local function NudgeBox(pad, label)
+    local fs = pad:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    fs:SetText(label)
+    local box = CreateFrame("EditBox", nil, pad, "InputBoxTemplate")
+    box:SetSize(64, 22)
+    box:SetAutoFocus(false)
+    box:SetNumeric(true)
+    box:SetMaxLetters(5)
+    box:SetPoint("LEFT", fs, "RIGHT", 8, 0)
+    local function Apply(self)
+        local n = ns.nudge
+        local x, y = tonumber(pad.x:GetText()), tonumber(pad.y:GetText())
+        if n and x and y then ns:SetNudgePosition(n.key, x, y) end
+        self:ClearFocus()
+    end
+    box:SetScript("OnEnterPressed", Apply)
+    box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+    box:SetScript("OnEditFocusGained", function() StopHold(pad) end)
+    box:SetScript("OnEditFocusLost", function() pad:Refresh() end)
+    box:SetScript("OnTabPressed", function(self)
+        Apply(self)
+        local other = self == pad.x and pad.y or pad.x
+        other:SetFocus()
+        other:HighlightText()
+    end)
+    AttachTip(box, label, L.TIP_NUDGE_XY)
+    return fs, box
+end
+
+local function BuildNudgePad(b)
+    local pad = CreateFrame("Frame", nil, b)
+    pad:SetPoint("TOPLEFT", 0, 0)
+    pad:SetPoint("TOPRIGHT", 0, 0)
+    pad.arrows = {}
+    local W = b:GetWidth() - 28
+
+    pad.title = pad:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    pad.title:SetPoint("TOPLEFT", 14, -11)
+    pad.title:SetWidth(W)
+    pad.title:SetJustifyH("LEFT")
+
+    -- first time only: why the options window folded, and how to open it again
+    pad.notice = pad:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    pad.notice:SetWidth(W - 96)
+    pad.notice:SetJustifyH("LEFT")
+    pad.notice:SetText(L.NUDGE_NOTICE)
+    pad.gotIt = CreateFrame("Button", nil, pad, "UIPanelButtonTemplate")
+    pad.gotIt:SetSize(88, 22)
+    pad.gotIt:SetText(L.NUDGE_GOT_IT)
+    pad.gotIt:SetPoint("TOPLEFT", pad.notice, "TOPRIGHT", 8, 0)
+    pad.gotIt:SetScript("OnClick", function()
+        ns.sv.placeNoticeSeen = true
+        pad:Refresh()
+    end)
+    AttachTip(pad.gotIt, L.NUDGE_GOT_IT, L.TIP_NUDGE_GOT_IT)
+
+    pad.groupNote = pad:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    pad.groupNote:SetWidth(W)
+    pad.groupNote:SetJustifyH("LEFT")
+    pad.groupNote:SetText(L.NUDGE_GROUP_NOTE)
+
+    -- the pad: four arrows around the check button
+    pad.cross = CreateFrame("Frame", nil, pad)
+    pad.cross:SetSize(PAD_BUTTON * 3 + 4, PAD_BUTTON * 3 + 4)
+    local up = PadArrow(pad, "UP", "Interface\\ChatFrame\\UI-ChatIcon-ScrollUp")
+    local down = PadArrow(pad, "DOWN", "Interface\\ChatFrame\\UI-ChatIcon-ScrollDown")
+    local left = PadArrow(pad, "LEFT", "Interface\\Buttons\\UI-SpellbookIcon-PrevPage")
+    local right = PadArrow(pad, "RIGHT", "Interface\\Buttons\\UI-SpellbookIcon-NextPage")
+    pad.done = CreateFrame("Button", nil, pad, "UIPanelButtonTemplate")
+    pad.done:SetSize(PAD_BUTTON, PAD_BUTTON)
+    pad.done.check = pad.done:CreateTexture(nil, "OVERLAY")
+    pad.done.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
+    pad.done.check:SetPoint("CENTER")
+    pad.done.check:SetSize(PAD_BUTTON - 4, PAD_BUTTON - 4)
+    pad.done:SetScript("OnClick", function() ns:FinishNudge(true) end)
+    AttachTip(pad.done, L.NUDGE_DONE, L.TIP_NUDGE_DONE)
+    pad.done:SetPoint("CENTER", pad.cross, "CENTER")
+    up:SetPoint("BOTTOM", pad.done, "TOP", 0, 2)
+    down:SetPoint("TOP", pad.done, "BOTTOM", 0, -2)
+    left:SetPoint("RIGHT", pad.done, "LEFT", -2, 0)
+    right:SetPoint("LEFT", pad.done, "RIGHT", 2, 0)
+
+    -- X and Y, then Cancel, right of the pad
+    pad.xLabel, pad.x = NudgeBox(pad, L.NUDGE_X)
+    pad.yLabel, pad.y = NudgeBox(pad, L.NUDGE_Y)
+    pad.xLabel:SetPoint("TOPLEFT", pad.cross, "TOPRIGHT", 20, -10)
+    pad.yLabel:SetPoint("TOPLEFT", pad.xLabel, "BOTTOMLEFT", 0, -16)
+    pad.cancel = CreateFrame("Button", nil, pad, "UIPanelButtonTemplate")
+    pad.cancel:SetSize(120, 22)
+    pad.cancel:SetText(L.NUDGE_CANCEL)
+    pad.cancel:SetPoint("TOPLEFT", pad.yLabel, "BOTTOMLEFT", 0, -14)
+    pad.cancel:SetScript("OnClick", function() ns:FinishNudge(false) end)
+    AttachTip(pad.cancel, L.NUDGE_CANCEL, L.TIP_NUDGE_CANCEL)
+
+    pad.hint = pad:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    pad.hint:SetWidth(W)
+    pad.hint:SetJustifyH("LEFT")
+    pad.hint:SetText(L.NUDGE_HINT)
+    pad.combat = pad:CreateFontString(nil, "OVERLAY", "GameFontRed")
+    pad.combat:SetWidth(W)
+    pad.combat:SetJustifyH("LEFT")
+    pad.combat:SetText(L.NUDGE_COMBAT)
+
+    -- texts above and below the pad: each one takes the height of its text
+    -- (bigger text, Shift + mouse wheel), and the banner grows with them
+    pad.Refresh = function(self)
+        local n = ns.nudge
+        if not n then return end
+        local key = n.key
+        local group = ns:GetSubtree(ns:GetRoot(key))
+        local alone = next(group, next(group)) == nil
+        self.title:SetFormattedText(alone and L.NUDGE_TITLE or L.NUDGE_TITLE_GROUP, ns:GetBlockName(key))
+        local y = -11 - self.title:GetStringHeight() - 8
+        local noticeOn = not ns.sv.placeNoticeSeen
+        self.notice:SetShown(noticeOn)
+        self.gotIt:SetShown(noticeOn)
+        if noticeOn then
+            self.notice:ClearAllPoints()
+            self.notice:SetPoint("TOPLEFT", 14, y)
+            y = y - math.max(self.notice:GetStringHeight(), 22) - 8
+        end
+        self.groupNote:SetShown(not alone)
+        if not alone then
+            self.groupNote:ClearAllPoints()
+            self.groupNote:SetPoint("TOPLEFT", 14, y)
+            y = y - self.groupNote:GetStringHeight() - 6
+        end
+        self.cross:ClearAllPoints()
+        self.cross:SetPoint("TOPLEFT", 14, y)
+        y = y - self.cross:GetHeight() - 6
+        self.hint:ClearAllPoints()
+        self.hint:SetPoint("TOPLEFT", 14, y)
+        y = y - self.hint:GetStringHeight() - 4
+        local fight = InCombatLockdown()
+        self.combat:SetShown(fight)
+        for _, btn in pairs(self.arrows) do btn:SetEnabled(not fight) end
+        if fight then StopHold(self) end
+        if fight then
+            self.combat:ClearAllPoints()
+            self.combat:SetPoint("TOPLEFT", 14, y)
+            y = y - self.combat:GetStringHeight() - 4
+        end
+        b:SetHeight(math.floor(-y + 10))
+        -- X and Y follow the group (a mouse drag too), except a box being typed in
+        local px, py = ns:GetNudgePosition(key)
+        if not self.x:HasFocus() then self.x:SetText(px and tostring(px) or "") end
+        if not self.y:HasFocus() then self.y:SetText(py and tostring(py) or "") end
+    end
+
+    -- held arrow, and X / Y kept up to date (10 times a second)
+    local tick = 0
+    pad:SetScript("OnUpdate", function(self, elapsed)
+        local h = self.hold
+        -- a key let go where the banner cannot hear it (a text box, another window)
+        if h and h.key and IsKeyDown and not IsKeyDown(h.name) then
+            StopHold(self)
+            h = nil
+        end
+        if h then
+            if h.wait > 0 then
+                h.wait = h.wait - elapsed
+            else
+                h.acc = h.acc + elapsed
+                while h.acc >= 1 / NUDGE_RATE do
+                    h.acc = h.acc - 1 / NUDGE_RATE
+                    NudgeOnce(h.dir, h.big)
+                end
+            end
+        end
+        tick = tick + elapsed
+        if tick >= 0.1 then
+            tick = 0
+            self:Refresh()
+        end
+    end)
+    pad:SetScript("OnHide", function(self) StopHold(self) end)
+
+    -- keys of the banner while placing (ListenForUndo calls these)
+    b.OnOwnKey = function(_, key)
+        if not ns.nudge then return false end
+        if NUDGE_KEYS[key] then
+            StartHold(pad, key, IsShiftKeyDown(), true)
+            return true
+        elseif key == "ENTER" then
+            ns:FinishNudge(true)
+            return true
+        elseif key == "ESCAPE" then
+            ns:FinishNudge(false)
+            return true
+        end
+        return false
+    end
+    b.OnOwnKeyUp = function(_, key)
+        if NUDGE_KEYS[key] then StopHold(pad, key) end
+    end
+    -- the folded options window may hear the keys first: it passes them on the same way
+    if panel then
+        panel.OnOwnKey, panel.OnOwnKeyUp = b.OnOwnKey, b.OnOwnKeyUp
+    end
+    b.pad = pad
+    return pad
+end
+
+-- Banner content: the usual buttons, or the pad while placing to the pixel
+function ns:ShowNudgePad(b)
+    local on = self.nudge ~= nil
+    if on and not b.pad then BuildNudgePad(b) end
+    b.text:SetShown(not on)
+    b.layer:SetShown(not on)
+    b.hint:SetShown(not on)
+    for _, btn in ipairs(b.buttons) do btn:SetShown(not on) end
+    if b.pad then
+        b.pad:SetShown(on)
+        if on then
+            b.pad:Refresh()
+            self:SkinWindow(b, b.pad.title)
+        end
+    end
+    if not on then b:SetHeight(104) end
 end
 
 -- Placement mode: what can be done with the hovered block, in a panel stuck to the

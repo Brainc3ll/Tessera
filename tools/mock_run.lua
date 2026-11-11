@@ -2869,4 +2869,103 @@ elseif GetLocale() == "enUS" then
         print("options checked: " .. #baseline .. ", lost: " .. lost)
     end
 end
+-- Placing to the pixel (1.3, lot 5): "Place" folds the window, the arrows move the
+-- whole group by real pixels, Escape puts it back, Enter keeps it (one undo step)
+do
+    MOCK_GEOMETRY = true
+    local physical = GetPhysicalScreenSize
+    GetPhysicalScreenSize = function() return 1920, 1080 end
+    ns:ResetProfile("top")
+    ns:UpdateLayout()
+    local key
+    for _, k in ipairs(ns:GetBlockKeys()) do
+        local c = ns.db.blocks[k]
+        if c.enabled and c.dock and not ns.IsSpacerKey(k) then key = k break end
+    end
+    if not key then print("STEP ERROR: placing: no block inside a group") end
+    ns:SetLocked(true, true)
+    if not TesseraOptions:IsShown() then ns:ToggleOptions() end
+    ns:OpenOptionsFor(key)
+    ns:RefreshOptions()
+    if not (ns.placeButton and ns:CanNudge(key)) then print("STEP ERROR: placing: no \"Place\" button for a block on screen") end
+    ns.sv.placeNoticeSeen = nil
+    ns.placeButton:GetScript("OnClick")(ns.placeButton)
+    local b = ns.banner
+    if not ns.nudge then print("STEP ERROR: placing: \"Place\" did not start") end
+    if ns.db.locked then print("STEP ERROR: placing: blocks still locked") end
+    if not (TesseraOptions:IsShown() and TesseraOptions.folded) then print("STEP ERROR: placing: the options window is not folded to its bar") end
+    if not (b and b:IsShown() and b.pad and b.pad:IsShown()) then print("STEP ERROR: placing: no pad on the banner") end
+    if not b.pad.notice:IsShown() then print("STEP ERROR: placing: no first-time message") end
+    b.pad.gotIt:GetScript("OnClick")(b.pad.gotIt)
+    if not ns.sv.placeNoticeSeen or b.pad.notice:IsShown() then print("STEP ERROR: placing: \"Got it\" does not hide the message") end
+    local root = ns:GetRoot(key)
+    local x0, y0 = ns:GetNudgePosition(key)
+    local before = ns.DeepCopy(ns.db.blocks[root].point)
+    ns:NudgeBy(key, 1, 0)
+    local x1, y1 = ns:GetNudgePosition(key)
+    if x1 ~= x0 + 1 or y1 ~= y0 then print("STEP ERROR: placing: one step is not one pixel: " .. tostring(x1 - x0) .. ", " .. tostring(y1 - y0)) end
+    -- keyboard: Shift + down arrow = 10 pixels (the bar is at the top of the screen)
+    local shift = IsShiftKeyDown
+    IsShiftKeyDown = function() return true end
+    b:GetScript("OnKeyDown")(b, "DOWN")
+    b:GetScript("OnKeyUp")(b, "DOWN")
+    IsShiftKeyDown = shift
+    local x2, y2 = ns:GetNudgePosition(key)
+    if x2 ~= x1 or y2 ~= y1 - 10 then print("STEP ERROR: placing: Shift + arrow is not 10 pixels") end
+    ns:SetNudgePosition(key, 300, 200)
+    local x3, y3 = ns:GetNudgePosition(key)
+    if x3 ~= 300 or y3 ~= 200 then print("STEP ERROR: placing: typed X and Y not reached: " .. tostring(x3) .. ", " .. tostring(y3)) end
+    -- the group stays on the screen
+    ns:SetNudgePosition(key, 99999, 99999)
+    local al, ab, ar, at
+    for k in pairs(ns:GetDragSet(root)) do
+        local f = ns.frames[k]
+        if f and f:IsShown() then
+            local l, bb, r, t = ns:GetRectUI(f)
+            al, ab = math.min(al or l, l), math.min(ab or bb, bb)
+            ar, at = math.max(ar or r, r), math.max(at or t, t)
+        end
+    end
+    if ar > UIParent:GetWidth() + 0.01 or at > UIParent:GetHeight() + 0.01 then print("STEP ERROR: placing: the group left the screen") end
+    -- in combat: nothing moves
+    InCombatLockdown = function() return true end
+    if ns:NudgeBy(key, 1, 0) then print("STEP ERROR: placing: moved in combat") end
+    InCombatLockdown = function() return false end
+    -- Escape: back to the start, locked again, window unfolded
+    b:GetScript("OnKeyDown")(b, "ESCAPE")
+    ns:UpdateLayout()
+    local x4, y4 = ns:GetNudgePosition(key)
+    if ns.nudge then print("STEP ERROR: placing: Escape did not stop") end
+    if x4 ~= x0 or y4 ~= y0 then print("STEP ERROR: placing: Escape did not put the group back") end
+    local p = ns.db.blocks[root].point
+    if not (p and before and p[3] == before[3] and p[4] == before[4]) then print("STEP ERROR: placing: Escape left another saved point") end
+    if not ns.db.locked then print("STEP ERROR: placing: blocks not locked again") end
+    if TesseraOptions.folded or not TesseraOptions:IsShown() then print("STEP ERROR: placing: options window not opened again") end
+    -- Enter keeps the place; Ctrl + Z then undoes the whole placement
+    ns:StartNudge(key)
+    for _ = 1, 3 do ns:NudgeBy(key, 1, 0) end
+    b:GetScript("OnKeyDown")(b, "ENTER")
+    local x5 = ns:GetNudgePosition(key)
+    if ns.nudge or x5 ~= x0 + 3 then print("STEP ERROR: placing: Enter did not keep the place") end
+    ns:Undo()
+    ns:UpdateLayout()
+    if (ns:GetNudgePosition(key)) ~= x0 then print("STEP ERROR: placing: Ctrl + Z after Enter does not undo the placement") end
+    -- the saved point still exports and imports (decimals in the offsets)
+    ns:StartNudge(key)
+    ns:NudgeBy(key, 1, 1)
+    ns:FinishNudge(true)
+    local text = ns:ExportProfile()
+    if text and ns.ImportProfile then
+        local ok = ns:ImportProfile(text, "nudge-check")
+        if not ok then print("STEP ERROR: placing: a profile with a placed group does not import") end
+    end
+    -- nothing moved: no empty undo step
+    local depth = #(ns.undoStack or {})
+    ns:StartNudge(key)
+    ns:FinishNudge(true)
+    if #(ns.undoStack or {}) ~= depth then print("STEP ERROR: placing: an empty undo step was left") end
+    GetPhysicalScreenSize = physical
+    MOCK_GEOMETRY = false
+    ns:ResetProfile("top")
+end
 print("mock run finished")

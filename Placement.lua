@@ -222,8 +222,170 @@ function ns:Undo()
 end
 
 function ns:ClearUndo()
+    -- placing to the pixel can no longer go back to its start (Escape then just stops)
+    if self.nudge then self.nudge.snap = false end
     self.undoStack = {}
     if self.UpdateUndoButton then self:UpdateUndoButton() end
+end
+
+---------------------------------------------------------------------------
+-- Placing to the pixel ("Place" button of the Blocks tab, 1.3)
+---------------------------------------------------------------------------
+-- A block inside a bar has no position of its own: the head of its group holds the
+-- saved point, so the arrows move the whole group. A "pixel" is a real screen pixel,
+-- not an interface unit: one step can be less than one unit of the block, so the saved
+-- offsets may keep decimals (rounded to a thousandth; numbers older versions read too).
+
+-- Size of one real screen pixel in UIParent units (1 when the game cannot say)
+function ns:PixelInUI()
+    local h = GetPhysicalScreenSize and select(2, GetPhysicalScreenSize())
+    local s = UIParent:GetEffectiveScale()
+    if not (h and h > 0 and s and s > 0) then return 1 end
+    return 768 / (h * s)
+end
+
+local function Round3(v)
+    return math.floor(v * 1000 + 0.5) / 1000
+end
+
+-- Rectangle (UIParent units) around the shown blocks of a set
+local function SetRect(self, set)
+    local gl, gb, gr, gt
+    for k in pairs(set) do
+        local o = self.frames[k]
+        if o and o:IsShown() then
+            local l, b, r, t = self:GetRectUI(o)
+            if l and b and r and t then
+                gl, gb = math.min(gl or l, l), math.min(gb or b, b)
+                gr, gt = math.max(gr or r, r), math.max(gt or t, t)
+            end
+        end
+    end
+    return gl, gb, gr, gt
+end
+
+-- Can the group of this block be placed to the pixel? (shown, not frozen)
+function ns:CanNudge(key)
+    if not (key and self.db and self.db.blocks[key]) then return false end
+    if self.brokerModeActive or self.db.unlockedByEditMode then return false end
+    local root = self:GetRoot(key)
+    if self:IsFrozen(root) then return false end
+    local f = self.frames[root]
+    return f and f:IsShown() and f:GetLeft() ~= nil or false
+end
+
+-- Bottom-left corner of the group of `key`, in real pixels from the bottom-left corner
+-- of the screen (nil when the group is not on screen)
+function ns:GetNudgePosition(key)
+    if not (key and self.db.blocks[key]) then return end
+    local l, b = SetRect(self, self:GetSubtree(self:GetRoot(key)))
+    if not l then return end
+    local px = self:PixelInUI()
+    return math.floor(l / px + 0.5), math.floor(b / px + 0.5)
+end
+
+-- The group's head gets a plain saved point (as a mouse drag does): no longer tied to
+-- the default layout, nor stuck to a screen edge
+local function FreeGroup(self, rootKey)
+    local cfg, f = self.db.blocks[rootKey], self.frames[rootKey]
+    local tied = not cfg.point
+    for key in pairs(self:GetSubtree(rootKey)) do
+        local c = self.db.blocks[key]
+        if c and (c.anchor or c.edges or c.stretch) then tied = true end
+    end
+    if not tied then return end
+    local l, b, r, t = self:GetRectUI(f)
+    if not l then return end
+    for key in pairs(self:GetSubtree(rootKey)) do
+        local c = self.db.blocks[key]
+        if c then c.anchor, c.edges, c.stretch = nil, nil, nil end
+    end
+    cfg.point = self:MakeRelativePoint(l, b, r, t, UnitRatio(f))
+    self:ApplyStyle(rootKey)
+    -- something changed even if the step itself is blocked at the screen edge: Enter
+    -- must keep the undo step
+    if self.nudge then self.nudge.moved = true end
+end
+
+-- Moves the group of `key` so its bottom-left corner sits at (x, y) real pixels.
+-- The whole group (and any row hanging from it) stays on the screen.
+-- Returns true when it moved.
+function ns:SetNudgePosition(key, x, y)
+    if not (key and self.db.blocks[key]) or self:IsLocked() or InCombatLockdown()
+        or not self:CanNudge(key) then return false end
+    local rootKey = self:GetRoot(key)
+    local f, cfg = self.frames[rootKey], self.db.blocks[rootKey]
+    FreeGroup(self, rootKey)
+    if not cfg.point then return false end
+    local l, b = SetRect(self, self:GetSubtree(rootKey))
+    local al, ab, ar, at = SetRect(self, self:GetDragSet(rootKey))
+    if not (l and al) then return false end
+    local px = self:PixelInUI()
+    local dx, dy = x * px - l, y * px - b
+    local W, H = UIParent:GetWidth(), UIParent:GetHeight()
+    dx = math.max(-al, math.min(W - ar, dx))
+    dy = math.max(-ab, math.min(H - at, dy))
+    if math.abs(dx) < px / 4 and math.abs(dy) < px / 4 then return false end
+    local ratio = UnitRatio(f)
+    cfg.point[3] = Round3((cfg.point[3] or 0) + dx / ratio)
+    cfg.point[4] = Round3((cfg.point[4] or 0) + dy / ratio)
+    self:ApplyStyle(rootKey)
+    self:RequestLayout()
+    if self.nudge then self.nudge.moved = true end
+    return true
+end
+
+-- Moves the group of `key` by (dx, dy) real pixels
+function ns:NudgeBy(key, dx, dy)
+    local x, y = self:GetNudgePosition(key)
+    if not x then return false end
+    return self:SetNudgePosition(key, x + dx, y + dy)
+end
+
+-- Starts placing the group of `key` to the pixel: blocks unlocked for the while (locked
+-- again at the end if they were), the options window folded to its bar, the banner
+-- switched to its pad. One undo step for the whole placement.
+function ns:StartNudge(key)
+    if InCombatLockdown() or not self:CanNudge(key) then return false end
+    if self.nudge then self:FinishNudge(true) end
+    self:PushUndo()
+    self.nudge = { key = key, wasLocked = self.db.locked and true or false,
+        snap = self.undoStack[#self.undoStack] }
+    if self.db.locked then self:SetLocked(false, true) end
+    if self.SetOptionsFolded then self:SetOptionsFolded(true) end
+    self:UpdatePlacementBanner()
+    return true
+end
+
+-- Ends the placement. keep: Enter / ✓ (the move stays, Ctrl + Z still undoes it);
+-- otherwise Escape: back to where the group was when it started.
+function ns:FinishNudge(keep)
+    local n = self.nudge
+    if not n then return end
+    self.nudge = nil
+    local stack = self.undoStack or {}
+    local at
+    for i = #stack, 1, -1 do
+        if stack[i] == n.snap then at = i break end
+    end
+    if keep then
+        -- nothing moved: no empty undo step left behind
+        if not n.moved and at == #stack and at then table.remove(stack) end
+    elseif at then
+        while self:CanUndo() and #self.undoStack >= at do self:Undo() end
+    elseif n.snap ~= false then
+        -- more than UNDO_LIMIT drags since the start: back to the oldest kept step
+        while self:CanUndo() do self:Undo() end
+    end
+    if self.UpdateUndoButton then self:UpdateUndoButton() end
+    if n.wasLocked and not self.db.locked then self:SetLocked(true, true) end
+    self:UpdatePlacementBanner()
+    local panel = _G["TesseraOptions"]
+    if panel and self.SetOptionsFolded then
+        if not panel:IsShown() then panel:Show() end
+        self:SetOptionsFolded(false)
+        if self.RefreshOptions then self:RefreshOptions() end
+    end
 end
 
 ---------------------------------------------------------------------------

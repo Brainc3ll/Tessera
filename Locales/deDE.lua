@@ -302,7 +302,6 @@ L["HELP_GENERAL_1"] = "- Platzierung: sperren, Ausrichten an Blöcken und Blizza
 L["HELP_GENERAL_2"] = "- Tooltips: Klickhilfe, Tooltips im Kampf, nur bei gedrückter Alt-Taste, Tooltip-Größe."
 L["HELP_GENERAL_3"] = "- Kampf: Blöcke im Kampf fixiert."
 L["HELP_GENERAL_4"] = "- Chat und Minikarte: ruhiger Chat, Minikarten-Schaltfläche."
-L["HELP_GENERAL_5"] = "- Barrierefreiheit: kräftige oder sanfte Farben für die Werte und die Klassenfarben (automatisch, kräftig, sanft oder farbenblindgerecht für die Werte), hoher Kontrast, minimale Textgröße."
 L["HELP_GENERAL_6"] = "- Streamer-Modus: für Streams und Videos; ersetzt Namen anderer Spieler, deine anderen Charaktere, den Namen deiner Gilde und dein Gold durch ***. Dazu eine Tastenbelegung und ein Block Streamer-Modus (anfangs ausgeblendet)."
 L["HELP_HELPABOUT_1"] = "- Reiter Hilfe: diese Themen, die Schaltfläche \"Kurze Tour\" (ein paar kurze Schritte, auch beim ersten Start angeboten) und die Schaltfläche \"Demomodus\" (alle Blöcke auf einmal, nach Kategorie)."
 L["HELP_HELPABOUT_2"] = "- Reiter Über: Version, Autor, Übersetzer, Lizenz, Quellcode, Danksagungen und die Änderungen (was sich in jeder Version geändert hat). Nach einem Update bietet ein Fenster an, sie zu öffnen."

@@ -302,7 +302,6 @@ L["HELP_GENERAL_1"] = "- Colocación: bloquear, alinear con los bloques y con la
 L["HELP_GENERAL_2"] = "- Descripciones: ayuda de clics, descripciones en combate, solo manteniendo Alt, tamaño de las descripciones."
 L["HELP_GENERAL_3"] = "- Combate: bloques fijados en combate."
 L["HELP_GENERAL_4"] = "- Chat y minimapa: silencio en el chat, botón del minimapa."
-L["HELP_GENERAL_5"] = "- Accesibilidad: colores vivos o suaves para los valores y los colores de clase (automático, vivos, suaves o para daltónicos en los valores), alto contraste, tamaño mínimo del texto."
 L["HELP_GENERAL_6"] = "- Modo streamer: para streams y vídeos, muestra como *** los nombres de otros jugadores, tus otros personajes, el nombre de tu hermandad y tu oro. También un atajo de teclado y un bloque Modo streamer (oculto al principio)."
 L["HELP_HELPABOUT_1"] = "- Pestaña Ayuda: estos temas, el botón \"Visita rápida\" (unos pocos pasos cortos, también ofrecida al primer inicio) y el botón \"Modo demostración\" (todos los bloques a la vez, por categoría)."
 L["HELP_HELPABOUT_2"] = "- Pestaña Acerca de: versión, autor, traductores, licencia, código fuente, agradecimientos y las Novedades (lo que cambió en cada versión). Tras una actualización, una ventana ofrece abrirlas."

@@ -56,7 +56,8 @@ ns.CHANGELOG = {
                 "Texts exported from older versions still import.",
                 "The arrow of the Corpse block is 1.5 times bigger.",
                 "Options window: one setting per row, its name on the left and its control on the right. Long names wrap instead of being cut.",
-                "Lists with a few choices get arrows on each side, like the game's settings. Check boxes are the game's own: click anywhere on the row to tick one.",
+                "Lists with a few choices get arrows on each side, like the game's settings."
+                    .. " Check boxes are the game's own: click anywhere on the row to tick one.",
                 "Pages taller than the window scroll with the mouse wheel.",
               },
               fr = {
@@ -65,8 +66,10 @@ ns.CHANGELOG = {
                 "Vos profils continuent de fonctionner. Les blocs masqués perdent la place invisible qu'ils gardaient dans une barre.",
                 "Les textes exportés d'anciennes versions s'importent toujours.",
                 "La flèche du bloc Cadavre est 1,5 fois plus grande.",
-                "Fenêtre d'options : un réglage par ligne, son nom à gauche et sa commande à droite. Les noms longs passent à la ligne au lieu d'être coupés.",
-                "Les listes de quelques choix ont une flèche de chaque côté, comme les réglages du jeu. Les cases à cocher sont celles du jeu : cliquez n'importe où sur la ligne pour cocher.",
+                "Fenêtre d'options : un réglage par ligne, son nom à gauche et sa commande à droite."
+                    .. " Les noms longs passent à la ligne au lieu d'être coupés.",
+                "Les listes de quelques choix ont une flèche de chaque côté, comme les réglages du jeu."
+                    .. " Les cases à cocher sont celles du jeu : cliquez n'importe où sur la ligne pour cocher.",
                 "Les pages plus hautes que la fenêtre défilent à la molette.",
               },
             },

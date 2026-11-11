@@ -737,11 +737,8 @@ function ns:GetAvailableThemes()
     return list
 end
 
--- The profile's theme; by default, the theme of the installed UI
--- (FlareUI, then EllesmereUI, then ElvUI), otherwise Blizzard modern
-function ns:GetTheme()
-    local chosen = self.db and self.db.theme
-    if chosen and byKey[chosen] and byKey[chosen].available() then return chosen end
+-- The style the automatic mode gives: the installed UI's, otherwise Blizzard
+function ns:GetAutoTheme()
     for _, key in ipairs({ FlareKey(), "ellesmere", "elvui" }) do
         if IsInstalled(byKey[key]) then return key end
     end
@@ -749,6 +746,14 @@ function ns:GetTheme()
         return ns.IsForeverClient() and "blizzardForever" or "blizzardModern"
     end
     return "blizzard"
+end
+
+-- The profile's theme; by default, the theme of the installed UI
+-- (FlareUI, then EllesmereUI, then ElvUI), otherwise Blizzard modern
+function ns:GetTheme()
+    local chosen = self.db and self.db.theme
+    if chosen and byKey[chosen] and byKey[chosen].available() then return chosen end
+    return self:GetAutoTheme()
 end
 
 -- A profile that chose Blizzard modern on WoW Forever saw it in gold: it keeps that look
@@ -821,9 +826,7 @@ end
 
 -- Switches the profile to a theme: clears style overrides from the group and launcher
 -- defaults, restyles every block and the options window. Returns false if unavailable.
-function ns:ApplyTheme(key)
-    if not byKey[key] or not byKey[key].available() then return false end
-    self.db.theme = key
+local function RestyleAll(self, key)
     if FLARE_KEYS[key] then
         local font, outline, shadow = FlareFont()
         self.db.flareFontSeen = { font = font, outline = outline, shadow = shadow }
@@ -832,7 +835,44 @@ function ns:ApplyTheme(key)
     RestyleProfile(self, key, true)
     if self.UpdateAll then self:UpdateAll() end -- values in the new threshold colors
     if self.SkinOptions then self:SkinOptions() end
+end
+
+function ns:ApplyTheme(key)
+    if not byKey[key] or not byKey[key].available() then return false end
+    self.db.theme = key
+    RestyleAll(self, key)
     return true
+end
+
+-- Back to the automatic style (1.3.1): no style fixed on the profile, the one of the
+-- installed UI (Bronze and gold, Bronze, Emerald, Elven, else Blizzard). Like a new profile:
+-- the blocks take that style, and it follows the UI if it goes missing (SyncAutoTheme).
+function ns:ApplyAutoTheme()
+    self.db.theme = nil
+    local key = self:GetTheme()
+    self.db.autoTheme, self.db.autoThemeMissing = key, nil
+    RestyleAll(self, key)
+    return true
+end
+
+-- The Look tab's style list: "Automatic" first (with the style it gives now), then the styles
+function ns:GetStyleChoices()
+    local auto = self:GetThemeInfo(self:GetAutoTheme())
+    local list = { { key = "auto", name = L.THEME_AUTO_FMT:format(auto and auto.name or "?") } }
+    for _, t in ipairs(self:GetAvailableThemes()) do table.insert(list, { key = t.key, name = t.name }) end
+    return list
+end
+
+-- What the list shows: "auto", or the style fixed on the profile
+function ns:GetStyleChoice()
+    local chosen = self.db.theme
+    if chosen and byKey[chosen] and byKey[chosen].available() then return chosen end
+    return "auto"
+end
+
+function ns:PickStyleChoice(v)
+    if v == "auto" then return self:ApplyAutoTheme() end
+    return self:ApplyTheme(v)
 end
 
 -- The automatic style (no style picked by the player) is the one of the installed UI.

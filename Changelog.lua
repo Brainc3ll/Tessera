@@ -60,6 +60,8 @@ ns.CHANGELOG = {
             },
             { kind = "improved",
               en = {
+                "New \"Automatic\" choice at the top of the style list: it gives your blocks the style of the interface you have installed"
+                    .. " and follows it if it goes missing. A style you pick yourself stays fixed.",
                 "When the interface your automatic style follows goes missing, Tessera shows the Blizzard style for now"
                     .. " and says so in the chat. Your style comes back with the interface.",
                 "Blocks tab, \"All blocks\" page: the style choice is greyed out. A button opens the Look tab,"
@@ -71,6 +73,8 @@ ns.CHANGELOG = {
                     .. " Bronze (old), the FlareUI 1.x style, is back in the list.",
               },
               fr = {
+                "Nouveau choix « Automatique » en haut de la liste des styles : il donne à tes blocs le style de l'interface que tu as installée"
+                    .. " et la suit si elle disparaît. Un style que tu choisis toi-même reste fixe.",
                 "Quand l'interface que suit ton style automatique disparaît, Tessera affiche le style Blizzard pour l'instant"
                     .. " et le dit dans la discussion. Ton style revient avec l'interface.",
                 "Onglet Blocs, page « Tous les blocs » : le choix du style est grisé. Un bouton ouvre l'onglet Apparence,"

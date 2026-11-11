@@ -587,6 +587,7 @@ NEW_EN = [
 ("SPACER_NO_ROW","A bar stretched over the screen width stays on one row: add the spacer on the left or on the right."),
 ("THEME_FLARE_SQUARE","Bronze square"),
 ("THEME_BRONZE","Bronze"),
+("THEME_AUTO_FMT","Automatic (%s)"),
 ("THEME_BRONZE_OLD","Bronze (old)"),
 ("THEME_BRONZE_GOLD","Bronze and gold"),
 ("THEME_EMERALD","Emerald"),
@@ -948,6 +949,7 @@ NEW_EN = [
 NEW_FR = {
 "THEME_FLARE_SQUARE":"Bronze carré",
 "THEME_BRONZE":"Bronze",
+"THEME_AUTO_FMT":"Automatique (%s)",
 "THEME_BRONZE_OLD":"Bronze ancien",
 "THEME_BRONZE_GOLD":"Bronze et or",
 "THEME_EMERALD":"Émeraude",

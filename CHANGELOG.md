@@ -12,6 +12,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
+- New "Automatic" choice at the top of the style list: it gives your blocks the style of the interface you have installed and follows it if it goes missing. A style you pick yourself stays fixed.
 - When the interface your automatic style follows goes missing, Tessera shows the Blizzard style for now and says so in the chat. Your style comes back with the interface.
 - Blocks tab, "All blocks" page: the style choice is greyed out. A button opens the Look tab, which picks the style of every block and of the window.
 - About tab: a thank-you to Malkkav for FlareUI, with a FlareUI button that copies the link of his addon.

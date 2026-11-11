@@ -1137,6 +1137,42 @@ for _, step in ipairs({
         C_AddOns.GetAddOnMetadata, ns.HasFlareUIMedia = meta, has
         ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing = theme, auto, missing
     end,
+    -- "Automatic" in the style list: back to the installed interface's style, from a fixed one
+    function()
+        local has, meta = ns.HasFlareUIMedia, C_AddOns.GetAddOnMetadata
+        local theme, auto, missing = ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing
+        ns.HasFlareUIMedia = function() return true end
+        C_AddOns.GetAddOnMetadata = function(name, field)
+            if name == "FlareUI" and field == "Version" then return "6.0.1" end
+            return meta(name, field)
+        end
+        ns:ApplyTheme("flareui2")
+        assert(ns.db.theme == "flareui2" and ns:GetStyleChoice() == "flareui2", "a fixed style shows as itself")
+        local list = ns:GetStyleChoices()
+        assert(list[1].key == "auto" and list[1].name:find(ns.L.THEME_BRONZE_GOLD, 1, true), "Automatic first, naming its style")
+        ns:PickStyleChoice("auto")
+        assert(ns.db.theme == nil and ns:GetStyleChoice() == "auto", "Automatic leaves no style fixed")
+        assert(ns:GetTheme() == "flareui6" and ns.db.autoTheme == "flareui6", "Automatic gives FlareUI 6's style")
+        assert(math.abs(ns.db.blocks.gold.borderColor.r - 0.65) < 0.01, "blocks restyled by Automatic")
+        local said, print0 = {}, ns.Print
+        ns.Print = function(msg) table.insert(said, msg) end
+        ns.HasFlareUIMedia = function() return false end
+        ns:SyncAutoTheme()
+        assert(ns.db.autoThemeMissing == "flareui6" and #said == 1, "Automatic follows the interface when it goes missing")
+        ns.Print = print0
+        -- a fixed style stays as it is when its interface is missing (no fallback by hand)
+        ns.HasFlareUIMedia = function() return true end
+        ns:ApplyTheme("flareui2")
+        ns.db.autoThemeMissing = nil
+        ns.HasFlareUIMedia = function() return false end
+        said = {}
+        ns.Print = function(msg) table.insert(said, msg) end
+        ns:SyncAutoTheme()
+        ns.Print = print0
+        assert(ns.db.theme == "flareui2" and ns.db.autoThemeMissing == nil and #said == 0, "a style picked by hand must stay")
+        C_AddOns.GetAddOnMetadata, ns.HasFlareUIMedia = meta, has
+        ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing = theme, auto, missing
+    end,
     -- DataBroker mode choices are remembered per display addon
     function()
         local was = ns.brokerDisplay

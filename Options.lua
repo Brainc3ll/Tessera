@@ -2424,17 +2424,12 @@ local function BuildLookPage(page)
     -- Left column: style and how groups look
     Place(CreateHeader(page, L.SECTION_THEME), 1)
     Place(CreateNote(page, L.THEME_HINT), 1)
-    Place(CreateDropdown(page, L.THEME, function()
-        local list = {}
-        for _, t in ipairs(ns:GetAvailableThemes()) do
-            table.insert(list, { key = t.key, name = t.name })
-        end
-        return list
-    end, function() return ns:GetTheme() end,
+    Place(CreateDropdown(page, L.THEME, function() return ns:GetStyleChoices() end,
+       function() return ns:GetStyleChoice() end,
        function(v)
-           ns:ApplyTheme(v)
+           ns:PickStyleChoice(v)
            -- the style of a UI that is not installed: say what differs from the real one
-           local note = ns:GetThemeNote(v)
+           local note = ns:GetThemeNote()
            if note then ns.Print(note) end
            ns:RefreshOptions()
        end, nil, nil, L.TIP_THEME), 1)

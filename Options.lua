@@ -3010,6 +3010,7 @@ end
 -- side the options window moves to the screen's left edge first)
 function ns:DockBesidePanel(frame)
     if not (panel and panel:IsShown() and frame and frame:IsShown()) then return end
+    if frame.centered then return end -- the copy window sits in front, in the middle
     local screenW = UIParent:GetWidth() * UIParent:GetEffectiveScale()
     local ps, fs = panel:GetEffectiveScale(), frame:GetEffectiveScale()
     local left, right = (panel:GetLeft() or 0) * ps, (panel:GetRight() or 0) * ps
@@ -3246,10 +3247,14 @@ end)
 -- The size in the top bar, next to the fold arrow ("100 %"); its tooltip says how to change it
 local function BuildZoomText()
     local f = CreateFrame("Frame", nil, panel)
-    f:SetSize(52, 22)
+    f:SetSize(52, 34)
     f:SetPoint("RIGHT", panel.fold, "LEFT", -6, 0)
     local fs = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    fs:SetPoint("CENTER")
+    fs:SetPoint("TOP", 0, -2)
+    -- a small reminder under the size: how to change it
+    local hint = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    hint:SetPoint("TOP", fs, "BOTTOM", 0, -1)
+    hint:SetText(L.ZOOM_HINT)
     f.Refresh = function()
         fs:SetText(math.floor((ns.sv.optionsZoom or 1) * 100 + 0.5) .. " %")
     end
@@ -4981,7 +4986,11 @@ function ns:ShowTextWindow(title, text, onAccept, acceptLabel)
     copyFrame.accept:SetShown(onAccept ~= nil)
     copyFrame.accept:SetText(acceptLabel or ACCEPT)
     copyFrame.box:SetText(text or "")
+    -- in front of the options, in the middle of the screen: it does not push them aside
+    copyFrame.centered = true
     ns:ShowSideWindow(copyFrame)
+    copyFrame:ClearAllPoints()
+    copyFrame:SetPoint("CENTER", 0, 120)
     copyFrame.box:SetFocus()
     copyFrame.box:HighlightText()
 end

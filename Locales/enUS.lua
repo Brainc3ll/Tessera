@@ -1121,6 +1121,7 @@ local L = {
     REDUCE_MOTION = "Fewer animations",
     ACCESS_GAME_NOTE = "The game has its own accessibility settings (colorblind mode, motion sickness, camera shake): Esc, Options, Accessibility. Tessera adds what its blocks and windows need.",
     WINDOW_ZOOM = "Size of Tessera's windows",
+    ZOOM_HINT = "Shift + wheel",
     PLACE_BLOCK = "Place by pixel",
     TIP_PLACE_BLOCK = "Moves this block's group pixel by pixel, with the arrow keys or the arrows of the banner. This window folds to its bar meanwhile.",
     NUDGE_TITLE = "Placing: %s",

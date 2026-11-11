@@ -1304,3 +1304,4 @@ L["TIP_NEWS_BUTTON"] = "The big changes of this version, each with a button that
 L["TUTORIAL_11"] = "To place a block to the pixel, click \"Place by pixel\" (Blocks tab or banner). The arrow keys move its group by 1 pixel, Shift by 10. Enter keeps the place, Escape puts it back."
 L["TUTORIAL_12"] = "In the options, search for a setting at the top; the help for each setting is on the right. Shift + mouse wheel resizes the window. The Accessibility tab has threshold colors, high contrast, fewer animations and a minimum text size."
 L["TUTORIAL_DO_ACCESS"] = "Open the Accessibility tab"
+L["ZOOM_HINT"] = "Shift + wheel"

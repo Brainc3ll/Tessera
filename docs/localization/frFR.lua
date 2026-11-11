@@ -1304,3 +1304,4 @@ L["TIP_NEWS_BUTTON"] = "Les grands changements de cette version, chacun avec un 
 L["TUTORIAL_11"] = "Pour placer un bloc au pixel près, clique sur « Placer au pixel » (onglet Blocs ou bandeau). Les flèches du clavier déplacent son groupe d'1 pixel, Maj de 10. Entrée garde la place, Échap la remet."
 L["TUTORIAL_12"] = "Dans les options, cherche un réglage en haut ; l'aide de chaque réglage est à droite. Maj + molette change la taille de la fenêtre. L'onglet Accessibilité propose les couleurs des seuils, le contraste élevé, moins d'animations et une taille minimale du texte."
 L["TUTORIAL_DO_ACCESS"] = "Ouvrir l'onglet Accessibilité"
+L["ZOOM_HINT"] = "Maj + molette"

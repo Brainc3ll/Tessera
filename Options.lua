@@ -663,23 +663,42 @@ local function CreateSwitch(parent, label, getter, setter, isShown, tip)
     local track = b:CreateTexture(nil, "BORDER")
     track:SetPoint("TOPLEFT", edge, "TOPLEFT", 1, -1)
     track:SetPoint("BOTTOMRIGHT", edge, "BOTTOMRIGHT", -1, 1)
-    local knob = b:CreateTexture(nil, "ARTWORK")
-    knob:SetSize(18, 18)
-    knob:SetColorTexture(0.95, 0.95, 0.95, 1)
+    local knobEdge = b:CreateTexture(nil, "ARTWORK", nil, 1)
+    knobEdge:SetSize(18, 18)
+    local knob = b:CreateTexture(nil, "ARTWORK", nil, 2)
+    knob:SetPoint("TOPLEFT", knobEdge, "TOPLEFT", 1, -1)
+    knob:SetPoint("BOTTOMRIGHT", knobEdge, "BOTTOMRIGHT", -1, 1)
     local state = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
     state:SetPoint("LEFT", edge, "RIGHT", 8, 0)
     b.hover = b:CreateTexture(nil, "HIGHLIGHT")
     b.hover:SetAllPoints(edge)
     b.hover:SetColorTexture(1, 1, 1, 0.15)
+    -- in the colors of the window's style: its title color (gold in most styles) for the
+    -- frame and the knob when on; grey when off. High contrast: a white frame.
     b.Refresh = function(self)
         local on = getter() and true or false
         self.on = on
-        local strong = ns.sv and ns.sv.highContrast
-        -- high contrast: a light frame around the track
-        if strong then edge:SetColorTexture(1, 1, 1, 1) else edge:SetColorTexture(0, 0, 0, 0.9) end
-        if on then track:SetColorTexture(0.15, 0.55, 0.15, 1) else track:SetColorTexture(0.25, 0.25, 0.25, 1) end
-        knob:ClearAllPoints()
-        knob:SetPoint(on and "RIGHT" or "LEFT", edge, on and "RIGHT" or "LEFT", on and -3 or 3, 0)
+        local info = ns.GetThemeInfo and ns:GetThemeInfo(ns:GetTheme())
+        local w = info and info.window and info.window()
+        local c = w and w.title or { 1, 0.82, 0 }
+        local r, g, bl = c[1] or c.r or 1, c[2] or c.g or 0.82, c[3] or c.b or 0
+        if ns.sv and ns.sv.highContrast then
+            edge:SetColorTexture(1, 1, 1, 1)
+        else
+            edge:SetColorTexture(r, g, bl, on and 1 or 0.6)
+        end
+        if on then
+            track:SetColorTexture(r * 0.35, g * 0.35, bl * 0.35, 1)
+            knob:SetColorTexture(r, g, bl, 1)
+            state:SetTextColor(r, g, bl)
+        else
+            track:SetColorTexture(0.07, 0.07, 0.07, 1)
+            knob:SetColorTexture(0.55, 0.55, 0.55, 1)
+            state:SetTextColor(0.75, 0.75, 0.75)
+        end
+        knobEdge:SetColorTexture(0, 0, 0, 1)
+        knobEdge:ClearAllPoints()
+        knobEdge:SetPoint(on and "RIGHT" or "LEFT", edge, on and "RIGHT" or "LEFT", on and -3 or 3, 0)
         state:SetText(on and YES or NO)
     end
     b.Activate = function(self)

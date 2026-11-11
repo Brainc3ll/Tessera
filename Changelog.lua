@@ -76,7 +76,8 @@ ns.CHANGELOG = {
                 "Search a setting from the top of the options window: Enter or a click opens its page and makes it blink. Old names work too.",
                 "A help panel on the right of the options window explains the setting under the mouse, in place of its tooltip.",
                 "The arrow next to the cross folds the options window to its top bar."
-                    .. " Shift + mouse wheel changes its size (70 to 130 %), shown at the top; Tessera's other windows follow.",
+                    .. " Shift + mouse wheel changes its size (70 to 130 %), shown at the top; Tessera's other windows follow."
+                    .. " Their help tooltips are bigger and follow it too.",
                 "About tab: the links sit in boxes, ready to copy (the game opens no browser).",
                 "Blocks tab: one page in place of five sub-tabs. The \"On screen\" switch sits left of the block's name.",
                 "The essentials and the block's own settings come first; its look, when to show it, and its name and clicks fold into sections.",
@@ -97,7 +98,8 @@ ns.CHANGELOG = {
                 "Cherchez un réglage en haut de la fenêtre d'options : Entrée ou un clic ouvre sa page et le fait clignoter. Les anciens noms marchent aussi.",
                 "Un panneau d'aide, à droite de la fenêtre d'options, explique le réglage sous la souris, à la place de son infobulle.",
                 "La flèche à côté de la croix réduit la fenêtre d'options à sa barre du haut."
-                    .. " Maj + molette change sa taille (de 70 à 130 %), affichée en haut ; les autres fenêtres de Tessera suivent.",
+                    .. " Maj + molette change sa taille (de 70 à 130 %), affichée en haut ; les autres fenêtres de Tessera suivent."
+                    .. " Leurs bulles d'aide sont plus grandes et suivent aussi.",
                 "Onglet À propos : les liens sont dans des cases, prêts à copier (le jeu n'ouvre pas de navigateur).",
                 "Onglet Blocs : une seule page au lieu de cinq sous-onglets. L'interrupteur « Sur l'écran » se trouve à gauche du nom du bloc.",
                 "L'essentiel et les réglages propres au bloc viennent d'abord ; son apparence, quand l'afficher, son nom et ses clics se replient en sections.",

@@ -2748,6 +2748,15 @@ do
     for _ = 1, 6 do wheel(TesseraOptions, 1) end
     if ns.sv.optionsZoom ~= nil then print("STEP ERROR: back to 100 % saves nothing") end
     IsShiftKeyDown = shift
+    -- help tooltips of Tessera's windows: 125 % of the game's size, given back on hide
+    local set = {}
+    GameTooltip.SetScale = function(_, v) set[#set + 1] = v end
+    GameTooltip.GetOwner = function() return TesseraOptions end
+    GameTooltip.__scripts.OnShow(GameTooltip)
+    if not set[1] or math.abs(set[1] - 1.25) > 0.001 then print("STEP ERROR: window tooltips are 125 % of the game's size: " .. tostring(set[1])) end
+    GameTooltip.__scripts.OnHide(GameTooltip)
+    if not set[2] or math.abs(set[2] - 1) > 0.001 then print("STEP ERROR: the game's tooltip scale is given back") end
+    GameTooltip.SetScale, GameTooltip.GetOwner = nil, nil
 end
 -- Blocks tab (1.3, lot 4): the "On screen" switch, the list in two parts, the style of
 -- one block, sections that fold and open from the search; Accessibility tab

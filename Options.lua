@@ -3112,6 +3112,28 @@ function ns:FollowWindowSize(frame)
     frame:SetScale(self.sv and self.sv.optionsZoom or 1)
 end
 
+-- Help tooltips of Tessera's windows: bigger than the game's own at 100 % (hard to read
+-- next to the pointer), and sized with the windows. The game's tooltip is shared, so its
+-- scale is given back as soon as it hides.
+local TOOLTIP_BASE = 1.25
+local function OwnedByTesseraWindow(tooltip)
+    local f = tooltip:GetOwner()
+    while f do
+        if f == panel or zoomWindows[f] then return true end
+        f = f.GetParent and f:GetParent() or nil
+    end
+    return false
+end
+local windowTipScale
+GameTooltip:HookScript("OnShow", function(self)
+    if windowTipScale or not OwnedByTesseraWindow(self) then return end
+    windowTipScale = self:GetScale()
+    self:SetScale(windowTipScale * TOOLTIP_BASE * (ns.sv and ns.sv.optionsZoom or 1))
+end)
+GameTooltip:HookScript("OnHide", function(self)
+    if windowTipScale then self:SetScale(windowTipScale) windowTipScale = nil end
+end)
+
 -- The size in the top bar, next to the fold arrow ("100 %"); its tooltip says how to change it
 local function BuildZoomText()
     local f = CreateFrame("Frame", nil, panel)

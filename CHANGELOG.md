@@ -28,7 +28,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Pages taller than the window scroll with the mouse wheel.
 - Search a setting from the top of the options window: Enter or a click opens its page and makes it blink. Old names work too.
 - A help panel on the right of the options window explains the setting under the mouse, in place of its tooltip.
-- The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %), shown at the top; Tessera's other windows follow.
+- The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %), shown at the top; Tessera's other windows follow. Their help tooltips are bigger and follow it too.
 - About tab: the links sit in boxes, ready to copy (the game opens no browser).
 - Blocks tab: one page in place of five sub-tabs. The "On screen" switch sits left of the block's name.
 - The essentials and the block's own settings come first; its look, when to show it, and its name and clicks fold into sections.

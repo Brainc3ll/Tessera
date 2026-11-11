@@ -7,10 +7,12 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### New
 
+- Placement banners: an "Empty blocks" button (or the V key) shows or hides, while you place, the blocks set to "Hide when empty". Hide them to see the real bar.
 - New style: Bronze and gold, after the settings window of FlareUI 6. Bronze edges like its frames and gold text; on the options window, a rock background and gold rows under the mouse. With FlareUI 6 installed, new profiles start with it. A profile on Bronze keeps its style, and Tessera offers the new one.
 
 ### Improvements
 
+- About tab: a thank-you to Malkkav for FlareUI, with a FlareUI button that copies the link of his addon.
 - The styles that follow another interface get their own names: Bronze, Bronze (old) and Bronze square (FlareUI), Elven (ElvUI) and Emerald (EllesmereUI). Your blocks look the same; only the name changes. Without its addon, a style says which one it lacks: "Elven (without ElvUI)". Bronze (old), the FlareUI 1.x style, is back in the list.
 
 ## 1.3.0 — 2026-11-11

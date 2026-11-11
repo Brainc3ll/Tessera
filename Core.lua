@@ -1937,11 +1937,16 @@ function ns:ShouldShow(key)
     if not cfg or not cfg.enabled then return false end
     if self.allHidden then return false end -- key binding "show / hide all blocks"
     if self.brokerModeActive then return false end -- DataBroker mode: another addon shows the data
-    if self:IsLocked() then -- when unlocked, everything is visible for placement
+    local locked = self:IsLocked()
+    if locked then -- when unlocked, everything is visible for placement
         if cfg.hideInCombat and self.state.inCombat then return false end
         if cfg.hideInInstance and self.state.inInstance then return false end
         if cfg.hideInVehicle and self.state.inVehicle then return false end
         if cfg.hideWhenResting and IsResting and IsResting() then return false end
+    end
+    -- empty blocks: hidden when locked; while placing, hidden only if the player chose to
+    -- (the "Empty blocks" button of the placement banners, ns.placeHideEmpty)
+    if locked or self.placeHideEmpty then
         -- a spacer merged with other blocks hides when none of them is shown
         -- (e.g. in the second row when every block in it is empty)
         if ns.IsSpacerKey(key) and not self.previewMode then
@@ -1989,8 +1994,20 @@ function ns:RefreshLockState()
 end
 
 -- (silent: no chat message, e.g. when Blizzard's Edit Mode opens or closes)
+-- Placing: show or hide the blocks that hide when empty (Friends, Guild...). Not saved:
+-- they show again the next time the blocks are unlocked.
+function ns:SetPlaceHideEmpty(on)
+    on = on and true or nil
+    if self.placeHideEmpty == on then return end
+    self.placeHideEmpty = on
+    self:UpdateAllVisibility()
+    if self.RefreshPlaceEmptyButtons then self:RefreshPlaceEmptyButtons() end
+    if self.RequestLayout then self:RequestLayout() end
+end
+
 function ns:SetLocked(locked, silent)
     if not locked and self.DemoBlocksUnlock and self:DemoBlocksUnlock() then return end
+    if locked then self.placeHideEmpty = nil end -- (the lock redraws everything below)
     self.db.locked = locked
     self:RefreshLockState()
     -- in front of or behind the Blizzard frames the blocks cover? (Layers.lua)

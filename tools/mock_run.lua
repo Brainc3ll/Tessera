@@ -1073,6 +1073,33 @@ for _, step in ipairs({
         assert(math.abs(ns.db.blocks.gold.borderColor.r - 0.80) < 0.01, "blocks not restyled back")
         ns.HasFlareUIMedia = has
     end,
+    -- placing: empty blocks ("Hide when empty") stay shown unless the player hides them (V)
+    function()
+        local key = "whispers"
+        local cfg = ns.db.blocks[key]
+        local mod = ns.modules[key]
+        local was, empty, locked = cfg.hideEmpty, mod.isEmpty, ns.db.locked
+        cfg.enabled, cfg.hideEmpty = true, true
+        mod.isEmpty = function() return true end
+        ns.db.locked = true
+        assert(not ns:ShouldShow(key), "locked: an empty block hides")
+        ns.db.locked = false
+        ns.placeHideEmpty = nil
+        assert(ns:ShouldShow(key), "placing: an empty block is shown")
+        ns:SetPlaceHideEmpty(true)
+        assert(not ns:ShouldShow(key), "placing, empty blocks hidden: the block hides")
+        assert(ns.frames[key] and not ns.frames[key]:IsShown(), "placing, empty blocks hidden: its frame hides")
+        ns:SetPlaceHideEmpty(false)
+        assert(ns:ShouldShow(key) and ns.frames[key]:IsShown(), "placing, empty blocks shown again")
+        ns:SetPlaceHideEmpty(true)
+        ns:SetLocked(true, true)
+        assert(ns.placeHideEmpty == nil, "locking resets the empty blocks button")
+        ns:SetLocked(false, true)
+        assert(ns:ShouldShow(key), "unlocked again: shown")
+        ns.db.locked = locked
+        cfg.hideEmpty, mod.isEmpty = was, empty
+        ns:UpdateAllVisibility()
+    end,
     -- FlareUI 6: Bronze and gold for new profiles; a profile on Bronze keeps it and is offered the new one
     function()
         local has, meta = ns.HasFlareUIMedia, C_AddOns.GetAddOnMetadata
@@ -3062,6 +3089,16 @@ do
     ns:Undo()
     ns:UpdateLayout()
     if (ns:GetNudgePosition(key)) ~= x0 then print("STEP ERROR: placing: Ctrl + Z after Enter does not undo the placement") end
+    -- the "Empty blocks" button: in the banner and in the pad, V toggles, locking resets
+    ns:StartNudge(key)
+    if not (b.emptyBtn and b.pad and b.pad.empty) then print("STEP ERROR: placing: no Empty blocks button") end
+    b:GetScript("OnKeyDown")(b, "V")
+    if not ns.placeHideEmpty or b.pad.empty:GetText() ~= ns.L.EMPTY_BLOCKS_HIDDEN or b.emptyBtn:GetText() ~= ns.L.EMPTY_BLOCKS_HIDDEN then
+        print("STEP ERROR: placing: V did not hide the empty blocks on both buttons")
+    end
+    b.pad.empty:GetScript("OnClick")(b.pad.empty)
+    if ns.placeHideEmpty or b.emptyBtn:GetText() ~= ns.L.EMPTY_BLOCKS_SHOWN then print("STEP ERROR: placing: the pad button did not show them again") end
+    ns:FinishNudge(false)
     -- the saved point still exports and imports (decimals in the offsets)
     ns:StartNudge(key)
     ns:NudgeBy(key, 1, 1)

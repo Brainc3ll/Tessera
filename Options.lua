@@ -2973,6 +2973,8 @@ local ABOUT_LINKS = {
     { "ABOUT_LINK_ISSUES", SOURCE_URL .. "/issues" },
     { "CurseForge", "https://www.curseforge.com/wow/addons/tessera" },
     { "Wago", "https://addons.wago.io/addons/tessera" },
+    -- the thanks to Malkkav: his addon's page (FlareUI is the addon's name, not translated)
+    { "FlareUI", "https://www.curseforge.com/wow/addons/flareui" },
 }
 
 -- A copy box: shows a link, selected on focus; typing changes nothing
@@ -3890,6 +3892,22 @@ end
 
 local BANNER_W, BANNER_H = 530, 130
 
+-- "Empty blocks: shown / hidden": one button in each placement banner (V on the keyboard)
+local emptyButtons = {}
+local function EmptyBlocksButton(parent)
+    local btn = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    btn:SetSize(176, 22)
+    btn:SetScript("OnClick", function() ns:SetPlaceHideEmpty(not ns.placeHideEmpty) end)
+    AttachTip(btn, L.EMPTY_BLOCKS, L.TIP_EMPTY_BLOCKS)
+    table.insert(emptyButtons, btn)
+    btn:SetText(ns.placeHideEmpty and L.EMPTY_BLOCKS_HIDDEN or L.EMPTY_BLOCKS_SHOWN)
+    return btn
+end
+function ns:RefreshPlaceEmptyButtons()
+    local text = self.placeHideEmpty and L.EMPTY_BLOCKS_HIDDEN or L.EMPTY_BLOCKS_SHOWN
+    for _, btn in ipairs(emptyButtons) do btn:SetText(text) end
+end
+
 -- Grid sizes, the same as the General tab's list
 local GRID_STEPS = { 0, 8, 16, 32 }
 local function GridText(v)
@@ -4042,12 +4060,18 @@ function ns:UpdatePlacementBanner()
         b.gridValue:SetPoint("LEFT", b.gridPrev, "RIGHT", 4, 0)
         b.gridNext = GridArrow("Interface\\Buttons\\UI-SpellbookIcon-NextPage", 1)
         b.gridNext:SetPoint("LEFT", b.gridValue, "RIGHT", 4, 0)
-        b.gridRow = { b.gridLabel, b.gridPrev, b.gridValue, b.gridNext }
-        -- G: next grid size (only while the banner shows its own buttons)
+        -- empty blocks (those set to hide when empty): shown while placing, or hidden as in game
+        b.emptyBtn = EmptyBlocksButton(b)
+        b.emptyBtn:SetPoint("TOPRIGHT", b, "TOPRIGHT", -12, -66)
+        b.gridRow = { b.gridLabel, b.gridPrev, b.gridValue, b.gridNext, b.emptyBtn }
+        -- G: next grid size, V: empty blocks (only while the banner shows its own buttons)
         b.OnOwnKey = function(_, key)
-            if not ns.nudge and key == "G" and not IsShiftKeyDown() and not IsControlKeyDown()
-                and not IsAltKeyDown() then
+            if ns.nudge or IsShiftKeyDown() or IsControlKeyDown() or IsAltKeyDown() then return false end
+            if key == "G" then
                 ns:StepGrid(1)
+                return true
+            elseif key == "V" then
+                ns:SetPlaceHideEmpty(not ns.placeHideEmpty)
                 return true
             end
             return false
@@ -4221,6 +4245,9 @@ local function BuildNudgePad(b)
     pad.keep:SetPoint("TOPLEFT", pad.yLabel, "BOTTOMLEFT", 0, -14)
     pad.keep:SetScript("OnClick", function() ns:FinishNudge(true) end)
     AttachTip(pad.keep, L.NUDGE_DONE, L.TIP_NUDGE_DONE)
+    -- the same "Empty blocks" button as the banner's, right of the X box
+    pad.empty = EmptyBlocksButton(pad)
+    pad.empty:SetPoint("LEFT", pad.x, "RIGHT", 24, 0)
     pad.cancel:SetPoint("LEFT", pad.keep, "RIGHT", 6, 0)
     pad.cancel:SetScript("OnClick", function() ns:FinishNudge(false) end)
     AttachTip(pad.cancel, L.NUDGE_CANCEL, L.TIP_NUDGE_CANCEL)
@@ -4321,6 +4348,9 @@ local function BuildNudgePad(b)
         if not ns.nudge then return ownKey and ownKey(self, key) or false end
         if NUDGE_KEYS[key] then
             StartHold(pad, key, IsShiftKeyDown(), true)
+            return true
+        elseif key == "V" and not IsShiftKeyDown() and not IsControlKeyDown() and not IsAltKeyDown() then
+            ns:SetPlaceHideEmpty(not ns.placeHideEmpty)
             return true
         elseif key == "ENTER" then
             ns:FinishNudge(true)

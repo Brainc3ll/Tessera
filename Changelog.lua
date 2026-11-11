@@ -42,12 +42,16 @@ ns.CHANGELOG = {
         sections = {
             { kind = "new",
               en = {
+                "Placement banners: an \"Empty blocks\" button (or the V key) shows or hides, while you place,"
+                    .. " the blocks set to \"Hide when empty\". Hide them to see the real bar.",
                 "New style: Bronze and gold, after the settings window of FlareUI 6. Bronze edges like its frames and gold text;"
                     .. " on the options window, a rock background and gold rows under the mouse."
                     .. " With FlareUI 6 installed, new profiles start with it."
                     .. " A profile on Bronze keeps its style, and Tessera offers the new one.",
               },
               fr = {
+                "Bandeaux de placement : un bouton « Blocs vides » (ou la touche V) montre ou cache, pendant le placement,"
+                    .. " les blocs réglés sur « Masquer si vide ». Cache-les pour voir la vraie barre.",
                 "Nouveau style : Bronze et or, d'après la fenêtre de réglages de FlareUI 6. Bords bronze comme ses cadres et texte or ;"
                     .. " sur la fenêtre d'options, un fond de roche et des lignes dorées sous la souris."
                     .. " Avec FlareUI 6 installé, les nouveaux profils commencent avec lui."
@@ -56,12 +60,14 @@ ns.CHANGELOG = {
             },
             { kind = "improved",
               en = {
+                "About tab: a thank-you to Malkkav for FlareUI, with a FlareUI button that copies the link of his addon.",
                 "The styles that follow another interface get their own names: Bronze, Bronze (old) and Bronze square (FlareUI),"
                     .. " Elven (ElvUI) and Emerald (EllesmereUI). Your blocks look the same; only the name changes."
                     .. " Without its addon, a style says which one it lacks: \"Elven (without ElvUI)\"."
                     .. " Bronze (old), the FlareUI 1.x style, is back in the list.",
               },
               fr = {
+                "Onglet À propos : un merci à Malkkav pour FlareUI, avec un bouton FlareUI qui copie le lien de son addon.",
                 "Les styles qui suivent une autre interface prennent leur propre nom : Bronze, Bronze ancien et Bronze carré (FlareUI),"
                     .. " Elfique (ElvUI) et Émeraude (EllesmereUI). Tes blocs ne changent pas ; seul le nom change."
                     .. " Sans son addon, un style dit lequel lui manque : « Elfique (sans ElvUI) »."

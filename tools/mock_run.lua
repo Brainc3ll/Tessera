@@ -2768,10 +2768,7 @@ do
     end
     ns:OpenOptionsFor(key)
     -- the list: "On screen" first, then "Available"
-    local switch
-    for _, r in ipairs(ns.optionRows) do
-        if r.label == L.ENABLED and r.page == 1 then switch = r.frame end
-    end
+    local switch = ns.blockSwitch
     if not switch then print("STEP ERROR: no \"On screen\" switch on the Blocks tab") end
     switch:Activate()
     if ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not take the block off the screen") end

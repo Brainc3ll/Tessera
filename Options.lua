@@ -538,17 +538,19 @@ end
 -- Section header: gold text with a thin line underneath
 local function CreateHeader(parent, text)
     local holder = CreateFrame("Frame", nil, parent)
-    holder:SetSize(FULL_W, 30) -- room above the text: sections stand apart
     local fs = holder:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
     fs:SetPoint("BOTTOMLEFT", 0, 5)
     fs:SetText(text)
+    -- room above the text: sections stand apart (more with bigger text)
+    local h = math.max(30, (fs:GetStringHeight() or 0) + 16)
+    holder:SetSize(FULL_W, h)
     local line = holder:CreateTexture(nil, "ARTWORK")
     line:SetColorTexture(1, 0.82, 0, 0.4)
     line:SetHeight(1)
     line:SetPoint("BOTTOMLEFT")
     line:SetPoint("BOTTOMRIGHT")
     holder.Refresh = function() end
-    holder.layoutHeight = 34
+    holder.layoutHeight = h + 4
     holder.isHeader, holder.headerText = true, text
     return Register(holder)
 end
@@ -559,13 +561,16 @@ end
 -- NewLayout). Not saved: every section opens folded or not as its page decides.
 local function CreateSection(parent, text, folded)
     local b = CreateFrame("Button", nil, parent)
-    b:SetSize(FULL_W, 30)
     local sign = b:CreateTexture(nil, "ARTWORK")
     sign:SetSize(16, 16)
     sign:SetPoint("BOTTOMLEFT", 0, 5)
     local fs = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
     fs:SetPoint("LEFT", sign, "RIGHT", 6, 0)
     fs:SetText(text)
+    local h = math.max(30, (fs:GetStringHeight() or 0) + 16) -- (bigger text: taller)
+    b:SetSize(FULL_W, h)
+    local size = math.max(16, math.floor(16 * TextScale()))
+    sign:SetSize(size, size)
     local line = b:CreateTexture(nil, "ARTWORK")
     line:SetColorTexture(1, 0.82, 0, 0.4)
     line:SetHeight(1)
@@ -588,7 +593,7 @@ local function CreateSection(parent, text, folded)
     end
     b:SetScript("OnClick", function(self) self:Activate() end)
     b:Refresh()
-    b.layoutHeight = 34
+    b.layoutHeight = h + 4
     b.isHeader, b.isSection, b.headerText = true, true, text
     return Register(b)
 end
@@ -650,9 +655,11 @@ local function CreateSwitch(parent, label, getter, setter, isShown, tip)
     title:SetWidth(SWITCH_W)
     title:SetJustifyH("LEFT")
     title:SetText(label)
+    local titleH = math.max(12, title:GetStringHeight() or 12)
     local edge = b:CreateTexture(nil, "BACKGROUND")
     edge:SetSize(48, 24)
-    edge:SetPoint("TOPLEFT", 0, -16)
+    edge:SetPoint("TOPLEFT", 0, -(titleH + 4))
+    b:SetHeight(titleH + 4 + 24 + 4)
     local track = b:CreateTexture(nil, "BORDER")
     track:SetPoint("TOPLEFT", edge, "TOPLEFT", 1, -1)
     track:SetPoint("BOTTOMRIGHT", edge, "BOTTOMRIGHT", -1, 1)
@@ -681,7 +688,7 @@ local function CreateSwitch(parent, label, getter, setter, isShown, tip)
     end
     b:SetScript("OnClick", function(self) self:Activate() end)
     AttachTip(b, label, tip)
-    b.layoutHeight = 48
+    b.layoutHeight = b:GetHeight() + 4
     b:Refresh()
     return Register(AsSetting(b, label, tip, "check"), isShown)
 end
@@ -1455,6 +1462,7 @@ local function BuildBlockPage(page)
     local REPLACE_W = 140
     local getE, setE = Field("enabled")
     local switch = top.Place(CreateSwitch(page, L.ENABLED, function() return getE() end, setE, nil, L.TIP_ENABLED), 1)
+    ns.blockSwitch = switch -- (tools/mock_run.lua)
     -- the list sits right of the switch, on the same line (not a row of the page)
     local selection = CreateDropdown(page, L.SELECTION, SelectionOptions,
         function() return selected end,
@@ -1470,7 +1478,6 @@ local function BuildBlockPage(page)
     end, function() return single() and ns.db.blocks[selected] ~= nil end, REPLACE_W - 8, L.TIP_REPLACE_BLOCK)
     replace:SetPoint("BOTTOMLEFT", selection, "BOTTOMRIGHT", 0, 1)
     top.Gap(1, 6)
-    top.Place(CreateNote(page, L.GROUP_HINT, FULL_W), 1)
 
     -- One page that scrolls (1.3, in place of five sub-tabs): what matters first, then
     -- the block's own settings; the rest in sections that fold (closed when the
@@ -3051,17 +3058,21 @@ local function BuildHelpPanel()
             title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -6)
             title:SetText(name)
             body:SetText(tip)
-        elseif helpBelow then
-            -- no room for the logo under the page
-            logo:Hide()
-            title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -6)
-            title:SetText(L.OPTIONS_TITLE)
-            body:SetText(L.HELP_PANEL_REST .. "\n\n" .. L.HELP_PANEL_ZOOM)
         else
-            logo:Show()
-            title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -136)
+            -- at rest: what the page is for (bigger text: not in the top bar), then the hints
+            local text = L.HELP_PANEL_REST .. "\n\n" .. L.HELP_PANEL_ZOOM
+            if currentPage == PAGE_BLOCKS then text = L.GROUP_HINT .. "\n\n" .. text end
+            if helpBelow then
+                -- no room for the logo under the page
+                logo:Hide()
+                title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -6)
+                text = (L["PAGE_HINT_" .. currentPage] or "") .. "\n\n" .. text
+            else
+                logo:Show()
+                title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -136)
+            end
             title:SetText(L.OPTIONS_TITLE)
-            body:SetText(L.HELP_PANEL_REST .. "\n\n" .. L.HELP_PANEL_ZOOM)
+            body:SetText(text)
         end
         return true
     end
@@ -3377,11 +3388,13 @@ ns.ListenForUndo = ListenForUndo
 -- Creates the main options window, its tabs and pages (called once, lazily)
 local function BuildPanel()
     ValidateSelection()
-    -- bigger text: the help panel goes under the page (read once: a change needs a reload)
+    -- bigger text: the help panel goes under the page, the list of pages gets wider
+    -- (read once: a change needs a reload)
     if TextScale() >= 1.5 and not helpBelow then
         helpBelow = true
         PAGE_RIGHT = 16
-        PANEL_W = PANEL_W - HELP_W + PAGE_RIGHT
+        NAV_W = math.floor(176 * (1 + (TextScale() - 1) * 0.5))
+        PANEL_W = 720 + NAV_W + PAGE_RIGHT
     end
 
     panel = CreateFrame("Frame", "TesseraOptions", UIParent, "BackdropTemplate")
@@ -3451,6 +3464,7 @@ local function BuildPanel()
         if index == PAGE_BROKER and not ns.modules[selected] then selected = DataModuleKeys()[1] or ALL end
         currentPage = index
         panel.hint:SetText(L["PAGE_HINT_" .. index] or "")
+        panel.hint:SetShown(TextScale() == 1) -- bigger text: in the help panel instead
         if ns.ShowOptionHelp then ns:ShowOptionHelp() end -- help panel back to rest
         for i, p in ipairs(pages) do
             p:SetShown(i == index)

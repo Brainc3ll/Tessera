@@ -1291,3 +1291,5 @@ L["TIP_PLACE_BLOCK"] = "Déplace le groupe de ce bloc pixel par pixel, avec les 
 L["NUDGE_NOT_SHOWN"] = "Ce bloc est caché pour l'instant (quand l'afficher, ou vide). « Placer » marche dès qu'il est à l'écran."
 L["NUDGE_PICK"] = "Placement : clique sur le bloc à placer"
 L["TIP_BANNER_PLACE"] = "Déplace un groupe pixel par pixel avec les flèches du clavier. Commence par le bloc choisi dans l'onglet Blocs ; clique sur un autre bloc pour le placer à son tour."
+L["HELP_PLACE_21"] = "- Grille : les flèches du bandeau de placement changent sa taille tout de suite, ou appuie sur G."
+L["TIP_BANNER_GRID"] = "Taille de la grille sur laquelle les blocs s'aimantent quand tu les poses (le même réglage que dans l'onglet Général). G : taille suivante."

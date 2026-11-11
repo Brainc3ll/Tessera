@@ -1135,6 +1135,7 @@ local L = {
     NUDGE_NOT_SHOWN = "This block is hidden right now (when to show it, or empty). \"Place\" works once it is on screen.",
     NUDGE_PICK = "Placing: click the block to place",
     TIP_BANNER_PLACE = "Moves a group pixel by pixel with the arrow keys. It starts with the block chosen in the Blocks tab; click another block to place it instead.",
+    TIP_BANNER_GRID = "Size of the grid blocks snap to when you drop them (same setting as the General tab). G: next size.",
     HELP_T_SHORT = "In short",
     HELP_SHORT_1 = "- Click \"Unlock blocks\", drag the blocks where you like, drop them against each other to merge them, then click \"Lock\".",
     HELP_SHORT_6 = "- In placement mode, the cross on a hovered block removes it, and its arrows replace it with another block without moving the rest.",
@@ -1156,6 +1157,7 @@ local L = {
     HELP_PLACE_16 = "- The arrows in the top-left corner of a hovered block: replace it with another block (see the topic \"Replacing blocks\").",
     HELP_PLACE_7 = "- Ctrl + Z, or Undo on the banner: undo the last action.",
     HELP_PLACE_20 = "- \"Place\" (Blocks tab or placement banner): move the chosen block's group pixel by pixel with the arrow keys (Shift: 10 pixels) or the arrows of the banner, or type X and Y. Click another block to place it instead. Enter keeps the place, Escape puts the groups back.",
+    HELP_PLACE_21 = "- Grid: the arrows on the placement banner change its size at once, or press G.",
     HELP_PLACE_8 = "- Right-click: quick menu: settings, remove, detach, add a spacer, replace with..., group look, freeze the group, lock. Hovering an unlocked block reminds you of it.",
     HELP_PLACE_9 = "- Add a spacer (quick menu): an empty block on the left, right, above or below a block, slipped in between if another block is already there. In a stretched bar, it takes room from the other spacers.",
     HELP_PLACE_10 = "- Replace with... (quick menu, or next to the block list in the Blocks tab): puts another block exactly in this one's place without moving the others, or swaps two shown blocks.",
@@ -1303,7 +1305,7 @@ ns.L = L
 -- change to one line only asks translators to redo that line.
 ns.HELP_LAYOUT = {
     { title = "HELP_T_SHORT", lines = { "HELP_SHORT_1", "HELP_SHORT_6", "HELP_SHORT_2", "HELP_SHORT_3", "HELP_SHORT_4", "HELP_SHORT_8", "", "HELP_SHORT_7", "HELP_SHORT_5" } },
-    { title = "HELP_T_PLACE", lines = { "HELP_PLACE_1", "HELP_PLACE_2", "HELP_PLACE_3", "HELP_PLACE_4", "", "HELP_PLACE_18", "HELP_PLACE_5", "HELP_PLACE_15", "HELP_PLACE_6", "HELP_PLACE_16", "HELP_PLACE_7", "HELP_PLACE_20", "HELP_PLACE_8", "HELP_PLACE_9", "HELP_PLACE_10", "HELP_PLACE_11", "HELP_PLACE_19", "HELP_PLACE_12", "HELP_PLACE_17", "HELP_PLACE_13", "HELP_PLACE_14" } },
+    { title = "HELP_T_PLACE", lines = { "HELP_PLACE_1", "HELP_PLACE_2", "HELP_PLACE_3", "HELP_PLACE_4", "", "HELP_PLACE_18", "HELP_PLACE_5", "HELP_PLACE_15", "HELP_PLACE_6", "HELP_PLACE_16", "HELP_PLACE_7", "HELP_PLACE_20", "HELP_PLACE_21", "HELP_PLACE_8", "HELP_PLACE_9", "HELP_PLACE_10", "HELP_PLACE_11", "HELP_PLACE_19", "HELP_PLACE_12", "HELP_PLACE_17", "HELP_PLACE_13", "HELP_PLACE_14" } },
     { title = "HELP_T_REPLACE", lines = { "HELP_REPLACE_1", "HELP_REPLACE_2", "HELP_REPLACE_3", "HELP_REPLACE_4", "HELP_REPLACE_5", "HELP_REPLACE_6", "", "HELP_REPLACE_7" } },
     { title = "HELP_T_USE", lines = { "HELP_USE_1", "HELP_USE_2", "HELP_USE_3", "HELP_USE_4", "HELP_USE_9", "HELP_USE_5", "HELP_USE_6", "", "HELP_USE_7", "", "HELP_USE_8" } },
     { title = "HELP_T_BLOCKS", lines = { "HELP_BLOCKS_1", "HELP_BLOCKS_19", "HELP_BLOCKS_8", "HELP_BLOCKS_18", "HELP_BLOCKS_16", "HELP_BLOCKS_17", "HELP_BLOCKS_2", "HELP_BLOCKS_20", "HELP_BLOCKS_3", "HELP_BLOCKS_4", "HELP_BLOCKS_5", "HELP_BLOCKS_7", "HELP_BLOCKS_9", "HELP_BLOCKS_10", "HELP_BLOCKS_11", "HELP_BLOCKS_12", "HELP_BLOCKS_13", "HELP_BLOCKS_14", "HELP_BLOCKS_15", "HELP_BLOCKS_6" } },

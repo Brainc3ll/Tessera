@@ -917,6 +917,7 @@ NEW_EN = [
 ("NUDGE_NOT_SHOWN","This block is hidden right now (when to show it, or empty). \"Place\" works once it is on screen."),
 ("NUDGE_PICK","Placing: click the block to place"),
 ("TIP_BANNER_PLACE","Moves a group pixel by pixel with the arrow keys. It starts with the block chosen in the Blocks tab; click another block to place it instead."),
+("TIP_BANNER_GRID","Size of the grid blocks snap to when you drop them (same setting as the General tab). G: next size."),
 ]
 NEW_FR = {
 "THEME_FLARE_SQUARE":"FlareUI carré",
@@ -1833,4 +1834,5 @@ NEW_FR = {
 "NUDGE_NOT_SHOWN":"Ce bloc est caché pour l'instant (quand l'afficher, ou vide). « Placer » marche dès qu'il est à l'écran.",
 "NUDGE_PICK":"Placement : clique sur le bloc à placer",
 "TIP_BANNER_PLACE":"Déplace un groupe pixel par pixel avec les flèches du clavier. Commence par le bloc choisi dans l'onglet Blocs ; clique sur un autre bloc pour le placer à son tour.",
+"TIP_BANNER_GRID":"Taille de la grille sur laquelle les blocs s'aimantent quand tu les poses (le même réglage que dans l'onglet Général). G : taille suivante.",
 }

@@ -3363,7 +3363,9 @@ ns:RegisterModule("streamer", {
     label = "STREAMER",
     icon = "Interface\\Icons\\Ability_Stealth",
     defaultEnabled = false,
-    -- "Hide when empty": the block only shows while the mode is on
+    -- "Hide when empty" (off by default, 1.3: the block stays on screen to switch the mode
+    -- on with a click): when ticked, the block only shows while the mode is on
+    defaults = { hideEmpty = false }, -- new profiles; saved profiles keep their choice
     isEmpty = function() return not ns:IsStreamer() end,
     update = function()
         if ns:IsStreamer() then return L.STREAMER_ON, WARN end

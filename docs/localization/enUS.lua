@@ -1291,3 +1291,5 @@ L["TIP_PLACE_BLOCK"] = "Moves this block's group pixel by pixel, with the arrow 
 L["NUDGE_NOT_SHOWN"] = "This block is hidden right now (when to show it, or empty). \"Place\" works once it is on screen."
 L["NUDGE_PICK"] = "Placing: click the block to place"
 L["TIP_BANNER_PLACE"] = "Moves a group pixel by pixel with the arrow keys. It starts with the block chosen in the Blocks tab; click another block to place it instead."
+L["HELP_PLACE_21"] = "- Grid: the arrows on the placement banner change its size at once, or press G."
+L["TIP_BANNER_GRID"] = "Size of the grid blocks snap to when you drop them (same setting as the General tab). G: next size."

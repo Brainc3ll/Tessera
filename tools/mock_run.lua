@@ -2999,6 +2999,12 @@ do
     if ns.nudge.key ~= key then print("STEP ERROR: placing: picking a block does not start placing it") end
     ns:FinishNudge(true)
     if TesseraOptions:IsShown() then print("STEP ERROR: placing: the options window opened though placing started from the banner") end
+    -- the banner's grid: G gives the next size, the arrows too
+    ns.db.grid = 0
+    b:GetScript("OnKeyDown")(b, "G")
+    if ns.db.grid ~= 8 then print("STEP ERROR: banner: G does not change the grid") end
+    b.gridPrev:GetScript("OnClick")(b.gridPrev)
+    if ns.db.grid ~= 0 then print("STEP ERROR: banner: the grid arrow does not go back") end
     ns:SetLocked(true, true)
     GetPhysicalScreenSize = physical
     MOCK_GEOMETRY = false

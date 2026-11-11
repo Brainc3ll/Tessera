@@ -16,9 +16,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - New Accessibility tab: threshold colors, high contrast, minimum text size, and fewer animations.
 - Fewer animations: blocks fade at once, and a block that wants your attention lights up without flashing.
 - "Place" (Blocks tab or placement banner): move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels), the arrows of the banner, or by typing X and Y. Click another block to place it instead. Enter keeps the place, Escape puts the group back. Saved places keep working in older versions.
+- Placement banner: change the grid size with its arrows, or press G.
 
 ### Improvements
 
+- Streamer mode block: "Hide when empty" is off by default, so the block stays on screen to switch the mode on.
 - "Remove" replaces "Hide": a block you remove leaves its group, and the blocks around it close the gap.
 - A removed block keeps its settings. Turn on its "On screen" switch (the old "Show") and it appears next to the options window.
 - Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.

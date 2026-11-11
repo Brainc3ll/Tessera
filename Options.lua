@@ -3705,7 +3705,23 @@ local function BannerButton(b, text, tip, onClick)
     return btn
 end
 
-local BANNER_W = 490
+local BANNER_W, BANNER_H = 490, 130
+
+-- Grid sizes, the same as the General tab's list
+local GRID_STEPS = { 0, 8, 16, 32 }
+local function GridText(v)
+    return v == 0 and L.GRID_OFF or (v .. " px")
+end
+-- Next (dir 1) or previous (dir -1) grid size, in a loop
+function ns:StepGrid(dir)
+    local cur, at = self.db.grid or 0, 1
+    for i, v in ipairs(GRID_STEPS) do if v == cur then at = i end end
+    at = (at - 1 + dir) % #GRID_STEPS + 1
+    self.db.grid = GRID_STEPS[at]
+    self:UpdateGrid()
+    if self.banner and self.banner.gridValue then self.banner.gridValue:SetText(GridText(self.db.grid)) end
+    if self.RefreshOptions then self:RefreshOptions() end
+end
 
 -- Where the player last dragged the banner (account-wide), else near the top of the screen
 local function PlaceBanner(b)
@@ -3760,7 +3776,7 @@ function ns:UpdatePlacementBanner()
     local b = self.banner
     if not b then
         b = CreateFrame("Frame", "TesseraPlacementBanner", UIParent, "BackdropTemplate")
-        b:SetSize(BANNER_W, 104)
+        b:SetSize(BANNER_W, BANNER_H)
         -- where the player last dragged it (account-wide), else near the top of the screen
         PlaceBanner(b)
         b:SetFrameStrata("DIALOG")
@@ -3816,12 +3832,45 @@ function ns:UpdatePlacementBanner()
         b.undo = buttons[3]
         b.buttons = buttons
 
+        -- grid size in two clicks (same setting as the General tab), or G on the keyboard
+        b.gridLabel = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        b.gridLabel:SetPoint("TOPLEFT", 14, -68)
+        b.gridLabel:SetText(L.GRID)
+        local function GridArrow(texture, dir)
+            local btn = CreateFrame("Button", nil, b)
+            btn:SetSize(24, 24)
+            btn:SetNormalTexture(texture .. "-Up")
+            btn:SetPushedTexture(texture .. "-Down")
+            btn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+            btn:SetScript("OnClick", function() ns:StepGrid(dir) end)
+            AttachTip(btn, L.GRID, L.TIP_BANNER_GRID)
+            return btn
+        end
+        b.gridPrev = GridArrow("Interface\\Buttons\\UI-SpellbookIcon-PrevPage", -1)
+        b.gridPrev:SetPoint("LEFT", b.gridLabel, "RIGHT", 10, 0)
+        b.gridValue = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        b.gridValue:SetWidth(90)
+        b.gridValue:SetPoint("LEFT", b.gridPrev, "RIGHT", 4, 0)
+        b.gridNext = GridArrow("Interface\\Buttons\\UI-SpellbookIcon-NextPage", 1)
+        b.gridNext:SetPoint("LEFT", b.gridValue, "RIGHT", 4, 0)
+        b.gridRow = { b.gridLabel, b.gridPrev, b.gridValue, b.gridNext }
+        -- G: next grid size (only while the banner shows its own buttons)
+        b.OnOwnKey = function(_, key)
+            if not ns.nudge and key == "G" and not IsShiftKeyDown() and not IsControlKeyDown()
+                and not IsAltKeyDown() then
+                ns:StepGrid(1)
+                return true
+            end
+            return false
+        end
+
         -- Ctrl + Z undoes while the banner is shown (see ListenForUndo)
         ListenForUndo(b)
         self.banner = b
     end
     self:SkinWindow(b, b.text)
     b.layer:SetText(self:LayerShown() == "behind" and L.LAYER_BEHIND_STATE or L.LAYER_FRONT_STATE)
+    b.gridValue:SetText(GridText(self.db.grid or 0))
     self:ShowNudgePad(b)
     b:Show()
     self:ClearPlacementInfo()
@@ -4068,9 +4117,11 @@ local function BuildNudgePad(b)
     end)
     pad:SetScript("OnHide", function(self) StopHold(self) end)
 
-    -- keys of the banner while placing (ListenForUndo calls these)
-    b.OnOwnKey = function(_, key)
-        if not ns.nudge then return false end
+    -- keys of the banner while placing (ListenForUndo calls these); otherwise the
+    -- banner's own keys (G: grid)
+    local ownKey = b.OnOwnKey
+    b.OnOwnKey = function(self, key)
+        if not ns.nudge then return ownKey and ownKey(self, key) or false end
         if NUDGE_KEYS[key] then
             StartHold(pad, key, IsShiftKeyDown(), true)
             return true
@@ -4088,7 +4139,8 @@ local function BuildNudgePad(b)
     end
     -- the folded options window may hear the keys first: it passes them on the same way
     if panel then
-        panel.OnOwnKey, panel.OnOwnKeyUp = b.OnOwnKey, b.OnOwnKeyUp
+        panel.OnOwnKey = function(_, key) return ns.nudge and b:OnOwnKey(key) or false end
+        panel.OnOwnKeyUp = b.OnOwnKeyUp
     end
     b.pad = pad
     return pad
@@ -4120,7 +4172,8 @@ function ns:ShowNudgePad(b)
         PlaceBanner(b)
         b.underPanel = nil
     end
-    if not on then b:SetHeight(104) end
+    for _, w in ipairs(b.gridRow) do w:SetShown(not on) end
+    if not on then b:SetHeight(BANNER_H) end
 end
 
 -- Placement mode: what can be done with the hovered block, in a panel stuck to the

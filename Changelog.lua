@@ -57,6 +57,7 @@ ns.CHANGELOG = {
                 "\"Place\" (Blocks tab or placement banner): move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels),"
                     .. " the arrows of the banner, or by typing X and Y. Click another block to place it instead."
                     .. " Enter keeps the place, Escape puts the group back. Saved places keep working in older versions.",
+                "Placement banner: change the grid size with its arrows, or press G.",
               },
               fr = {
                 "La taille de l'icône monte jusqu'à 200 pixels. Le bloc grandit avec son icône.",
@@ -67,10 +68,12 @@ ns.CHANGELOG = {
                     .. " avec les flèches du clavier (Maj : 10 pixels),"
                     .. " les flèches du bandeau, ou en tapant X et Y. Cliquez sur un autre bloc pour le placer à son tour."
                     .. " Entrée garde la place, Échap remet le groupe où il était. Les places enregistrées marchent aussi dans les anciennes versions.",
+                "Bandeau de placement : changez la taille de la grille avec ses flèches, ou appuyez sur G.",
               },
             },
             { kind = "improved",
               en = {
+                "Streamer mode block: \"Hide when empty\" is off by default, so the block stays on screen to switch the mode on.",
                 "\"Remove\" replaces \"Hide\": a block you remove leaves its group, and the blocks around it close the gap.",
                 "A removed block keeps its settings. Turn on its \"On screen\" switch (the old \"Show\") and it appears next to the options window.",
                 "Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.",
@@ -92,6 +95,7 @@ ns.CHANGELOG = {
                 "Ctrl + Z also undoes while the options window is open (taking blocks off, a style...).",
               },
               fr = {
+                "Bloc Mode streamer : « Masquer si vide » est désactivé au départ, le bloc reste à l'écran pour activer le mode.",
                 "« Retirer » remplace « Masquer » : un bloc que vous retirez sort de son groupe, et ses voisins se resserrent.",
                 "Un bloc retiré garde ses réglages. Allumez son interrupteur « Sur l'écran » (l'ancien « Afficher ») et il apparaît à côté des options.",
                 "Vos profils continuent de fonctionner. Les blocs masqués perdent la place invisible qu'ils gardaient dans une barre.",

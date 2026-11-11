@@ -15,7 +15,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Blocks tab: give a style to one block, to its group or to every block. Ctrl + Z undoes it.
 - New Accessibility tab: threshold colors, high contrast, minimum text size, and fewer animations.
 - Fewer animations: blocks fade at once, and a block that wants your attention lights up without flashing.
-- Blocks tab, "Place": move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels), the arrows of the banner, or by typing X and Y. Enter keeps the place, Escape puts the group back. Saved places keep working in older versions.
+- "Place" (Blocks tab or placement banner): move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels), the arrows of the banner, or by typing X and Y. Click another block to place it instead. Enter keeps the place, Escape puts the group back. Saved places keep working in older versions.
 
 ### Improvements
 

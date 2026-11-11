@@ -54,8 +54,8 @@ ns.CHANGELOG = {
                 "Blocks tab: give a style to one block, to its group or to every block. Ctrl + Z undoes it.",
                 "New Accessibility tab: threshold colors, high contrast, minimum text size, and fewer animations.",
                 "Fewer animations: blocks fade at once, and a block that wants your attention lights up without flashing.",
-                "Blocks tab, \"Place\": move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels),"
-                    .. " the arrows of the banner, or by typing X and Y."
+                "\"Place\" (Blocks tab or placement banner): move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels),"
+                    .. " the arrows of the banner, or by typing X and Y. Click another block to place it instead."
                     .. " Enter keeps the place, Escape puts the group back. Saved places keep working in older versions.",
               },
               fr = {
@@ -63,8 +63,9 @@ ns.CHANGELOG = {
                 "Onglet Blocs : donnez un style à un bloc, à son groupe ou à tous les blocs. Ctrl + Z l'annule.",
                 "Nouvel onglet Accessibilité : couleurs des seuils, contraste renforcé, taille minimale du texte, et moins d'animations.",
                 "Moins d'animations : les blocs s'estompent d'un coup, et un bloc qui veut votre attention s'éclaire sans clignoter.",
-                "Onglet Blocs, « Placer » : déplacez le groupe d'un bloc pixel par pixel avec les flèches du clavier (Maj : 10 pixels),"
-                    .. " les flèches du bandeau, ou en tapant X et Y."
+                "« Placer » (onglet Blocs ou bandeau de placement) : déplacez le groupe d'un bloc pixel par pixel"
+                    .. " avec les flèches du clavier (Maj : 10 pixels),"
+                    .. " les flèches du bandeau, ou en tapant X et Y. Cliquez sur un autre bloc pour le placer à son tour."
                     .. " Entrée garde la place, Échap remet le groupe où il était. Les places enregistrées marchent aussi dans les anciennes versions.",
               },
             },

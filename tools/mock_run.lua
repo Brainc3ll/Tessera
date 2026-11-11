@@ -2971,6 +2971,35 @@ do
     ns:StartNudge(key)
     ns:FinishNudge(true)
     if #(ns.undoStack or {}) ~= depth then print("STEP ERROR: placing: an empty undo step was left") end
+    -- a click on a block of another group while placing: that group is placed from now on
+    local other
+    for _, k in ipairs(ns:GetBlockKeys()) do
+        local c = ns.db.blocks[k]
+        if c.enabled and c.dock and k ~= key and not ns.IsSpacerKey(k) then
+            ns:Detach(k) -- a second group
+            ns:UpdateLayout()
+            if ns:CanNudge(k) and ns:GetRoot(k) ~= ns:GetRoot(key) then other = k break end
+        end
+    end
+    ns:StartNudge(key)
+    if not other then print("STEP ERROR: placing: no second group to click") end
+    if other then
+        local f = ns.frames[other]
+        f.dragMoved = false
+        f:GetScript("OnMouseUp")(f, "LeftButton")
+        if ns.nudge.key ~= other then print("STEP ERROR: placing: a click on another block does not switch to it") end
+    end
+    ns:FinishNudge(false)
+    -- from the banner, with no block chosen: the player picks one; the window stays closed
+    TesseraOptions:Hide()
+    ns:SetLocked(false, true)
+    ns:StartNudge(nil, true)
+    if not (ns.nudge and ns.nudge.key == nil) then print("STEP ERROR: placing: the banner's \"Place\" does not ask for a block") end
+    ns:SetNudgeTarget(key)
+    if ns.nudge.key ~= key then print("STEP ERROR: placing: picking a block does not start placing it") end
+    ns:FinishNudge(true)
+    if TesseraOptions:IsShown() then print("STEP ERROR: placing: the options window opened though placing started from the banner") end
+    ns:SetLocked(true, true)
     GetPhysicalScreenSize = physical
     MOCK_GEOMETRY = false
     ns:ResetProfile("top")

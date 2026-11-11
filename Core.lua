@@ -1585,6 +1585,8 @@ local function OnMouseUp(self, button)
             and not ns:IsFrozen(self.key) then
             ns:PushUndo()
             ns:HideBlock(self.key)
+        elseif button == "LeftButton" and ns.nudge and not self.dragMoved and not IsShiftKeyDown() and not IsAltKeyDown() then
+            ns:SetNudgeTarget(self.key) -- placing to the pixel: this block's group now
         elseif button == "RightButton" then
             ns:OpenQuickMenu(self.key)
         end

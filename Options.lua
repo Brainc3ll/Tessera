@@ -3613,6 +3613,15 @@ end
 
 -- Opens the Blocks tab with a given block selected (the DataBroker tab in DataBroker mode)
 -- (a right-click on a block: the options open on "This block", its own settings)
+-- Block chosen in the Blocks tab (nil for a group or "All blocks"), and setting it
+-- without opening the window (placing to the pixel: a click on another block)
+function ns:GetOptionsSelection()
+    if selected ~= ALL and self.db.blocks[selected] then return selected end
+end
+function ns:SetOptionsSelection(key)
+    if self.db.blocks[key] then selected = key end
+end
+
 function ns:OpenOptionsFor(key)
     self:OpenOptions(self.brokerModeActive and PAGE_BROKER or PAGE_BLOCKS, key)
     if not self.brokerModeActive and self.ShowBlockSub then self.ShowBlockSub(5) end
@@ -3696,6 +3705,8 @@ local function BannerButton(b, text, tip, onClick)
     return btn
 end
 
+local BANNER_W = 490
+
 -- Where the player last dragged the banner (account-wide), else near the top of the screen
 local function PlaceBanner(b)
     b:ClearAllPoints()
@@ -3749,7 +3760,7 @@ function ns:UpdatePlacementBanner()
     local b = self.banner
     if not b then
         b = CreateFrame("Frame", "TesseraPlacementBanner", UIParent, "BackdropTemplate")
-        b:SetSize(400, 104)
+        b:SetSize(BANNER_W, 104)
         -- where the player last dragged it (account-wide), else near the top of the screen
         PlaceBanner(b)
         b:SetFrameStrata("DIALOG")
@@ -3780,15 +3791,19 @@ function ns:UpdatePlacementBanner()
 
         b.hint = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         b.hint:SetPoint("TOPLEFT", 14, -30)
-        b.hint:SetWidth(372)
+        b.hint:SetWidth(BANNER_W - 28)
         b.hint:SetJustifyH("LEFT")
         b.hint:SetText(L.PLACEMENT_HINT)
 
-        -- four buttons in a row: Options, Undo, Reload, Lock
+        -- five buttons in a row: Options, Place, Undo, Reload, Lock
         local buttons = {
             BannerButton(b, L.BANNER_OPTIONS, L.TIP_BANNER_OPTIONS, function()
                 ns.optionsTucked = nil
                 ns:ToggleOptions()
+            end),
+            -- the block chosen in the Blocks tab, else the player clicks the block to place
+            BannerButton(b, L.PLACE_BLOCK, L.TIP_BANNER_PLACE, function()
+                ns:StartNudge(ns:GetOptionsSelection(), true)
             end),
             BannerButton(b, L.UNDO_SHORT, L.TIP_UNDO, function() ns:Undo() end),
             BannerButton(b, L.RELOAD_SHORT, L.TIP_RELOAD, function() ReloadUI() end),
@@ -3798,7 +3813,7 @@ function ns:UpdatePlacementBanner()
             btn:SetWidth(88)
             btn:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 12 + (i - 1) * 94, 12)
         end
-        b.undo = buttons[2]
+        b.undo = buttons[3]
         b.buttons = buttons
 
         -- Ctrl + Z undoes while the banner is shown (see ListenForUndo)
@@ -3827,7 +3842,7 @@ local NUDGE_NAMES = { UP = L.NUDGE_UP, DOWN = L.NUDGE_DOWN, LEFT = L.NUDGE_LEFT,
 
 local function NudgeOnce(dir, big)
     local n = ns.nudge
-    if not n then return end
+    if not (n and n.key) then return end
     local step = big and 10 or 1
     ns:NudgeBy(n.key, dir[1] * step, dir[2] * step)
 end
@@ -3882,7 +3897,7 @@ local function NudgeBox(pad, label)
     local function Apply(self)
         local n = ns.nudge
         local x, y = tonumber(pad.x:GetText()), tonumber(pad.y:GetText())
-        if n and x and y then ns:SetNudgePosition(n.key, x, y) end
+        if n and n.key and x and y then ns:SetNudgePosition(n.key, x, y) end
         self:ClearFocus()
     end
     box:SetScript("OnEnterPressed", Apply)
@@ -3979,11 +3994,16 @@ local function BuildNudgePad(b)
         local n = ns.nudge
         if not n then return end
         local key = n.key
-        local group = ns:GetSubtree(ns:GetRoot(key))
-        local alone = next(group, next(group)) == nil
-        self.title:SetFormattedText(alone and L.NUDGE_TITLE or L.NUDGE_TITLE_GROUP, ns:GetBlockName(key))
+        local alone = true
+        if key then
+            local group = ns:GetSubtree(ns:GetRoot(key))
+            alone = next(group, next(group)) == nil
+            self.title:SetFormattedText(alone and L.NUDGE_TITLE or L.NUDGE_TITLE_GROUP, ns:GetBlockName(key))
+        else
+            self.title:SetText(L.NUDGE_PICK) -- started from the banner with no block chosen
+        end
         local y = -11 - self.title:GetStringHeight() - 8
-        local noticeOn = not ns.sv.placeNoticeSeen
+        local noticeOn = not ns.sv.placeNoticeSeen and n.fromWindow -- (about the folded window)
         self.notice:SetShown(noticeOn)
         self.gotIt:SetShown(noticeOn)
         if noticeOn then
@@ -4014,7 +4034,8 @@ local function BuildNudgePad(b)
         end
         b:SetHeight(math.floor(-y + 10))
         -- X and Y follow the group (a mouse drag too), except a box being typed in
-        local px, py = ns:GetNudgePosition(key)
+        local px, py
+        if key then px, py = ns:GetNudgePosition(key) end
         if not self.x:HasFocus() then self.x:SetText(px and tostring(px) or "") end
         if not self.y:HasFocus() then self.y:SetText(py and tostring(py) or "") end
     end

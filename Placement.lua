@@ -345,12 +345,18 @@ end
 -- Starts placing the group of `key` to the pixel: blocks unlocked for the while (locked
 -- again at the end if they were), the options window folded to its bar, the banner
 -- switched to its pad. One undo step for the whole placement.
-function ns:StartNudge(key)
-    if InCombatLockdown() or not self:CanNudge(key) then return false end
+-- pick: with no block to start from (banner button), the player clicks the block to place
+function ns:StartNudge(key, pick)
+    if InCombatLockdown() then return false end
+    if not self:CanNudge(key) then
+        if not pick then return false end
+        key = nil
+    end
     if self.nudge then self:FinishNudge(true) end
     self:PushUndo()
+    local panel = _G["TesseraOptions"]
     self.nudge = { key = key, wasLocked = self.db.locked and true or false,
-        snap = self.undoStack[#self.undoStack] }
+        snap = self.undoStack[#self.undoStack], fromWindow = panel and panel:IsShown() and true or false }
     if self.db.locked then self:SetLocked(false, true) end
     if self.SetOptionsFolded then self:SetOptionsFolded(true) end
     self:UpdatePlacementBanner()
@@ -380,12 +386,23 @@ function ns:FinishNudge(keep)
     if self.UpdateUndoButton then self:UpdateUndoButton() end
     if n.wasLocked and not self.db.locked then self:SetLocked(true, true) end
     self:UpdatePlacementBanner()
+    -- the options window comes back only if placing started from it
     local panel = _G["TesseraOptions"]
-    if panel and self.SetOptionsFolded then
+    if panel and self.SetOptionsFolded and n.fromWindow then
         if not panel:IsShown() then panel:Show() end
         self:SetOptionsFolded(false)
         if self.RefreshOptions then self:RefreshOptions() end
     end
+end
+
+-- A click on another block while placing: that block's group is placed from now on
+-- (the options window shows it when it comes back)
+function ns:SetNudgeTarget(key)
+    if not (self.nudge and self:CanNudge(key)) then return false end
+    self.nudge.key = key
+    if self.SetOptionsSelection then self:SetOptionsSelection(key) end
+    if self.banner and self.banner.pad and self.banner.pad:IsShown() then self.banner.pad:Refresh() end
+    return true
 end
 
 ---------------------------------------------------------------------------

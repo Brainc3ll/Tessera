@@ -165,9 +165,9 @@ Help tab inside the game explains everything.
 - Replace a block in place: the arrows on a hovered block (placement mode) put another block
   exactly there, with the same look, without moving anything else; a shown block swaps places,
   and the spacers of the ready-made layouts can be filled this way. A cross removes the block: it leaves its group and the others close the gap.
-- Place to the pixel: "Place" in the Blocks tab moves a block's group one screen pixel at a time
+- Place to the pixel: "Place" (Blocks tab or placement banner) moves a block's group one screen pixel at a time
   with the arrow keys (Shift: 10 pixels) or the arrows of the banner, or to the X and Y you type;
-  Enter keeps the place, Escape puts the group back.
+  click another block to place it instead; Enter keeps the place, Escape puts the groups back.
 - Groups: each bar of merged blocks has its entry in the Blocks tab, so its settings apply to the
   whole bar and its rows; "Copy style to group" (options or quick menu) gives one block's look to
   the rest of its group.

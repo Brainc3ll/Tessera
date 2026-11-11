@@ -900,7 +900,7 @@ NEW_EN = [
 ("NUDGE_NOTICE","The options window folded to its bar. It opens again when you finish (Enter or the check button) or cancel (Escape). The arrow on its bar opens it too."),
 ("NUDGE_GOT_IT","Got it"),
 ("TIP_NUDGE_GOT_IT","Hides this message for good."),
-("NUDGE_HINT","Arrow keys: 1 pixel. Shift + arrow: 10 pixels. Hold a key to keep moving. Enter: keep. Escape: back to the start."),
+("NUDGE_HINT","Arrow keys: 1 pixel. Shift + arrow: 10 pixels. Hold a key to keep moving. Click another block to place it instead. Enter: keep. Escape: back to the start."),
 ("NUDGE_COMBAT","In combat: placing waits until the fight ends."),
 ("NUDGE_UP","Up"),
 ("NUDGE_DOWN","Down"),
@@ -915,6 +915,8 @@ NEW_EN = [
 ("NUDGE_CANCEL","Cancel"),
 ("TIP_NUDGE_CANCEL","Puts the group back where it was (Escape)."),
 ("NUDGE_NOT_SHOWN","This block is hidden right now (when to show it, or empty). \"Place\" works once it is on screen."),
+("NUDGE_PICK","Placing: click the block to place"),
+("TIP_BANNER_PLACE","Moves a group pixel by pixel with the arrow keys. It starts with the block chosen in the Blocks tab; click another block to place it instead."),
 ]
 NEW_FR = {
 "THEME_FLARE_SQUARE":"FlareUI carré",
@@ -1814,7 +1816,7 @@ NEW_FR = {
 "NUDGE_NOTICE":"La fenêtre d'options s'est réduite à sa barre. Elle revient quand tu valides (Entrée ou le bouton coché) ou annules (Échap). La flèche de sa barre la déplie aussi.",
 "NUDGE_GOT_IT":"Compris",
 "TIP_NUDGE_GOT_IT":"Ce message ne revient plus.",
-"NUDGE_HINT":"Flèches : 1 pixel. Maj + flèche : 10 pixels. Garde la touche enfoncée pour continuer. Entrée : garder. Échap : revenir au départ.",
+"NUDGE_HINT":"Flèches : 1 pixel. Maj + flèche : 10 pixels. Garde la touche enfoncée pour continuer. Clique sur un autre bloc pour le placer à son tour. Entrée : garder. Échap : revenir au départ.",
 "NUDGE_COMBAT":"En combat : le placement attend la fin du combat.",
 "NUDGE_UP":"Haut",
 "NUDGE_DOWN":"Bas",
@@ -1829,4 +1831,6 @@ NEW_FR = {
 "NUDGE_CANCEL":"Annuler",
 "TIP_NUDGE_CANCEL":"Remet le groupe là où il était (Échap).",
 "NUDGE_NOT_SHOWN":"Ce bloc est caché pour l'instant (quand l'afficher, ou vide). « Placer » marche dès qu'il est à l'écran.",
+"NUDGE_PICK":"Placement : clique sur le bloc à placer",
+"TIP_BANNER_PLACE":"Déplace un groupe pixel par pixel avec les flèches du clavier. Commence par le bloc choisi dans l'onglet Blocs ; clique sur un autre bloc pour le placer à son tour.",
 }

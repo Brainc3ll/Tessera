@@ -2622,6 +2622,28 @@ function ns.HelpText(layout)
     return table.concat(parts, "\n")
 end
 
+-- The help topics with their chapters: a topic's lines are cut at each "" of the layout, and
+-- each chapter is drawn apart, with a thin line between (BuildTopicPage). Topics that end a
+-- group of the list (the list shows a line under them) are named here.
+local HELP_GROUP_END = { HELP_T_USE = true, HELP_T_BROKER = true, HELP_T_PROFILES = true }
+local function HelpSections(layout)
+    local sections = {}
+    for _, topic in ipairs(layout or {}) do
+        local chunks, current = {}, {}
+        for _, key in ipairs(topic.lines) do
+            if key == "" then
+                if #current > 0 then chunks[#chunks + 1] = table.concat(current, "\n"); current = {} end
+            else
+                current[#current + 1] = L[key] or ""
+            end
+        end
+        if #current > 0 then chunks[#chunks + 1] = table.concat(current, "\n") end
+        sections[#sections + 1] = { title = L[topic.title] or "", body = strtrim(table.concat(chunks, "\n")),
+            chunks = chunks, groupEnd = HELP_GROUP_END[topic.title] }
+    end
+    return sections
+end
+
 -- Topic page (Help and About tabs): a list of topics on the left, the selected
 -- topic on the right. This keeps each screen short instead of one long wall of text.
 -- getSections() returns a key and the list of { title, body, raw } sections; the
@@ -2666,15 +2688,50 @@ local function BuildTopicPage(page, getSections, bottomRoom)
     text:SetJustifyH("LEFT")
     text:SetSpacing(3)
 
-    local buttons, sections = {}, {}
+    local buttons, sections, chapters, groupLines = {}, {}, {}, {}
 
     local function ShowSection(index)
         local section = sections[index]
         if not section then return end
         title:SetText(section.title)
         -- an empty line between paragraphs (each line of the text), for more air
-        text:SetText(section.raw and section.body or (section.body:gsub("\n+", "\n\n")))
-        content:SetHeight(title:GetStringHeight() + 10 + text:GetStringHeight() + 20)
+        local function Paragraphs(body)
+            return section.raw and body or (body:gsub("\n+", "\n\n"))
+        end
+        local chunks = section.chunks
+        text:SetText(Paragraphs(chunks and chunks[1] or section.body))
+        -- the other chapters: a thin line, then the chapter
+        local height = title:GetStringHeight() + 10 + text:GetStringHeight()
+        local above = text
+        local extra = chunks and #chunks - 1 or 0
+        for n = 1, math.max(extra, #chapters) do
+            local c = chapters[n]
+            if n <= extra then
+                if not c then
+                    c = { line = content:CreateTexture(nil, "ARTWORK"), text = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight") }
+                    c.line:SetColorTexture(1, 0.82, 0, 0.25)
+                    c.line:SetHeight(1)
+                    c.text:SetWidth(textW)
+                    c.text:SetJustifyH("LEFT")
+                    c.text:SetSpacing(3)
+                    chapters[n] = c
+                end
+                c.line:ClearAllPoints()
+                c.line:SetPoint("TOPLEFT", above, "BOTTOMLEFT", 0, -12)
+                c.line:SetWidth(textW)
+                c.line:Show()
+                c.text:ClearAllPoints()
+                c.text:SetPoint("TOPLEFT", c.line, "BOTTOMLEFT", 0, -12)
+                c.text:SetText(Paragraphs(chunks[n + 1]))
+                c.text:Show()
+                height = height + 25 + c.text:GetStringHeight()
+                above = c.text
+            elseif c then
+                c.line:Hide()
+                c.text:Hide()
+            end
+        end
+        content:SetHeight(height + 20)
         if scroll.SetVerticalScroll then scroll:SetVerticalScroll(0) end
         for i, b in ipairs(buttons) do
             local selectedTopic = (i == index)
@@ -2723,8 +2780,26 @@ local function BuildTopicPage(page, getSections, bottomRoom)
             b:SetPoint("TOPLEFT", topicList, "TOPLEFT", 0, -y)
             y = y + b:GetHeight() + 2
             b:Show()
+            -- a thin line under the last topic of a group
+            local line = groupLines[i]
+            if not line then
+                line = topicList:CreateTexture(nil, "ARTWORK")
+                line:SetColorTexture(1, 0.82, 0, 0.25)
+                line:SetHeight(1)
+                groupLines[i] = line
+            end
+            if section.groupEnd and i < #sections then
+                line:ClearAllPoints()
+                line:SetPoint("TOPLEFT", topicList, "TOPLEFT", 8, -(y + 4))
+                line:SetWidth(TOPIC_W - 16)
+                line:Show()
+                y = y + 10
+            else
+                line:Hide()
+            end
         end
         for i = #sections + 1, #buttons do buttons[i]:Hide() end
+        for i = #sections + 1, #groupLines do groupLines[i]:Hide() end
         ShowSection(1)
     end
     content.ShowTopic = function(_, index) ShowSection(index) end
@@ -2739,7 +2814,7 @@ local function BuildHelpPage(page)
     BuildTopicPage(page, function()
         local wanted = ns.brokerModeActive and "broker" or "normal"
         cache[wanted] = cache[wanted]
-            or SplitHelp(ns.HelpText(ns.brokerModeActive and ns.HELP_LAYOUT_BROKER or ns.HELP_LAYOUT))
+            or HelpSections(ns.brokerModeActive and ns.HELP_LAYOUT_BROKER or ns.HELP_LAYOUT)
         return wanted, cache[wanted]
     end, 26) -- room for the three buttons below the topics
     -- the quick tour can be started again from here (not in DataBroker mode: no blocks)
@@ -2943,6 +3018,7 @@ function ns:DockBesidePanel(frame)
     else
         panel:ClearAllPoints()
         panel:SetPoint("LEFT", UIParent, "LEFT", 0, 0)
+        panel.dockMoved = true -- no room beside it: it comes back to the middle when the window closes
         frame:SetPoint("TOPLEFT", panel, "TOPRIGHT", 8, 0)
     end
 end
@@ -2972,6 +3048,11 @@ function ns:ShowSideWindow(frame)
             if back then
                 back:Show()
                 ns:DockBesidePanel(back)
+            elseif panel and panel.dockMoved then
+                -- the window that pushed the options aside is closed: they go back to the middle
+                panel.dockMoved = nil
+                panel:ClearAllPoints()
+                panel:SetPoint("CENTER")
             end
         end)
     end
@@ -3448,6 +3529,7 @@ local function BuildPanel()
     panel:SetScript("OnDragStart", panel.StartMoving)
     panel:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
+        self.dockMoved = nil -- the player put it there
         DockSideWindows()
     end)
     table.insert(UISpecialFrames, panel:GetName()) -- close with Escape
@@ -3456,6 +3538,7 @@ local function BuildPanel()
     panel:HookScript("OnShow", function()
         -- opened again: back in the middle of the screen (not when it only comes back
         -- from placement, where the player had put it)
+        panel.dockMoved = nil
         if not panel.keepPlace then
             panel:ClearAllPoints()
             panel:SetPoint("CENTER")
@@ -4297,25 +4380,48 @@ StaticPopupDialogs["TESSERA_WELCOME"] = {
 -- Quick tour: a few short steps in a small window (first launch, or the button
 -- of the Help tab). Some steps offer a button that does the action for the player.
 ---------------------------------------------------------------------------
+-- "Show me": opens the place and makes the setting blink, like the search does
+local function NewsKey()
+    return ns.db.blocks.gold and "gold" or ns.order[1]
+end
+-- a widget of the Blocks tab head (the "On screen" switch, "Place by pixel")
+local function ShowHeadWidget(getWidget, label, tip)
+    return function()
+        ns:OpenOptionsFor(NewsKey())
+        ns:RefreshOptions()
+        ns:ShowOptionHelp(label, tip)
+        C_Timer.After(0, function()
+            local w = getWidget()
+            if w and w:IsShown() then Blink(w) end
+        end)
+    end
+end
+-- a setting row, found by its label (the first one: they are the same for every block)
+local function ShowRow(page, label, selectBlock)
+    return function()
+        if selectBlock then ns:OpenOptionsFor(NewsKey()) end
+        for _, r in ipairs(ns.optionRows) do
+            if r.label == label and r.page == page then
+                ns.GoToOption(r, ns.ShowOptionsPage)
+                return
+            end
+        end
+        ns:OpenOptions(page)
+    end
+end
 local TUTORIAL_STEPS = {
     { text = "TUTORIAL_1" },
     { text = "TUTORIAL_8", layouts = true, action = "TUTORIAL_DO_KEEP", run = function() ns:KeepTourLayout() end },
-    { text = "TUTORIAL_9", action = "TUTORIAL_DO_BLOCK", run = function()
-        local key = ns.db.blocks.gold and "gold" or ns.order[1]
-        ns:OpenOptionsFor(key)
-        if ns.ShowBlockSub then ns.ShowBlockSub(5) end
-    end },
-    { text = "TUTORIAL_11", action = "TUTORIAL_DO_BLOCK", run = function()
-        local key = ns.db.blocks.gold and "gold" or ns.order[1]
-        ns:OpenOptionsFor(key)
-        if ns.ShowBlockSub then ns.ShowBlockSub(1) end
-    end },
+    { text = "TUTORIAL_9", action = "TUTORIAL_DO_BLOCK",
+      run = ShowHeadWidget(function() return ns.blockSwitch end, L.ENABLED, L.TIP_ENABLED) },
+    { text = "TUTORIAL_11", action = "TUTORIAL_DO_BLOCK",
+      run = ShowHeadWidget(function() return ns.placeButton end, L.PLACE_BLOCK, L.TIP_PLACE_BLOCK) },
     { text = "TUTORIAL_2", action = "TUTORIAL_DO_UNLOCK", run = function() ns:SetLocked(false) end },
     { text = "TUTORIAL_3" },
     { text = "TUTORIAL_4" },
     { text = "TUTORIAL_5" },
     { text = "TUTORIAL_6", action = "TUTORIAL_DO_LOOK", run = function() ns:OpenOptions(PAGE_LOOK) end },
-    { text = "TUTORIAL_12", action = "TUTORIAL_DO_ACCESS", run = function() ns:OpenOptions(PAGE_ACCESS) end },
+    { text = "TUTORIAL_12", action = "TUTORIAL_DO_ACCESS", run = ShowRow(PAGE_ACCESS, L.HIGH_CONTRAST) },
     { text = "TUTORIAL_7", action = "TUTORIAL_DO_LOCK", run = function() ns:SetLocked(true) end },
 }
 local tutorial
@@ -4528,35 +4634,6 @@ StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
 -- "What's new in 1.3": a small window after an update (and from the Help tab). One
 -- short line per big change, each with a button that opens the right place.
 ---------------------------------------------------------------------------
--- "Show me": opens the place and makes the setting blink, like the search does
-local function NewsKey()
-    return ns.db.blocks.gold and "gold" or ns.order[1]
-end
--- a widget of the Blocks tab head (the "On screen" switch, "Place by pixel")
-local function ShowHeadWidget(getWidget, label, tip)
-    return function()
-        ns:OpenOptionsFor(NewsKey())
-        ns:RefreshOptions()
-        ns:ShowOptionHelp(label, tip)
-        C_Timer.After(0, function()
-            local w = getWidget()
-            if w and w:IsShown() then Blink(w) end
-        end)
-    end
-end
--- a setting row, found by its label (the first one: they are the same for every block)
-local function ShowRow(page, label, selectBlock)
-    return function()
-        if selectBlock then ns:OpenOptionsFor(NewsKey()) end
-        for _, r in ipairs(ns.optionRows) do
-            if r.label == label and r.page == page then
-                ns.GoToOption(r, ns.ShowOptionsPage)
-                return
-            end
-        end
-        ns:OpenOptions(page)
-    end
-end
 local NEWS_ROWS = {
     { text = "NEWS_1", run = ShowHeadWidget(function() return ns.blockSwitch end, L.ENABLED, L.TIP_ENABLED) },
     { text = "NEWS_2", run = ShowHeadWidget(function() return ns.placeButton end, L.PLACE_BLOCK, L.TIP_PLACE_BLOCK) },

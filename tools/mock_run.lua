@@ -2441,7 +2441,16 @@ for _, step in ipairs({
     -- quick tour
     function()
         ns:StartTutorial()
-        for _ = 1, 10 do TesseraTutorial.next:GetScript("OnClick")() end -- 11 steps: the last one
+        for _ = 1, 10 do
+            -- "Show me" steps (block options, Place by pixel, Accessibility) run without error
+            local i = TesseraTutorial.index
+            if i == 3 or i == 4 or i == 10 then
+                local ok, err = pcall(TesseraTutorial.action:GetScript("OnClick"))
+                if not ok then print("STEP ERROR: tour step " .. i .. " button: " .. tostring(err)) end
+                ns:ShowSideWindow(TesseraTutorial)
+            end
+            TesseraTutorial.next:GetScript("OnClick")()
+        end -- 11 steps: the last one
         if TesseraTutorial.index ~= 11 then print("STEP ERROR: tour: expected 11 steps, at the last one the index is " .. tostring(TesseraTutorial.index)) end
         -- "What's new in 1.3": opens, one side window at a time
         ns:ShowNews()

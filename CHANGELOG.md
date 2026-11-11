@@ -24,7 +24,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Streamer mode block: "Hide when empty" is off by default, so the block stays on screen to switch the mode on.
 - Welcome window and quick tour: they follow the new options window ("On screen", placing to the pixel, search, help, Accessibility).
 - "Place by pixel" is wider and its text is gold, so it is easy to find.
-- The options window opens in the middle of the screen each time.
+- The options window opens in the middle of the screen each time, and comes back there when a window that pushed it aside is closed.
+- Help tab: thin lines between groups of topics and between the chapters of a topic.
 - "Remove" replaces "Hide": a block you remove leaves its group, and the blocks around it close the gap.
 - A removed block keeps its settings. Turn on its "On screen" switch (the old "Show") and it appears next to the options window.
 - Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.

@@ -2795,7 +2795,7 @@ end
 -- Window frame (1.3): search (old names too), going to a result, folding, size
 do
     local L = ns.L
-    local found = ns.SearchOptions(GetLocale() == "frFR" and "afficher" or "show")
+    local found = ns.SearchOptions((L.SEARCH_OLD_ENABLED or "Show"):match("^[^,]+"))
     local hasOnScreen = false
     for _, r in ipairs(found) do if r.label == L.ENABLED then hasOnScreen = true end end
     if not hasOnScreen then print("STEP ERROR: search: an old name does not find \"" .. L.ENABLED .. "\"") end

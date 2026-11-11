@@ -40,14 +40,6 @@ ns.CHANGELOG = {
         version = "1.3.0",
         date = "2026-11-11",
         sections = {
-            { kind = "fixed",
-              en = {
-                "Camping block: near a campfire it shows the campfire instead of \"None\".",
-              },
-              fr = {
-                "Bloc Camping : près d'un feu de camp, il affiche le feu au lieu de « Aucun ».",
-              },
-            },
             { kind = "new",
               en = {
                 "Icon size goes up to 200 pixels. The block grows with its icon.",
@@ -138,6 +130,14 @@ ns.CHANGELOG = {
                 "L'essentiel et les réglages propres au bloc viennent d'abord ; son apparence, quand l'afficher, son nom et ses clics se replient en sections.",
                 "La liste des blocs montre d'abord ceux sur votre écran, puis ceux disponibles.",
                 "Ctrl + Z annule aussi quand la fenêtre d'options est ouverte (blocs retirés, un style...).",
+              },
+            },
+            { kind = "fixed",
+              en = {
+                "Camping block: near a campfire it shows the campfire instead of \"None\".",
+              },
+              fr = {
+                "Bloc Camping : près d'un feu de camp, il affiche le feu au lieu de « Aucun ».",
               },
             },
         },

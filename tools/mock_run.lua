@@ -2446,6 +2446,20 @@ for _, step in ipairs({
         -- "What's new in 1.3": opens, one side window at a time
         ns:ShowNews()
         if not (TesseraNews and TesseraNews:IsShown()) then print("STEP ERROR: news window did not open") end
+        -- "Show me" finds its settings: they must be registered rows
+        for _, label in ipairs({ ns.L.APPLY_STYLE_TO, ns.L.HIGH_CONTRAST }) do
+            local found = false
+            for _, r in ipairs(ns.optionRows) do if r.label == label then found = true end end
+            if not found then print("STEP ERROR: news: no setting row for \"" .. label .. "\"") end
+        end
+        -- every "Show me" button runs without error
+        for _, child in ipairs({ TesseraNews:GetChildren() }) do
+            if child.GetObjectType and child:GetObjectType() == "Button" and child:GetScript("OnClick") then
+                local ok, err = pcall(child:GetScript("OnClick"), child)
+                if not ok then print("STEP ERROR: news button: " .. tostring(err)) end
+                if TesseraNews then TesseraNews:Show() end
+            end
+        end
         TesseraNews:Hide()
         -- the layouts step: try some, leave without keeping -> the player's layout comes back
         ns:ResetProfile("left")

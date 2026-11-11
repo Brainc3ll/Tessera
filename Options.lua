@@ -3217,8 +3217,15 @@ end
 
 -- the row lights up three times ("Fewer animations": it stays lit for a moment)
 local function Blink(w)
-    local light = w.hover
-    if not light then return end
+    local light = w.hover or w.blinkLight
+    if not light then
+        -- a widget without a hover light (a button, the search box): a gold one
+        light = w:CreateTexture(nil, "OVERLAY")
+        light:SetAllPoints()
+        light:SetColorTexture(1, 0.82, 0, 0.35)
+        light:Hide()
+        w.blinkLight = light
+    end
     if ns.sv and ns.sv.reduceMotion then
         light:SetAlpha(2.5)
         light:Show()
@@ -3447,6 +3454,12 @@ local function BuildPanel()
     ListenForUndo(panel) -- Ctrl + Z: same as in placement mode (taking blocks off, a style...)
     -- the placement banner steps aside while this window is open
     panel:HookScript("OnShow", function()
+        -- opened again: back in the middle of the screen (not when it only comes back
+        -- from placement, where the player had put it)
+        if not panel.keepPlace then
+            panel:ClearAllPoints()
+            panel:SetPoint("CENTER")
+        end
         FitPanelToScreen()
         ns:UpdatePlacementBanner()
         DockSideWindows()
@@ -3765,7 +3778,9 @@ function ns:UpdatePlacementBanner()
             if panel then
                 ns:SkinOptions()
                 ns:RefreshOptions()
+                panel.keepPlace = true
                 panel:Show()
+                panel.keepPlace = nil
             end
         end
     end
@@ -4513,19 +4528,47 @@ StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
 -- "What's new in 1.3": a small window after an update (and from the Help tab). One
 -- short line per big change, each with a button that opens the right place.
 ---------------------------------------------------------------------------
-local function ShowNewBlock(sub)
+-- "Show me": opens the place and makes the setting blink, like the search does
+local function NewsKey()
+    return ns.db.blocks.gold and "gold" or ns.order[1]
+end
+-- a widget of the Blocks tab head (the "On screen" switch, "Place by pixel")
+local function ShowHeadWidget(getWidget, label, tip)
     return function()
-        local key = ns.db.blocks.gold and "gold" or ns.order[1]
-        ns:OpenOptionsFor(key)
-        if not ns.brokerModeActive and ns.ShowBlockSub then ns.ShowBlockSub(sub) end
+        ns:OpenOptionsFor(NewsKey())
+        ns:RefreshOptions()
+        ns:ShowOptionHelp(label, tip)
+        C_Timer.After(0, function()
+            local w = getWidget()
+            if w and w:IsShown() then Blink(w) end
+        end)
+    end
+end
+-- a setting row, found by its label (the first one: they are the same for every block)
+local function ShowRow(page, label, selectBlock)
+    return function()
+        if selectBlock then ns:OpenOptionsFor(NewsKey()) end
+        for _, r in ipairs(ns.optionRows) do
+            if r.label == label and r.page == page then
+                ns.GoToOption(r, ns.ShowOptionsPage)
+                return
+            end
+        end
+        ns:OpenOptions(page)
     end
 end
 local NEWS_ROWS = {
-    { text = "NEWS_1", run = ShowNewBlock(1) },
-    { text = "NEWS_2", run = ShowNewBlock(1) },
-    { text = "NEWS_3", run = function() ns:OpenOptions(PAGE_BLOCKS) end },
-    { text = "NEWS_4", run = ShowNewBlock(1) },
-    { text = "NEWS_5", run = function() ns:OpenOptions(PAGE_ACCESS) end },
+    { text = "NEWS_1", run = ShowHeadWidget(function() return ns.blockSwitch end, L.ENABLED, L.TIP_ENABLED) },
+    { text = "NEWS_2", run = ShowHeadWidget(function() return ns.placeButton end, L.PLACE_BLOCK, L.TIP_PLACE_BLOCK) },
+    { text = "NEWS_3", run = function()
+        ns:OpenOptions(PAGE_BLOCKS)
+        ns:ShowOptionHelp(L.SEARCH, L.TIP_SEARCH)
+        C_Timer.After(0, function()
+            if panel and panel.search then Blink(panel.search) end
+        end)
+    end },
+    { text = "NEWS_4", run = ShowRow(PAGE_BLOCKS, L.APPLY_STYLE_TO, true) },
+    { text = "NEWS_5", run = ShowRow(PAGE_ACCESS, L.HIGH_CONTRAST) },
 }
 local news
 local NEWS_W, NEWS_TEXT_W, NEWS_BUTTON_W = 440, 290, 96

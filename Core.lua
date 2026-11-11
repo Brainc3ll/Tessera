@@ -1721,7 +1721,8 @@ function ns:ApplyStyle(key)
     local showIcon = cfg.showIcon and not (cfg.hideIcons and not launcherLike)
     local iconOnly = showIcon and not cfg.showLabel and (launcherLike or cfg.showValue == false)
     -- icon size: chosen in pixels (to make every icon the same), or following the height
-    local iconSize = (cfg.iconSize or 0) > 0 and math.min(cfg.iconSize, cfg.height * 2)
+    -- (a size bigger than the height makes the block grow: see NeededSize in Merge.lua)
+    local iconSize = (cfg.iconSize or 0) > 0 and cfg.iconSize
         or math.max(8, cfg.height - 2 * inset - 4)
     f.inset, f.iconSize, f.iconOnly = inset, iconSize, iconOnly
     f.borderKey = cfg.border
@@ -1989,6 +1990,9 @@ function ns:UpdateBlock(key)
         end)
         if okIcon and icon then
             self:SetIcon(f.icon, icon)
+            -- an icon can ask to be drawn bigger than the icon size (the corpse arrow: x1.5)
+            local k = type(icon) == "table" and icon.scale or 1
+            if f.iconSize then f.icon:SetSize(f.iconSize * k, f.iconSize * k) end
             self:StyleIcon(f, cfg)
         end
     end

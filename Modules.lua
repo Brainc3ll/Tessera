@@ -3583,7 +3583,7 @@ ns:RegisterModule("corpse", {
     icon = "Interface\\Icons\\Ability_Rogue_FeignDeath",
     getIcon = function()
         local info = CorpseInfo()
-        if info and info.angle then return { file = CORPSE_ARROW, rotation = info.angle } end
+        if info and info.angle then return { file = CORPSE_ARROW, rotation = info.angle, scale = 1.5 } end
         return "Interface\\Icons\\Ability_Rogue_FeignDeath"
     end,
     events = { "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST" },

@@ -37,6 +37,28 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.3.0",
+        date = "2026-11-11",
+        sections = {
+            { kind = "new",
+              en = {
+                "Icon size goes up to 200 pixels. The block grows with its icon.",
+              },
+              fr = {
+                "La taille de l'icône monte jusqu'à 200 pixels. Le bloc grandit avec son icône.",
+              },
+            },
+            { kind = "improved",
+              en = {
+                "The arrow of the Corpse block is 1.5 times bigger.",
+              },
+              fr = {
+                "La flèche du bloc Cadavre est 1,5 fois plus grande.",
+              },
+            },
+        },
+    },
+    {
         version = "1.2.1",
         date = "2026-11-10",
         sections = {

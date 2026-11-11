@@ -3,6 +3,16 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.3.0 — 2026-11-11
+
+### New
+
+- Icon size goes up to 200 pixels. The block grows with its icon.
+
+### Improvements
+
+- The arrow of the Corpse block is 1.5 times bigger.
+
 ## 1.2.1 — 2026-11-10
 
 ### Improvements

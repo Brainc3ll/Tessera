@@ -95,6 +95,8 @@ Tessera is a collaboration between me, a player, and an AI.
 
 **Thanks** to Funkeh, whose [StatBlock Core](https://www.curseforge.com/wow/addons/stat-block-core) (free-floating DataBroker blocks, no longer updated since 2022) was my first inspiration for Tessera.
 
+**Thanks** to Malkkav, author of [FlareUI](https://www.curseforge.com/wow/addons/flareui) (MIT license): the options window takes its look from it.
+
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
 
 In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a maintainer who does not program, 76–100% of the code written by AI, changes tested but not read by a human (details in `ACR.md`). `AI-DECLARATION.md` gives the AI's part at each stage (design, code, tests, docs, review, release).

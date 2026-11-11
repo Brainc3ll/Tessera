@@ -1039,7 +1039,7 @@ local function BuildBlockPage(page)
         -- the icon: same size, frame and colors for every block (e.g. with "All blocks")
         P.Gap(1, 8)
         P.Place(CreateHeader(sub, L.SECTION_ICON), 1)
-        P.Place(Slider(sub, L.ICON_SIZE, 0, 40, "iconSize", L.TIP_ICON_SIZE), 1)
+        P.Place(Slider(sub, L.ICON_SIZE, 0, 200, "iconSize", L.TIP_ICON_SIZE), 1)
         P.Place(Dropdown(sub, L.ICON_SHAPE, {
             { key = "none", name = L.ICON_SHAPE_NONE },
             { key = "square", name = L.ICON_SHAPE_SQUARE },
@@ -2256,6 +2256,10 @@ local function AboutText()
     table.insert(lines, "")
     if L.ABOUT_THANKS and L.ABOUT_THANKS ~= "" then
         table.insert(lines, L.ABOUT_THANKS)
+        table.insert(lines, "")
+    end
+    if L.ABOUT_THANKS_2 and L.ABOUT_THANKS_2 ~= "" then
+        table.insert(lines, L.ABOUT_THANKS_2)
         table.insert(lines, "")
     end
     table.insert(lines, L.ABOUT_BUGS)

@@ -361,3 +361,15 @@ Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, 
 - Idée à valider : bandeau d'aide à droite de la fenêtre qui explique le réglage survolé (FlareUI : titre, description, conseil).
 La maquette HTML a été dessinée dans la conversation du 11/11 ; elle n'est pas enregistrée dans le dépôt.
 
+### Crédit et leçons de FlareUI (11/11)
+Crédit voulu par Braincell1980 : la fenêtre d'options 1.3 est inspirée de FlareUI, de Malkkav (licence MIT, aucun code copié pour l'instant ; si on en reprend, garder la mention « Copyright (c) 2026 Malkkav »). Texte court, à passer par stop-slop : EN « Options window inspired by FlareUI, by Malkkav. » ; FR « Fenêtre d'options inspirée de FlareUI, de Malkkav. » Où : page « À propos » (liens à copier, pas à cliquer : le jeu n'ouvre pas de lien, il faut une boîte de copie, comme `copyFrame` de Options.lua), README, changelog 1.3. Liens lus dans `Settings/Pages/About.lua` de FlareUI 5.1.2 : CurseForge https://www.curseforge.com/wow/addons/flareui et GitHub https://github.com/malkkav/FlareUI.
+Bugs de la fenêtre d'options de FlareUI, corrigés chez lui (changelogs 1.1 à 5.1.2 lus), à ne pas reproduire :
+- Bouton « Reload now » resté cliquable ou invisible après une fermeture en combat ; Entrée ou Échap en combat qui répondent à une boîte de dialogue en plus du jeu ; rechargement lancé par Entrée.
+- Fenêtre ou menu ouvert depuis le mode manette qui bloque le client : FlareUI écoute la manette avec son propre cadre, jamais la navigation de Blizzard (`Settings/PadNav.lua`). Une fenêtre « Nouveautés » qui s'ouvre toute seule en mode manette.
+- Boîte de copie de lien qui s'ouvre derrière la fenêtre (2.0.4) : même famille que ton observation du 7/11 sur les niveaux de cadre.
+- Curseurs gris au lieu de la couleur du style selon l'onglet ou le survol (1.4.2) ; liste déroulante qui remonte la fenêtre en haut au changement (1.5) ; carte « module éteint » qui cache les résultats de recherche (2.4.0) ; erreur Lua en cherchant (2.5.2).
+- Libellés traduits plus longs : boutons qui ne s'adaptent pas, onglets qui dépassent le bord avec l'étiquette NEW (5.1.1, 5.1.2) ; fenêtre trop basse pour une page (2.0.15, 5.0.3).
+- Profil importé abîmé qui gèle le jeu ; « tout réinitialiser » qui recoche des cases ; choix de profil qui se propage aux autres personnages (2.0).
+- Ouvrir la fenêtre depuis Options > Addons qui ferme celle de Blizzard et peut perdre des changements de touches (2.0).
+À reprendre de FlareUI : recherche qui ignore les accents et trouve les anciens noms (utile quand « Afficher » devient « Sur l'écran »), réglages du même sujet regroupés, Maj + molette pour agrandir la fenêtre (70 % à 130 %), fermeture avec « Recharger maintenant / Plus tard » quand un rechargement attend.
+

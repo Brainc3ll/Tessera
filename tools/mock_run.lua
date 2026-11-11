@@ -2649,7 +2649,7 @@ do
     local function Rect(f) local l, b, w, h = MockRect(f) return l, b, l + w, b + h end
     local function CheckRows(what)
         local groups = {}
-        for _, r in ipairs(ns.optionRows) do
+        for _, r in ipairs(ns.optionWidgets) do
             if r.frame.__shown then
                 local id = tostring(r.content)
                 groups[id] = groups[id] or { content = r.content, rows = {} }
@@ -2681,7 +2681,9 @@ do
         if not r.tip then print("STEP ERROR: row without a tooltip: " .. tostring(r.label)) end
     end
     ns:ResetProfile("top")
-    for _, key in ipairs({ "*all", ns:GetBlockKeys()[1], "gold", "clock", "durability" }) do
+    local keys = { "*all" }
+    for _, key in ipairs(ns:GetBlockKeys()) do keys[#keys + 1] = key end
+    for _, key in ipairs(keys) do
         if key == "*all" or ns.db.blocks[key] then
             pcall(function() ns:OpenOptionsFor(key) end)
             for sub = 1, 5 do

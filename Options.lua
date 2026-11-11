@@ -934,7 +934,17 @@ local function NewLayout(page, top)
     local anchor = CreateFrame("Frame", nil, page)
     anchor:SetSize(1, 1)
 
-    local function Low(col) return math.min(y[col], packed[col] or y[col]) end
+    -- lowest virtual y of a column: its shown widgets (two can share a slot, the one
+    -- shown counts) and its option stacks; nothing shown: its top
+    local function Low(col)
+        local low = packed[col] or top0
+        for _, it in ipairs(items[col]) do
+            if not it.w.foldedAway and it.w:IsShown() then
+                low = math.min(low, it.vy - it.w.layoutHeight - SPACING)
+            end
+        end
+        return low
+    end
 
     -- y of column 2's anchor; the lowest point of the page
     local function Settle()
@@ -971,6 +981,9 @@ local function NewLayout(page, top)
                 content = page })
         end
         if not layout.untracked then table.insert(items[col], { w = w, vy = y[col] }) end
+        -- every placed widget, settings or not (tools/mock_run.lua: nothing overlaps)
+        ns.optionWidgets = ns.optionWidgets or {}
+        table.insert(ns.optionWidgets, { frame = w, label = w.optionLabel or w.headerText or "note", content = page })
         used[col] = true
         y[col] = y[col] - w.layoutHeight - SPACING
         Settle()
@@ -1561,7 +1574,7 @@ local function BuildBlockPage(page)
             SetField("customName", v ~= "" and v or nil)
         end, named, L.TIP_CUSTOM_NAME), 2)
         P.Gap(2, 6)
-        P.Place(CreateHeader(sub, L.SECTION_CLICKS), 2).isShown = notSpacer
+        local clicksHeader = P.Place(CreateHeader(sub, L.SECTION_CLICKS), 2)
         local clickShown = function() return not ns.IsForwardingKey(selected) and notSpacer() end
         local getS, setS = Field("shiftClick")
         local getM, setM = Field("middleClick")
@@ -1592,6 +1605,9 @@ local function BuildBlockPage(page)
             ns:RefreshOptions()
         end, function() return named() and ns.CanPinTooltip and ns.CanPinTooltip(selected) or false end,
             COL_W - 8, L.TIP_PIN_BUTTON), 2)
+        -- the header only when a click setting or the pin button is under it
+        -- (a DataBroker block keeps its own clicks)
+        clicksHeader.isShown = function() return clickShown() or pin.isShown() end
         pin.Refresh = function(self)
             self:SetText(ns.IsPinned and ns:IsPinned(selected) and L.MENU_UNPIN or L.MENU_PIN)
         end

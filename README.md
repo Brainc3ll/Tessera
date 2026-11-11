@@ -28,7 +28,7 @@ LibDataBroker to exchange data with DataBroker addons.
 - **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level: most blocks give you a choice.
 - **Pin a tooltip, rename a block.** Keep a block's tooltip open next to it, updated every second, and give any block a name of your own.
 - **A micro-menu that grows with you.** Blizzard's micro menu in one block: its tooltip lists the menus, a click opens them; a menu you have not unlocked yet stays grey until you reach it.
-- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, FlareUI, ElvUI, EllesmereUI, or fantasy styles built from the game's own frames.
+- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, Bronze and Bronze and gold (FlareUI), Elven (ElvUI), Emerald (EllesmereUI), or fantasy styles built from the game's own frames.
 - **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
 - **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
 - **Ready to stream.** Streamer mode hides other players' names, your other characters, your guild's name and your gold in one click.
@@ -182,7 +182,7 @@ Help tab inside the game explains everything.
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- 24 styles: matching FlareUI, ElvUI, EllesmereUI (also without that addon, as an imitation) or
+- 25 styles: matching FlareUI (Bronze, Bronze and gold), ElvUI (Elven), EllesmereUI (Emerald) (also without that addon, as an imitation) or
   Blizzard's look (Blizzard Retail in silver, Blizzard Forever in gold, Blizzard Classic), Square
   styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
   Parchment; Arcane), styles made of the game's own frames (Royal seal, Ironforge, Runeblade,
@@ -244,7 +244,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
 | `Locales/deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`... | The other languages, sent by pull request or issue; a missing text shows in English. |
 | `Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
-| `Themes.lua` | The styles (FlareUI, EllesmereUI, ElvUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
+| `Themes.lua` | The styles (Bronze, Bronze and gold and Bronze (old) for FlareUI, Emerald for EllesmereUI, Elven for ElvUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
 | `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
 | `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |

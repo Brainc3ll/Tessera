@@ -3,6 +3,16 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.3.1 — 
+
+### New
+
+- New style: Bronze and gold, after the settings window of FlareUI 6. Darker bronze edges and gold text; on the options window, a rock background and gold rows under the mouse. With FlareUI 6 installed, new profiles start with it. A profile on Bronze keeps its style, and Tessera offers the new one.
+
+### Improvements
+
+- The styles that follow another interface get their own names: Bronze, Bronze (old) and Bronze square (FlareUI), Elven (ElvUI) and Emerald (EllesmereUI). Your blocks look the same; only the name changes.
+
 ## 1.3.0 — 2026-11-11
 
 ### New

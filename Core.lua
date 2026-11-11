@@ -616,7 +616,7 @@ function ns:ApplyLevelPalette()
     local key = self:GetLevelPalette()
     if key == "auto" then
         local theme = self.db and self.GetTheme and self:GetTheme()
-        key = (theme == "flareui2" or theme == "flareui") and "soft" or "bright"
+        key = (ns.IsFlareTheme and ns.IsFlareTheme(theme)) and "soft" or "bright"
     end
     for i, hex in ipairs(PALETTES[key] or PALETTES.bright) do ns.LEVEL_COLORS[i] = hex end
     -- "soft" also tones the class colors down (the colorblind palette leaves them as they are)

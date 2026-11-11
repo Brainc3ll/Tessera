@@ -118,13 +118,26 @@ local function FlareUIMajor()
 end
 ns.FlareUIMajor = FlareUIMajor
 
+-- The style matching the installed FlareUI: Bronze and gold from 6.0, Bronze from 2.0, Bronze
+-- (old) for 1.x. Without FlareUI: Bronze (it is not installed, so never picked automatically).
+local function FlareKey()
+    local major = FlareUIMajor() or 2
+    if major >= 6 then return "flareui6" end
+    return major >= 2 and "flareui2" or "flareui"
+end
+
+-- Is this one of the FlareUI styles (they follow FlareUI's XP bar font)?
+local FLARE_KEYS = { flareui = true, flareui2 = true, flareui6 = true }
+function ns.IsFlareTheme(key) return FLARE_KEYS[key] == true end
+
 -- Theme list, in menu order. Each entry has:
 --   available() whether it can be offered, installed() whether its UI is loaded (optional),
 --   block(cfg) writes the block style into cfg, window() returns the options window style
 ns.themes = {
     {
         key = "flareui2",
-        name = "FlareUI",
+        name = L.THEME_BRONZE, -- (FlareUI 2 to 5)
+        uiName = "FlareUI",
         installed = function() return ns:HasFlareUIMedia() end,
         available = function() return true end,
         missingNote = "THEME_NOTE_FLAREUI",
@@ -157,7 +170,8 @@ ns.themes = {
     },
     {
         key = "flareui", -- key kept from earlier versions: saved profiles refer to it
-        name = "FlareUI 1.x",
+        name = L.THEME_BRONZE_OLD, -- (FlareUI 1.x)
+        uiName = "FlareUI",
         installed = function() return ns:HasFlareUIMedia() end,
         -- no longer in the list, except for FlareUI 1.x itself or a profile that uses it
         hidden = function() return FlareUIMajor() ~= 1 end,
@@ -186,8 +200,52 @@ ns.themes = {
         end,
     },
     {
+        -- FlareUI 6.0's settings window (Settings/Panel.lua): bronze edges (0.55, 0.42, 0.24),
+        -- hover (0.79, 0.65, 0.35 at 12%, its list highlight), selection (1, 0.84, 0.5), gold
+        -- text (0.91, 0.77, 0.42), natural rock under a brown wash (0.05, 0.038, 0.026 at 35%).
+        -- Its XP bar did not change in 6.0: the blocks take the window's colors (Tessera's choice)
+        key = "flareui6",
+        name = L.THEME_BRONZE_GOLD,
+        uiName = "FlareUI",
+        installed = function() return ns:HasFlareUIMedia() end,
+        available = function() return true end,
+        missingNote = "THEME_NOTE_FLAREUI",
+        block = function(cfg)
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0, g = 0, b = 0, a = 0.5 }
+            local thin = ns:HasFlareUIMedia()
+            cfg.border = thin and "lsm:FlareUI Thin" or "solid"
+            cfg.borderSize = thin and 8 or 1
+            cfg.borderColor = { r = 0.55, g = 0.42, b = 0.24, a = 1 }
+            cfg.font, cfg.outline, cfg.textShadow = FlareFont()
+            cfg.textTint = { r = 0.91, g = 0.77, b = 0.42, a = 1 }
+            cfg.separators = true
+            cfg.separatorColor = { r = 0.78, g = 0.60, b = 0.34, a = 0.9 }
+            cfg.barTexture = "lsm:FlareUI Forever"
+        end,
+        window = function()
+            local LSM = ns:GetLSM()
+            local thick = LSM and LSM:Fetch("border", "FlareUI Thick", true)
+            return {
+                -- the rock times (1 - 0.35): FlareUI's wash, near enough (its brown is almost black)
+                bgFile = "Interface\\FrameGeneral\\UI-Background-Rock",
+                edgeFile = thick or "Interface\\Tooltips\\UI-Tooltip-Border",
+                edgeSize = thick and 12 or 16, inset = thick and 3 or 5, tile = true, tileSize = 256,
+                bg = { 0.67, 0.66, 0.65, 1 },
+                -- FlareUI's own frame on its Thick border: its frames' bronze (#A67D45)
+                border = { 0.65, 0.49, 0.27, 1 },
+                title = { 0.91, 0.77, 0.42 },
+                accents = {
+                    hover = { 0.79, 0.65, 0.35, 0.12 }, lit = { 1, 0.84, 0.5, 1 },
+                    line = { 0.55, 0.42, 0.24, 0.9 }, text = { 0.91, 0.77, 0.42 },
+                },
+            }
+        end,
+    },
+    {
         key = "ellesmere",
-        name = "EllesmereUI",
+        name = L.THEME_EMERALD,
+        uiName = "EllesmereUI",
         installed = function() return type(_G["EllesmereUI"]) == "table" end,
         available = function() return true end,
         missingNote = "THEME_NOTE_ELLESMERE",
@@ -210,7 +268,8 @@ ns.themes = {
     },
     {
         key = "elvui",
-        name = "ElvUI",
+        name = L.THEME_ELVEN,
+        uiName = "ElvUI",
         installed = function()
             local E = ElvEngine()
             return E ~= nil and type(E.media) == "table"
@@ -680,8 +739,7 @@ end
 function ns:GetTheme()
     local chosen = self.db and self.db.theme
     if chosen and byKey[chosen] and byKey[chosen].available() then return chosen end
-    local flare = (FlareUIMajor() or 2) >= 2 and "flareui2" or "flareui"
-    for _, key in ipairs({ flare, "ellesmere", "elvui" }) do
+    for _, key in ipairs({ FlareKey(), "ellesmere", "elvui" }) do
         if IsInstalled(byKey[key]) then return key end
     end
     if byKey.blizzardModern.available() then
@@ -763,7 +821,7 @@ end
 function ns:ApplyTheme(key)
     if not byKey[key] or not byKey[key].available() then return false end
     self.db.theme = key
-    if key == "flareui" or key == "flareui2" then
+    if FLARE_KEYS[key] then
         local font, outline, shadow = FlareFont()
         self.db.flareFontSeen = { font = font, outline = outline, shadow = shadow }
     end
@@ -825,7 +883,7 @@ end
 function ns:FollowFlareFont()
     local db = self.db
     local key = db and self:GetTheme()
-    if not (key == "flareui" or key == "flareui2") then return end
+    if not FLARE_KEYS[key] then return end
     local font, outline, shadow = FlareFont()
     local seen = db.flareFontSeen
     db.flareFontSeen = { font = font, outline = outline, shadow = shadow }
@@ -845,8 +903,7 @@ end
 -- Styles of the UIs installed now (FlareUI in its installed version), by priority
 function ns:GetDetectedUIStyles()
     local list = {}
-    local flare = (FlareUIMajor() or 2) >= 2 and "flareui2" or "flareui"
-    for _, key in ipairs({ flare, "ellesmere", "elvui" }) do
+    for _, key in ipairs({ FlareKey(), "ellesmere", "elvui" }) do
         if IsInstalled(byKey[key]) then table.insert(list, key) end
     end
     return list
@@ -854,14 +911,14 @@ end
 
 -- Name of the UI behind a style, with FlareUI's version (e.g. "FlareUI 2.0")
 function ns:GetUIName(key)
-    if key == "flareui" or key == "flareui2" then
+    if FLARE_KEYS[key] then
         local get = (C_AddOns and C_AddOns.GetAddOnMetadata) or function() end
         local ok, version = false, nil
         if get then ok, version = pcall(get, "FlareUI", "Version") end
         if ok and type(version) == "string" and version ~= "" then return "FlareUI " .. version end
         return "FlareUI"
     end
-    return byKey[key] and byKey[key].name or key
+    return byKey[key] and (byKey[key].uiName or byKey[key].name) or key
 end
 
 -- Styles of installed UIs that were never offered (account-wide memory sv.uiOffered).

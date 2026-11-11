@@ -441,6 +441,40 @@ local function SetRowShown(w, shown)
     if w.check then w.check:SetShown(shown and true or false) end
 end
 
+-- Accent colors of the window's style: row under the mouse, selection mark, lines under
+-- section headers (and their text, when the style sets one). Styles without them keep the
+-- game's white highlight and yellow.
+local DEFAULT_ACCENTS = {
+    hover = { 1, 1, 1, 0.1 }, lit = { 1, 0.82, 0, 1 }, line = { 1, 0.82, 0, 0.4 },
+}
+function ns:WindowAccents()
+    local info = self.GetThemeInfo and self:GetThemeInfo(self:GetTheme())
+    local w = info and info.window and info.window()
+    local a = w and w.accents
+    if type(a) ~= "table" then return DEFAULT_ACCENTS end
+    return {
+        hover = a.hover or DEFAULT_ACCENTS.hover, lit = a.lit or DEFAULT_ACCENTS.lit,
+        line = a.line or DEFAULT_ACCENTS.line, text = a.text,
+    }
+end
+
+-- Header lines (and texts) drawn in the accent colors, recolored when the style changes
+local accentLines = {}
+local function PaintAccent(line, fs)
+    local a = ns:WindowAccents()
+    line:SetColorTexture(unpack(a.line))
+    if fs then
+        if a.text then fs:SetTextColor(unpack(a.text)) else fs:SetTextColor(1, 0.82, 0) end
+    end
+end
+local function AccentLine(line, fs)
+    table.insert(accentLines, { line = line, fs = fs })
+    PaintAccent(line, fs)
+end
+function ns:RepaintAccents()
+    for _, e in ipairs(accentLines) do PaintAccent(e.line, e.fs) end
+end
+
 local function NewRow(parent, frameType)
     local row = CreateFrame(frameType or "Frame", nil, parent)
     row:SetSize(FULL_W, 28)
@@ -463,6 +497,9 @@ end
 local function RowHover(row, ...)
     local function Enter()
         local strong = ns.sv and ns.sv.highContrast
+        local a = ns:WindowAccents()
+        row.hover:SetColorTexture(unpack(a.hover))
+        row.mark:SetColorTexture(unpack(a.lit))
         row.hover:SetAlpha(strong and 2.5 or 1)
         row.hover:Show()
         row.mark:SetShown(strong and true or false)
@@ -514,7 +551,7 @@ local function CreateHeader(parent, text)
     local h = math.max(30, (fs:GetStringHeight() or 0) + 16)
     holder:SetSize(FULL_W, h)
     local line = holder:CreateTexture(nil, "ARTWORK")
-    line:SetColorTexture(1, 0.82, 0, 0.4)
+    AccentLine(line, fs)
     line:SetHeight(1)
     line:SetPoint("BOTTOMLEFT")
     line:SetPoint("BOTTOMRIGHT")
@@ -539,7 +576,7 @@ local function CreateSection(parent, text, folded)
     local h = math.max(30, (fs:GetStringHeight() or 0) + 16) -- (bigger text: taller)
     b:SetSize(FULL_W, h)
     local line = b:CreateTexture(nil, "ARTWORK")
-    line:SetColorTexture(1, 0.82, 0, 0.4)
+    AccentLine(line, fs)
     line:SetHeight(1)
     line:SetPoint("BOTTOMLEFT")
     line:SetPoint("BOTTOMRIGHT")
@@ -547,7 +584,11 @@ local function CreateSection(parent, text, folded)
     b.hover:SetAllPoints()
     b.hover:SetColorTexture(1, 1, 1, 0.08)
     b.hover:Hide()
-    b:SetScript("OnEnter", function(self) self.hover:Show() end)
+    b:SetScript("OnEnter", function(self)
+        local c = ns:WindowAccents().hover
+        self.hover:SetColorTexture(c[1], c[2], c[3], (c[4] or 0.1) * 0.8)
+        self.hover:Show()
+    end)
     b:SetScript("OnLeave", function(self) self.hover:Hide() end)
     b.folded = folded and true or false
     b.Refresh = function(self)
@@ -2574,6 +2615,7 @@ end
 -- Re-skins the open Tessera windows after a theme change
 function ns:SkinOptions()
     if panel then self:SkinWindow(panel, panel.title) end
+    self:RepaintAccents() -- section lines in the new style's colors
     if self.banner then self:SkinWindow(self.banner, self.banner.text) end
 end
 

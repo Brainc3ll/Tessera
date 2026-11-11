@@ -46,6 +46,12 @@ compliqué ; Braincell1980 choisit la version de chaque idée.
 - Tous les cadres connus de Tessera existent encore ; nouveaux cadres repérés dans son code : `FlareUI_UF_TargetOfTarget`, `FlareUI_UF_TargetOfFocus`, `FlareUI_Party`, `FlareUI_Raid`, `FlareUI_Boss` (ajoutés à `ns.KNOWN_UI_FRAMES`).
 - Nouveautés à suivre : mode manette (`GamepadMode.lua` : bascule le CVar InputDeviceInterfaceStyle, proposée à la première pression d'une manette) et menu radial (`RadialMenu.lua`) : utile pour la 1.3 de Tessera (navigation à la manette). Un module DamageMeter. Son sac de minicarte (`FlareUI_MinimapBag`) utilise LibDataBroker / LibDBIcon : Tessera le connaissait déjà.
 
+
+### FlareUI 6.0.1 (11 novembre 2026, comparé à la 5.1.2)
+- Licence MIT, TOC 16001 (Forever). Sauvegardes toujours `FlareUI2_DB`, `FlareUI_DB` ; médias LibSharedMedia lus par Tessera toujours là (« FlareUI Thin », « FlareUI Thick », « FlareUI Frames », « FlareUI Forever ») ; nouvelles polices Marcellus et Roboto Condensed Bold.
+- Fenêtre de réglages refaite (`Settings/Panel.lua`) : bords des boîtes bronze 0.55/0.42/0.24, survol 0.78/0.6/0.34, sélection 1/0.84/0.5, texte or 0.91/0.77/0.42 ; surlignage des listes 0.79/0.65/0.35 à 12 % ; boîtes noires à 28 % ; fond de roche du jeu (`Interface\FrameGeneral\UI-Background-Rock`) sous un voile brun 0.05/0.038/0.026 à 35 % ; cadre « bronze lourd » de l'écran des personnages (atlas `heavybronze-frame-basic`, étiré à la main), cadre des bulles d'aide en secours ; titres en Friz Quadrata, texte en Roboto Condensed. Barre d'XP inchangée (0.80/0.60/0.34).
+- Repris dans Tessera (1.3.1) : style « Bronze et or » (`flareui6`). Cadre bronze lourd pas repris (FlareUI l'étire à la main ; un essai en tranches a cassé chez lui) : bordure « FlareUI Thick » à la place.
+- Manette : voir `docs/IDEES-FUTUR.md`, « Ce que FlareUI 6.0 apprend pour la manette ».
 ### Ce qu'on a appris d'EllesmereUI 9.6.1 (21 octobre 2026)
 Licence « tous droits réservés » : idées seulement, aucun code ni donnée repris.
 - Son style « moderne » des barres de données : fond 0.067 à 95 %, comme notre style EllesmereUI (rien à changer).

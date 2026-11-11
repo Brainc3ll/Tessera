@@ -1073,6 +1073,34 @@ for _, step in ipairs({
         assert(math.abs(ns.db.blocks.gold.borderColor.r - 0.80) < 0.01, "blocks not restyled back")
         ns.HasFlareUIMedia = has
     end,
+    -- FlareUI 6: Bronze and gold for new profiles; a profile on Bronze keeps it and is offered the new one
+    function()
+        local has, meta = ns.HasFlareUIMedia, C_AddOns.GetAddOnMetadata
+        local theme, auto, missing = ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing
+        ns.HasFlareUIMedia = function() return true end
+        C_AddOns.GetAddOnMetadata = function(name, field)
+            if name == "FlareUI" and field == "Version" then return "6.0.1" end
+            return meta(name, field)
+        end
+        ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing = nil, "flareui2", nil
+        ns:SyncAutoTheme()
+        assert(ns.db.theme == "flareui2", "Bronze profile lost its style under FlareUI 6")
+        local offered = false
+        for _, key in ipairs(ns:GetDetectedUIStyles()) do offered = offered or key == "flareui6" end
+        assert(offered, "Bronze and gold not offered with FlareUI 6")
+        ns.db.theme = nil
+        assert(ns:GetTheme() == "flareui6", "FlareUI 6: new profiles not on Bronze and gold")
+        assert(ns:GetUIName("flareui6") == "FlareUI 6.0.1", "UI name of Bronze and gold")
+        assert(ns:WindowAccents().lit[2] == 0.84, "Bronze and gold window accents")
+        ns.db.theme = "flareui2"
+        assert(ns:WindowAccents().lit[2] == 0.82, "default accents changed for other styles")
+        assert(ns:GetUIName("elvui") == "ElvUI" and ns:GetUIName("ellesmere") == "EllesmereUI", "UI names after renaming")
+        local cfg = {}
+        ns:ApplyThemeToCfg(cfg, "flareui6")
+        assert(math.abs(cfg.borderColor.r - 0.55) < 0.01 and cfg.textTint, "Bronze and gold block style")
+        C_AddOns.GetAddOnMetadata, ns.HasFlareUIMedia = meta, has
+        ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing = theme, auto, missing
+    end,
     -- DataBroker mode choices are remembered per display addon
     function()
         local was = ns.brokerDisplay

@@ -26,7 +26,7 @@ Repris : bloc Vol et prochain bateau ou zeppelin (1.2, à sonder), sacs de chaqu
 
 | Addon | Ce qu'il fait | Recoupe Tessera | DataBroker |
 |---|---|---|---|
-| FlareUI 4.0 (Malkkav, MIT depuis la 4.0) | Interface complète à l'allure fantasy : cadres d'unité, groupe, raid, boss, barres d'action, XP, minicarte et sac de boutons, mode manette, menu radial. Tessera a des styles faits pour elle et suit sa police et son ombre. | Styles, barre d'XP (Tessera s'y accroche) | Sac de minicarte avec LibDataBroker / LibDBIcon |
+| FlareUI 6.0.1 (Malkkav, MIT depuis la 4.0 ; vu le 11/11) | Interface complète à l'allure fantasy : cadres d'unité, groupe, raid, boss, barres d'action, XP, minicarte et sac de boutons, mode manette, menu radial. Tessera a des styles faits pour elle (Bronze, Bronze et or pour la 6.0) et suit sa police et son ombre. | Styles, barre d'XP (Tessera s'y accroche) | Sac de minicarte avec LibDataBroker / LibDBIcon |
 | Forever Companion | Tableau de bord des personnages (niveaux, métiers, Legacy, repos), suggestions, liste de préparation avant donjon. 2 400 téléchargements, bêta. | Legacy, XP de repos, munitions, composants | Pas mentionné |
 | Chart My Legacy | Points Legacy, classement des personnages, défis Legacy. 18 téléchargements. | Legacy | Pas mentionné |
 | Campfire Tooltips: Forever | Bonus de camp dans les infobulles. 85 téléchargements. | Camping (complémentaire) | Pas mentionné |

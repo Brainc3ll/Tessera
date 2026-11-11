@@ -10,7 +10,7 @@ Most blocks let you choose what they show: played time this level or in total, h
 
 Other things you might like:
 
-- 24 styles, so the blocks match your UI: Blizzard, FlareUI, ElvUI, EllesmereUI, or fantasy looks made from the game's own frames.
+- 25 styles, so the blocks match your UI: Blizzard, Bronze and Bronze and gold (FlareUI), Elven (ElvUI), Emerald (EllesmereUI), or fantasy looks made from the game's own frames.
 - Streamer mode hides other players' names, your other characters, your guild and your gold.
 - DataBroker works both ways: your other addons' Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 - Pin a block's tooltip so it stays open, and give any block a name of your own.
@@ -80,7 +80,7 @@ La plupart des blocs te laissent choisir ce qu'ils affichent : temps de jeu à c
 
 D'autres choses qui pourraient te plaire :
 
-- 24 styles, pour que les blocs collent à ton interface : Blizzard, FlareUI, ElvUI, EllesmereUI, ou des allures fantasy faites avec les fenêtres du jeu.
+- 25 styles, pour que les blocs collent à ton interface : Blizzard, Bronze et Bronze et or (FlareUI), Elfique (ElvUI), Émeraude (EllesmereUI), ou des allures fantasy faites avec les fenêtres du jeu.
 - Le mode streamer cache les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
 - DataBroker dans les deux sens : les objets Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (anciennement ChocolateBar).
 - Épingle l'infobulle d'un bloc pour qu'elle reste ouverte, et donne à n'importe quel bloc le nom que tu veux.

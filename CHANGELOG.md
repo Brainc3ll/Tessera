@@ -24,6 +24,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Streamer mode block: "Hide when empty" is off by default, so the block stays on screen to switch the mode on.
 - Welcome window and quick tour: they follow the new options window ("On screen", placing to the pixel, search, help, Accessibility).
 - "Place by pixel" is wider and its text is gold, so it is easy to find.
+- A hidden block at the end of a bar no longer leaves an empty place: a centered bar stays centered when a whisper comes and goes.
 - Export, import and report windows open in front of the options, in the middle of the screen.
 - The options window opens in the middle of the screen each time, and comes back there when a window that pushed it aside is closed.
 - Help tab: topics in groups that go together (getting started, placing, the settings tabs, other addons, help), with thin lines between the groups and between the chapters of a topic.

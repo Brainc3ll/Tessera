@@ -3255,6 +3255,17 @@ local function BuildZoomText()
     local hint = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     hint:SetPoint("TOP", fs, "BOTTOM", 0, -1)
     hint:SetText(L.ZOOM_HINT)
+    -- never wider than its room (a long translation): the text shrinks, then is cut
+    local HINT_W = 62
+    hint:SetWidth(HINT_W)
+    hint:SetWordWrap(false)
+    local font, size, flags = hint:GetFont()
+    if font and size and hint.GetUnboundedStringWidth then
+        while size > 8 and hint:GetUnboundedStringWidth() > HINT_W do
+            size = size - 1
+            hint:SetFont(font, size, flags)
+        end
+    end
     f.Refresh = function()
         fs:SetText(math.floor((ns.sv.optionsZoom or 1) * 100 + 0.5) .. " %")
     end

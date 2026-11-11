@@ -1428,9 +1428,33 @@ local function GroupExtent(self, head, width)
     -- a hidden block that others still hang from (e.g. a hidden block under the bar
     -- with a block on its right) is a zero-width link: its dependents must be placed
     -- too. Only for this computation: the width table itself is not changed.
-    local function W(key)
-        if width[key] then return width[key] end
+    -- A hidden block keeps its place only for what comes after it: when nothing that
+    -- is turned on and docked after it takes room, its place would be an invisible gap
+    -- at the end of the bar, and a bar kept centered would sit off-center by half of it
+    -- (a whisper came and went). Blocks turned off do not count: the ready-made bars
+    -- keep the chain of their blocks docked one to the next, turned off or not.
+    local roomCache = {}
+    local function TakesRoom(key, seen)
+        if roomCache[key] ~= nil then return roomCache[key] end
         local f = self.frames[key]
+        if f and f:IsShown() then roomCache[key] = true return true end
+        seen = seen or {}
+        if seen[key] then return false end
+        seen[key] = true
+        for k, c in pairs(self.db.blocks) do
+            if c.enabled and ((c.dock and c.dock.to == key) or ns.HangTarget(c.anchor) == key)
+                and TakesRoom(k, seen) then
+                roomCache[key] = true
+                return true
+            end
+        end
+        roomCache[key] = false
+        return false
+    end
+    local function W(key)
+        local f = self.frames[key]
+        if f and not f:IsShown() and not TakesRoom(key) then return 0 end
+        if width[key] then return width[key] end
         if f and not f:IsShown() then return 0 end
     end
     local changed = true

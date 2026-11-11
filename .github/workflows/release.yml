@@ -24,6 +24,11 @@ on:
     tags:
       - "**"
   workflow_dispatch:
+    inputs:
+      skip_docs_check:
+        description: "Skip the documentation check (only when GitHub cannot install Lua and Claude ran the check locally)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write # lets the job create the tag and the GitHub release
@@ -48,6 +53,7 @@ jobs:
       # strings for CurseForge): tools/check_docs.lua lists what is out of date, and a
       # failure stops the release here, before any tag or upload
       - name: Check the documentation
+        if: ${{ !inputs.skip_docs_check }}
         run: |
           # the package servers sometimes fail: try apt twice, then build Lua 5.1.5 from
           # lua.org (checked against its known SHA-256)

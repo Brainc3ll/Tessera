@@ -6,7 +6,7 @@ Ce dossier `docs/` n'est pas inclus dans l'addon (voir `.pkgmeta`) : il sert au 
 
 Un seul bouton publie partout : le workflow **Package and release** (onglet Actions du dépôt GitHub → « Run workflow », ou `gh workflow run release.yml` ; si GraphQL est bloqué : `gh api -X POST repos/Brainc3ll/Tessera/actions/workflows/release.yml/dispatches -f ref=main`). Pousser un tag `v…` lance aussi le workflow. Dans l'ordre, il :
 
-1. **vérifie la documentation** (`tools/check_docs.lua`, voir plus bas) : si elle n'est pas à jour, rien n'est publié ;
+1. **vérifie la documentation** (`tools/check_docs.lua`, voir plus bas) : si elle n'est pas à jour, rien n'est publié ; si GitHub ne peut pas installer Lua (panne d'Ubuntu), cocher « Skip the documentation check » (ou `-f "inputs[skip_docs_check]=true"`), seulement après l'avoir lancée en local ;
 2. lit la version dans `Tessera.toc` et crée le tag `v<version>` ;
 3. fabrique le zip `Tessera-v<version>-forever.zip`, avec toutes les traductions de `Locales/` telles qu'elles sont dans le dépôt ;
 4. crée la release GitHub (titre `v<version>`) et envoie le zip sur **CurseForge** et sur **Wago**, avec la partie de cette version de `CHANGELOG.md` comme notes de version.

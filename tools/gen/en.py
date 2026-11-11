@@ -62,4 +62,13 @@ EN = [
 ("CMD_UNLOCKED","Blocks unlocked: drag them to move them. Hover a block: its cross hides it, its arrows replace it."),
 ("CMD_HELP","Commands: /tessera (options), /tessera lock, /tessera unlock, /tessera reset, /tessera minimap, /tessera preview, /tessera demo, /tessera bug, /tessera broker, /tessera recover, /tessera help (this list)"),
 ("CMD_RESET","Everything has been reset: the interface is reloading."),
+("SEARCH","Search a setting"),
+("SEARCH_NONE","No setting found"),
+("SEARCH_OLD_ENABLED","Show, Hide, Enabled"),
+("HELP_PANEL_REST","Point at a setting: its explanation shows here."),
+("HELP_PANEL_ZOOM","Shift + mouse wheel on the window: its size."),
+("FOLD_WINDOW","Fold the window"),
+("ABOUT_LINKS","Links"),
+("ABOUT_LINK_ISSUES","Bugs and ideas"),
+("ABOUT_COPY_HINT","Ctrl + C to copy"),
 ]

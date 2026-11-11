@@ -3266,6 +3266,9 @@ ns:RegisterModule("camping", {
             if cd > 0 then return L.CAMP_KIT_COOLDOWN:format(ShortTime(cd)), WARN end
             return L.CAMP_KIT_READY, GOOD
         end
+        -- only near a campfire: its name (the game's own text), not "None"
+        local near = PlayerAura(CAMP_NEAR)
+        if near and near.name and near.name ~= "" then return near.name end
         return L.NONE
     end,
     tooltip = function(tt)

@@ -2718,6 +2718,37 @@ do
     if not inside.__shown then print("STEP ERROR: an unfolded section shows its rows again") end
     MOCK_GEOMETRY = nil
 end
+-- Window frame (1.3): search (old names too), going to a result, folding, size
+do
+    local L = ns.L
+    local found = ns.SearchOptions(GetLocale() == "frFR" and "afficher" or "show")
+    local hasOnScreen = false
+    for _, r in ipairs(found) do if r.label == L.ENABLED then hasOnScreen = true end end
+    if not hasOnScreen then print("STEP ERROR: search: an old name does not find \"" .. L.ENABLED .. "\"") end
+    if #ns.SearchOptions("e") ~= 0 then print("STEP ERROR: search starts at two letters") end
+    local fmt = ns.SearchOptions(ns.L.HIDE_EMPTY)
+    if #fmt < 2 then print("STEP ERROR: search: a setting of several blocks is listed once per block") end
+    for _, r in ipairs(found) do
+        local ok, err = pcall(ns.GoToOption, r, ns.ShowOptionsPage)
+        if not ok then print("STEP ERROR: going to a search result: " .. tostring(err)) end
+    end
+    for _, fn in ipairs(__timers) do pcall(fn) end
+    if not TesseraOptions:IsShown() then ns:ToggleOptions() end
+    ns:SetOptionsFolded(true)
+    if TesseraOptions:GetHeight() > 100 or TesseraOptions.nav:IsShown() then print("STEP ERROR: a folded window keeps only its top bar") end
+    TesseraOptions:Hide(); TesseraOptions:Show()
+    if TesseraOptions:GetHeight() < 500 or not TesseraOptions.nav:IsShown() then print("STEP ERROR: the window opens unfolded") end
+    local wheel = TesseraOptions:GetScript("OnMouseWheel")
+    local shift = IsShiftKeyDown
+    IsShiftKeyDown = function() return true end
+    for _ = 1, 30 do wheel(TesseraOptions, 1) end
+    if ns.sv.optionsZoom ~= 1.3 then print("STEP ERROR: window size stops at 130 %: " .. tostring(ns.sv.optionsZoom)) end
+    for _ = 1, 30 do wheel(TesseraOptions, -1) end
+    if ns.sv.optionsZoom ~= 0.7 then print("STEP ERROR: window size stops at 70 %: " .. tostring(ns.sv.optionsZoom)) end
+    for _ = 1, 6 do wheel(TesseraOptions, 1) end
+    if ns.sv.optionsZoom ~= nil then print("STEP ERROR: back to 100 % saves nothing") end
+    IsShiftKeyDown = shift
+end
 -- Options that must never get lost (rule: a rework takes nothing away). Dump with
 -- MOCK_WRITE_OPTIONS=1 on a version known good; then every run (enUS only) checks that each
 -- recorded option still exists, or that tools/options_renames.txt says what it became.

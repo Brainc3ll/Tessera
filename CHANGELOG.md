@@ -5,6 +5,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.3.0 — 2026-11-11
 
+### Fixes
+
+- Camping block: near a campfire it shows the campfire instead of "None".
+
 ### New
 
 - Icon size goes up to 200 pixels. The block grows with its icon.
@@ -19,6 +23,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Options window: one setting per row, its name on the left and its control on the right. Long names wrap instead of being cut.
 - Lists with a few choices get arrows on each side, like the game's settings. Check boxes are the game's own: click anywhere on the row to tick one.
 - Pages taller than the window scroll with the mouse wheel.
+- Search a setting from the top of the options window: Enter or a click opens its page and makes it blink. Old names work too.
+- A help panel on the right of the options window explains the setting under the mouse.
+- The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %).
+- About tab: a button per link puts it in a box, ready to copy.
 
 ## 1.2.1 — 2026-11-10
 

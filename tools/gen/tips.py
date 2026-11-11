@@ -37,6 +37,9 @@ TIPS_EN = {
 "LOCK_BUTTON":"Lock blocks","UNLOCK_BUTTON":"Unlock blocks",
 "TIP_LOCK_BUTTON":"Unlocked blocks can be moved with the left mouse button. Lock them again to click on them.",
 "TIP_COPY_STYLE_GROUP":"Copies the look of this block (text, background, border, height, icon) to the other blocks of its bar and of the rows below it. You can undo it (Ctrl + Z in placement mode).",
+"TIP_SEARCH":"Type part of a setting's name. Up and down pick a result, Enter opens it.",
+"TIP_FOLD_WINDOW":"Keeps only the top bar, to see what is behind the window. Click again to unfold it. The window always opens unfolded.",
+"TIP_ABOUT_COPY":"The game opens no browser: the link goes in the box below, selected. Press Ctrl + C, then paste it in your browser.",
 }
 TIPS_FR = {
 "TIP_SELECTION":"Choisis à quoi s'appliquent les réglages ci-dessous : tous les blocs, tous les lanceurs, un groupe (une barre et ses rangées) ou un seul bloc (information, lanceur, DataBroker ou espace).",
@@ -77,4 +80,7 @@ TIPS_FR = {
 "LOCK_BUTTON":"Verrouiller les blocs","UNLOCK_BUTTON":"Déverrouiller les blocs",
 "TIP_LOCK_BUTTON":"Déverrouillés, les blocs se déplacent au clic gauche. Reverrouille-les pour pouvoir cliquer dessus.",
 "TIP_COPY_STYLE_GROUP":"Copie l'apparence de ce bloc (texte, fond, bordure, hauteur, icône) sur les autres blocs de sa barre et des rangées en dessous. Tu peux l'annuler (Ctrl + Z en mode placement).",
+"TIP_SEARCH":"Tape une partie du nom d'un réglage. Haut et bas choisissent un résultat, Entrée l'ouvre.",
+"TIP_FOLD_WINDOW":"Ne garde que la barre du haut, pour voir ce qu'il y a derrière la fenêtre. Clique encore pour la déplier. La fenêtre s'ouvre toujours dépliée.",
+"TIP_ABOUT_COPY":"Le jeu n'ouvre pas de navigateur : le lien va dans la case en dessous, sélectionné. Appuie sur Ctrl + C, puis colle-le dans ton navigateur.",
 }

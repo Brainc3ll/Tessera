@@ -40,6 +40,14 @@ ns.CHANGELOG = {
         version = "1.3.0",
         date = "2026-11-11",
         sections = {
+            { kind = "fixed",
+              en = {
+                "Camping block: near a campfire it shows the campfire instead of \"None\".",
+              },
+              fr = {
+                "Bloc Camping : près d'un feu de camp, il affiche le feu au lieu de « Aucun ».",
+              },
+            },
             { kind = "new",
               en = {
                 "Icon size goes up to 200 pixels. The block grows with its icon.",
@@ -59,6 +67,10 @@ ns.CHANGELOG = {
                 "Lists with a few choices get arrows on each side, like the game's settings."
                     .. " Check boxes are the game's own: click anywhere on the row to tick one.",
                 "Pages taller than the window scroll with the mouse wheel.",
+                "Search a setting from the top of the options window: Enter or a click opens its page and makes it blink. Old names work too.",
+                "A help panel on the right of the options window explains the setting under the mouse.",
+                "The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %).",
+                "About tab: a button per link puts it in a box, ready to copy.",
               },
               fr = {
                 "« Retirer » remplace « Masquer » : un bloc que vous retirez sort de son groupe, et ses voisins se resserrent.",
@@ -71,6 +83,10 @@ ns.CHANGELOG = {
                 "Les listes de quelques choix ont une flèche de chaque côté, comme les réglages du jeu."
                     .. " Les cases à cocher sont celles du jeu : cliquez n'importe où sur la ligne pour cocher.",
                 "Les pages plus hautes que la fenêtre défilent à la molette.",
+                "Cherchez un réglage en haut de la fenêtre d'options : Entrée ou un clic ouvre sa page et le fait clignoter. Les anciens noms marchent aussi.",
+                "Un panneau d'aide, à droite de la fenêtre d'options, explique le réglage sous la souris.",
+                "La flèche à côté de la croix réduit la fenêtre d'options à sa barre du haut. Maj + molette change sa taille (de 70 à 130 %).",
+                "Onglet À propos : un bouton par lien le met dans une case, prêt à copier.",
               },
             },
         },

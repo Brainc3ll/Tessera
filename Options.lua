@@ -49,7 +49,9 @@ local pages, tabs, currentPage = {}, {}, PAGE_BLOCKS
 local NAV_W = 176            -- navigation list, on the left
 local PAGE_TOP = -64         -- top of the pages, under the title
 ns.OPTIONS_PAGE_TOP = PAGE_TOP
-local PANEL_W, PANEL_H = 720 + NAV_W, 780
+local SEARCH_W = 200         -- search box, in the top bar
+local HELP_W = 260           -- help panel, on the right (1.3): explains the setting under the mouse
+local PANEL_W, PANEL_H = 720 + NAV_W + HELP_W, 780
 local COL_W = 300
 local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
@@ -386,6 +388,7 @@ local function AttachTip(frame, title, tip)
     end
     if not frame or not tip then return end
     frame:HookScript("OnEnter", function(self)
+        if ns.ShowOptionHelp then ns:ShowOptionHelp(title, tip) end -- help panel, on the right
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText(title, 1, 1, 1)
         GameTooltip:AddLine(tip, nil, nil, nil, true)
@@ -904,6 +907,7 @@ local function ScrollArea(holder, bottom)
     local content = CreateFrame("Frame", nil, scroll)
     content:SetSize(SCROLL_W, 10)
     scroll:SetScrollChild(content)
+    if ns.OptionsZoomOnShiftWheel then ns.OptionsZoomOnShiftWheel(scroll) end -- Shift + wheel: window size
     content.scroll = scroll
     content.pageIndex, content.subIndex = holder.pageIndex, holder.subIndex
     holder.content = content
@@ -978,7 +982,7 @@ local function NewLayout(page, top)
         if w.optionLabel then
             table.insert(ns.optionRows, { frame = w, label = w.optionLabel, tip = w.optionTip,
                 kind = w.optionKind, page = page.pageIndex, sub = page.subIndex, section = section[col],
-                content = page })
+                content = page, block = layout.currentBlock })
         end
         if not layout.untracked then table.insert(items[col], { w = w, vy = y[col] }) end
         -- every placed widget, settings or not (tools/mock_run.lua: nothing overlaps)
@@ -1186,6 +1190,7 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
         end
         if #list > 0 then hasOptions[key] = true end
         local firstWidget = #widgets + 1
+        P.currentBlock = key -- (search: a setting of this block opens it)
         P.untracked = true -- stacked widgets: measured when packed (relayout below)
         for _, opt in ipairs(list) do
             local shown = function()
@@ -1240,7 +1245,7 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
         for w = firstWidget, #widgets do table.insert(stack, widgets[w]) end
         table.insert(stacks, stack)
         P.Gap(col, P.Bottom(col) - stackTop) -- back to the top for the next module
-        P.untracked = nil
+        P.untracked, P.currentBlock = nil, nil
     end
     -- packs the visible widgets of each stack from the top (called after every refresh);
     -- the rows under the stacks (column 2 since 1.3) follow its lowest point
@@ -1950,6 +1955,7 @@ local function BuildBrokerPage(tabPage, showBlockPage)
     keeper.Refresh = function() ShowSub(current) end
     Register(keeper)
 
+    ns.ShowBrokerSub = ShowSub -- (search: opens the part a setting is in)
     BuildBrokerPlugins(subs[1], showBlockPage)
     local page = ScrollArea(subs[2], 16)
     local P = NewLayout(page)
@@ -2466,10 +2472,11 @@ end
 -- is added between the paragraphs of a topic. Returns the content frame, with
 -- Refresh() and ShowTopic(index).
 local TOPIC_W, TOPIC_H = 165, 22
-local function BuildTopicPage(page, getSections)
+local function BuildTopicPage(page, getSections, bottomRoom)
+    bottomRoom = bottomRoom or 0 -- room kept free at the bottom (About: the links)
     local topicList = CreateFrame("Frame", nil, page)
     topicList:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1] - 12, -6)
-    topicList:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 70)
+    topicList:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 70 + bottomRoom)
     topicList:SetWidth(TOPIC_W)
 
     -- thin vertical line between the topics and the text
@@ -2480,11 +2487,12 @@ local function BuildTopicPage(page, getSections)
     divider:SetPoint("BOTTOMLEFT", topicList, "BOTTOMRIGHT", 6, 0)
 
     local textX = COL_X[1] - 12 + TOPIC_W + 18
-    local textW = PANEL_W - NAV_W - textX - 48
+    local textW = PANEL_W - NAV_W - HELP_W - textX - 48
     local ok, scroll = pcall(CreateFrame, "ScrollFrame", nil, page, "ScrollFrameTemplate")
     if not ok then scroll = CreateFrame("ScrollFrame", nil, page, "UIPanelScrollFrameTemplate") end
     scroll:SetPoint("TOPLEFT", page, "TOPLEFT", textX, -6)
-    scroll:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", -40, 24)
+    scroll:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", -40, 24 + bottomRoom)
+    if ns.OptionsZoomOnShiftWheel then ns.OptionsZoomOnShiftWheel(scroll) end
 
     local content = CreateFrame("Frame", nil, scroll)
     content:SetSize(textW, 10)
@@ -2671,6 +2679,50 @@ local function AboutText()
     return table.concat(lines, "\n")
 end
 
+-- Links of the About tab (1.3): the game opens no browser, so a button per link puts
+-- it, selected, in one copy box of the page (inside the window: never behind it)
+local ABOUT_LINKS = {
+    { "GitHub", SOURCE_URL },
+    { "ABOUT_LINK_ISSUES", SOURCE_URL .. "/issues" },
+    { "CurseForge", "https://www.curseforge.com/wow/addons/tessera" },
+    { "Wago", "https://addons.wago.io/addons/tessera" },
+    { "FlareUI", "https://www.curseforge.com/wow/addons/flareui" },
+}
+local function BuildAboutLinks(page)
+    local title = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    title:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 84)
+    title:SetText(L.ABOUT_LINKS)
+    local box = CreateFrame("EditBox", nil, page, "InputBoxTemplate")
+    box:SetSize(FULL_W - 150, 20)
+    box:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + 6, 22)
+    box:SetAutoFocus(false)
+    local hint = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    hint:SetPoint("LEFT", box, "RIGHT", 10, 0)
+    hint:SetText(L.ABOUT_COPY_HINT)
+    local current = ""
+    box:SetScript("OnTextChanged", function(self, userInput)
+        if userInput then -- a copy box: typing changes nothing
+            self:SetText(current)
+            self:HighlightText()
+        end
+    end)
+    box:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
+    box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+    box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+    local w = math.floor((FULL_W - 4 * 6) / #ABOUT_LINKS)
+    for i, link in ipairs(ABOUT_LINKS) do
+        local name = L[link[1]] or link[1]
+        local b = CreateButton(page, name, function()
+            current = link[2]
+            box:SetText(current)
+            box:SetFocus()
+            box:HighlightText()
+        end, nil, w, L.TIP_ABOUT_COPY)
+        b:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + (i - 1) * (w + 6), 52)
+    end
+    AttachTip(box, L.ABOUT_LINKS, L.TIP_ABOUT_COPY)
+end
+
 local function BuildAboutPage(page)
     local sections -- built once: the version and language do not change in a session
     aboutContent = BuildTopicPage(page, function()
@@ -2679,7 +2731,8 @@ local function BuildAboutPage(page)
             { title = L.CHANGELOG_TITLE, body = ChangelogText(), raw = true },
         }
         return "about", sections
-    end)
+    end, 84)
+    BuildAboutLinks(page)
     -- the tab always opens on "About" (the "what's new" popup then asks for the changelog)
     page:HookScript("OnShow", function() aboutContent:ShowTopic(1) end)
 end
@@ -2767,7 +2820,325 @@ local function FitPanelToScreen()
     local w, h = UIParent:GetWidth(), UIParent:GetHeight()
     if not (w and h and w > 0 and h > 0) then return end
     local scale = math.min(1, (w - 2 * SIDE_ROOM) / PANEL_W, (h - 40) / PANEL_H)
-    panel:SetScale(math.max(0.6, scale))
+    -- the player's own size (Shift + mouse wheel on the window), on top
+    local zoom = ns.sv and ns.sv.optionsZoom or 1
+    panel:SetScale(math.max(0.5, math.max(0.6, scale) * zoom))
+end
+
+---------------------------------------------------------------------------
+-- Window frame (1.3): help panel on the right, fold to the top bar, search, size
+-- with Shift + mouse wheel. Every part is a child of the window, on its layer:
+-- nothing of it stays in front of another addon's window.
+---------------------------------------------------------------------------
+local TOPBAR_H = 64
+local ZOOM_MIN, ZOOM_MAX, ZOOM_STEP = 0.7, 1.3, 0.05
+
+-- Help panel: the setting under the mouse (its name and tooltip); at rest, the logo
+-- and two hints. Tooltips still show on hover.
+local function BuildHelpPanel()
+    local help = CreateFrame("Frame", nil, panel)
+    help:SetPoint("TOPLEFT", panel, "TOPLEFT", PANEL_W - HELP_W, PAGE_TOP)
+    help:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 16)
+    local line = help:CreateTexture(nil, "ARTWORK")
+    line:SetColorTexture(1, 0.82, 0, 0.25)
+    line:SetWidth(1)
+    line:SetPoint("TOPLEFT", -10, 0)
+    line:SetPoint("BOTTOMLEFT", -10, 0)
+    local textW = HELP_W - 32
+    local logo = help:CreateTexture(nil, "ARTWORK")
+    logo:SetSize(96, 96)
+    logo:SetPoint("TOP", help, "TOP", -8, -24)
+    logo:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
+    local title = help:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    title:SetWidth(textW)
+    title:SetJustifyH("LEFT")
+    if title.SetWordWrap then title:SetWordWrap(true) end
+    local body = help:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    body:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
+    body:SetWidth(textW)
+    body:SetJustifyH("LEFT")
+    if body.SetSpacing then body:SetSpacing(3) end
+    help.title, help.body = title, body
+    function ns:ShowOptionHelp(name, tip)
+        title:ClearAllPoints()
+        if name and tip then
+            logo:Hide()
+            title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -6)
+            title:SetText(name)
+            body:SetText(tip)
+        else
+            logo:Show()
+            title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -136)
+            title:SetText(L.OPTIONS_TITLE)
+            body:SetText(L.HELP_PANEL_REST .. "\n\n" .. L.HELP_PANEL_ZOOM)
+        end
+    end
+    ns:ShowOptionHelp()
+    panel.help = help
+end
+
+-- Folds the window to its top bar (to see what is behind it), or unfolds it. Not
+-- saved: the window always opens unfolded. The top edge stays where it is.
+local function SetFolded(on)
+    if (panel.folded and true or false) == (on and true or false) then return end
+    panel.folded = on and true or nil
+    local left, top = panel:GetLeft(), panel:GetTop()
+    panel:SetHeight(on and TOPBAR_H or PANEL_H)
+    if left and top then
+        panel:ClearAllPoints()
+        panel:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top)
+    end
+    panel.nav:SetShown(not on)
+    panel.help:SetShown(not on)
+    for i, p in ipairs(pages) do p:SetShown(not on and i == currentPage) end
+    if on and panel.results then panel.results:Hide() end
+    panel.fold:Refresh()
+    DockSideWindows()
+end
+ns.SetOptionsFolded = function(_, on) if panel then SetFolded(on) end end
+
+local function BuildFoldButton()
+    local b = CreateFrame("Button", nil, panel)
+    b:SetSize(28, 28)
+    b:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -40, -17)
+    b:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+    b.Refresh = function(self)
+        -- arrow up: fold; arrow down: unfold (a shape, the tooltip names it)
+        local name = panel.folded and "ScrollDown" or "ScrollUp"
+        self:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-" .. name .. "-Up")
+        self:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-" .. name .. "-Down")
+    end
+    b:SetScript("OnClick", function() SetFolded(not panel.folded) end)
+    b.Activate = function(self) self:Click() end
+    AttachTip(b, L.FOLD_WINDOW, L.TIP_FOLD_WINDOW)
+    b:Refresh()
+    panel.fold = b
+end
+
+-- Size of the window: Shift + mouse wheel anywhere on it, 70 % to 130 %, saved for
+-- the account (on top of the automatic fit to small screens)
+local function ApplyZoom()
+    FitPanelToScreen()
+end
+local function Zoom(delta)
+    local z = (ns.sv.optionsZoom or 1) + (delta > 0 and ZOOM_STEP or -ZOOM_STEP)
+    z = math.max(ZOOM_MIN, math.min(ZOOM_MAX, math.floor(z * 100 + 0.5) / 100))
+    ns.sv.optionsZoom = (math.abs(z - 1) > 0.001) and z or nil
+    ApplyZoom()
+    DockSideWindows()
+end
+-- a scroll area passes Shift + wheel on to the window, and scrolls otherwise
+local function ZoomOnShiftWheel(frame)
+    local scroll = frame:GetScript("OnMouseWheel")
+    frame:EnableMouseWheel(true)
+    frame:SetScript("OnMouseWheel", function(self, delta)
+        if IsShiftKeyDown() then Zoom(delta) elseif scroll then scroll(self, delta) end
+    end)
+end
+ns.OptionsZoomOnShiftWheel = ZoomOnShiftWheel
+
+---------------------------------------------------------------------------
+-- Search (1.3): finds a setting by its name, its tooltip, its section or an old
+-- name ("Show" finds "On screen"), without minding accents or capitals. A result
+-- opens its page (and the block it belongs to), scrolls to the row and makes it blink.
+---------------------------------------------------------------------------
+local SEARCH_MAX = 8
+-- old names of renamed settings (key: the label of today)
+local function OldNames(label)
+    if label == L.ENABLED then return L.SEARCH_OLD_ENABLED end
+end
+
+local function PlaceName(r)
+    local names = { [PAGE_BLOCKS] = L.TAB_BLOCK, [PAGE_LOOK] = L.TAB_LOOK, [PAGE_GENERAL] = L.TAB_GENERAL,
+        [PAGE_LAUNCHERS] = L.LAUNCHERS, [PAGE_BROKER] = L.TAB_BROKER, [PAGE_PROFILES] = L.PROFILES }
+    local where = names[r.page] or ""
+    if r.block then where = where .. " › " .. ns:GetBlockName(r.block)
+    elseif r.section then where = where .. " › " .. r.section end
+    return where
+end
+
+-- Results: settings first whose name matches, then the others; one per name and place
+function ns.SearchOptions(text)
+    local needle = ns.SortKey(strtrim(text or ""))
+    local found, seen = {}, {}
+    if #needle < 2 then return found end
+    for pass = 1, 2 do
+        for _, r in ipairs(ns.optionRows) do
+            local inName = ns.SortKey(r.label or ""):find(needle, 1, true)
+                or ns.SortKey(OldNames(r.label) or ""):find(needle, 1, true)
+            local inRest = ns.SortKey((r.tip or "") .. " " .. (r.section or "")):find(needle, 1, true)
+            local id = (r.label or "") .. "|" .. tostring(r.page) .. "|" .. tostring(r.sub) .. "|" .. tostring(r.block)
+            if not seen[id] and ((pass == 1 and inName) or (pass == 2 and inRest)) then
+                seen[id] = true
+                table.insert(found, r)
+            end
+        end
+    end
+    return found
+end
+
+-- the row lights up three times
+local function Blink(w)
+    local light = w.hover
+    if not light then return end
+    local n = 0
+    local function Step()
+        n = n + 1
+        light:SetAlpha(2.5)
+        light:SetShown(n % 2 == 1)
+        if n < 6 then C_Timer.After(0.25, Step) end
+    end
+    Step()
+end
+
+-- Opens the page of a setting, its block when it belongs to one, and shows it
+function ns.GoToOption(r, showPage)
+    if not r then return end
+    if r.block then
+        ns:OpenOptionsFor(r.block)
+    else
+        showPage(r.page)
+        if r.page == PAGE_BLOCKS and r.sub and ns.ShowBlockSub then ns.ShowBlockSub(r.sub) end
+        if r.page == PAGE_BROKER and r.sub and ns.ShowBrokerSub then ns.ShowBrokerSub(r.sub) end
+    end
+    if r.page == PAGE_BLOCKS and r.sub and ns.ShowBlockSub then ns.ShowBlockSub(r.sub) end
+    ns:RefreshOptions()
+    ns:ShowOptionHelp(r.label, r.tip)
+    -- positions are known on the next frame
+    C_Timer.After(0, function()
+        local content, w = r.content, r.frame
+        if content and content.scroll and w:IsShown() then
+            local top, rowTop = content:GetTop(), w:GetTop()
+            if top and rowTop then
+                local scroll = content.scroll
+                local range = scroll.GetVerticalScrollRange and scroll:GetVerticalScrollRange() or 0
+                scroll:SetVerticalScroll(math.max(0, math.min(range, top - rowTop - 20)))
+            end
+        end
+        if w:IsShown() then Blink(w) end
+    end)
+end
+
+local function BuildSearch(showPage)
+    local ok, box = pcall(CreateFrame, "EditBox", nil, panel, "SearchBoxTemplate")
+    if not ok then box = CreateFrame("EditBox", nil, panel, "InputBoxTemplate") end
+    box:SetSize(SEARCH_W, 20)
+    box:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -(76 + 170 + 12), -21)
+    box:SetAutoFocus(false)
+    if type(box.Instructions) == "table" then box.Instructions:SetText(L.SEARCH) end
+    AttachTip(box, L.SEARCH, L.TIP_SEARCH)
+    panel.search = box
+
+    -- result list under the box, over the page (a child of the window, raised)
+    local results = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+    results:SetPoint("TOPRIGHT", box, "BOTTOMRIGHT", 0, -4)
+    results:SetWidth(SEARCH_W + 160)
+    results:SetFrameLevel(panel:GetFrameLevel() + 30)
+    if results.SetBackdrop then
+        results:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
+        results:SetBackdropColor(0.05, 0.05, 0.05, 0.97)
+        results:SetBackdropBorderColor(1, 0.82, 0, 0.6)
+    end
+    results:Hide()
+    panel.results = results
+    local lines, list, chosen = {}, {}, 1
+    local empty = results:CreateFontString(nil, "OVERLAY", "GameFontDisable")
+    empty:SetPoint("TOPLEFT", 10, -8)
+    empty:SetText(L.SEARCH_NONE)
+
+    local function Open(index)
+        local r = list[index]
+        if not r then return end
+        results:Hide()
+        box:ClearFocus()
+        ns.GoToOption(r, showPage)
+    end
+    local function Mark()
+        for i, b in ipairs(lines) do
+            -- the chosen line: a bar on its left and a light (keyboard)
+            b.bar:SetShown(i == chosen)
+            b.light:SetShown(i == chosen)
+        end
+    end
+    for i = 1, SEARCH_MAX do
+        local b = CreateFrame("Button", nil, results)
+        b:SetHeight(34)
+        b:SetPoint("TOPLEFT", 4, -4 - (i - 1) * 36)
+        b:SetPoint("RIGHT", -4, 0)
+        b.light = b:CreateTexture(nil, "BACKGROUND")
+        b.light:SetAllPoints()
+        b.light:SetColorTexture(1, 1, 1, 0.12)
+        b.bar = b:CreateTexture(nil, "ARTWORK")
+        b.bar:SetPoint("TOPLEFT"); b.bar:SetPoint("BOTTOMLEFT")
+        b.bar:SetWidth(3)
+        b.bar:SetColorTexture(1, 0.82, 0, 1)
+        b:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+        b.name = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        b.name:SetPoint("TOPLEFT", 10, -3)
+        b.name:SetPoint("RIGHT", -6, 0)
+        b.name:SetJustifyH("LEFT")
+        if b.name.SetWordWrap then b.name:SetWordWrap(false) end
+        b.place = b:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+        b.place:SetPoint("TOPLEFT", b.name, "BOTTOMLEFT", 0, -2)
+        b.place:SetPoint("RIGHT", -6, 0)
+        b.place:SetJustifyH("LEFT")
+        if b.place.SetWordWrap then b.place:SetWordWrap(false) end
+        b:SetScript("OnClick", function() Open(i) end)
+        lines[i] = b
+    end
+
+    local function Update()
+        local text = box:GetText() or ""
+        if ns.SortKey(strtrim(text)) == "" or #ns.SortKey(strtrim(text)) < 2 then
+            results:Hide()
+            return
+        end
+        list = ns.SearchOptions(text)
+        chosen = 1
+        local shown = math.min(#list, SEARCH_MAX)
+        for i, b in ipairs(lines) do
+            local r = list[i]
+            b:SetShown(i <= shown)
+            if r then
+                b.name:SetText(r.label)
+                b.place:SetText(PlaceName(r))
+            end
+        end
+        empty:SetShown(shown == 0)
+        results:SetHeight(shown == 0 and 30 or (shown * 36 + 6))
+        results:Show()
+        Mark()
+    end
+    box:HookScript("OnTextChanged", function(_, userInput) if userInput then Update() end end)
+    box:HookScript("OnEnterPressed", function() Open(chosen) end)
+    box:HookScript("OnEscapePressed", function(self)
+        self:SetText("")
+        results:Hide()
+        self:ClearFocus()
+    end)
+    -- keyboard: up and down choose a result, Enter opens it
+    if box.SetAltArrowKeyMode then box:SetAltArrowKeyMode(false) end
+    box:HookScript("OnArrowPressed", function(_, key)
+        if not results:IsShown() then return end
+        local n = math.min(#list, SEARCH_MAX)
+        if n == 0 then return end
+        if key == "DOWN" then chosen = chosen % n + 1 elseif key == "UP" then chosen = (chosen - 2) % n + 1 end
+        Mark()
+    end)
+    box:HookScript("OnEditFocusLost", function()
+        -- a click on a result arrives after the focus is lost: hide a moment later
+        C_Timer.After(0.2, function() if not box:HasFocus() then results:Hide() end end)
+    end)
+end
+
+local function BuildWindowFrame(showPage)
+    BuildHelpPanel()
+    BuildFoldButton()
+    BuildSearch(showPage)
+    -- Shift + wheel over the window: its size
+    ZoomOnShiftWheel(panel)
+    -- always opens unfolded
+    panel:HookScript("OnShow", function() SetFolded(false) end)
 end
 
 -- Creates the main options window, its tabs and pages (called once, lazily)
@@ -2802,13 +3173,19 @@ local function BuildPanel()
         ns:CleanMemorySoon() -- the memory the window used is freed once it is closed
     end)
 
+    -- top bar (1.3): logo, title, the page's sentence, search, lock, fold, close
+    local logo = panel:CreateTexture(nil, "ARTWORK")
+    logo:SetSize(32, 32)
+    logo:SetPoint("TOPLEFT", 18, -16)
+    logo:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
+    panel.logo = logo
     panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    panel.title:SetPoint("TOPLEFT", 24, -24)
+    panel.title:SetPoint("LEFT", logo, "RIGHT", 8, 0)
     panel.title:SetText(L.OPTIONS_TITLE)
     -- one plain sentence on what the open page is for, next to the title
     panel.hint = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     panel.hint:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, -20)
-    panel.hint:SetPoint("RIGHT", panel, "RIGHT", -230, 0)
+    panel.hint:SetPoint("RIGHT", panel, "RIGHT", -(SEARCH_W + 170 + 76 + 16), 0)
     panel.hint:SetHeight(30)
     panel.hint:SetJustifyH("LEFT")
     panel.hint:SetJustifyV("MIDDLE")
@@ -2819,7 +3196,7 @@ local function BuildPanel()
 
     local lockButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     lockButton:SetSize(170, 22)
-    lockButton:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -46, -20)
+    lockButton:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -76, -20)
     lockButton:SetScript("OnClick", function() ns:SetLocked(not ns.db.locked) end)
     lockButton.Refresh = function(self)
         self:SetText(ns.db.locked and L.UNLOCK_BUTTON or L.LOCK_BUTTON)
@@ -2834,6 +3211,7 @@ local function BuildPanel()
         if index == PAGE_BROKER and not ns.modules[selected] then selected = DataModuleKeys()[1] or ALL end
         currentPage = index
         panel.hint:SetText(L["PAGE_HINT_" .. index] or "")
+        if ns.ShowOptionHelp then ns:ShowOptionHelp() end -- help panel back to rest
         for i, p in ipairs(pages) do
             p:SetShown(i == index)
             tabs[i]:SetSelected(i == index)
@@ -2886,7 +3264,7 @@ local function BuildPanel()
 
         local page = CreateFrame("Frame", nil, panel)
         page:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, PAGE_TOP)
-        page:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", 0, 0)
+        page:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -HELP_W, 0)
         page.pageIndex = i
         pages[i] = page
     end
@@ -2899,6 +3277,7 @@ local function BuildPanel()
     BuildProfilesPage(pages[PAGE_PROFILES])
     BuildHelpPage(pages[PAGE_HELP])
     BuildAboutPage(pages[PAGE_ABOUT])
+    BuildWindowFrame(ShowPage)
     ns.ShowOptionsPage = ShowPage
     ns:SkinOptions()
     ns:ApplyOptionsMode()

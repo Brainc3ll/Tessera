@@ -358,7 +358,7 @@ Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, 
 - Général : déplacement et grille, infobulles, combat, chat, mode streamer, bouton de la minicarte.
 - Accessibilité : contraste élevé, taille minimale du texte, couleurs des niveaux, moins d'animations, renvoi vers les réglages du jeu.
 - Placement : voir `docs/A-REPRENDRE.md` (décisions du 11/11).
-- Idée à valider : bandeau d'aide à droite de la fenêtre qui explique le réglage survolé (FlareUI : titre, description, conseil).
+- Bandeau d'aide à droite de la fenêtre qui explique le réglage survolé : fait (lot 3b, 11/11) ; recherche, réduire, logo, Maj + molette, liens à copier d'À propos : faits aussi.
 La maquette HTML a été dessinée dans la conversation du 11/11 ; elle n'est pas enregistrée dans le dépôt.
 
 ### Crédit et leçons de FlareUI (11/11)

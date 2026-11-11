@@ -185,7 +185,7 @@ Help tab inside the game explains everything.
   Parchment; Arcane), styles made of the game's own frames (Royal seal, Ironforge, Runeblade,
   Ember, Sylvan), The War Within and Midnight (Blizzard's frames of these expansions on the options
   window) and Tessera, in the addon's own colors.
-- Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; accessibility options
+- Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; an Accessibility tab (threshold colors, high contrast, fewer animations, minimum text size, bigger text in Tessera's windows)
   (bright or soft colors for values and class colors, or colorblind values; high contrast;
   minimum text size). Class color on the text, background, border, icon frame and lines.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
@@ -255,7 +255,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Demo.lua` | Demo mode: every block by category with sample values, style switcher (also mixed styles, one per column), the player's profile put aside and given back. |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
-| `Options.lua` | Options window: a list of pages on the left (Blocks — with sub-tabs This block, Display, Text, Frame, Behaviour —, Look, General, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About) and a hint per page; widgets (since 1.3 one row per setting, label on the left and control on the right, in one scrolling column; `ns.optionRows` lists every row with its page and section for the search, the help panel and the gamepad; a top bar with logo, search, fold button; a help panel on the right; Shift + mouse wheel for the window size; a copy box for the About links), placement banner, text window (export / import / bug report), welcome popup and quick tour, side windows kept beside the options (never over them), Blizzard Settings page. |
+| `Options.lua` | Options window: a list of pages on the left (Blocks — one scrolling page: the "On screen" switch and the block list at the top, the essentials and its own settings, then sections that fold (`CreateSection`): look of this block, when to show it, this block —, Look, General, Accessibility, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About) and a hint per page; widgets (since 1.3 one row per setting, label on the left and control on the right, in one scrolling column; `ns.optionRows` lists every row with its page and section for the search, the help panel and the gamepad; a top bar with logo, search, fold button; a help panel on the right; Shift + mouse wheel for the window size; a copy box for the About links; bigger text for Tessera's windows through copies of the game's font objects, `OptFont`, with the help panel under the page from 150 %), placement banner, text window (export / import / bug report), welcome popup and quick tour, side windows kept beside the options (never over them), Blizzard Settings page. |
 
 The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the release guide
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions

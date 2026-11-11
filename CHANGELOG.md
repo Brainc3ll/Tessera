@@ -12,11 +12,15 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### New
 
 - Icon size goes up to 200 pixels. The block grows with its icon.
+- Blocks tab: give a style to one block, to its group or to every block. Ctrl + Z undoes it.
+- New Accessibility tab: threshold colors, high contrast, minimum text size, and two new settings.
+- Fewer animations: blocks fade at once, and a block that wants your attention lights up without flashing.
+- Text of Tessera's windows at 150 or 200 %. From 150 %, the help goes under the page.
 
 ### Improvements
 
 - "Remove" replaces "Hide": a block you remove leaves its group, and the blocks around it close the gap.
-- A removed block keeps its settings. Check "On screen" (the old "Show") and it appears next to the options window.
+- A removed block keeps its settings. Turn on its "On screen" switch (the old "Show") and it appears next to the options window.
 - Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.
 - Texts exported from older versions still import.
 - The arrow of the Corpse block is 1.5 times bigger.
@@ -27,6 +31,9 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - A help panel on the right of the options window explains the setting under the mouse, in place of its tooltip.
 - The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %).
 - About tab: the links sit in boxes, ready to copy (the game opens no browser).
+- Blocks tab: one page in place of five sub-tabs. The "On screen" switch sits left of the block's name.
+- The essentials and the block's own settings come first; its look, when to show it, and its name and clicks fold into sections.
+- The block list shows the blocks on your screen first, then those available.
 
 ## 1.2.1 — 2026-11-10
 

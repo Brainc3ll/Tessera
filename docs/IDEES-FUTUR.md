@@ -358,6 +358,7 @@ Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, 
 - Général : déplacement et grille, infobulles, combat, chat, mode streamer, bouton de la minicarte.
 - Accessibilité : contraste élevé, taille minimale du texte, couleurs des niveaux, moins d'animations, renvoi vers les réglages du jeu.
 - Placement : voir `docs/A-REPRENDRE.md` (décisions du 11/11).
+- Fait au lot 4 (11/11, test96) : onglet Accessibilité, page Blocs en une page avec sections repliables, interrupteur « Sur l'écran », liste « Sur l'écran / Disponibles », style d'un bloc ou d'un groupe (action). Reste du lot 5 : X, Y, verrouiller, « Placer », échelle.
 - Bandeau d'aide à droite de la fenêtre qui explique le réglage survolé : fait (lot 3b, 11/11) ; recherche, réduire, logo, Maj + molette, liens à copier d'À propos : faits aussi.
 La maquette HTML a été dessinée dans la conversation du 11/11 ; elle n'est pas enregistrée dans le dépôt.
 

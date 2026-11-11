@@ -743,6 +743,21 @@ local function RestyleProfile(self, key, restyle)
     if restyle then self:ReanchorAll() end
 end
 
+-- Writes a theme into some blocks only (Blocks tab, "Apply this style to", 1.3): the
+-- profile's style (Look tab) and the window do not change. Undoable. Returns false if
+-- the style is not available.
+function ns:ApplyThemeToBlocks(keys, key)
+    if not byKey[key] or not byKey[key].available() then return false end
+    if self.PushUndo then self:PushUndo(true) end -- Undo brings the old looks back
+    for _, blockKey in ipairs(keys) do
+        local cfg = self.db.blocks[blockKey]
+        if cfg then self:ApplyThemeToCfg(cfg, key) end
+    end
+    self:ReanchorAll() -- drawn again, heads first (see RestyleProfile)
+    if self.UpdateAll then self:UpdateAll() end
+    return true
+end
+
 -- Switches the profile to a theme: clears style overrides from the group and launcher
 -- defaults, restyles every block and the options window. Returns false if unavailable.
 function ns:ApplyTheme(key)

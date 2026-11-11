@@ -3,10 +3,12 @@ Active profile
 Add a DataBroker block
 Add a launcher block
 Add a spacer
+All blocks
 All blocks behind
 All blocks in front
 Always shown in combat
 Apply this layout
+Apply this style to
 Back to the automatic choice
 Background
 Background color and opacity
@@ -20,6 +22,7 @@ Border color and opacity
 Border in class color
 Border size
 Bring blocks back on screen
+Bugs and ideas
 Coin icons
 Color by threshold
 Color of my status
@@ -30,6 +33,7 @@ Copy style to group
 Corner join (%)
 Count
 Currency shown
+CurseForge
 Custom name
 Date format
 Date shown
@@ -45,12 +49,15 @@ Experience shown
 Export the layout
 Export the style
 Export this profile
+Fewer animations
 Fit width to text
 Flash to alert
+Fold the window
 Font
 Font size
 Frame of all blocks...
 Freeze blocks in combat
+GitHub
 Goal type
 Gold format
 Grid
@@ -69,6 +76,7 @@ Icon size (0 = automatic)
 Import a profile
 Import...
 In front or behind
+Its group
 Joint between tiles
 Latency shown
 Layer
@@ -80,6 +88,7 @@ Line direction
 Line in class color
 Line thickness (pixels)
 Lines in class color
+Links
 Lock
 Lock blocks
 Memory shown
@@ -88,6 +97,7 @@ Minimum height
 Minimum text size
 Minimum width
 New profile
+On screen
 Only while holding Alt
 Opacity (%)
 Opacity when hidden (%)
@@ -114,6 +124,7 @@ Same profile for all characters
 Scale of all blocks (%)
 Scale of this group (%)
 Search
+Search a setting
 Share my blocks with DataBroker addons
 Share this block
 Shift + click
@@ -138,14 +149,17 @@ Spacer type
 Stat shown on the block
 Streamer mode
 Style of blocks and window
+Style to apply
 Switch to DataBroker mode
 Target (gold or level)
 Text alignment
 Text color
 Text in class color
+Text of Tessera's windows
 Text of all blocks...
 Text shadow
 Text to show
+This block
 Thousands separator
 Time shown
 Tooltip on hover
@@ -157,5 +171,6 @@ Unlock blocks
 Unlock with Edit Mode
 Use Tessera's own blocks
 Volume shown
+Wago
 Weapons
 Yellow threshold

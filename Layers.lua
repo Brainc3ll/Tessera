@@ -291,8 +291,9 @@ function ns:ShowEditModeLayerButton(show)
     emButton:SetText(self:LayerShown() == "behind" and L.LAYER_BEHIND_STATE or L.LAYER_FRONT_STATE)
     emButton:Show()
     if not emButton.seen then
-        emButton.glow:Show()
-        if emButton.pulse and not emButton.pulse:IsPlaying() then emButton.pulse:Play() end
+        emButton.glow:Show() -- "Fewer animations" (Accessibility tab): a still glow, no pulse
+        local still = self.sv and self.sv.reduceMotion
+        if emButton.pulse and not still and not emButton.pulse:IsPlaying() then emButton.pulse:Play() end
     end
 end
 

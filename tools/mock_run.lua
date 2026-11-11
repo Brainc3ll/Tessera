@@ -218,6 +218,13 @@ CreateFrame = function(kind, name, _, template)
     end
     return f
 end
+-- font objects (bigger text of Tessera's windows, Accessibility tab)
+CreateFont = function(name)
+    local o = NewObject("Font")
+    o.GetFont = function() return "Fonts\\FRIZQT__.TTF", 12, "" end
+    if name then _G[name] = o end
+    return o
+end
 C_Timer = { After = function(_, fn) table.insert(_G.__timers, fn) end, NewTicker = function(_, fn) table.insert(_G.__tickers, fn); return NewObject("Ticker") end }
 __timers, __tickers = {}, {}
 GetLocale = function() return arg[2] or "frFR" end
@@ -429,7 +436,7 @@ end
 -- open options, every page and sub-tab, select every block
 local ok, err = xpcall(function() ns:ToggleOptions() end, debug.traceback)
 if not ok then print("OPTIONS ERROR: " .. tostring(err)) end
-for i = 1, 8 do local ok2, err2 = xpcall(function() ns.ShowOptionsPage(i) end, debug.traceback) if not ok2 then print("PAGE ERROR " .. i .. ": " .. tostring(err2)) end end
+for i = 1, ns.OPTIONS_PAGE_COUNT do local ok2, err2 = xpcall(function() ns.ShowOptionsPage(i) end, debug.traceback) if not ok2 then print("PAGE ERROR " .. i .. ": " .. tostring(err2)) end end
 -- every options page must fit in the window (pages start 98 px below its top)
 -- (every page keeps the 40 px of the bottom buttons free: nothing may ever cover them)
 for slot, n in pairs(ns.optionStacks or {}) do
@@ -831,7 +838,7 @@ for _, step in ipairs({
         obj.OnClick(nil, "RightButton")
         ns:SetBrokerMode(true)
         assert(ns.brokerModeActive, "broker mode not on")
-        for i = 1, 8 do ns.ShowOptionsPage(i) end
+        for i = 1, ns.OPTIONS_PAGE_COUNT do ns.ShowOptionsPage(i) end
         ns:OpenOptionsFor("gold")
         ns:SetBrokerMode(false)
         assert(not ns.brokerModeActive, "broker mode not off")
@@ -2686,7 +2693,7 @@ do
     for _, key in ipairs(keys) do
         if key == "*all" or ns.db.blocks[key] then
             pcall(function() ns:OpenOptionsFor(key) end)
-            for sub = 1, 5 do
+            for sub = 1, 6 do -- (1.3: parts of one page; 2, 3, 4 and 6 open their section)
                 ns.ShowBlockSub(sub)
                 ns:RefreshOptions()
                 CheckRows(key .. ", sub-tab " .. sub)
@@ -2748,6 +2755,68 @@ do
     for _ = 1, 6 do wheel(TesseraOptions, 1) end
     if ns.sv.optionsZoom ~= nil then print("STEP ERROR: back to 100 % saves nothing") end
     IsShiftKeyDown = shift
+end
+-- Blocks tab (1.3, lot 4): the "On screen" switch, the list in two parts, the style of
+-- one block, sections that fold and open from the search; Accessibility tab
+do
+    local L = ns.L
+    ns:ResetProfile("top")
+    if not TesseraOptions:IsShown() then ns:ToggleOptions() end
+    local key
+    for _, k in ipairs(ns:GetBlockKeys()) do
+        if ns.db.blocks[k].enabled and not ns.IsSpacerKey(k) then key = k break end
+    end
+    ns:OpenOptionsFor(key)
+    -- the list: "On screen" first, then "Available"
+    local switch
+    for _, r in ipairs(ns.optionRows) do
+        if r.label == L.ENABLED and r.page == 1 then switch = r.frame end
+    end
+    if not switch then print("STEP ERROR: no \"On screen\" switch on the Blocks tab") end
+    switch:Activate()
+    if ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not take the block off the screen") end
+    switch:Activate()
+    if not ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not put the block back") end
+    -- style of one block: the others keep theirs, Ctrl + Z brings it back
+    local themes = ns:GetAvailableThemes()
+    local other
+    for _, k in ipairs(ns:GetBlockKeys()) do if k ~= key and not ns.IsSpacerKey(k) then other = k break end end
+    local before, otherBefore = ns.db.blocks[key].border, ns.db.blocks[other].border
+    local target
+    for _, t in ipairs(themes) do
+        local probe = {}
+        ns:ApplyThemeToCfg(probe, t.key)
+        if probe.border ~= before then target = t.key break end
+    end
+    if target then
+        ns:ApplyThemeToBlocks({ key }, target)
+        if ns.db.blocks[key].border == before then print("STEP ERROR: the style did not reach the block") end
+        if ns.db.blocks[other].border ~= otherBefore then print("STEP ERROR: the style of one block changed another one") end
+        ns:Undo()
+        if ns.db.blocks[key].border ~= before then print("STEP ERROR: Ctrl + Z does not bring the block's look back") end
+    end
+    -- sections: folded when the window is built; the search opens the right one
+    for _, sec in ipairs(ns.blockSections) do sec.folded = true end
+    ns:RefreshOptions()
+    local found = ns.SearchOptions(L.FADE_OUT)
+    local r = found[1]
+    if not (r and r.foldSection) then
+        print("STEP ERROR: a setting in a section does not know its section")
+    else
+        if r.frame.__shown then print("STEP ERROR: a folded section shows its rows") end
+        ns.GoToOption(r, ns.ShowOptionsPage)
+        if r.foldSection.folded or not r.frame.__shown then print("STEP ERROR: the search does not open the section") end
+    end
+    for _, fn in ipairs(__timers) do pcall(fn) end
+    -- Accessibility tab: its settings are found, fewer animations runs
+    local access = ns.SearchOptions(L.REDUCE_MOTION)
+    if not (access[1] and access[1].page == ns.OPTIONS_PAGE_COUNT) then print("STEP ERROR: \"Fewer animations\" not on the Accessibility tab") end
+    ns.sv.reduceMotion = true
+    local f = ns.frames[key]
+    local ok, err = pcall(function() ns:Flash(f); ns:UpdateFades() end)
+    if not ok then print("STEP ERROR: fewer animations: " .. tostring(err)) end
+    ns.sv.reduceMotion = nil
+    for _, fn in ipairs(__timers) do pcall(fn) end
 end
 -- Options that must never get lost (rule: a rework takes nothing away). Dump with
 -- MOCK_WRITE_OPTIONS=1 on a version known good; then every run (enUS only) checks that each

@@ -2182,8 +2182,20 @@ function ns:GetBarTextureFile(setting)
     return LSM and LSM:Fetch("statusbar", setting:sub(5), true) or nil
 end
 
--- Short flash (three pulses) to draw attention to a block
+-- Short flash (three pulses) to draw attention to a block; with "Fewer animations"
+-- (Accessibility tab) a still light for a moment instead
 function ns:Flash(f)
+    if self.sv and self.sv.reduceMotion then
+        if not f.stillFlash then
+            f.stillFlash = f:CreateTexture(nil, "OVERLAY")
+            f.stillFlash:SetAllPoints()
+            f.stillFlash:SetColorTexture(1, 1, 1, 0.3)
+            f.stillFlash:SetBlendMode("ADD")
+        end
+        f.stillFlash:Show()
+        C_Timer.After(1.5, function() f.stillFlash:Hide() end)
+        return
+    end
     if not f.flash then
         f.flash = f:CreateTexture(nil, "OVERLAY")
         f.flash:SetAllPoints()
@@ -2227,6 +2239,7 @@ local fader -- frame whose OnUpdate moves every block's alpha toward its target
 -- speed, every drawn frame, so it looks smooth; stops when every block is there
 local function StepFades(_, elapsed)
     local step, busy = math.min(1, (elapsed or 0) / FADE_TIME), false
+    if ns.sv and ns.sv.reduceMotion then step = 1 end -- "Fewer animations": at once
     for _, f in pairs(ns.frames) do
         local target, current = f.fadeTarget, f.fade or 1
         if target and math.abs(current - target) > 0.001 then

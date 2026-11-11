@@ -26,7 +26,8 @@ local L = ns.L
 -- Options window tabs:
 --   Blocks     selection (all blocks, all launchers or a single block) and its settings
 --   Look       style, how groups look, ready-made layouts, screen edges
---   General    moving, combat, chat, minimap, accessibility
+--   General    moving, tooltips, combat, chat, minimap
+--   Accessibility  colors of levels, high contrast, text sizes, fewer animations (1.3)
 --   Launchers  add and edit launcher blocks and DataBroker blocks
 --   Broker     share Tessera's blocks with DataBroker addons, DataBroker mode
 --   Profiles   profiles and reset
@@ -38,6 +39,13 @@ local panel
 local widgets = {}
 local PAGE_BLOCKS, PAGE_LOOK, PAGE_GENERAL, PAGE_LAUNCHERS, PAGE_BROKER, PAGE_PROFILES, PAGE_HELP, PAGE_ABOUT =
     1, 2, 3, 4, 5, 6, 7, 8
+-- (1.3) a page added later gets the next number (its texts, PAGE_HINT_<n>, keep theirs);
+-- NAV_ORDER is where each one sits in the list on the left
+local PAGE_ACCESS = 9
+local PAGE_COUNT = 9
+local NAV_ORDER = { PAGE_BLOCKS, PAGE_LOOK, PAGE_GENERAL, PAGE_ACCESS, PAGE_LAUNCHERS, PAGE_BROKER,
+    PAGE_PROFILES, PAGE_HELP, PAGE_ABOUT }
+ns.OPTIONS_PAGE_COUNT = PAGE_COUNT
 local HIDDEN_IN_BROKER_MODE = { [PAGE_BLOCKS] = true, [PAGE_LOOK] = true, [PAGE_GENERAL] = true,
     [PAGE_LAUNCHERS] = true, [PAGE_PROFILES] = true }
 local pages, tabs, currentPage = {}, {}, PAGE_BLOCKS
@@ -52,6 +60,39 @@ ns.OPTIONS_PAGE_TOP = PAGE_TOP
 local SEARCH_W = 200         -- search box, in the top bar
 local HELP_W = 260           -- help panel, on the right (1.3): explains the setting under the mouse
 local PANEL_W, PANEL_H = 720 + NAV_W + HELP_W, 780
+-- Bigger text (Accessibility tab, 1.3): the text of Tessera's windows at 100, 150 or 200 %,
+-- read when the window is built (a change asks for a reload). From 150 % the help panel
+-- moves under the page and the window loses its right part: the page keeps its width.
+local HELP_BELOW_H = 170     -- help panel under the page
+local textScale, helpBelow = 1, false
+local PAGE_RIGHT = HELP_W    -- room right of the page (help panel, or the margin)
+
+-- Text size of Tessera's windows, read once per session (ns.sv.optionsTextScale)
+local scaleRead = false
+local function TextScale()
+    if not scaleRead and ns.sv then
+        local v = tonumber(ns.sv.optionsTextScale)
+        textScale = (v == 1.5 or v == 2) and v or 1
+        scaleRead = true
+    end
+    return textScale
+end
+-- The game's font objects at the chosen size: a copy of each, made once ("GameFontNormal"
+-- stays the game's own; the window uses "TesseraOpt_GameFontNormal" when bigger)
+local function OptFont(name)
+    local scale = TextScale()
+    if scale == 1 or not CreateFont then return name end
+    local copyName = "TesseraOpt_" .. name
+    if not _G[copyName] then
+        local base = _G[name]
+        local font = CreateFont(copyName)
+        if not (font and base) then return name end
+        font:CopyFontObject(base)
+        local path, size, flags = font:GetFont()
+        if path and size then font:SetFont(path, math.floor(size * scale + 0.5), flags or "") end
+    end
+    return copyName
+end
 local COL_W = 300
 local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
@@ -400,7 +441,7 @@ end
 
 -- Small title label at the top-left of a widget holder
 local function AddTitle(holder, text)
-    local title = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    local title = holder:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalSmall"))
     title:SetPoint("TOPLEFT")
     title:SetText(text)
     return title
@@ -471,7 +512,7 @@ end
 
 -- Label on the left of a row; owner (default: the row) makes the font string
 local function RowLabel(row, text, owner)
-    local fs = (owner or row):CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    local fs = (owner or row):CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
     fs:SetPoint("LEFT", row, "LEFT", 0, 0)
     fs:SetWidth(ROW_LABEL_W)
     fs:SetJustifyH("LEFT")
@@ -498,7 +539,7 @@ end
 local function CreateHeader(parent, text)
     local holder = CreateFrame("Frame", nil, parent)
     holder:SetSize(FULL_W, 30) -- room above the text: sections stand apart
-    local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local fs = holder:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
     fs:SetPoint("BOTTOMLEFT", 0, 5)
     fs:SetText(text)
     local line = holder:CreateTexture(nil, "ARTWORK")
@@ -513,15 +554,16 @@ local function CreateHeader(parent, text)
 end
 
 -- Section that folds: a header with a + / - button (a shape, not only a color).
--- The rows placed under it, up to the next header of the same column, hide when it
--- is folded and the rows below move up (see NewLayout). Not saved: decided per page.
+-- The rows placed under it, up to the next section of the same column (plain headers
+-- inside it fold with it), hide when it is folded and the rows below move up (see
+-- NewLayout). Not saved: every section opens folded or not as its page decides.
 local function CreateSection(parent, text, folded)
     local b = CreateFrame("Button", nil, parent)
     b:SetSize(FULL_W, 30)
     local sign = b:CreateTexture(nil, "ARTWORK")
     sign:SetSize(16, 16)
     sign:SetPoint("BOTTOMLEFT", 0, 5)
-    local fs = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local fs = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
     fs:SetPoint("LEFT", sign, "RIGHT", 6, 0)
     fs:SetText(text)
     local line = b:CreateTexture(nil, "ARTWORK")
@@ -554,7 +596,7 @@ end
 -- Multi-line help text (default width: the whole page)
 local function CreateNote(parent, text, width)
     local holder = CreateFrame("Frame", nil, parent)
-    local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local fs = holder:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
     fs:SetPoint("TOPLEFT")
     fs:SetWidth(width or FULL_W)
     fs:SetJustifyH("LEFT")
@@ -596,6 +638,54 @@ local function CreateCheck(parent, label, getter, setter, isShown, tip)
 end
 
 -- Slider with stepper arrows (the game's own); values are rounded to integers
+-- Switch (1.3): "On screen" at the head of a block, left of its name. A title above,
+-- then a track with a knob that slides (left: off, right: on) and the word Yes / No:
+-- a shape and a word, not only a color. Click, Enter or the gamepad's confirm flips it.
+local SWITCH_W = 150
+local function CreateSwitch(parent, label, getter, setter, isShown, tip)
+    local b = CreateFrame("Button", nil, parent)
+    b:SetSize(SWITCH_W, 44)
+    local title = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalSmall"))
+    title:SetPoint("TOPLEFT")
+    title:SetWidth(SWITCH_W)
+    title:SetJustifyH("LEFT")
+    title:SetText(label)
+    local edge = b:CreateTexture(nil, "BACKGROUND")
+    edge:SetSize(48, 24)
+    edge:SetPoint("TOPLEFT", 0, -16)
+    local track = b:CreateTexture(nil, "BORDER")
+    track:SetPoint("TOPLEFT", edge, "TOPLEFT", 1, -1)
+    track:SetPoint("BOTTOMRIGHT", edge, "BOTTOMRIGHT", -1, 1)
+    local knob = b:CreateTexture(nil, "ARTWORK")
+    knob:SetSize(18, 18)
+    knob:SetColorTexture(0.95, 0.95, 0.95, 1)
+    local state = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
+    state:SetPoint("LEFT", edge, "RIGHT", 8, 0)
+    b.hover = b:CreateTexture(nil, "HIGHLIGHT")
+    b.hover:SetAllPoints(edge)
+    b.hover:SetColorTexture(1, 1, 1, 0.15)
+    b.Refresh = function(self)
+        local on = getter() and true or false
+        self.on = on
+        local strong = ns.sv and ns.sv.highContrast
+        -- high contrast: a light frame around the track
+        if strong then edge:SetColorTexture(1, 1, 1, 1) else edge:SetColorTexture(0, 0, 0, 0.9) end
+        if on then track:SetColorTexture(0.15, 0.55, 0.15, 1) else track:SetColorTexture(0.25, 0.25, 0.25, 1) end
+        knob:ClearAllPoints()
+        knob:SetPoint(on and "RIGHT" or "LEFT", edge, on and "RIGHT" or "LEFT", on and -3 or 3, 0)
+        state:SetText(on and YES or NO)
+    end
+    b.Activate = function(self)
+        setter(not self.on)
+        ns:RefreshOptions()
+    end
+    b:SetScript("OnClick", function(self) self:Activate() end)
+    AttachTip(b, label, tip)
+    b.layoutHeight = 48
+    b:Refresh()
+    return Register(AsSetting(b, label, tip, "check"), isShown)
+end
+
 local function CreateSlider(parent, label, minV, maxV, step, getter, setter, isShown, tip)
     local holder = NewRow(parent)
     RowLabel(holder, label)
@@ -932,20 +1022,21 @@ local function NewLayout(page, top)
     local y = { top0, top0 }
     local items = { {}, {} } -- placed widgets of each column and their virtual y
     local packed = {}        -- lowest virtual y of the option stacks of a column (BuildModuleOptions)
-    local folded = { 0, 0 }  -- height hidden by folded sections in each column
     local used = {}
     local section = {}       -- current section title of each column
+    local foldSection = {}   -- current section that folds, in each column
     local layout = {}
     local anchor = CreateFrame("Frame", nil, page)
     anchor:SetSize(1, 1)
 
     -- lowest virtual y of a column: its shown widgets (two can share a slot, the one
     -- shown counts) and its option stacks; nothing shown: its top
+    -- (real positions: a row's virtual y moved up by the sections folded above it)
     local function Low(col)
         local low = packed[col] or top0
         for _, it in ipairs(items[col]) do
             if not it.w.foldedAway and it.w:IsShown() then
-                low = math.min(low, it.vy - it.w.layoutHeight - SPACING)
+                low = math.min(low, it.vy + (it.shift or 0) - it.w.layoutHeight - SPACING)
             end
         end
         return low
@@ -954,10 +1045,10 @@ local function NewLayout(page, top)
     -- y of column 2's anchor; the lowest point of the page
     local function Settle()
         local ay = 0
-        if used[1] then ay = Low(1) + folded[1] - COLUMN_GAP - top0 end
+        if used[1] then ay = Low(1) - COLUMN_GAP - top0 end
         anchor:ClearAllPoints()
         anchor:SetPoint("TOPLEFT", page, "TOPLEFT", 0, ay)
-        local lowest = used[2] and (ay + Low(2) + folded[2]) or (Low(1) + folded[1])
+        local lowest = used[2] and (ay + Low(2)) or Low(1)
         if page.scroll then
             page:SetHeight(math.max(10, -lowest + 12))
         else
@@ -980,10 +1071,11 @@ local function NewLayout(page, top)
         col = col or 1
         layout.Point(w, col, y[col])
         if w.isHeader then section[col] = w.headerText end
+        if w.isSection then foldSection[col] = w end
         if w.optionLabel then
             table.insert(ns.optionRows, { frame = w, label = w.optionLabel, tip = w.optionTip,
                 kind = w.optionKind, page = page.pageIndex, sub = page.subIndex, section = section[col],
-                content = page, block = layout.currentBlock })
+                content = page, block = layout.currentBlock, foldSection = foldSection[col] })
         end
         if not layout.untracked then table.insert(items[col], { w = w, vy = y[col] }) end
         -- every placed widget, settings or not (tools/mock_run.lua: nothing overlaps)
@@ -1009,7 +1101,7 @@ local function NewLayout(page, top)
         end
         return h
     end
-    -- lowest virtual y of the shown widgets of a column's option stacks
+    -- lowest y (real: folded sections above counted) of the shown widgets of a column's option stacks
     function layout.SetPacked(col, low)
         packed[col] = low
         Settle()
@@ -1022,17 +1114,28 @@ local function NewLayout(page, top)
             foldedAbove[col] = {}
             for idx, it in ipairs(list) do
                 local w = it.w
-                if w.isHeader then
+                it.shift = shift
+                if w.isSection then
                     layout.Point(w, col, it.vy + shift)
                     current = nil
-                    if w.isSection and w.folded and w:IsShown() then
-                        local nextVy = Low(col)
+                    if w.folded and w:IsShown() then
+                        -- down to the next section, or to the lowest row that would show
+                        -- (rows folded by the last pass count: they are still there)
+                        local nextVy
                         for j = idx + 1, #list do
-                            if list[j].w.isHeader then nextVy = list[j].vy break end
+                            if list[j].w.isSection then nextVy = list[j].vy break end
                         end
+                        if not nextVy then
+                            nextVy = math.min(packed[col] or it.vy, it.vy - w.layoutHeight - SPACING)
+                            for j = idx + 1, #list do
+                                local o = list[j].w
+                                local would = o:IsShown() or (o.foldedAway and (not o.isShown or o.isShown()))
+                                if would then nextVy = math.min(nextVy, list[j].vy - o.layoutHeight - SPACING) end
+                            end
+                        end
+                        current = w
                         local hidden = (it.vy - w.layoutHeight - SPACING) - nextVy
                         if hidden > 0 then
-                            current = w
                             table.insert(foldedAbove[col], { vy = it.vy, h = hidden })
                             shift = shift + hidden
                         end
@@ -1048,7 +1151,6 @@ local function NewLayout(page, top)
                     layout.Point(w, col, it.vy + shift)
                 end
             end
-            folded[col] = shift
         end
         Settle()
     end
@@ -1097,9 +1199,9 @@ local function SelectionOptions()
             table.insert(list, { key = g.key, name = name })
         end
     end
-    table.insert(list, { isTitle = true, name = L.DATA_BLOCKS })
-    -- data blocks in alphabetical order of their (translated) name, whatever the
-    -- order they were registered in; then launchers and spacers, as GetBlockKeys sorts them
+    -- then every block in two parts (1.3): those on the screen (a green dot), then those
+    -- available (greyed). In each part: data blocks in alphabetical order of their
+    -- (translated) name, then launchers, DataBroker blocks and spacers, as GetBlockKeys sorts them
     local keys, data = {}, {}
     for _, key in ipairs(ns:GetBlockKeys()) do
         if ns.IsForwardingKey(key) or ns.IsSpacerKey(key) then
@@ -1110,29 +1212,25 @@ local function SelectionOptions()
     end
     table.sort(data, function(a, b) return SortKey(ns:GetBlockName(a)) < SortKey(ns:GetBlockName(b)) end)
     for i = #data, 1, -1 do table.insert(keys, 1, data[i]) end
-    local launchersTitle, brokersTitle, spacersTitle = false, false, false
-    for _, key in ipairs(keys) do
-        if ns.IsLauncherKey(key) and not launchersTitle then
-            launchersTitle = true
-            table.insert(list, { isTitle = true, name = L.LAUNCHERS })
+    for part = 1, 2 do
+        local on = part == 1
+        local titled = false
+        for _, key in ipairs(keys) do
+            local cfg = ns.db.blocks[key]
+            if (cfg and cfg.enabled and true or false) == on then
+                if not titled then
+                    titled = true
+                    table.insert(list, { isTitle = true, name = on and L.ENABLED or L.AVAILABLE_BLOCKS })
+                end
+                local name = ns:GetBlockName(key)
+                if on then
+                    name = "|TInterface\\COMMON\\Indicator-Green:14:14|t " .. name
+                else
+                    name = "|cff8c8c8c" .. name .. "|r"
+                end
+                table.insert(list, { key = key, name = name })
+            end
         end
-        if ns.IsBrokerKey(key) and not brokersTitle then
-            brokersTitle = true
-            table.insert(list, { isTitle = true, name = L.BROKERS })
-        end
-        if ns.IsSpacerKey(key) and not spacersTitle then
-            spacersTitle = true
-            table.insert(list, { isTitle = true, name = L.SPACERS })
-        end
-        -- shown blocks are easy to spot: a green dot; the others are greyed
-        local cfg = ns.db.blocks[key]
-        local name = ns:GetBlockName(key)
-        if cfg and cfg.enabled then
-            name = "|TInterface\\COMMON\\Indicator-Green:14:14|t " .. name
-        else
-            name = "|cff8c8c8c" .. name .. "|r"
-        end
-        table.insert(list, { key = key, name = name })
     end
     return list
 end
@@ -1263,14 +1361,72 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
             end
             low = math.min(low, y)
         end
-        P.SetPacked(col, low)
+        P.SetPacked(col, low + shift)
     end)
     return hasOptions
 end
 
-local blockSub = 5 -- open sub-tab: 5 This block (first), 1 Display, 2 Text, 3 Frame, 4 Behaviour
 
--- Builds the "Blocks" tab: selection dropdown, three sub-tabs and single-block actions
+-- "Apply this style to": this block, its group, every block (1.3, an action: the style
+-- is written into their settings, Ctrl + Z undoes it). For a group selection, "Its
+-- group" is that group; "All blocks" and "All launchers" only offer every block.
+local function CreateStyleTargets(parent, getStyle)
+    local row = NewRow(parent)
+    RowLabel(row, L.APPLY_STYLE_TO)
+    local w = math.floor((ROW_CONTROL_W - 10 - 2 * 6) / 3)
+    local function Keys(target)
+        if target == "all" then return ns:GetBlockKeys() end
+        if target == "group" then
+            local head = GroupHead()
+            return ns:GetStyleGroup(head or selected)
+        end
+        return { selected }
+    end
+    local function Apply(target)
+        if ns:ApplyThemeToBlocks(Keys(target), getStyle()) then
+            local note = ns:GetThemeNote(getStyle())
+            if note then ns.Print(note) end
+        end
+        ns:RefreshOptions()
+    end
+    local function Single() return not IsGroup() and ns.db.blocks[selected] ~= nil end
+    local buttons = {}
+    local specs = {
+        { "block", L.STYLE_TO_BLOCK, L.TIP_STYLE_TO_BLOCK, Single },
+        { "group", L.STYLE_TO_GROUP, L.TIP_STYLE_TO_GROUP, function()
+            if GroupHead() then return true end
+            return Single() and #ns:GetStyleGroup(selected) >= 2
+        end },
+        { "all", L.ALL_BLOCKS, L.TIP_STYLE_TO_ALL, function() return true end },
+    }
+    for i, spec in ipairs(specs) do
+        local b = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+        b:SetSize(w, 24)
+        b:SetPoint("LEFT", row, "LEFT", ROW_CONTROL_X + (i - 1) * (w + 6), 0)
+        b:SetText(spec[2])
+        FitButtonText(b)
+        b:SetScript("OnClick", function() Apply(spec[1]) end)
+        AttachTip(b, spec[2], spec[3])
+        b.enabledFor = spec[4]
+        buttons[i] = b
+    end
+    RowHover(row, buttons[1], buttons[2], buttons[3])
+    AttachTip(row, L.APPLY_STYLE_TO, L.TIP_APPLY_STYLE_TO)
+    row.Refresh = function()
+        for _, b in ipairs(buttons) do b:SetEnabled(b.enabledFor() and true or false) end
+    end
+    -- confirm: the first button that can be used (the gamepad will step through them)
+    row.Activate = function()
+        for _, b in ipairs(buttons) do
+            if b:IsEnabled() then b:Click() return end
+        end
+    end
+    FitRow(row, 30)
+    return Register(AsSetting(row, L.APPLY_STYLE_TO, L.TIP_APPLY_STYLE_TO, "button"))
+end
+
+-- Builds the "Blocks" tab: the head (switch, selection), one page that scrolls, with
+-- sections that fold, and the single-block actions at the bottom
 local function BuildBlockPage(page)
     local single = function() return not IsGroup() end
     local isLauncher = function() return ns.IsLauncherKey(selected) end
@@ -1293,334 +1449,305 @@ local function BuildBlockPage(page)
         return CreateColor(parent, label, hasAlpha, get, set, nil, tip)
     end
 
-    -- Block selection, full width
+    -- Head, above the part that scrolls: the "On screen" switch, left of the block's
+    -- name (the selection list), then "Replace with..."
     local top = NewLayout(page)
-    local ShowSub -- defined below (sub-tabs); a spacer's settings are in "This block"
     local REPLACE_W = 140
+    local getE, setE = Field("enabled")
+    local switch = top.Place(CreateSwitch(page, L.ENABLED, function() return getE() end, setE, nil, L.TIP_ENABLED), 1)
+    -- the list sits right of the switch, on the same line (not a row of the page)
     local selection = CreateDropdown(page, L.SELECTION, SelectionOptions,
         function() return selected end,
         function(v)
             selected = v
-            if ns.IsSpacerKey(v) and ShowSub then ShowSub(5) end
             ns:RefreshOptions()
-        end, nil, FULL_W - REPLACE_W, L.TIP_SELECTION)
-    top.Place(selection, 1)
+        end, nil, FULL_W - REPLACE_W - SWITCH_W - 10, L.TIP_SELECTION)
+    selection:SetPoint("TOPLEFT", switch, "TOPRIGHT", 10, 0)
     -- "Replace with...": another block takes the selected block's place
     local replace = CreateButton(page, L.REPLACE_BLOCK, function(self)
         if not (MenuUtil and MenuUtil.CreateContextMenu) then return end
         ns:OpenReplaceMenu(selected, self)
     end, function() return single() and ns.db.blocks[selected] ~= nil end, REPLACE_W - 8, L.TIP_REPLACE_BLOCK)
     replace:SetPoint("BOTTOMLEFT", selection, "BOTTOMRIGHT", 0, 1)
+    top.Gap(1, 6)
     top.Place(CreateNote(page, L.GROUP_HINT, FULL_W), 1)
 
-    -- Sub-tabs
-    local subY = top.Bottom(1) - 4
-    local subs, buttons, contents = {}, {}, {}
-    ShowSub = function(index)
-        blockSub = index
-        for i, sub in ipairs(subs) do
-            sub:SetShown(i == index)
-            buttons[i]:SetEnabled(i ~= index)
-        end
-    end
-    -- index = what the code refers to (saved in blockSub); order = where the button sits:
-    -- "This block" (5) comes first, everything the selected block has of its own
-    local subNames = { L.SUB_DISPLAY, L.SUB_TEXT, L.SUB_FRAME, L.SUB_BEHAVIOUR, L.SUB_THIS_BLOCK }
-    local SUB_ORDER = { 5, 1, 2, 3, 4 }
-    local subW = (FULL_W - 6 * (#subNames - 1)) / #subNames
-    for i, text in ipairs(subNames) do
-        local slot = 1
-        for n, index in ipairs(SUB_ORDER) do if index == i then slot = n end end
-        local b = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
-        b:SetSize(subW, 22)
-        b:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1] + (slot - 1) * (subW + 6), subY)
-        b:SetText(text)
-        b:SetScript("OnClick", function() ShowSub(i) end)
-        buttons[i] = b
-        local sub = CreateFrame("Frame", nil, page)
-        sub:SetPoint("TOPLEFT", page, "TOPLEFT", 0, subY - 36)
-        sub.layoutBase = subY - 36
-        sub:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", 0, 56)
-        sub.pageIndex, sub.subIndex = page.pageIndex, i
-        subs[i] = sub
-        contents[i] = ScrollArea(sub) -- the sub-tab scrolls (one column of rows)
-    end
-    local line = page:CreateTexture(nil, "ARTWORK")
-    line:SetColorTexture(1, 0.82, 0, 0.25)
-    line:SetHeight(1)
-    line:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1], subY - 28)
-    line:SetPoint("TOPRIGHT", page, "TOPLEFT", COL_X[1] + FULL_W, subY - 28)
+    -- One page that scrolls (1.3, in place of five sub-tabs): what matters first, then
+    -- the block's own settings; the rest in sections that fold (closed when the
+    -- window is built): its look, when to show it, this block (name, clicks, tooltip).
+    local bodyY = top.Bottom(1) - 4
+    local body = CreateFrame("Frame", nil, page)
+    body:SetPoint("TOPLEFT", page, "TOPLEFT", 0, bodyY)
+    body:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", 0, 56)
+    body.layoutBase = bodyY
+    body.pageIndex = page.pageIndex
+    local sub = ScrollArea(body)
+    local P = NewLayout(sub)
+    local notSpacer = function() return not ns.IsSpacerKey(selected) end
 
-    -- 1. Display: what is shown, and the size
-    do
-        local sub = contents[1]
-        local P = NewLayout(sub)
-        P.Place(CreateHeader(sub, L.SECTION_DISPLAY), 1)
-        local spacerNote = P.Place(CreateNote(sub, L.SPACER_SETTINGS_HINT), 1)
-        spacerNote.isShown = function() return ns.IsSpacerKey(selected) end
-        P.Place(Check(sub, L.ENABLED, "enabled", L.TIP_ENABLED), 1)
-        P.Place(Check(sub, L.SHOW_LABEL, "showLabel", L.TIP_SHOW_LABEL), 1)
-        P.Place(Check(sub, L.SHOW_VALUE, "showValue", L.TIP_SHOW_VALUE), 1)
-        P.Place(Check(sub, L.SHOW_ICON, "showIcon", L.TIP_SHOW_ICON), 1)
-        P.Place(Check(sub, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP), 1)
-        P.Place(Check(sub, L.COLORIZE, "colorize", L.TIP_COLORIZE), 1)
-        -- progress bar: only for blocks that have a progress (or a group selection)
-        local getP, setP = Field("progressBar")
-        P.Place(CreateCheck(sub, L.PROGRESS_BAR, getP, setP, function()
-            if IsGroup() then return true end
-            local mod = ns:GetModule(selected)
-            return mod and mod.progress ~= nil or false
-        end, L.TIP_PROGRESS_BAR), 1)
-        P.Gap(1, 6)
-        local getA, setA = Field("alpha")
-        P.Place(CreateSlider(sub, L.OPACITY, 10, 100, 5,
-            function() return math.floor((getA() or 1) * 100 + 0.5) end,
-            function(v) setA(v / 100) end, nil, L.TIP_OPACITY), 1)
-        P.Place(Dropdown(sub, L.STRATA, {
-            { key = "BACKGROUND", name = L.STRATA_BACKGROUND },
-            { key = "LOW", name = L.STRATA_LOW },
-            { key = "MEDIUM", name = L.STRATA_MEDIUM },
-            { key = "HIGH", name = L.STRATA_HIGH },
-        }, "strata", L.TIP_STRATA), 1)
+    -- Column 1: what matters, then the block's own settings (the option stacks: last)
+    P.Place(CreateHeader(sub, L.SECTION_ESSENTIAL), 1)
+    P.Place(Check(sub, L.SHOW_LABEL, "showLabel", L.TIP_SHOW_LABEL), 1)
+    P.Place(Check(sub, L.SHOW_VALUE, "showValue", L.TIP_SHOW_VALUE), 1)
+    P.Place(Check(sub, L.SHOW_ICON, "showIcon", L.TIP_SHOW_ICON), 1)
+    -- style of this block, its group or every block: an action (written into their
+    -- settings, Ctrl + Z undoes it); the window keeps the style of the Look tab
+    local pickStyle
+    local function StyleChoices()
+        local list = {}
+        for _, t in ipairs(ns:GetAvailableThemes()) do table.insert(list, { key = t.key, name = t.name }) end
+        return list
+    end
+    P.Place(CreateDropdown(sub, L.BLOCK_STYLE, StyleChoices,
+        function() return pickStyle or ns:GetTheme() end,
+        function(v) pickStyle = v end, nil, nil, L.TIP_BLOCK_STYLE), 1)
+    P.Place(CreateStyleTargets(sub, function() return pickStyle or ns:GetTheme() end), 1)
+    P.Place(CreateHeader(sub, L.SECTION_SIZE), 1)
+    P.Place(Check(sub, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP), 1)
+    local sizeNote = P.Place(CreateNote(sub, L.SIZE_GROUP_HINT), 1)
+    sizeNote.isShown = IsGroup
+    -- a group selection shows the note in place of the sliders (same slot)
+    P.Gap(1, -(sizeNote.layoutHeight + SPACING))
+    P.Place(Slider(sub, L.WIDTH, 16, 600, "width", L.TIP_WIDTH, single), 1)
+    P.Place(Slider(sub, L.HEIGHT, 10, 100, "height", L.TIP_HEIGHT, single), 1)
+    P.Place(Slider(sub, L.ICON_SIZE, 0, 200, "iconSize", L.TIP_ICON_SIZE), 1)
+    -- scale of the whole merged group the block belongs to (stored on its root)
+    P.Place(CreateSlider(sub, L.GROUP_SCALE, 50, 300, 5,
+        function()
+            local root = not IsGroup() and ns.db.blocks[ns:GetRoot(selected)]
+            return math.floor(((root and root.scale) or 1) * 100 + 0.5)
+        end,
+        function(v) if not IsGroup() then ns:SetGroupScale(selected, v / 100) end end,
+        single, L.TIP_GROUP_SCALE), 1)
 
-        P.Place(CreateHeader(sub, L.SECTION_SIZE), 2)
-        P.Place(Check(sub, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP), 2)
-        local sizeNote = P.Place(CreateNote(sub, L.SIZE_GROUP_HINT), 2)
-        sizeNote.isShown = IsGroup
-        -- a group selection shows the note in place of the sliders (same slot)
-        P.Gap(2, -(sizeNote.layoutHeight + SPACING))
-        P.Place(Slider(sub, L.WIDTH, 16, 600, "width", L.TIP_WIDTH, single), 2)
-        P.Place(Slider(sub, L.HEIGHT, 10, 100, "height", L.TIP_HEIGHT, single), 2)
-        -- scale of the whole merged group the block belongs to (stored on its root)
-        P.Place(CreateSlider(sub, L.GROUP_SCALE, 50, 300, 5,
-            function()
-                local root = not IsGroup() and ns.db.blocks[ns:GetRoot(selected)]
-                return math.floor(((root and root.scale) or 1) * 100 + 0.5)
-            end,
-            function(v) if not IsGroup() then ns:SetGroupScale(selected, v / 100) end end,
-            single, L.TIP_GROUP_SCALE), 2)
+    -- its own settings: what the value looks like (gold format, clock...), a spacer's
+    -- type, text and line. A group selection gets a note: they belong to one block.
+    P.Place(CreateHeader(sub, L.SECTION_OWN), 1)
+    local pick = P.Place(CreateNote(sub, L.THIS_BLOCK_PICK), 1)
+    pick.isShown = IsGroup
+    local none = P.Place(CreateNote(sub, L.NO_BLOCK_OPTIONS), 1)
+    P.Gap(1, -(pick.layoutHeight + none.layoutHeight + 2 * SPACING))
+    local keys = { "spacer" }
+    for _, key in ipairs(ns.order) do table.insert(keys, key) end
+    -- (one stack per column: two would draw over each other)
+    local hasOptions = BuildModuleOptions(sub, P, 1, keys, nil, function() return true end)
+    none.isShown = function()
+        local key = SelectedModuleKey()
+        return not IsGroup() and not (key and hasOptions[key])
     end
 
-    -- 2. Text
-    do
-        local sub = contents[2]
-        local P = NewLayout(sub)
-        P.Place(CreateHeader(sub, L.SECTION_TEXT), 1)
-        P.Place(Dropdown(sub, L.FONT, function() return ns:GetMediaList("font") end, "font", L.TIP_FONT), 1)
-        P.Place(Slider(sub, L.FONT_SIZE, 6, 32, "fontSize", L.TIP_FONT_SIZE), 1)
-        P.Place(Dropdown(sub, L.OUTLINE, {
-            { key = "NONE", name = L.OUTLINE_NONE },
-            { key = "OUTLINE", name = L.OUTLINE_THIN },
-            { key = "THICKOUTLINE", name = L.OUTLINE_THICK },
-        }, "outline", L.TIP_OUTLINE), 1)
-        P.Place(Check(sub, L.TEXT_SHADOW, "textShadow", L.TIP_TEXT_SHADOW), 1)
+    -- Column 2 (shown under column 1): the sections that fold
+    -- 1. The look of this block: display, text, background, icon, border, lines
+    local lookSection = P.Place(CreateSection(sub, L.SECTION_BLOCK_LOOK, true), 2)
+    P.Place(CreateHeader(sub, L.SECTION_DISPLAY), 2)
+    P.Place(Check(sub, L.COLORIZE, "colorize", L.TIP_COLORIZE), 2)
+    -- progress bar: only for blocks that have a progress (or a group selection)
+    local getP, setP = Field("progressBar")
+    P.Place(CreateCheck(sub, L.PROGRESS_BAR, getP, setP, function()
+        if IsGroup() then return true end
+        local mod = ns:GetModule(selected)
+        return mod and mod.progress ~= nil or false
+    end, L.TIP_PROGRESS_BAR), 2)
+    local getA, setA = Field("alpha")
+    P.Place(CreateSlider(sub, L.OPACITY, 10, 100, 5,
+        function() return math.floor((getA() or 1) * 100 + 0.5) end,
+        function(v) setA(v / 100) end, nil, L.TIP_OPACITY), 2)
+    P.Place(Dropdown(sub, L.STRATA, {
+        { key = "BACKGROUND", name = L.STRATA_BACKGROUND },
+        { key = "LOW", name = L.STRATA_LOW },
+        { key = "MEDIUM", name = L.STRATA_MEDIUM },
+        { key = "HIGH", name = L.STRATA_HIGH },
+    }, "strata", L.TIP_STRATA), 2)
 
-        P.Place(CreateHeader(sub, L.SECTION_LAYOUT_TEXT), 2)
-        P.Place(Dropdown(sub, L.JUSTIFY, {
-            { key = "LEFT", name = L.LEFT },
-            { key = "CENTER", name = L.CENTER },
-            { key = "RIGHT", name = L.RIGHT },
-        }, "justify", L.TIP_JUSTIFY), 2)
-        P.Place(Color(sub, L.TEXT_COLOR, false, "textColor", L.TIP_TEXT_COLOR), 2)
-        P.Place(Check(sub, L.CLASS_COLOR_TEXT, "classColorText", L.TIP_CLASS_COLOR_TEXT), 2)
+    P.Place(CreateHeader(sub, L.SECTION_TEXT), 2)
+    P.Place(Dropdown(sub, L.FONT, function() return ns:GetMediaList("font") end, "font", L.TIP_FONT), 2)
+    P.Place(Slider(sub, L.FONT_SIZE, 6, 32, "fontSize", L.TIP_FONT_SIZE), 2)
+    P.Place(Dropdown(sub, L.OUTLINE, {
+        { key = "NONE", name = L.OUTLINE_NONE },
+        { key = "OUTLINE", name = L.OUTLINE_THIN },
+        { key = "THICKOUTLINE", name = L.OUTLINE_THICK },
+    }, "outline", L.TIP_OUTLINE), 2)
+    P.Place(Check(sub, L.TEXT_SHADOW, "textShadow", L.TIP_TEXT_SHADOW), 2)
+    P.Place(Dropdown(sub, L.JUSTIFY, {
+        { key = "LEFT", name = L.LEFT },
+        { key = "CENTER", name = L.CENTER },
+        { key = "RIGHT", name = L.RIGHT },
+    }, "justify", L.TIP_JUSTIFY), 2)
+    P.Place(Color(sub, L.TEXT_COLOR, false, "textColor", L.TIP_TEXT_COLOR), 2)
+    P.Place(Check(sub, L.CLASS_COLOR_TEXT, "classColorText", L.TIP_CLASS_COLOR_TEXT), 2)
 
-    end
+    P.Place(CreateHeader(sub, L.BACKGROUND), 2)
+    P.Place(Dropdown(sub, L.BACKGROUND, function() return ns:GetMediaList("background") end, "bg", L.TIP_BACKGROUND), 2)
+    P.Place(Color(sub, L.BG_COLOR, true, "bgColor", L.TIP_BG_COLOR), 2)
+    P.Place(Check(sub, L.CLASS_COLOR_BG, "classColorBg", L.TIP_CLASS_COLOR_BG), 2)
 
-    -- 3. Frame: background on the left, border on the right
-    do
-        local sub = contents[3]
-        local P = NewLayout(sub)
-        P.Place(CreateHeader(sub, L.BACKGROUND), 1)
-        P.Place(Dropdown(sub, L.BACKGROUND, function() return ns:GetMediaList("background") end, "bg", L.TIP_BACKGROUND), 1)
-        P.Place(Color(sub, L.BG_COLOR, true, "bgColor", L.TIP_BG_COLOR), 1)
-        P.Place(Check(sub, L.CLASS_COLOR_BG, "classColorBg", L.TIP_CLASS_COLOR_BG), 1)
+    -- the icon: same frame and colors for every block (e.g. with "All blocks"); its size is above
+    P.Place(CreateHeader(sub, L.SECTION_ICON), 2)
+    P.Place(Dropdown(sub, L.ICON_SHAPE, {
+        { key = "none", name = L.ICON_SHAPE_NONE },
+        { key = "square", name = L.ICON_SHAPE_SQUARE },
+        { key = "round", name = L.ICON_SHAPE_ROUND },
+    }, "iconShape", L.TIP_ICON_SHAPE), 2)
+    P.Place(Color(sub, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR), 2)
+    P.Place(Check(sub, L.CLASS_COLOR_ICON, "classColorIcon", L.TIP_CLASS_COLOR_ICON), 2)
+    P.Place(Check(sub, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), 2)
 
-        -- the icon: same size, frame and colors for every block (e.g. with "All blocks")
-        P.Gap(1, 8)
-        P.Place(CreateHeader(sub, L.SECTION_ICON), 1)
-        P.Place(Slider(sub, L.ICON_SIZE, 0, 200, "iconSize", L.TIP_ICON_SIZE), 1)
-        P.Place(Dropdown(sub, L.ICON_SHAPE, {
-            { key = "none", name = L.ICON_SHAPE_NONE },
-            { key = "square", name = L.ICON_SHAPE_SQUARE },
-            { key = "round", name = L.ICON_SHAPE_ROUND },
-        }, "iconShape", L.TIP_ICON_SHAPE), 1)
-        P.Place(Color(sub, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR), 1)
-        P.Place(Check(sub, L.CLASS_COLOR_ICON, "classColorIcon", L.TIP_CLASS_COLOR_ICON), 1)
-        P.Place(Check(sub, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), 1)
-
-        P.Place(CreateHeader(sub, L.BORDER), 2)
-        -- picking a border also restores its original thickness
-        P.Place(CreateDropdown(sub, L.BORDER, function() return ns:GetMediaList("border") end,
-            function()
-                local cfg = Cfg()
-                return cfg and cfg.border
-            end,
-            function(v)
-                SetField("border", v)
-                local media = ns:FindMedia("border", v)
-                local size = media and media.size
-                if size then SetField("borderSize", size) end
-                ns:RefreshOptions()
-            end, nil, nil, L.TIP_BORDER), 2)
-        P.Place(Slider(sub, L.BORDER_SIZE, 1, 32, "borderSize", L.TIP_BORDER_SIZE), 2)
-
-        -- Corner join: belongs to the border (not the block), with a reset to the original value
-        local function CurrentBorder()
+    P.Place(CreateHeader(sub, L.BORDER), 2)
+    -- picking a border also restores its original thickness
+    P.Place(CreateDropdown(sub, L.BORDER, function() return ns:GetMediaList("border") end,
+        function()
             local cfg = Cfg()
             return cfg and cfg.border
-        end
-        local function HasCorners()
+        end,
+        function(v)
+            SetField("border", v)
+            local media = ns:FindMedia("border", v)
+            local size = media and media.size
+            if size then SetField("borderSize", size) end
+            ns:RefreshOptions()
+        end, nil, nil, L.TIP_BORDER), 2)
+    P.Place(Slider(sub, L.BORDER_SIZE, 1, 32, "borderSize", L.TIP_BORDER_SIZE), 2)
+
+    -- Corner join: belongs to the border (not the block), with a reset to the original value
+    local function CurrentBorder()
+        local cfg = Cfg()
+        return cfg and cfg.border
+    end
+    local function HasCorners()
+        local b = CurrentBorder()
+        return b and b ~= "none" and b ~= "solid"
+    end
+    local corner = CreateSlider(sub, L.CORNER_JOIN, 0, 100, 1,
+        function()
             local b = CurrentBorder()
-            return b and b ~= "none" and b ~= "solid"
-        end
-        local corner = CreateSlider(sub, L.CORNER_JOIN, 0, 100, 1,
-            function()
-                local b = CurrentBorder()
-                return b and math.floor(ns:GetBorderReach(b) * 100 + 0.5) or 0
-            end,
-            function(v)
-                local b = CurrentBorder()
-                if b then ns:SetBorderReach(b, v / 100) end
-            end, HasCorners, L.TIP_CORNER_JOIN)
-        local default = CreateFrame("Button", nil, corner, "UIPanelButtonTemplate")
-        default:SetSize(64, 18)
-        default:SetPoint("RIGHT", corner.slider, "LEFT", -8, 0) -- between the label and the slider
-        corner.label:SetWidth(ROW_LABEL_W - 80)
-        default:SetText(L.DEFAULT_SHORT)
-        default:SetScript("OnClick", function()
+            return b and math.floor(ns:GetBorderReach(b) * 100 + 0.5) or 0
+        end,
+        function(v)
             local b = CurrentBorder()
-            if b then
-                ns:SetBorderReach(b, nil)
-                ns:RefreshOptions()
+            if b then ns:SetBorderReach(b, v / 100) end
+        end, HasCorners, L.TIP_CORNER_JOIN)
+    local default = CreateFrame("Button", nil, corner, "UIPanelButtonTemplate")
+    default:SetSize(64, 18)
+    default:SetPoint("RIGHT", corner.slider, "LEFT", -8, 0) -- between the label and the slider
+    corner.label:SetWidth(ROW_LABEL_W - 80)
+    default:SetText(L.DEFAULT_SHORT)
+    default:SetScript("OnClick", function()
+        local b = CurrentBorder()
+        if b then
+            ns:SetBorderReach(b, nil)
+            ns:RefreshOptions()
+        end
+    end)
+    AttachTip(default, L.DEFAULT_SHORT, L.TIP_CORNER_DEFAULT)
+    local refreshCorner = corner.Refresh
+    corner.Refresh = function(self)
+        refreshCorner(self)
+        local b = CurrentBorder()
+        default:SetEnabled(b ~= nil and ns:HasCustomBorderReach(b))
+    end
+    P.Place(corner, 2)
+    P.Place(Color(sub, L.BORDER_COLOR, true, "borderColor", L.TIP_BORDER_COLOR), 2)
+    P.Place(Check(sub, L.CLASS_COLOR_BORDER, "classColorBorder", L.TIP_CLASS_COLOR_BORDER), 2)
+    -- thin lines between merged blocks
+    P.Place(CreateHeader(sub, L.SECTION_SEPARATORS), 2)
+    P.Place(Check(sub, L.SEPARATORS, "separators", L.TIP_SEPARATORS), 2)
+    P.Place(Color(sub, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), 2)
+    P.Place(Check(sub, L.CLASS_COLOR_SEPARATOR, "classColorSeparator", L.TIP_CLASS_COLOR_SEPARATOR), 2)
+
+    -- 2. When to show it: hidden in some places, hover fade
+    local whenSection = P.Place(CreateSection(sub, L.SECTION_WHEN, true), 2)
+    P.Place(Check(sub, L.HIDE_COMBAT, "hideInCombat", L.TIP_HIDE_COMBAT), 2)
+    P.Place(Check(sub, L.HIDE_INSTANCE, "hideInInstance", L.TIP_HIDE_INSTANCE), 2)
+    P.Place(Check(sub, L.HIDE_VEHICLE, "hideInVehicle", L.TIP_HIDE_VEHICLE), 2)
+    P.Place(Check(sub, L.HIDE_RESTING, "hideWhenResting", L.TIP_HIDE_RESTING), 2)
+    P.Place(CreateHeader(sub, L.SECTION_FADE), 2)
+    local getF, setF = Field("fadeOut")
+    P.Place(CreateCheck(sub, L.FADE_OUT, getF, function(v)
+        setF(v)
+        ns:RefreshOptions()
+    end, nil, L.TIP_FADE_OUT), 2)
+    local fading = function() local cfg = Cfg() return cfg and cfg.fadeOut or false end
+    local getFA, setFA = Field("fadeAlpha")
+    P.Place(CreateSlider(sub, L.FADE_ALPHA, 0, 90, 5,
+        function() return math.floor((getFA() or 0) * 100 + 0.5) end,
+        function(v) setFA(v / 100) end, fading, L.TIP_FADE_ALPHA), 2)
+    local getFC, setFC = Field("fadeShowCombat")
+    P.Place(CreateCheck(sub, L.FADE_COMBAT, getFC, setFC, fading, L.TIP_FADE_COMBAT), 2)
+
+    -- 3. This block: its name, its tooltip, its alert, its clicks and its pinned tooltip
+    local thisSection = P.Place(CreateSection(sub, L.SECTION_THIS_BLOCK, true), 2)
+    local named = function() return not IsGroup() and notSpacer() end
+    local getN = Field("customName")
+    P.Place(CreateEditBox(sub, L.CUSTOM_NAME, getN, function(v)
+        v = type(v) == "string" and strtrim(v) or ""
+        SetField("customName", v ~= "" and v or nil)
+    end, named, L.TIP_CUSTOM_NAME), 2)
+    P.Place(Check(sub, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP), 2)
+    P.Place(Dropdown(sub, L.TOOLTIP_ANCHOR, {
+        { key = "auto", name = L.TOOLTIP_AUTO },
+        { key = "top", name = L.TOOLTIP_TOP },
+        { key = "bottom", name = L.TOOLTIP_BOTTOM },
+    }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR), 2).isShown = notSpacer
+    P.Place(Check(sub, L.ALERT, "alert", L.TIP_ALERT), 2).isShown = notSpacer
+    local clicksHeader = P.Place(CreateHeader(sub, L.SECTION_CLICKS), 2)
+    local clickShown = function() return not ns.IsForwardingKey(selected) and notSpacer() end
+    local getS, setS = Field("shiftClick")
+    local getM, setM = Field("middleClick")
+    local function Actions(withOpen)
+        local list = {}
+        if withOpen then table.insert(list, { key = "open", name = L.ACTION_OPEN }) end
+        -- the block's own extra action (e.g. coordinates: place a map pin)
+        local mod = not IsGroup() and ns:GetModule(selected)
+        if mod and mod.extraAction then
+            table.insert(list, { key = mod.extraAction.key, name = L[mod.extraAction.label] })
+        end
+        for _, a in ipairs({ { "none", L.ACTION_NONE }, { "chat", L.ACTION_CHAT },
+                             { "options", L.ACTION_OPTIONS }, { "hide", L.ACTION_HIDE },
+                             { "pin", L.ACTION_PIN } }) do
+            table.insert(list, { key = a[1], name = a[2] })
+        end
+        return list
+    end
+    P.Place(CreateDropdown(sub, L.SHIFT_CLICK, function() return Actions(false) end, getS, setS,
+        clickShown, nil, L.TIP_SHIFT_CLICK), 2)
+    P.Place(CreateDropdown(sub, L.MIDDLE_CLICK, function() return Actions(true) end, getM, function(v)
+        setM(v)
+        ns:RequestOverlaySync() -- the secure button listens to middle clicks only for "open"
+    end, clickShown, nil, L.TIP_MIDDLE_CLICK), 2)
+    local pin = P.Place(CreateButton(sub, L.MENU_PIN, function()
+        ns:TogglePin(selected)
+        ns:RefreshOptions()
+    end, function() return named() and ns.CanPinTooltip and ns.CanPinTooltip(selected) or false end,
+        COL_W - 8, L.TIP_PIN_BUTTON), 2)
+    -- the header only when a click setting or the pin button is under it
+    -- (a DataBroker block keeps its own clicks)
+    clicksHeader.isShown = function() return clickShown() or pin.isShown() end
+    pin.Refresh = function(self)
+        self:SetText(ns.IsPinned and ns:IsPinned(selected) and L.MENU_UNPIN or L.MENU_PIN)
+    end
+
+    -- Opens a part of the page (the old sub-tabs, still used by other pages and the tour):
+    -- 1 and 5 the top (what matters, its own settings), 2 and 3 its look, 4 when to
+    -- show it, 6 this block. The section unfolds and the page scrolls to it.
+    local SUB_SECTION = { [2] = lookSection, [3] = lookSection, [4] = whenSection, [6] = thisSection }
+    local function ShowSub(index)
+        local section = SUB_SECTION[index]
+        if section then section.folded = false end
+        ns:RefreshOptions()
+        C_Timer.After(0, function()
+            local scroll = sub.scroll
+            if not (scroll and scroll.SetVerticalScroll) then return end
+            local y = 0
+            if section and section:IsShown() then
+                local top0, at = sub:GetTop(), section:GetTop()
+                if top0 and at then y = top0 - at end
             end
+            local range = scroll.GetVerticalScrollRange and scroll:GetVerticalScrollRange() or 0
+            scroll:SetVerticalScroll(math.max(0, math.min(range, y)))
         end)
-        AttachTip(default, L.DEFAULT_SHORT, L.TIP_CORNER_DEFAULT)
-        local refresh = corner.Refresh
-        corner.Refresh = function(self)
-            refresh(self)
-            local b = CurrentBorder()
-            default:SetEnabled(b ~= nil and ns:HasCustomBorderReach(b))
-        end
-        P.Place(corner, 2)
-        P.Place(Color(sub, L.BORDER_COLOR, true, "borderColor", L.TIP_BORDER_COLOR), 2)
-        P.Place(Check(sub, L.CLASS_COLOR_BORDER, "classColorBorder", L.TIP_CLASS_COLOR_BORDER), 2)
-        -- thin lines between merged blocks
-        P.Gap(2, 8)
-        P.Place(CreateHeader(sub, L.SECTION_SEPARATORS), 2)
-        P.Place(Check(sub, L.SEPARATORS, "separators", L.TIP_SEPARATORS), 2)
-        P.Place(Color(sub, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), 2)
-        P.Place(Check(sub, L.CLASS_COLOR_SEPARATOR, "classColorSeparator", L.TIP_CLASS_COLOR_SEPARATOR), 2)
     end
-
-    -- 4. Behaviour: settings specific to the selected block (left), visibility and
-    -- clicks (right)
-    do
-        local sub = contents[4]
-        local P = NewLayout(sub)
-        P.Place(CreateHeader(sub, L.SECTION_VISIBILITY), 1)
-        P.Place(Check(sub, L.HIDE_COMBAT, "hideInCombat", L.TIP_HIDE_COMBAT), 1)
-        P.Place(Check(sub, L.HIDE_INSTANCE, "hideInInstance", L.TIP_HIDE_INSTANCE), 1)
-        P.Place(Check(sub, L.HIDE_VEHICLE, "hideInVehicle", L.TIP_HIDE_VEHICLE), 1)
-        P.Place(Check(sub, L.HIDE_RESTING, "hideWhenResting", L.TIP_HIDE_RESTING), 1)
-        -- right column: hover fade, clicks, alerts, tooltip
-        P.Place(CreateHeader(sub, L.SECTION_FADE), 2)
-        local getF, setF = Field("fadeOut")
-        P.Place(CreateCheck(sub, L.FADE_OUT, getF, function(v)
-            setF(v)
-            ns:RefreshOptions()
-        end, nil, L.TIP_FADE_OUT), 2)
-        local fading = function() local cfg = Cfg() return cfg and cfg.fadeOut or false end
-        local getFA, setFA = Field("fadeAlpha")
-        P.Place(CreateSlider(sub, L.FADE_ALPHA, 0, 90, 5,
-            function() return math.floor((getFA() or 0) * 100 + 0.5) end,
-            function(v) setFA(v / 100) end, fading, L.TIP_FADE_ALPHA), 2)
-        local getFC, setFC = Field("fadeShowCombat")
-        P.Place(CreateCheck(sub, L.FADE_COMBAT, getFC, setFC, fading, L.TIP_FADE_COMBAT), 2)
-
-        P.Gap(2, 6)
-        local notSpacer = function() return not ns.IsSpacerKey(selected) end
-        P.Place(Check(sub, L.ALERT, "alert", L.TIP_ALERT), 2).isShown = notSpacer
-        P.Place(Dropdown(sub, L.TOOLTIP_ANCHOR, {
-            { key = "auto", name = L.TOOLTIP_AUTO },
-            { key = "top", name = L.TOOLTIP_TOP },
-            { key = "bottom", name = L.TOOLTIP_BOTTOM },
-        }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR), 2).isShown = notSpacer
-    end
-
-    -- 5. This block (first button): everything the selected block has of its own: what it
-    -- shows and its settings (left), its name, its clicks and its pinned tooltip (right).
-    -- A group selection ("All blocks") gets a note: these settings belong to one block.
-    do
-        local sub = contents[5]
-        local P = NewLayout(sub)
-        local notSpacer = function() return not ns.IsSpacerKey(selected) end
-        P.Place(CreateHeader(sub, L.SECTION_THIS_BLOCK), 1)
-        local pick = P.Place(CreateNote(sub, L.THIS_BLOCK_PICK), 1)
-        pick.isShown = IsGroup
-        local none = P.Place(CreateNote(sub, L.NO_BLOCK_OPTIONS), 1)
-        P.Gap(1, -(pick.layoutHeight + none.layoutHeight + 2 * SPACING))
-        -- what the value looks like (gold format, clock...), then the block's own settings
-        local keys = {}
-        for _, key in ipairs(ns.order) do table.insert(keys, key) end
-        -- (one stack per block: two builds in the same column would draw over each other)
-        local hasOptions = BuildModuleOptions(sub, P, 1, keys, nil, function() return true end)
-        none.isShown = function()
-            local key = SelectedModuleKey()
-            return not IsGroup() and not (key and (hasOptions[key] or key == "spacer"))
-        end
-        -- a spacer's settings (type, text, line): right column, in place of the clicks
-        BuildModuleOptions(sub, P, 2, { "spacer" })
-
-        -- right column: the name, the clicks, the pinned tooltip
-        local named = function() return not IsGroup() and notSpacer() end
-        P.Place(CreateHeader(sub, L.CUSTOM_NAME), 2).isShown = named
-        local getN = Field("customName")
-        P.Place(CreateEditBox(sub, L.CUSTOM_NAME, getN, function(v)
-            v = type(v) == "string" and strtrim(v) or ""
-            SetField("customName", v ~= "" and v or nil)
-        end, named, L.TIP_CUSTOM_NAME), 2)
-        P.Gap(2, 6)
-        local clicksHeader = P.Place(CreateHeader(sub, L.SECTION_CLICKS), 2)
-        local clickShown = function() return not ns.IsForwardingKey(selected) and notSpacer() end
-        local getS, setS = Field("shiftClick")
-        local getM, setM = Field("middleClick")
-        local function Actions(withOpen)
-            local list = {}
-            if withOpen then table.insert(list, { key = "open", name = L.ACTION_OPEN }) end
-            -- the block's own extra action (e.g. coordinates: place a map pin)
-            local mod = not IsGroup() and ns:GetModule(selected)
-            if mod and mod.extraAction then
-                table.insert(list, { key = mod.extraAction.key, name = L[mod.extraAction.label] })
-            end
-            for _, a in ipairs({ { "none", L.ACTION_NONE }, { "chat", L.ACTION_CHAT },
-                                 { "options", L.ACTION_OPTIONS }, { "hide", L.ACTION_HIDE },
-                                 { "pin", L.ACTION_PIN } }) do
-                table.insert(list, { key = a[1], name = a[2] })
-            end
-            return list
-        end
-        P.Place(CreateDropdown(sub, L.SHIFT_CLICK, function() return Actions(false) end, getS, setS,
-            clickShown, nil, L.TIP_SHIFT_CLICK), 2)
-        P.Place(CreateDropdown(sub, L.MIDDLE_CLICK, function() return Actions(true) end, getM, function(v)
-            setM(v)
-            ns:RequestOverlaySync() -- the secure button listens to middle clicks only for "open"
-        end, clickShown, nil, L.TIP_MIDDLE_CLICK), 2)
-        P.Gap(2, 6)
-        local pin = P.Place(CreateButton(sub, L.MENU_PIN, function()
-            ns:TogglePin(selected)
-            ns:RefreshOptions()
-        end, function() return named() and ns.CanPinTooltip and ns.CanPinTooltip(selected) or false end,
-            COL_W - 8, L.TIP_PIN_BUTTON), 2)
-        -- the header only when a click setting or the pin button is under it
-        -- (a DataBroker block keeps its own clicks)
-        clicksHeader.isShown = function() return clickShown() or pin.isShown() end
-        pin.Refresh = function(self)
-            self:SetText(ns.IsPinned and ns:IsPinned(selected) and L.MENU_UNPIN or L.MENU_PIN)
-        end
-    end
-
-    ShowSub(blockSub)
     ns.ShowBlockSub = ShowSub
+    ns.blockSections = { lookSection, whenSection, thisSection }
 
     -- Single-block actions, at the bottom (four slots; "Copy to group" only for a
     -- block in a group, the fourth button takes its slot otherwise)
@@ -1663,7 +1790,7 @@ local function BuildBlockPage(page)
     local addSpacer = CreateButton(page, L.ADD_SPACER, function()
         selected = ns:AddSpacer()
         ns:PlaceNearOptions(selected)
-        ShowSub(5) -- the spacer's settings (type, text, line) are in "This block"
+        ShowSub(5) -- the spacer's settings (type, text, line): its own settings, at the top
         if ns.db.locked then ns:SetLocked(false) end
         ns:RefreshOptions()
     end, function() return not ns.IsForwardingKey(selected) and not isSpacer() end, bw, L.TIP_ADD_SPACER)
@@ -1752,10 +1879,22 @@ local function BuildGeneralPage(page)
     Place(CreateCheck(page, L.SHOW_MINIMAP_BUTTON,
         function() return not ns.sv.hideMinimapButton end,
         function(v) ns:SetMinimapButtonShown(v) end, nil, L.TIP_MINIMAP_BUTTON), 2)
+end
 
-    -- Accessibility (account-wide: they concern the player, not a layout)
-    P.Gap(2, 8)
-    Place(CreateHeader(page, L.SECTION_ACCESSIBILITY), 2)
+---------------------------------------------------------------------------
+-- "Accessibility" tab (1.3): what Tessera adds to the game's own accessibility settings
+-- (account-wide: they concern the player, not a layout). The game's settings are not
+-- redone here: a note points to them.
+---------------------------------------------------------------------------
+local TEXT_SCALES = { { key = "100", name = "100 %" }, { key = "150", name = "150 %" }, { key = "200", name = "200 %" } }
+local function BuildAccessPage(page)
+    page = ScrollArea(page, 16)
+    local P = NewLayout(page)
+    local function Place(w, col) return P.Place(w, col) end
+
+    Place(CreateNote(page, L.ACCESS_GAME_NOTE), 1)
+    -- colors and motion
+    Place(CreateHeader(page, L.SECTION_ACCESS_SEE), 1)
     -- threshold colors: automatic (soft with a FlareUI style), bright, soft, colorblind
     Place(CreateDropdown(page, L.LEVEL_PALETTE, {
             { key = "auto", name = L.LEVEL_PALETTE_AUTO },
@@ -1769,19 +1908,40 @@ local function BuildGeneralPage(page)
             ns:ApplyLevelPalette()
             ns:RefreshAllBlocks() -- the class colors of frames and lines too
             ns:UpdateAll()
-        end, nil, nil, L.TIP_LEVEL_PALETTE), 2)
+        end, nil, nil, L.TIP_LEVEL_PALETTE), 1)
     Place(CreateCheck(page, L.HIGH_CONTRAST,
         function() return ns.sv.highContrast end,
         function(v)
             ns.sv.highContrast = v or nil
             ns:RefreshAllBlocks()
-        end, nil, L.TIP_HIGH_CONTRAST), 2)
+        end, nil, L.TIP_HIGH_CONTRAST), 1)
+    -- no fade, no flash, no pulse: blocks and windows change at once
+    Place(CreateCheck(page, L.REDUCE_MOTION,
+        function() return ns.sv.reduceMotion end,
+        function(v)
+            ns.sv.reduceMotion = v or nil
+            if ns.UpdateFades then ns:UpdateFades() end
+        end, nil, L.TIP_REDUCE_MOTION), 1)
+
+    -- text sizes
+    Place(CreateHeader(page, L.SECTION_ACCESS_TEXT), 1)
     Place(CreateSlider(page, L.MIN_FONT_SIZE, 0, 24, 1,
         function() return ns.sv.minFontSize or 0 end,
         function(v)
             ns.sv.minFontSize = v > 0 and v or nil
             ns:RefreshAllBlocks()
-        end, nil, L.TIP_MIN_FONT_SIZE), 2)
+        end, nil, L.TIP_MIN_FONT_SIZE), 1)
+    Place(CreateDropdown(page, L.WINDOW_TEXT_SIZE, TEXT_SCALES,
+        function() return tostring(math.floor((ns.sv.optionsTextScale or 1) * 100 + 0.5)) end,
+        function(v)
+            local scale = (tonumber(v) or 100) / 100
+            ns.sv.optionsTextScale = scale ~= 1 and scale or nil
+            ns:RefreshOptions()
+        end, nil, nil, L.TIP_WINDOW_TEXT_SIZE), 1)
+    -- the new size is used once the interface is reloaded
+    local waiting = function() return (ns.sv.optionsTextScale or 1) ~= TextScale() end
+    Place(CreateNote(page, L.WINDOW_TEXT_RELOAD), 1).isShown = waiting
+    Place(CreateButton(page, L.RELOAD_SHORT, function() ReloadUI() end, waiting, nil, L.TIP_WINDOW_TEXT_RELOAD), 1)
 end
 
 ---------------------------------------------------------------------------
@@ -2488,7 +2648,7 @@ local function BuildTopicPage(page, getSections, bottomRoom)
     divider:SetPoint("BOTTOMLEFT", topicList, "BOTTOMRIGHT", 6, 0)
 
     local textX = COL_X[1] - 12 + TOPIC_W + 18
-    local textW = PANEL_W - NAV_W - HELP_W - textX - 48
+    local textW = PANEL_W - NAV_W - PAGE_RIGHT - textX - 48
     local ok, scroll = pcall(CreateFrame, "ScrollFrame", nil, page, "ScrollFrameTemplate")
     if not ok then scroll = CreateFrame("ScrollFrame", nil, page, "UIPanelScrollFrameTemplate") end
     scroll:SetPoint("TOPLEFT", page, "TOPLEFT", textX, -6)
@@ -2499,12 +2659,12 @@ local function BuildTopicPage(page, getSections, bottomRoom)
     content:SetSize(textW, 10)
     scroll:SetScrollChild(content)
 
-    local title = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    local title = content:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalLarge"))
     title:SetPoint("TOPLEFT")
     title:SetWidth(textW)
     title:SetJustifyH("LEFT")
 
-    local text = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    local text = content:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
     text:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
     text:SetWidth(textW)
     text:SetJustifyH("LEFT")
@@ -2542,7 +2702,7 @@ local function BuildTopicPage(page, getSections, bottomRoom)
         b.mark:SetColorTexture(1, 0.82, 0, 0.9)
         b.mark:SetSize(3, TOPIC_H - 6)
         b.mark:SetPoint("LEFT", b, "LEFT", 0, 0)
-        b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        b.label = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
         b.label:SetPoint("LEFT", b, "LEFT", 10, 0)
         b.label:SetPoint("RIGHT", b, "RIGHT", -4, 0)
         b.label:SetJustifyH("LEFT")
@@ -2706,14 +2866,14 @@ local function CopyBox(parent, width, getText)
     return box
 end
 local function BuildAboutLinks(page)
-    local title = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local title = page:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
     title:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 88)
     title:SetText(L.ABOUT_LINKS)
     -- Tessera's links: a button puts its link in the shared box
     local current = ""
     local box = CopyBox(page, FULL_W - 150, function() return current end)
     box:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + 6, 26)
-    local hint = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local hint = page:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
     hint:SetPoint("LEFT", box, "RIGHT", 10, 0)
     hint:SetText(L.ABOUT_COPY_HINT)
     local w = math.floor((FULL_W - 3 * 6) / #ABOUT_LINKS)
@@ -2844,23 +3004,34 @@ local ZOOM_MIN, ZOOM_MAX, ZOOM_STEP = 0.7, 1.3, 0.05
 -- and two hints. Tooltips still show on hover.
 local function BuildHelpPanel()
     local help = CreateFrame("Frame", nil, panel)
-    help:SetPoint("TOPLEFT", panel, "TOPLEFT", PANEL_W - HELP_W, PAGE_TOP)
-    help:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 16)
     local line = help:CreateTexture(nil, "ARTWORK")
     line:SetColorTexture(1, 0.82, 0, 0.25)
-    line:SetWidth(1)
-    line:SetPoint("TOPLEFT", -10, 0)
-    line:SetPoint("BOTTOMLEFT", -10, 0)
-    local textW = HELP_W - 32
+    local textW
+    if helpBelow then
+        -- bigger text: under the page, as wide as it, a line above it
+        help:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W + COL_X[1], -(PANEL_H - HELP_BELOW_H) - 8)
+        help:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 16)
+        line:SetHeight(1)
+        line:SetPoint("TOPLEFT", 0, 6)
+        line:SetPoint("TOPRIGHT", 0, 6)
+        textW = PANEL_W - NAV_W - COL_X[1] - 40
+    else
+        help:SetPoint("TOPLEFT", panel, "TOPLEFT", PANEL_W - HELP_W, PAGE_TOP)
+        help:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 16)
+        line:SetWidth(1)
+        line:SetPoint("TOPLEFT", -10, 0)
+        line:SetPoint("BOTTOMLEFT", -10, 0)
+        textW = HELP_W - 32
+    end
     local logo = help:CreateTexture(nil, "ARTWORK")
     logo:SetSize(96, 96)
     logo:SetPoint("TOP", help, "TOP", -8, -24)
     logo:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
-    local title = help:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    local title = help:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalLarge"))
     title:SetWidth(textW)
     title:SetJustifyH("LEFT")
     if title.SetWordWrap then title:SetWordWrap(true) end
-    local body = help:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    local body = help:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
     body:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
     body:SetWidth(textW)
     body:SetJustifyH("LEFT")
@@ -2880,6 +3051,12 @@ local function BuildHelpPanel()
             title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -6)
             title:SetText(name)
             body:SetText(tip)
+        elseif helpBelow then
+            -- no room for the logo under the page
+            logo:Hide()
+            title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -6)
+            title:SetText(L.OPTIONS_TITLE)
+            body:SetText(L.HELP_PANEL_REST .. "\n\n" .. L.HELP_PANEL_ZOOM)
         else
             logo:Show()
             title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -136)
@@ -2965,7 +3142,8 @@ end
 
 local function PlaceName(r)
     local names = { [PAGE_BLOCKS] = L.TAB_BLOCK, [PAGE_LOOK] = L.TAB_LOOK, [PAGE_GENERAL] = L.TAB_GENERAL,
-        [PAGE_LAUNCHERS] = L.LAUNCHERS, [PAGE_BROKER] = L.TAB_BROKER, [PAGE_PROFILES] = L.PROFILES }
+        [PAGE_LAUNCHERS] = L.LAUNCHERS, [PAGE_BROKER] = L.TAB_BROKER, [PAGE_PROFILES] = L.PROFILES,
+        [PAGE_ACCESS] = L.SECTION_ACCESSIBILITY }
     local where = names[r.page] or ""
     if r.block then where = where .. " › " .. ns:GetBlockName(r.block)
     elseif r.section then where = where .. " › " .. r.section end
@@ -2992,10 +3170,16 @@ function ns.SearchOptions(text)
     return found
 end
 
--- the row lights up three times
+-- the row lights up three times ("Fewer animations": it stays lit for a moment)
 local function Blink(w)
     local light = w.hover
     if not light then return end
+    if ns.sv and ns.sv.reduceMotion then
+        light:SetAlpha(2.5)
+        light:Show()
+        C_Timer.After(1.5, function() light:Hide() end)
+        return
+    end
     local n = 0
     local function Step()
         n = n + 1
@@ -3013,10 +3197,10 @@ function ns.GoToOption(r, showPage)
         ns:OpenOptionsFor(r.block)
     else
         showPage(r.page)
-        if r.page == PAGE_BLOCKS and r.sub and ns.ShowBlockSub then ns.ShowBlockSub(r.sub) end
         if r.page == PAGE_BROKER and r.sub and ns.ShowBrokerSub then ns.ShowBrokerSub(r.sub) end
     end
-    if r.page == PAGE_BLOCKS and r.sub and ns.ShowBlockSub then ns.ShowBlockSub(r.sub) end
+    -- a setting in a folded section: the section opens
+    if r.foldSection and r.foldSection.folded then r.foldSection.folded = false end
     ns:RefreshOptions()
     ns:ShowOptionHelp(r.label, r.tip)
     -- positions are known on the next frame
@@ -3057,7 +3241,7 @@ local function BuildSearch(showPage)
     results:Hide()
     panel.results = results
     local lines, list, chosen = {}, {}, 1
-    local empty = results:CreateFontString(nil, "OVERLAY", "GameFontDisable")
+    local empty = results:CreateFontString(nil, "OVERLAY", OptFont("GameFontDisable"))
     empty:SetPoint("TOPLEFT", 10, -8)
     empty:SetText(L.SEARCH_NONE)
 
@@ -3088,12 +3272,12 @@ local function BuildSearch(showPage)
         b.bar:SetWidth(3)
         b.bar:SetColorTexture(1, 0.82, 0, 1)
         b:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
-        b.name = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        b.name = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
         b.name:SetPoint("TOPLEFT", 10, -3)
         b.name:SetPoint("RIGHT", -6, 0)
         b.name:SetJustifyH("LEFT")
         if b.name.SetWordWrap then b.name:SetWordWrap(false) end
-        b.place = b:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+        b.place = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontDisableSmall"))
         b.place:SetPoint("TOPLEFT", b.name, "BOTTOMLEFT", 0, -2)
         b.place:SetPoint("RIGHT", -6, 0)
         b.place:SetJustifyH("LEFT")
@@ -3159,6 +3343,12 @@ end
 -- Creates the main options window, its tabs and pages (called once, lazily)
 local function BuildPanel()
     ValidateSelection()
+    -- bigger text: the help panel goes under the page (read once: a change needs a reload)
+    if TextScale() >= 1.5 and not helpBelow then
+        helpBelow = true
+        PAGE_RIGHT = 16
+        PANEL_W = PANEL_W - HELP_W + PAGE_RIGHT
+    end
 
     panel = CreateFrame("Frame", "TesseraOptions", UIParent, "BackdropTemplate")
     panel:SetSize(PANEL_W, PANEL_H)
@@ -3194,11 +3384,11 @@ local function BuildPanel()
     logo:SetPoint("TOPLEFT", 18, -16)
     logo:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
     panel.logo = logo
-    panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    panel.title = panel:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalLarge"))
     panel.title:SetPoint("LEFT", logo, "RIGHT", 8, 0)
     panel.title:SetText(L.OPTIONS_TITLE)
     -- one plain sentence on what the open page is for, next to the title
-    panel.hint = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    panel.hint = panel:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
     panel.hint:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, -20)
     panel.hint:SetPoint("RIGHT", panel, "RIGHT", -(SEARCH_W + 170 + 76 + 16), 0)
     panel.hint:SetHeight(30)
@@ -3235,7 +3425,7 @@ local function BuildPanel()
     end
 
     local names = { L.TAB_BLOCK, L.TAB_LOOK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.PROFILES, L.TAB_HELP,
-        L.TAB_ABOUT }
+        L.TAB_ABOUT, L.SECTION_ACCESSIBILITY }
     -- the navigation list: a thin frame, one line per page, the open one marked by a gold
     -- bar and white text (also a shape, not only a color: the bar)
     local nav = CreateFrame("Frame", nil, panel, "BackdropTemplate")
@@ -3262,7 +3452,7 @@ local function BuildPanel()
         local hover = tab:CreateTexture(nil, "HIGHLIGHT") -- shown by the game while hovered
         hover:SetAllPoints()
         hover:SetColorTexture(1, 1, 1, 0.07)
-        tab.label = tab:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        tab.label = tab:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
         tab.label:SetPoint("LEFT", 12, 0)
         tab.label:SetPoint("RIGHT", -4, 0)
         tab.label:SetJustifyH("LEFT")
@@ -3279,7 +3469,7 @@ local function BuildPanel()
 
         local page = CreateFrame("Frame", nil, panel)
         page:SetPoint("TOPLEFT", panel, "TOPLEFT", NAV_W, PAGE_TOP)
-        page:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -HELP_W, 0)
+        page:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -PAGE_RIGHT, helpBelow and HELP_BELOW_H or 0)
         page.pageIndex = i
         pages[i] = page
     end
@@ -3287,6 +3477,7 @@ local function BuildPanel()
     BuildBlockPage(pages[PAGE_BLOCKS])
     BuildLookPage(pages[PAGE_LOOK])
     BuildGeneralPage(pages[PAGE_GENERAL])
+    BuildAccessPage(pages[PAGE_ACCESS])
     BuildLaunchersPage(pages[PAGE_LAUNCHERS], function() ShowPage(PAGE_BLOCKS) end)
     BuildBrokerPage(pages[PAGE_BROKER], function() ShowPage(PAGE_BLOCKS) end)
     BuildProfilesPage(pages[PAGE_PROFILES])
@@ -3305,9 +3496,9 @@ end
 function ns:ApplyOptionsMode()
     if not panel then return end
     local visible = {}
-    for i, tab in ipairs(tabs) do
+    for _, i in ipairs(NAV_ORDER) do
         local shown = not (ns.brokerModeActive and HIDDEN_IN_BROKER_MODE[i])
-        tab:SetShown(shown)
+        tabs[i]:SetShown(shown)
         if shown then table.insert(visible, i) end
     end
     -- one line per visible page; a small gap before Profiles and before Help (three groups:
@@ -3380,16 +3571,16 @@ local function RegisterBlizzardSettings()
 
     local canvas = CreateFrame("Frame")
 
-    local title = canvas:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+    local title = canvas:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalHuge"))
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText(L.OPTIONS_TITLE)
 
     local version = C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(ADDON, "Version")
-    local sub = canvas:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local sub = canvas:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
     sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
     sub:SetText(version and ("Version " .. version) or "")
 
-    local desc = canvas:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    local desc = canvas:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
     desc:SetPoint("TOPLEFT", sub, "BOTTOMLEFT", 0, -16)
     desc:SetWidth(560)
     desc:SetJustifyH("LEFT")
@@ -3492,7 +3683,7 @@ function ns:UpdatePlacementBanner()
             ns.sv.bannerPoint = { "CENTER", math.floor(x * k - cx + 0.5), math.floor(y * k - cy + 0.5) }
         end)
 
-        b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        b.text = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
         b.text:SetPoint("TOPLEFT", 14, -11)
         b.text:SetText(L.PLACEMENT_TITLE)
 
@@ -3503,7 +3694,7 @@ function ns:UpdatePlacementBanner()
         b.layer:SetScript("OnClick", function() ns:ToggleTempLayer() end)
         AttachTip(b.layer, L.LAYER_TOGGLE, L.TIP_LAYER_TOGGLE)
 
-        b.hint = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        b.hint = b:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
         b.hint:SetPoint("TOPLEFT", 14, -30)
         b.hint:SetWidth(372)
         b.hint:SetJustifyH("LEFT")
@@ -3586,11 +3777,11 @@ function ns:ShowPlacementInfo(lines, title)
         info:RegisterForDrag("LeftButton")
         info:SetScript("OnDragStart", function() b:StartMoving() end)
         info:SetScript("OnDragStop", function() b:GetScript("OnDragStop")(b) end)
-        info.title = info:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        info.title = info:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
         info.title:SetPoint("TOPLEFT", 14, -10)
         info.title:SetWidth(b:GetWidth() - 28)
         info.title:SetJustifyH("LEFT")
-        info.text = info:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        info.text = info:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
         info.text:SetWidth(b:GetWidth() - 28)
         info.text:SetJustifyH("LEFT")
         info.text:SetSpacing(3)
@@ -3799,9 +3990,9 @@ function ns:StartTutorial()
         tutorial:RegisterForDrag("LeftButton")
         tutorial:SetScript("OnDragStart", tutorial.StartMoving)
         tutorial:SetScript("OnDragStop", tutorial.StopMovingOrSizing)
-        tutorial.title = tutorial:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        tutorial.title = tutorial:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
         tutorial.title:SetPoint("TOPLEFT", 16, -14)
-        tutorial.text = tutorial:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        tutorial.text = tutorial:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
         tutorial.text:SetPoint("TOPLEFT", 16, -38)
         tutorial.text:SetWidth(348)
         tutorial.text:SetJustifyH("LEFT")
@@ -3838,10 +4029,10 @@ function ns:StartTutorial()
         nextLayout:SetSize(28, 22)
         nextLayout:ClearAllPoints()
         nextLayout:SetPoint("TOPRIGHT", row, "TOPRIGHT", 0, 0)
-        row.name = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        row.name = row:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
         row.name:SetPoint("LEFT", prev, "RIGHT", 6, 0)
         row.name:SetPoint("RIGHT", nextLayout, "LEFT", -6, 0)
-        row.desc = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        row.desc = row:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
         row.desc:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -8)
         row.desc:SetWidth(348)
         row.desc:SetJustifyH("LEFT")
@@ -3975,10 +4166,10 @@ local function BuildOffer()
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
     table.insert(UISpecialFrames, f:GetName()) -- Escape = keep the current style
 
-    f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    f.title = f:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormalLarge"))
     f.title:SetPoint("TOP", 0, -18)
     f.title:SetText("Tessera")
-    f.text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    f.text = f:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlight"))
     f.text:SetPoint("TOP", f.title, "BOTTOM", 0, -10)
     f.text:SetWidth(420)
     f.choices = {}
@@ -3986,7 +4177,7 @@ local function BuildOffer()
     f.preview:SetHeight(30)
     f.blocks = {}
     for i = 1, #PREVIEW_SAMPLES do f.blocks[i] = PreviewBlock(f.preview) end
-    f.note = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    f.note = f:CreateFontString(nil, "OVERLAY", OptFont("GameFontHighlightSmall"))
     f.note:SetWidth(420)
     f.note:SetText(L.STYLE_OFFER_NOTE)
 
@@ -4088,7 +4279,7 @@ function ns:ShowTextWindow(title, text, onAccept, acceptLabel)
         copyFrame:SetScript("OnDragStart", copyFrame.StartMoving)
         copyFrame:SetScript("OnDragStop", copyFrame.StopMovingOrSizing)
         table.insert(UISpecialFrames, "TesseraDebugCopy")
-        copyFrame.title = copyFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        copyFrame.title = copyFrame:CreateFontString(nil, "OVERLAY", OptFont("GameFontNormal"))
         copyFrame.title:SetPoint("TOPLEFT", 16, -14)
         local close = CreateFrame("Button", nil, copyFrame, "UIPanelCloseButton")
         close:SetPoint("TOPRIGHT", -4, -4)

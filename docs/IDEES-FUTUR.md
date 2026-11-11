@@ -348,3 +348,16 @@ Broker_Everything 5.0.0 est sous GPL v3 et Tessera sous MIT : on reprend seuleme
 - **Bloc-notes** : par personnage ou pour tout le compte. Demande une fenêtre de saisie.
 - **Réglage « nombre seul »** : afficher seulement le nombre, sans texte (« Shorter Broker »).
 - **Clic réglable** : actions de clic configurables par bloc (Tessera a déjà Maj + clic ; clic simple, droit et Ctrl à vérifier).
+
+## Fenêtre d'options 1.3 (maquette du 11/11, rien codé)
+Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, le rare est replié. Tous les réglages actuels restent (une refonte n'enlève rien) ; seule leur place change. Commandes sur le modèle des réglages du jeu (◄ valeur ►, curseurs à losange, cases jaunes), pilotables à la manette (D-pad, A, B, LT / RT pour les onglets). Texte × 2 et contraste élevé testés dès le dessin.
+- Barre du haut : titre, recherche d'un réglage, ▲ réduire, ✕ fermer.
+- Onglets : Blocs, Apparence, Général, Accessibilité (nouveau), Lanceurs, Broker, Profils, puis Aide et À propos.
+- Blocs : liste « Sur l'écran » puis « Disponibles ». En tête : interrupteur « Sur l'écran », nom, « Placer ». Essentiel : nom, valeur, icône, style (ce bloc, son groupe ou tous), largeur auto, hauteur, taille d'icône (jusqu'à 200). Position : X, Y, verrouiller. Sections repliables : Apparence de ce bloc, Quand l'afficher, Ce bloc (nom, clics, infobulle). Bas de page : copier sur le groupe ou sur tous, remplacer par, réinitialiser.
+- Apparence : style général, échelle (celui du jeu, pixel perfect, personnalisée), groupes, écart, aimantation, préréglages, plan avant ou arrière, export et import.
+- Général : déplacement et grille, infobulles, combat, chat, mode streamer, bouton de la minicarte.
+- Accessibilité : contraste élevé, taille minimale du texte, couleurs des niveaux, moins d'animations, renvoi vers les réglages du jeu.
+- Placement : voir `docs/A-REPRENDRE.md` (décisions du 11/11).
+- Idée à valider : bandeau d'aide à droite de la fenêtre qui explique le réglage survolé (FlareUI : titre, description, conseil).
+La maquette HTML a été dessinée dans la conversation du 11/11 ; elle n'est pas enregistrée dans le dépôt.
+

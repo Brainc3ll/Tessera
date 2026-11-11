@@ -70,4 +70,4 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
 - Inclusive texts: address the player directly and prefer gender-neutral French wording
   ("Bienvenue", not "Bienvenu(e)"); no "(e)" or middle dot, screen readers read them badly.
   A block that shows a class or race name uses the gendered name the game gives for that character.
-- Commit messages end with: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`
+- Commit messages end with the model actually used (rule of 11/11), for example `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`, plus a line `Model: Sonnet 5.5`. No `Claude-Session` line.

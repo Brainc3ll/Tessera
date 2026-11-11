@@ -388,7 +388,8 @@ local function AttachTip(frame, title, tip)
     end
     if not frame or not tip then return end
     frame:HookScript("OnEnter", function(self)
-        if ns.ShowOptionHelp then ns:ShowOptionHelp(title, tip) end -- help panel, on the right
+        -- in the options window the help panel on the right explains it: no tooltip too
+        if ns.ShowOptionHelp and ns:ShowOptionHelp(title, tip, self) then return end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText(title, 1, 1, 1)
         GameTooltip:AddLine(tip, nil, nil, nil, true)
@@ -2686,30 +2687,37 @@ local ABOUT_LINKS = {
     { "ABOUT_LINK_ISSUES", SOURCE_URL .. "/issues" },
     { "CurseForge", "https://www.curseforge.com/wow/addons/tessera" },
     { "Wago", "https://addons.wago.io/addons/tessera" },
-    { "FlareUI", "https://www.curseforge.com/wow/addons/flareui" },
 }
-local function BuildAboutLinks(page)
-    local title = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    title:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 84)
-    title:SetText(L.ABOUT_LINKS)
-    local box = CreateFrame("EditBox", nil, page, "InputBoxTemplate")
-    box:SetSize(FULL_W - 150, 20)
-    box:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + 6, 22)
+local FLAREUI_URL = "https://www.curseforge.com/wow/addons/flareui"
+
+-- A copy box: shows a link, selected on focus; typing changes nothing
+local function CopyBox(parent, width, getText)
+    local box = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
+    box:SetSize(width, 20)
     box:SetAutoFocus(false)
-    local hint = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    hint:SetPoint("LEFT", box, "RIGHT", 10, 0)
-    hint:SetText(L.ABOUT_COPY_HINT)
-    local current = ""
     box:SetScript("OnTextChanged", function(self, userInput)
-        if userInput then -- a copy box: typing changes nothing
-            self:SetText(current)
+        if userInput then
+            self:SetText(getText())
             self:HighlightText()
         end
     end)
     box:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
     box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
     box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
-    local w = math.floor((FULL_W - 4 * 6) / #ABOUT_LINKS)
+    return box
+end
+local function BuildAboutLinks(page)
+    local title = page:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    title:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 114)
+    title:SetText(L.ABOUT_LINKS)
+    -- Tessera's links: a button puts its link in the shared box
+    local current = ""
+    local box = CopyBox(page, FULL_W - 150, function() return current end)
+    box:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + 6, 52)
+    local hint = page:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    hint:SetPoint("LEFT", box, "RIGHT", 10, 0)
+    hint:SetText(L.ABOUT_COPY_HINT)
+    local w = math.floor((FULL_W - 3 * 6) / #ABOUT_LINKS)
     for i, link in ipairs(ABOUT_LINKS) do
         local name = L[link[1]] or link[1]
         local b = CreateButton(page, name, function()
@@ -2718,9 +2726,18 @@ local function BuildAboutLinks(page)
             box:SetFocus()
             box:HighlightText()
         end, nil, w, L.TIP_ABOUT_COPY)
-        b:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + (i - 1) * (w + 6), 52)
+        b:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] + (i - 1) * (w + 6), 80)
     end
     AttachTip(box, L.ABOUT_LINKS, L.TIP_ABOUT_COPY)
+    -- FlareUI (credit): its link always in its own box
+    local label = page:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    label:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1], 26)
+    label:SetText(L.ABOUT_LINK_FLAREUI)
+    local flare = CopyBox(page, FULL_W - 300, function() return FLAREUI_URL end)
+    flare:SetPoint("LEFT", label, "RIGHT", 12, 0)
+    flare:SetText(FLAREUI_URL)
+    flare:SetCursorPosition(0)
+    AttachTip(flare, L.ABOUT_LINK_FLAREUI, L.TIP_ABOUT_COPY_BOX)
 end
 
 local function BuildAboutPage(page)
@@ -2731,7 +2748,7 @@ local function BuildAboutPage(page)
             { title = L.CHANGELOG_TITLE, body = ChangelogText(), raw = true },
         }
         return "about", sections
-    end, 84)
+    end, 114)
     BuildAboutLinks(page)
     -- the tab always opens on "About" (the "what's new" popup then asks for the changelog)
     page:HookScript("OnShow", function() aboutContent:ShowTopic(1) end)
@@ -2859,7 +2876,14 @@ local function BuildHelpPanel()
     body:SetJustifyH("LEFT")
     if body.SetSpacing then body:SetSpacing(3) end
     help.title, help.body = title, body
-    function ns:ShowOptionHelp(name, tip)
+    -- true when the panel shows it (owner, if given, must be in the unfolded window)
+    function ns:ShowOptionHelp(name, tip, owner)
+        if owner then
+            if not help:IsVisible() then return false end
+            local f = owner
+            while f and f ~= panel do f = f.GetParent and f:GetParent() or nil end
+            if f ~= panel then return false end
+        end
         title:ClearAllPoints()
         if name and tip then
             logo:Hide()
@@ -2872,6 +2896,7 @@ local function BuildHelpPanel()
             title:SetText(L.OPTIONS_TITLE)
             body:SetText(L.HELP_PANEL_REST .. "\n\n" .. L.HELP_PANEL_ZOOM)
         end
+        return true
     end
     ns:ShowOptionHelp()
     panel.help = help

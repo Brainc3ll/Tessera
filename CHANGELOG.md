@@ -24,9 +24,9 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Lists with a few choices get arrows on each side, like the game's settings. Check boxes are the game's own: click anywhere on the row to tick one.
 - Pages taller than the window scroll with the mouse wheel.
 - Search a setting from the top of the options window: Enter or a click opens its page and makes it blink. Old names work too.
-- A help panel on the right of the options window explains the setting under the mouse.
+- A help panel on the right of the options window explains the setting under the mouse, in place of its tooltip.
 - The arrow next to the cross folds the options window to its top bar. Shift + mouse wheel changes its size (70 to 130 %).
-- About tab: a button per link puts it in a box, ready to copy.
+- About tab: the links sit in boxes, ready to copy (the game opens no browser).
 
 ## 1.2.1 — 2026-11-10
 

@@ -2441,7 +2441,12 @@ for _, step in ipairs({
     -- quick tour
     function()
         ns:StartTutorial()
-        for _ = 1, 9 do TesseraTutorial.next:GetScript("OnClick")() end
+        for _ = 1, 10 do TesseraTutorial.next:GetScript("OnClick")() end -- 11 steps: the last one
+        if TesseraTutorial.index ~= 11 then print("STEP ERROR: tour: expected 11 steps, at the last one the index is " .. tostring(TesseraTutorial.index)) end
+        -- "What's new in 1.3": opens, one side window at a time
+        ns:ShowNews()
+        if not (TesseraNews and TesseraNews:IsShown()) then print("STEP ERROR: news window did not open") end
+        TesseraNews:Hide()
         -- the layouts step: try some, leave without keeping -> the player's layout comes back
         ns:ResetProfile("left")
         ns.db.blocks.time.width = 123

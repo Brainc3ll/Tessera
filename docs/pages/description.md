@@ -16,6 +16,7 @@ Other things you might like:
 - Pin a block's tooltip so it stays open, and give any block a name of your own.
 - Style a whole bar at once: pick its group in the options, or copy one block's look to the rest of the bar.
 - Place a bar to the exact pixel with the arrow keys, or type where it goes.
+- An options window with a search, a help panel for each setting and an Accessibility tab: high contrast, fewer animations, a minimum text size.
 - English and French, plus German, Spanish and Brazilian Portuguese.
 
 Over 50 blocks, plus launchers for your minimap buttons. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
@@ -85,6 +86,7 @@ D'autres choses qui pourraient te plaire :
 - Épingle l'infobulle d'un bloc pour qu'elle reste ouverte, et donne à n'importe quel bloc le nom que tu veux.
 - Règle toute une barre d'un coup : choisis son groupe dans les options, ou copie l'apparence d'un bloc sur le reste de la barre.
 - Place une barre au pixel près avec les flèches du clavier, ou tape où elle va.
+- Une fenêtre d'options avec une recherche, un panneau d'aide pour chaque réglage et un onglet Accessibilité : contraste élevé, moins d'animations, une taille minimale du texte.
 - Anglais et français, plus l'allemand, l'espagnol et le portugais du Brésil.
 
 Plus de 50 blocs, et des lanceurs pour les boutons de ta minicarte. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.

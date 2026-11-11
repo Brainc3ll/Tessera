@@ -54,26 +54,32 @@ ns.CHANGELOG = {
                 "Blocks tab: give a style to one block, to its group or to every block. Ctrl + Z undoes it.",
                 "New Accessibility tab: threshold colors, high contrast, minimum text size, and fewer animations.",
                 "Fewer animations: blocks fade at once, and a block that wants your attention lights up without flashing.",
-                "\"Place\" (Blocks tab or placement banner): move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels),"
+                "\"Place by pixel\" (Blocks tab or placement banner): move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels),"
                     .. " the arrows of the banner, or by typing X and Y. Click another block to place it instead."
                     .. " Enter keeps the place, Escape puts the group back. Saved places keep working in older versions.",
                 "Placement banner: change the grid size with its arrows, or press G.",
+                "\"What's new in 1.3\": after the update, a window lists the big changes,"
+                    .. " each with a button that opens the right place. It stays in the Help tab.",
               },
               fr = {
                 "La taille de l'icône monte jusqu'à 200 pixels. Le bloc grandit avec son icône.",
                 "Onglet Blocs : donnez un style à un bloc, à son groupe ou à tous les blocs. Ctrl + Z l'annule.",
                 "Nouvel onglet Accessibilité : couleurs des seuils, contraste renforcé, taille minimale du texte, et moins d'animations.",
                 "Moins d'animations : les blocs s'estompent d'un coup, et un bloc qui veut votre attention s'éclaire sans clignoter.",
-                "« Placer » (onglet Blocs ou bandeau de placement) : déplacez le groupe d'un bloc pixel par pixel"
+                "« Placer au pixel » (onglet Blocs ou bandeau de placement) : déplacez le groupe d'un bloc pixel par pixel"
                     .. " avec les flèches du clavier (Maj : 10 pixels),"
                     .. " les flèches du bandeau, ou en tapant X et Y. Cliquez sur un autre bloc pour le placer à son tour."
                     .. " Entrée garde la place, Échap remet le groupe où il était. Les places enregistrées marchent aussi dans les anciennes versions.",
                 "Bandeau de placement : changez la taille de la grille avec ses flèches, ou appuyez sur G.",
+                "« Nouveautés de la 1.3 » : après la mise à jour, une fenêtre liste les grands changements,"
+                    .. " chacun avec un bouton qui ouvre le bon endroit. Elle reste dans l'onglet Aide.",
               },
             },
             { kind = "improved",
               en = {
                 "Streamer mode block: \"Hide when empty\" is off by default, so the block stays on screen to switch the mode on.",
+                "Welcome window and quick tour: they follow the new options window (\"On screen\", placing to the pixel, search, help, Accessibility).",
+                "\"Place by pixel\" is wider and its text is gold, so it is easy to find.",
                 "\"Remove\" replaces \"Hide\": a block you remove leaves its group, and the blocks around it close the gap.",
                 "A removed block keeps its settings. Turn on its \"On screen\" switch (the old \"Show\") and it appears next to the options window.",
                 "Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.",
@@ -95,6 +101,9 @@ ns.CHANGELOG = {
                 "Ctrl + Z also undoes while the options window is open (taking blocks off, a style...).",
               },
               fr = {
+                "Fenêtre de bienvenue et visite rapide : elles suivent la nouvelle fenêtre d'options"
+                    .. " (« Sur l'écran », placement au pixel, recherche, aide, Accessibilité).",
+                "« Placer au pixel » est plus large et son texte est doré : on le trouve plus vite.",
                 "Bloc Mode streamer : « Masquer si vide » est désactivé au départ, le bloc reste à l'écran pour activer le mode.",
                 "« Retirer » remplace « Masquer » : un bloc que vous retirez sort de son groupe, et ses voisins se resserrent.",
                 "Un bloc retiré garde ses réglages. Allumez son interrupteur « Sur l'écran » (l'ancien « Afficher ») et il apparaît à côté des options.",

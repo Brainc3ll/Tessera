@@ -1216,7 +1216,6 @@ L["PAGE_HINT_8"] = "Version, Änderungen und wie man einen Fehler meldet oder ü
 L["THIS_BLOCK_PICK"] = "Wähle oben einen Block in der Liste: seine eigenen Einstellungen erscheinen hier."
 L["TIP_PIN_BUTTON"] = "Hält den Tooltip des Blocks neben ihm offen, jede Sekunde aktualisiert."
 L["HELP_BLOCKS_16"] = "- Dieser Block (erster Reiter): alles, was nur dem gewählten Block gehört: wie er seinen Wert schreibt, seine Einstellungen (Ziel, Schwellen, ausblenden wenn leer...), sein Name, Umschalt-Klick und Mittelklick, ein Knopf zum Anheften seines Tooltips. Ein Rechtsklick auf einen Block öffnet ihn hier."
-L["TUTORIAL_10"] = "Alt + Rechtsklick auf einen Block öffnet sein Schnellmenü: hefte seinen Tooltip an, damit er offen bleibt, benenne ihn um, füge einen Abstandhalter hinzu. Wer \"Wert anzeigen\" abwählt, behält nur sein Symbol."
 L["TUTORIAL_9"] = "Jeder Block hat eigene Einstellungen: ein Rechtsklick darauf öffnet die Optionen bei \"Dieser Block\": was er zeigt, seine Einstellungen, sein Name, seine Klicks."
 L["TUTORIAL_DO_BLOCK"] = "Zeig es mir"
 L["DEMO_ENDED_KEPT"] = "Demo beendet: deine Blöcke sind zurück, mit dem gewählten Stil."

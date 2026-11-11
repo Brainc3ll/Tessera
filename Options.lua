@@ -42,6 +42,7 @@ local PAGE_BLOCKS, PAGE_LOOK, PAGE_GENERAL, PAGE_LAUNCHERS, PAGE_BROKER, PAGE_PR
 -- (1.3) a page added later gets the next number (its texts, PAGE_HINT_<n>, keep theirs);
 -- NAV_ORDER is where each one sits in the list on the left
 local PAGE_ACCESS = 9
+local NEWS_VERSION = "1.3" -- the version with a "What's new" window (ns:ShowNews)
 local PAGE_COUNT = 9
 local NAV_ORDER = { PAGE_BLOCKS, PAGE_LOOK, PAGE_GENERAL, PAGE_ACCESS, PAGE_LAUNCHERS, PAGE_BROKER,
     PAGE_PROFILES, PAGE_HELP, PAGE_ABOUT }
@@ -1444,7 +1445,7 @@ local function BuildBlockPage(page)
     -- Head, above the part that scrolls: the "On screen" switch, left of the block's
     -- name (the selection list), then "Replace with..."
     local top = NewLayout(page)
-    local REPLACE_W, PLACE_W = 140, 90
+    local REPLACE_W, PLACE_W = 140, 140
     local getE, setE = Field("enabled")
     local switch = top.Place(CreateSwitch(page, L.ENABLED, function() return getE() end, setE, nil, L.TIP_ENABLED), 1)
     ns.blockSwitch = switch -- (tools/mock_run.lua)
@@ -1467,6 +1468,7 @@ local function BuildBlockPage(page)
         if not ns:StartNudge(selected) then ns.Print(L.NUDGE_NOT_SHOWN) end
     end, single, PLACE_W - 6, L.TIP_PLACE_BLOCK)
     place:SetPoint("LEFT", replace, "RIGHT", 4, 0)
+    place:SetNormalFontObject("GameFontNormal") -- gold text: easy to spot among the buttons
     -- usable as soon as the block is on screen: a block just put back is shown a moment
     -- after the window refreshes (test102), so its frame is checked on click
     place.Refresh = function(self)
@@ -2739,7 +2741,7 @@ local function BuildHelpPage(page)
         cache[wanted] = cache[wanted]
             or SplitHelp(ns.HelpText(ns.brokerModeActive and ns.HELP_LAYOUT_BROKER or ns.HELP_LAYOUT))
         return wanted, cache[wanted]
-    end)
+    end, 26) -- room for the three buttons below the topics
     -- the quick tour can be started again from here (not in DataBroker mode: no blocks)
     local tour = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
     tour:SetSize(TOPIC_W, 22)
@@ -2761,6 +2763,15 @@ local function BuildHelpPage(page)
     AttachTip(demo, L.DEMO_BUTTON, L.TIP_DEMO_BUTTON)
     demo.Refresh = function() end
     Register(demo, function() return not ns.brokerModeActive end)
+    -- what changed in 1.3, with buttons that open the right places
+    local whatsNew = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
+    whatsNew:SetSize(TOPIC_W, 22)
+    whatsNew:SetPoint("BOTTOMLEFT", demo, "TOPLEFT", 0, 4)
+    whatsNew:SetText(L.NEWS_BUTTON:format(NEWS_VERSION))
+    whatsNew:SetScript("OnClick", function() ns:ShowNews() end)
+    AttachTip(whatsNew, L.NEWS_BUTTON:format(NEWS_VERSION), L.TIP_NEWS_BUTTON)
+    whatsNew.Refresh = function() end
+    Register(whatsNew, function() return not ns.brokerModeActive end)
 end
 
 ---------------------------------------------------------------------------
@@ -3705,7 +3716,7 @@ local function BannerButton(b, text, tip, onClick)
     return btn
 end
 
-local BANNER_W, BANNER_H = 490, 130
+local BANNER_W, BANNER_H = 530, 130
 
 -- Grid sizes, the same as the General tab's list
 local GRID_STEPS = { 0, 8, 16, 32 }
@@ -3825,10 +3836,14 @@ function ns:UpdatePlacementBanner()
             BannerButton(b, L.RELOAD_SHORT, L.TIP_RELOAD, function() ReloadUI() end),
             BannerButton(b, L.LOCK_SHORT, L.TIP_LOCKED, function() ns:SetLocked(true) end),
         }
+        local x = 12
         for i, btn in ipairs(buttons) do
-            btn:SetWidth(88)
-            btn:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 12 + (i - 1) * 94, 12)
+            local w = i == 2 and 128 or 88 -- "Place by pixel" is the longest label
+            btn:SetWidth(w)
+            btn:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", x, 12)
+            x = x + w + 6
         end
+        buttons[2]:SetNormalFontObject("GameFontNormal")
         b.undo = buttons[3]
         b.buttons = buttons
 
@@ -4275,12 +4290,17 @@ local TUTORIAL_STEPS = {
         ns:OpenOptionsFor(key)
         if ns.ShowBlockSub then ns.ShowBlockSub(5) end
     end },
+    { text = "TUTORIAL_11", action = "TUTORIAL_DO_BLOCK", run = function()
+        local key = ns.db.blocks.gold and "gold" or ns.order[1]
+        ns:OpenOptionsFor(key)
+        if ns.ShowBlockSub then ns.ShowBlockSub(1) end
+    end },
     { text = "TUTORIAL_2", action = "TUTORIAL_DO_UNLOCK", run = function() ns:SetLocked(false) end },
     { text = "TUTORIAL_3" },
     { text = "TUTORIAL_4" },
     { text = "TUTORIAL_5" },
     { text = "TUTORIAL_6", action = "TUTORIAL_DO_LOOK", run = function() ns:OpenOptions(PAGE_LOOK) end },
-    { text = "TUTORIAL_10" },
+    { text = "TUTORIAL_12", action = "TUTORIAL_DO_ACCESS", run = function() ns:OpenOptions(PAGE_ACCESS) end },
     { text = "TUTORIAL_7", action = "TUTORIAL_DO_LOCK", run = function() ns:SetLocked(true) end },
 }
 local tutorial
@@ -4489,6 +4509,79 @@ StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
     end,
 }
 
+---------------------------------------------------------------------------
+-- "What's new in 1.3": a small window after an update (and from the Help tab). One
+-- short line per big change, each with a button that opens the right place.
+---------------------------------------------------------------------------
+local function ShowNewBlock(sub)
+    return function()
+        local key = ns.db.blocks.gold and "gold" or ns.order[1]
+        ns:OpenOptionsFor(key)
+        if not ns.brokerModeActive and ns.ShowBlockSub then ns.ShowBlockSub(sub) end
+    end
+end
+local NEWS_ROWS = {
+    { text = "NEWS_1", run = ShowNewBlock(1) },
+    { text = "NEWS_2", run = ShowNewBlock(1) },
+    { text = "NEWS_3", run = function() ns:OpenOptions(PAGE_BLOCKS) end },
+    { text = "NEWS_4", run = ShowNewBlock(1) },
+    { text = "NEWS_5", run = function() ns:OpenOptions(PAGE_ACCESS) end },
+}
+local news
+local NEWS_W, NEWS_TEXT_W, NEWS_BUTTON_W = 440, 290, 96
+
+function ns:ShowNews()
+    if not news then
+        news = CreateFrame("Frame", "TesseraNews", UIParent, "BackdropTemplate")
+        news:SetWidth(NEWS_W)
+        news:SetPoint("TOP", UIParent, "TOP", 0, -140)
+        news:SetFrameStrata("FULLSCREEN_DIALOG")
+        news:SetClampedToScreen(true)
+        news:SetMovable(true)
+        news:EnableMouse(true)
+        news:RegisterForDrag("LeftButton")
+        news:SetScript("OnDragStart", news.StartMoving)
+        news:SetScript("OnDragStop", news.StopMovingOrSizing)
+        news.title = news:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        news.title:SetPoint("TOPLEFT", 16, -14)
+        news.title:SetText(L.NEWS_TITLE:format(NEWS_VERSION))
+        local close = CreateFrame("Button", nil, news, "UIPanelCloseButton")
+        close:SetPoint("TOPRIGHT", -4, -4)
+        local y = 40
+        for _, row in ipairs(NEWS_ROWS) do
+            local text = news:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+            text:SetPoint("TOPLEFT", 16, -y)
+            text:SetWidth(NEWS_TEXT_W)
+            text:SetJustifyH("LEFT")
+            text:SetSpacing(3)
+            text:SetText(L[row.text])
+            local button = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
+            button:SetSize(NEWS_BUTTON_W, 22)
+            button:SetText(L.TUTORIAL_DO_BLOCK)
+            button:SetPoint("TOPRIGHT", news, "TOPLEFT", NEWS_W - 16, -y)
+            button:SetScript("OnClick", row.run)
+            y = y + math.max(text:GetStringHeight(), 22) + 12
+        end
+        local all = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
+        all:SetSize(190, 22)
+        all:SetText(L.NEWS_ALL)
+        all:SetPoint("BOTTOMLEFT", 16, 14)
+        all:SetScript("OnClick", function()
+            news:Hide()
+            ns:OpenOptions(PAGE_ABOUT)
+            if aboutContent then aboutContent:ShowTopic(CHANGELOG_TOPIC) end
+        end)
+        local done = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
+        done:SetSize(96, 22)
+        done:SetText(L.TUTORIAL_DONE)
+        done:SetPoint("BOTTOMRIGHT", -16, 14)
+        done:SetScript("OnClick", function() news:Hide() end)
+        news:SetHeight(y + 48)
+    end
+    self:SkinWindow(news, news.title)
+    ns:ShowSideWindow(news)
+end
+
 -- Shows the welcome popup once per saved-variables file (first install), or the
 -- "what's new" popup when the installed version changed since last time
 function ns:ShowWelcomeIfNeeded()
@@ -4497,8 +4590,19 @@ function ns:ShowWelcomeIfNeeded()
     -- (welcomed but no version saved: installed before this popup existed, i.e. updated)
     if self.sv.welcomed and version and self.sv.lastVersion ~= version then
         self.sv.lastVersion = version
+        -- a version with its own news window (1.3.x): shown once, instead of the popup
+        if version:sub(1, #NEWS_VERSION + 1) == NEWS_VERSION .. "." and self.sv.newsSeen ~= NEWS_VERSION
+            and not self.brokerModeActive then
+            self.sv.newsSeen = NEWS_VERSION
+            self:ShowNews()
+            return
+        end
         StaticPopup_Show("TESSERA_WHATS_NEW", version)
         return
+    end
+    -- a new install has nothing to catch up on
+    if not self.sv.welcomed and version and version:sub(1, #NEWS_VERSION + 1) == NEWS_VERSION .. "." then
+        self.sv.newsSeen = NEWS_VERSION
     end
     if version then self.sv.lastVersion = version end
     if self.sv.welcomed then return end

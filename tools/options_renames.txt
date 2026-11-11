@@ -1,1 +1,2 @@
 Show	On screen
+Place	Place by pixel

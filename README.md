@@ -167,7 +167,7 @@ Help tab inside the game explains everything.
   and the spacers of the ready-made layouts can be filled this way. A cross removes the block: it leaves its group and the others close the gap.
 - Place to the pixel: "Place by pixel" (Blocks tab or placement banner) moves a block's group one screen pixel at a time
   with the arrow keys (Shift: 10 pixels) or the arrows of the banner, or to the X and Y you type;
-  click another block to place it instead; Enter keeps the place, Escape puts the groups back.
+  click another block to place it instead; Enter (or "Keep") keeps the place, Escape puts the groups back.
 - Groups: each bar of merged blocks has its entry in the Blocks tab, so its settings apply to the
   whole bar and its rows; "Copy style to group" (options or quick menu) gives one block's look to
   the rest of its group.

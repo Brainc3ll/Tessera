@@ -15,7 +15,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Blocks tab: give a style to one block, to its group or to every block. Ctrl + Z undoes it.
 - New Accessibility tab: threshold colors, high contrast, minimum text size, and fewer animations.
 - Fewer animations: blocks fade at once, and a block that wants your attention lights up without flashing.
-- "Place by pixel" (Blocks tab or placement banner): move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels), the arrows of the banner, or by typing X and Y. Click another block to place it instead. Enter keeps the place, Escape puts the group back. Saved places keep working in older versions.
+- "Place by pixel" (Blocks tab or placement banner): move a block's group pixel by pixel with the arrow keys (Shift: 10 pixels), the arrows of the banner, or by typing X and Y. Click another block to place it instead. Enter (or "Keep") keeps the place, Escape puts the group back. Saved places keep working in older versions.
 - Placement banner: change the grid size with its arrows, or press G.
 - "What's new in 1.3": after the update, a window lists the big changes, each with a button that opens the right place and makes the setting blink. It stays in the Help tab.
 
@@ -25,7 +25,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Welcome window and quick tour: they follow the new options window ("On screen", placing to the pixel, search, help, Accessibility).
 - "Place by pixel" is wider and its text is gold, so it is easy to find.
 - The options window opens in the middle of the screen each time, and comes back there when a window that pushed it aside is closed.
-- Help tab: thin lines between groups of topics and between the chapters of a topic.
+- Help tab: topics in groups that go together (getting started, placing, the settings tabs, other addons, help), with thin lines between the groups and between the chapters of a topic.
 - "Remove" replaces "Hide": a block you remove leaves its group, and the blocks around it close the gap.
 - A removed block keeps its settings. Turn on its "On screen" switch (the old "Show") and it appears next to the options window.
 - Your profiles keep working. Blocks you had hidden lose the invisible place they kept in a bar.

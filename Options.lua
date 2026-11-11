@@ -2625,7 +2625,11 @@ end
 -- The help topics with their chapters: a topic's lines are cut at each "" of the layout, and
 -- each chapter is drawn apart, with a thin line between (BuildTopicPage). Topics that end a
 -- group of the list (the list shows a line under them) are named here.
-local HELP_GROUP_END = { HELP_T_USE = true, HELP_T_BROKER = true, HELP_T_PROFILES = true }
+-- Groups: getting started (in short, using blocks, WoW Forever) / placing (place, replace,
+-- Blizzard's frames) / the settings tabs (Blocks, Look, General, Accessibility, Profiles) /
+-- other addons (Launchers, DataBroker) / Help, About and commands
+local HELP_GROUP_END = { HELP_T_FOREVER = true, HELP_T_EDITMODE = true, HELP_T_PROFILES = true,
+    HELP_T_BROKER = true }
 local function HelpSections(layout)
     local sections = {}
     for _, topic in ipairs(layout or {}) do
@@ -3297,16 +3301,30 @@ function ns.SearchOptions(text)
 end
 
 -- the row lights up three times ("Fewer animations": it stays lit for a moment)
-local function Blink(w)
-    local light = w.hover or w.blinkLight
-    if not light then
-        -- a widget without a hover light (a button, the search box): a gold one
-        light = w:CreateTexture(nil, "OVERLAY")
-        light:SetAllPoints()
-        light:SetColorTexture(1, 0.82, 0, 0.35)
-        light:Hide()
-        w.blinkLight = light
+-- A gold frame around a widget: seen whatever its colors (the "On screen" switch,
+-- a button), a shape as well as a color (high contrast). Shown and hidden as one.
+local function BlinkFrame(w)
+    if w.blinkFrame then return w.blinkFrame end
+    local f = CreateFrame("Frame", nil, w)
+    f:SetPoint("TOPLEFT", -4, 4)
+    f:SetPoint("BOTTOMRIGHT", 4, -4)
+    f:SetFrameLevel(w:GetFrameLevel() + 10)
+    for _, side in ipairs({ { "TOPLEFT", "TOPRIGHT", true }, { "BOTTOMLEFT", "BOTTOMRIGHT", true },
+                            { "TOPLEFT", "BOTTOMLEFT" }, { "TOPRIGHT", "BOTTOMRIGHT" } }) do
+        local t = f:CreateTexture(nil, "OVERLAY")
+        t:SetColorTexture(1, 0.82, 0, 1)
+        t:SetPoint(side[1])
+        t:SetPoint(side[2])
+        if side[3] then t:SetHeight(3) else t:SetWidth(3) end
     end
+    f:Hide()
+    w.blinkFrame = f
+    return f
+end
+
+local function Blink(w, framed)
+    local light = not framed and w.hover
+    if not light then light = BlinkFrame(w) end
     if ns.sv and ns.sv.reduceMotion then
         light:SetAlpha(2.5)
         light:Show()
@@ -4137,7 +4155,15 @@ local function BuildNudgePad(b)
     pad.cancel = CreateFrame("Button", nil, pad, "UIPanelButtonTemplate")
     pad.cancel:SetSize(120, 22)
     pad.cancel:SetText(L.NUDGE_CANCEL)
-    pad.cancel:SetPoint("TOPLEFT", pad.yLabel, "BOTTOMLEFT", 0, -14)
+    -- "Keep" in words too, beside "Cancel" (the check of the pad says the same)
+    pad.keep = CreateFrame("Button", nil, pad, "UIPanelButtonTemplate")
+    pad.keep:SetSize(120, 22)
+    pad.keep:SetText(L.NUDGE_DONE)
+    pad.keep:SetNormalFontObject("GameFontNormal")
+    pad.keep:SetPoint("TOPLEFT", pad.yLabel, "BOTTOMLEFT", 0, -14)
+    pad.keep:SetScript("OnClick", function() ns:FinishNudge(true) end)
+    AttachTip(pad.keep, L.NUDGE_DONE, L.TIP_NUDGE_DONE)
+    pad.cancel:SetPoint("LEFT", pad.keep, "RIGHT", 6, 0)
     pad.cancel:SetScript("OnClick", function() ns:FinishNudge(false) end)
     AttachTip(pad.cancel, L.NUDGE_CANCEL, L.TIP_NUDGE_CANCEL)
 
@@ -4392,7 +4418,7 @@ local function ShowHeadWidget(getWidget, label, tip)
         ns:ShowOptionHelp(label, tip)
         C_Timer.After(0, function()
             local w = getWidget()
-            if w and w:IsShown() then Blink(w) end
+            if w and w:IsShown() then Blink(w, true) end
         end)
     end
 end
@@ -4641,7 +4667,7 @@ local NEWS_ROWS = {
         ns:OpenOptions(PAGE_BLOCKS)
         ns:ShowOptionHelp(L.SEARCH, L.TIP_SEARCH)
         C_Timer.After(0, function()
-            if panel and panel.search then Blink(panel.search) end
+            if panel and panel.search then Blink(panel.search, true) end
         end)
     end },
     { text = "NEWS_4", run = ShowRow(PAGE_BLOCKS, L.APPLY_STYLE_TO, true) },

@@ -2896,6 +2896,13 @@ do
     if not (TesseraOptions:IsShown() and TesseraOptions.folded) then print("STEP ERROR: placing: the options window is not folded to its bar") end
     if not (b and b:IsShown() and b.pad and b.pad:IsShown()) then print("STEP ERROR: placing: no pad on the banner") end
     if not b.pad.notice:IsShown() then print("STEP ERROR: placing: no first-time message") end
+    -- a frame without a height draws nothing in the game (test102: empty banner)
+    local top, bottom = false, false
+    for _, pt in ipairs(b.pad.__points or {}) do
+        if pt[1]:find("TOP") then top = true end
+        if pt[1]:find("BOTTOM") then bottom = true end
+    end
+    if not (top and bottom) and (b.pad.__h or 0) <= 0 then print("STEP ERROR: placing: the pad has no height") end
     b.pad.gotIt:GetScript("OnClick")(b.pad.gotIt)
     if not ns.sv.placeNoticeSeen or b.pad.notice:IsShown() then print("STEP ERROR: placing: \"Got it\" does not hide the message") end
     local root = ns:GetRoot(key)

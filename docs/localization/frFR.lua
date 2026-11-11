@@ -1288,3 +1288,4 @@ L["TIP_NUDGE_DONE"] = "Garde la nouvelle place (Entrée). Ctrl + Z l'annule enco
 L["TIP_NUDGE_GOT_IT"] = "Ce message ne revient plus."
 L["TIP_NUDGE_XY"] = "Coin bas-gauche du groupe, en pixels de l'écran depuis le coin bas-gauche de l'écran. Tape un nombre, puis Entrée."
 L["TIP_PLACE_BLOCK"] = "Déplace le groupe de ce bloc pixel par pixel, avec les flèches du clavier ou celles du bandeau. Pendant ce temps, cette fenêtre se réduit à sa barre."
+L["NUDGE_NOT_SHOWN"] = "Ce bloc est caché pour l'instant (quand l'afficher, ou vide). « Placer » marche dès qu'il est à l'écran."

@@ -1132,6 +1132,7 @@ local L = {
     TIP_NUDGE_DONE = "Keeps the new place (Enter). Ctrl + Z still undoes it afterwards.",
     NUDGE_CANCEL = "Cancel",
     TIP_NUDGE_CANCEL = "Puts the group back where it was (Escape).",
+    NUDGE_NOT_SHOWN = "This block is hidden right now (when to show it, or empty). \"Place\" works once it is on screen.",
     HELP_T_SHORT = "In short",
     HELP_SHORT_1 = "- Click \"Unlock blocks\", drag the blocks where you like, drop them against each other to merge them, then click \"Lock\".",
     HELP_SHORT_6 = "- In placement mode, the cross on a hovered block removes it, and its arrows replace it with another block without moving the rest.",

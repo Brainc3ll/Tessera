@@ -1463,11 +1463,16 @@ local function BuildBlockPage(page)
     end, function() return single() and ns.db.blocks[selected] ~= nil end, REPLACE_W - 8, L.TIP_REPLACE_BLOCK)
     replace:SetPoint("BOTTOMLEFT", selection, "BOTTOMRIGHT", 0, 1)
     -- "Place": moves the block's group pixel by pixel (the window folds meanwhile)
-    local place = CreateButton(page, L.PLACE_BLOCK, function() ns:StartNudge(selected) end,
-        single, PLACE_W - 6, L.TIP_PLACE_BLOCK)
+    local place = CreateButton(page, L.PLACE_BLOCK, function()
+        if not ns:StartNudge(selected) then ns.Print(L.NUDGE_NOT_SHOWN) end
+    end, single, PLACE_W - 6, L.TIP_PLACE_BLOCK)
     place:SetPoint("LEFT", replace, "RIGHT", 4, 0)
+    -- usable as soon as the block is on screen: a block just put back is shown a moment
+    -- after the window refreshes (test102), so its frame is checked on click
     place.Refresh = function(self)
-        self:SetEnabled(ns:CanNudge(selected) and not InCombatLockdown() and true or false)
+        local cfg = ns.db.blocks[selected]
+        self:SetEnabled(cfg and cfg.enabled and not ns:IsFrozen(selected) and not ns.brokerModeActive
+            and not InCombatLockdown() and true or false)
     end
     ns.placeButton = place -- (tools/mock_run.lua)
     top.Gap(1, 6)
@@ -3691,6 +3696,17 @@ local function BannerButton(b, text, tip, onClick)
     return btn
 end
 
+-- Where the player last dragged the banner (account-wide), else near the top of the screen
+local function PlaceBanner(b)
+    b:ClearAllPoints()
+    local pos = ns.sv.bannerPoint
+    if type(pos) == "table" and type(pos[1]) == "string" then
+        b:SetPoint(pos[1], UIParent, pos[1], tonumber(pos[2]) or 0, tonumber(pos[3]) or 0)
+    else
+        b:SetPoint("TOP", UIParent, "TOP", 0, -140)
+    end
+end
+
 -- Shows or hides the placement banner depending on the lock state (created on first use)
 function ns:UpdatePlacementBanner()
     -- (never in DataBroker mode: Tessera shows no block of its own; nor while Blizzard's
@@ -3735,12 +3751,7 @@ function ns:UpdatePlacementBanner()
         b = CreateFrame("Frame", "TesseraPlacementBanner", UIParent, "BackdropTemplate")
         b:SetSize(400, 104)
         -- where the player last dragged it (account-wide), else near the top of the screen
-        local pos = self.sv.bannerPoint
-        if type(pos) == "table" and type(pos[1]) == "string" then
-            b:SetPoint(pos[1], UIParent, pos[1], tonumber(pos[2]) or 0, tonumber(pos[3]) or 0)
-        else
-            b:SetPoint("TOP", UIParent, "TOP", 0, -140)
-        end
+        PlaceBanner(b)
         b:SetFrameStrata("DIALOG")
         b:SetClampedToScreen(true)
         b:EnableMouse(true)
@@ -3889,9 +3900,9 @@ local function NudgeBox(pad, label)
 end
 
 local function BuildNudgePad(b)
+    -- (the pad covers the whole banner: a frame without a height draws nothing, test102)
     local pad = CreateFrame("Frame", nil, b)
-    pad:SetPoint("TOPLEFT", 0, 0)
-    pad:SetPoint("TOPRIGHT", 0, 0)
+    pad:SetAllPoints(b)
     pad.arrows = {}
     local W = b:GetWidth() - 28
 
@@ -4076,6 +4087,17 @@ function ns:ShowNudgePad(b)
             b.pad:Refresh()
             self:SkinWindow(b, b.pad.title)
         end
+    end
+    -- while placing, the banner sits right under the folded options window (it was behind
+    -- its bar, test102); back to its own place afterwards
+    local panelShown = panel and panel:IsShown()
+    if on and panelShown and not b.underPanel then
+        b:ClearAllPoints()
+        b:SetPoint("TOP", panel, "BOTTOM", 0, -8)
+        b.underPanel = true
+    elseif not on and b.underPanel then
+        PlaceBanner(b)
+        b.underPanel = nil
     end
     if not on then b:SetHeight(104) end
 end

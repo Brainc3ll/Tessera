@@ -914,6 +914,7 @@ NEW_EN = [
 ("TIP_NUDGE_DONE","Keeps the new place (Enter). Ctrl + Z still undoes it afterwards."),
 ("NUDGE_CANCEL","Cancel"),
 ("TIP_NUDGE_CANCEL","Puts the group back where it was (Escape)."),
+("NUDGE_NOT_SHOWN","This block is hidden right now (when to show it, or empty). \"Place\" works once it is on screen."),
 ]
 NEW_FR = {
 "THEME_FLARE_SQUARE":"FlareUI carré",
@@ -1827,4 +1828,5 @@ NEW_FR = {
 "TIP_NUDGE_DONE":"Garde la nouvelle place (Entrée). Ctrl + Z l'annule encore ensuite.",
 "NUDGE_CANCEL":"Annuler",
 "TIP_NUDGE_CANCEL":"Remet le groupe là où il était (Échap).",
+"NUDGE_NOT_SHOWN":"Ce bloc est caché pour l'instant (quand l'afficher, ou vide). « Placer » marche dès qu'il est à l'écran.",
 }

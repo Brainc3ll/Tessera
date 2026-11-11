@@ -1288,3 +1288,4 @@ L["TIP_NUDGE_DONE"] = "Keeps the new place (Enter). Ctrl + Z still undoes it aft
 L["TIP_NUDGE_GOT_IT"] = "Hides this message for good."
 L["TIP_NUDGE_XY"] = "Bottom-left corner of the group, in screen pixels from the bottom-left corner of the screen. Type a number, then Enter."
 L["TIP_PLACE_BLOCK"] = "Moves this block's group pixel by pixel, with the arrow keys or the arrows of the banner. This window folds to its bar meanwhile."
+L["NUDGE_NOT_SHOWN"] = "This block is hidden right now (when to show it, or empty). \"Place\" works once it is on screen."

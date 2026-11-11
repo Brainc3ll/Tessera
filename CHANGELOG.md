@@ -12,6 +12,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
+- When the interface your automatic style follows goes missing, Tessera shows the Blizzard style for now and says so in the chat. Your style comes back with the interface.
+- Blocks tab, "All blocks" page: the style choice is greyed out. A button opens the Look tab, which picks the style of every block and of the window.
 - About tab: a thank-you to Malkkav for FlareUI, with a FlareUI button that copies the link of his addon.
 - The styles that follow another interface get their own names: Bronze, Bronze (old) and Bronze square (FlareUI), Elven (ElvUI) and Emerald (EllesmereUI). Your blocks look the same; only the name changes. Without its addon, a style says which one it lacks: "Elven (without ElvUI)". Bronze (old), the FlareUI 1.x style, is back in the list.
 

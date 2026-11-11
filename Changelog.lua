@@ -60,6 +60,10 @@ ns.CHANGELOG = {
             },
             { kind = "improved",
               en = {
+                "When the interface your automatic style follows goes missing, Tessera shows the Blizzard style for now"
+                    .. " and says so in the chat. Your style comes back with the interface.",
+                "Blocks tab, \"All blocks\" page: the style choice is greyed out. A button opens the Look tab,"
+                    .. " which picks the style of every block and of the window.",
                 "About tab: a thank-you to Malkkav for FlareUI, with a FlareUI button that copies the link of his addon.",
                 "The styles that follow another interface get their own names: Bronze, Bronze (old) and Bronze square (FlareUI),"
                     .. " Elven (ElvUI) and Emerald (EllesmereUI). Your blocks look the same; only the name changes."
@@ -67,6 +71,10 @@ ns.CHANGELOG = {
                     .. " Bronze (old), the FlareUI 1.x style, is back in the list.",
               },
               fr = {
+                "Quand l'interface que suit ton style automatique disparaît, Tessera affiche le style Blizzard pour l'instant"
+                    .. " et le dit dans la discussion. Ton style revient avec l'interface.",
+                "Onglet Blocs, page « Tous les blocs » : le choix du style est grisé. Un bouton ouvre l'onglet Apparence,"
+                    .. " qui choisit le style de tous les blocs et de la fenêtre.",
                 "Onglet À propos : un merci à Malkkav pour FlareUI, avec un bouton FlareUI qui copie le lien de son addon.",
                 "Les styles qui suivent une autre interface prennent leur propre nom : Bronze, Bronze ancien et Bronze carré (FlareUI),"
                     .. " Elfique (ElvUI) et Émeraude (EllesmereUI). Tes blocs ne changent pas ; seul le nom change."

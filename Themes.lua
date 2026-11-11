@@ -875,7 +875,12 @@ function ns:SyncAutoTheme()
         -- the old style is unavailable (its interface is missing): replaced for now, and
         -- given back automatically if that interface returns
         RestyleProfile(self, key, false)
+        local first = not db.autoThemeMissing
         db.autoThemeMissing = db.autoThemeMissing or applied
+        -- said once, when it happens (not at every login while the interface stays away)
+        if first and ns.Print and byKey[key] then
+            ns.Print(L.THEME_FALLBACK:format(self:GetUIName(applied), byKey[key].name))
+        end
     end
 end
 

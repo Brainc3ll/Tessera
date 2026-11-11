@@ -1431,7 +1431,8 @@ local function CreateStyleTargets(parent, getStyle)
             if GroupHead() then return true end
             return Single() and #ns:GetStyleGroup(selected) >= 2
         end },
-        { "all", L.ALL_BLOCKS, L.TIP_STYLE_TO_ALL, function() return true end },
+        -- on the "All blocks" page the Look tab does this (and restyles the window too)
+        { "all", L.ALL_BLOCKS, L.TIP_STYLE_TO_ALL, function() return selected ~= ALL end },
     }
     for i, spec in ipairs(specs) do
         local b = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
@@ -1444,13 +1445,33 @@ local function CreateStyleTargets(parent, getStyle)
         b.enabledFor = spec[4]
         buttons[i] = b
     end
-    RowHover(row, buttons[1], buttons[2], buttons[3])
+    -- "All blocks" page: the three buttons give way to one that opens the Look tab, where
+    -- the style of every block (and of this window) is picked; a style applied here would
+    -- not show in that tab
+    local goLook = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+    goLook:SetSize(ROW_CONTROL_W - 10, 24)
+    goLook:SetPoint("LEFT", row, "LEFT", ROW_CONTROL_X, 0)
+    goLook:SetText(L.STYLE_OPEN_LOOK)
+    FitButtonText(goLook)
+    goLook:SetScript("OnClick", function()
+        if ns.ShowOptionsPage then ns.ShowOptionsPage(PAGE_LOOK) end
+    end)
+    AttachTip(goLook, L.STYLE_OPEN_LOOK, L.TIP_STYLE_OPEN_LOOK)
+    row.goLook, row.buttons = goLook, buttons -- (tools/mock_run.lua)
+    RowHover(row, buttons[1], buttons[2], buttons[3], goLook)
     AttachTip(row, L.APPLY_STYLE_TO, L.TIP_APPLY_STYLE_TO)
     row.Refresh = function()
-        for _, b in ipairs(buttons) do b:SetEnabled(b.enabledFor() and true or false) end
+        local everything = selected == ALL
+        for _, b in ipairs(buttons) do
+            b:SetShown(not everything)
+            b:SetEnabled(b.enabledFor() and true or false)
+        end
+        goLook:SetShown(everything)
+        row.label:SetText(everything and L.STYLE_ALL_HERE or L.APPLY_STYLE_TO)
     end
     -- confirm: the first button that can be used (the gamepad will step through them)
     row.Activate = function()
+        if goLook:IsShown() then goLook:Click() return end
         for _, b in ipairs(buttons) do
             if b:IsEnabled() then b:Click() return end
         end
@@ -1546,9 +1567,17 @@ local function BuildBlockPage(page)
         for _, t in ipairs(ns:GetAvailableThemes()) do table.insert(list, { key = t.key, name = t.name }) end
         return list
     end
-    P.Place(CreateDropdown(sub, L.BLOCK_STYLE, StyleChoices,
+    local styleDropdown = P.Place(CreateDropdown(sub, L.BLOCK_STYLE, StyleChoices,
         function() return pickStyle or ns:GetTheme() end,
         function(v) pickStyle = v end, nil, nil, L.TIP_BLOCK_STYLE), 1)
+    -- greyed on the "All blocks" page: the Look tab picks that style (see CreateStyleTargets)
+    local styleRefresh = styleDropdown.Refresh
+    styleDropdown.Refresh = function(self)
+        styleRefresh(self)
+        local off = selected == ALL
+        self.dropdown:SetEnabled(not off)
+        self:SetAlpha(off and 0.45 or 1)
+    end
     P.Place(CreateStyleTargets(sub, function() return pickStyle or ns:GetTheme() end), 1)
     P.Place(CreateHeader(sub, L.SECTION_SIZE), 1)
     P.Place(Check(sub, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP), 1)
@@ -3804,7 +3833,7 @@ function ns:GetOptionsSelection()
     if selected ~= ALL and self.db.blocks[selected] then return selected end
 end
 function ns:SetOptionsSelection(key)
-    if self.db.blocks[key] then selected = key end
+    if key == ALL or self.db.blocks[key] then selected = key end
 end
 
 function ns:OpenOptionsFor(key)

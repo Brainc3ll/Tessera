@@ -1065,8 +1065,14 @@ for _, step in ipairs({
         local has = ns.HasFlareUIMedia
         ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing = nil, "flareui2", nil
         ns.HasFlareUIMedia = function() return false end
+        local said, print0 = {}, ns.Print
+        ns.Print = function(msg) table.insert(said, msg) end
         ns:SyncAutoTheme()
         assert(ns.db.autoThemeMissing == "flareui2" and ns.db.theme == nil, "missing style not remembered")
+        assert(#said == 1 and said[1]:find("FlareUI", 1, true), "the fallback says so in the chat, once")
+        ns:SyncAutoTheme()
+        assert(#said == 1, "the fallback message repeats at every sync")
+        ns.Print = print0
         ns.HasFlareUIMedia = function() return true end
         ns:SyncAutoTheme()
         assert(ns.db.autoThemeMissing == nil and ns:GetTheme() == "flareui2", "style not given back")
@@ -2564,6 +2570,36 @@ for _, step in ipairs({
             local found = false
             for _, r in ipairs(ns.optionRows) do if r.label == label then found = true end end
             if not found then print("STEP ERROR: news: no setting row for \"" .. label .. "\"") end
+        end
+        -- "All blocks" page: the style choice is greyed, one button opens the Look tab
+        local function Row(label)
+            for _, r in ipairs(ns.optionRows) do if r.label == label then return r.frame end end
+        end
+        local styleRow, applyRow = Row(ns.L.BLOCK_STYLE), Row(ns.L.APPLY_STYLE_TO)
+        if not (styleRow and applyRow and applyRow.goLook) then
+            print("STEP ERROR: style rows not registered")
+        else
+            local enabled
+            styleRow.dropdown.SetEnabled = function(_, v) enabled = v and true or false end
+            ns:SetOptionsSelection("*all")
+            ns:RefreshOptions()
+            if enabled ~= false then print("STEP ERROR: All blocks: the style list is not greyed out") end
+            if not applyRow.goLook:IsShown() then print("STEP ERROR: All blocks: no button to the Look tab") end
+            for _, b in ipairs(applyRow.buttons) do
+                if b:IsShown() then print("STEP ERROR: All blocks: a style button is still shown") end
+            end
+            if applyRow.label:GetText() ~= ns.L.STYLE_ALL_HERE then print("STEP ERROR: All blocks: the apply row keeps its label") end
+            local page, showPage = nil, ns.ShowOptionsPage
+            ns.ShowOptionsPage = function(i) page = i end
+            applyRow.goLook:GetScript("OnClick")(applyRow.goLook)
+            ns.ShowOptionsPage = showPage
+            if page ~= 2 then print("STEP ERROR: All blocks: the button did not open the Look tab (page " .. tostring(page) .. ")") end
+            -- a single block: back to the three buttons and the list
+            ns:SetOptionsSelection("gold")
+            ns:RefreshOptions()
+            if enabled ~= true then print("STEP ERROR: one block: the style list stays greyed out") end
+            if applyRow.goLook:IsShown() or not applyRow.buttons[1]:IsShown() then print("STEP ERROR: one block: the three buttons did not come back") end
+            if applyRow.label:GetText() ~= ns.L.APPLY_STYLE_TO then print("STEP ERROR: one block: the apply row label did not come back") end
         end
         -- every "Show me" button runs without error
         for _, child in ipairs({ TesseraNews:GetChildren() }) do

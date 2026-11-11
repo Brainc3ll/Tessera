@@ -34,6 +34,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Blocks tab: one page in place of five sub-tabs. The "On screen" switch sits left of the block's name.
 - The essentials and the block's own settings come first; its look, when to show it, and its name and clicks fold into sections.
 - The block list shows the blocks on your screen first, then those available.
+- Ctrl + Z also undoes while the options window is open (taking blocks off, a style...).
 
 ## 1.2.1 — 2026-11-10
 

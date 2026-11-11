@@ -2777,6 +2777,17 @@ do
     if ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not take the block off the screen") end
     switch:Activate()
     if not ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not put the block back") end
+    -- every block off at once, then Ctrl + Z in the options window brings them back
+    local onBefore = 0
+    for _, k in ipairs(ns:GetBlockKeys()) do if ns.db.blocks[k].enabled then onBefore = onBefore + 1 end end
+    ns:SetBlocksOnScreen(ns:GetBlockKeys(), false)
+    local ctrl = IsControlKeyDown
+    IsControlKeyDown = function() return true end
+    TesseraOptions:GetScript("OnKeyDown")(TesseraOptions, "Z")
+    IsControlKeyDown = ctrl
+    local onAfter = 0
+    for _, k in ipairs(ns:GetBlockKeys()) do if ns.db.blocks[k].enabled then onAfter = onAfter + 1 end end
+    if onAfter ~= onBefore then print("STEP ERROR: Ctrl + Z in the options window: " .. onAfter .. " blocks back of " .. onBefore) end
     -- style of one block: the others keep theirs, Ctrl + Z brings it back
     local themes = ns:GetAvailableThemes()
     local other

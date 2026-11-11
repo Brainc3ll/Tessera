@@ -3340,6 +3340,40 @@ local function BuildWindowFrame(showPage)
     panel:HookScript("OnShow", function() SetFolded(false) end)
 end
 
+-- Ctrl + Z undoes while a frame is shown (placement banner, options window); every
+-- other key goes on to the game. Keyboard propagation can only be changed out of
+-- combat, so the frame stops listening to the keyboard during combat (never
+-- swallowing a key). A text box with the focus keeps its own Ctrl + Z.
+local function ListenForUndo(frame)
+    local function Listen(on)
+        if InCombatLockdown() then return end
+        frame:SetPropagateKeyboardInput(true)
+        frame:EnableKeyboard(on)
+    end
+    frame:SetScript("OnKeyDown", function(self, key)
+        if InCombatLockdown() then return end
+        local undo = key == "Z" and IsControlKeyDown()
+        self:SetPropagateKeyboardInput(not undo)
+        if undo then ns:Undo() end
+    end)
+    frame:SetScript("OnKeyUp", function(self)
+        if not InCombatLockdown() then self:SetPropagateKeyboardInput(true) end
+    end)
+    frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+    frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    frame:HookScript("OnEvent", function(self, event)
+        if event == "PLAYER_REGEN_DISABLED" then
+            self:EnableKeyboard(false)
+        elseif event == "PLAYER_REGEN_ENABLED" then
+            Listen(self:IsShown())
+        end
+    end)
+    frame:HookScript("OnShow", function() Listen(true) end)
+    frame:HookScript("OnHide", function() Listen(false) end)
+    Listen(frame:IsShown())
+end
+ns.ListenForUndo = ListenForUndo
+
 -- Creates the main options window, its tabs and pages (called once, lazily)
 local function BuildPanel()
     ValidateSelection()
@@ -3364,6 +3398,7 @@ local function BuildPanel()
         DockSideWindows()
     end)
     table.insert(UISpecialFrames, panel:GetName()) -- close with Escape
+    ListenForUndo(panel) -- Ctrl + Z: same as in placement mode (taking blocks off, a style...)
     -- the placement banner steps aside while this window is open
     panel:HookScript("OnShow", function()
         FitPanelToScreen()
@@ -3716,35 +3751,8 @@ function ns:UpdatePlacementBanner()
         end
         b.undo = buttons[2]
 
-        -- Ctrl + Z undoes while the banner is shown; every other key goes on to the
-        -- game. Keyboard propagation can only be changed out of combat, so the banner
-        -- stops listening to the keyboard during combat (never swallowing a key).
-        local function ListenKeyboard(listen)
-            if InCombatLockdown() then return end
-            b:SetPropagateKeyboardInput(true)
-            b:EnableKeyboard(listen)
-        end
-        b:SetScript("OnKeyDown", function(frame, key)
-            if InCombatLockdown() then return end
-            local undo = key == "Z" and IsControlKeyDown()
-            frame:SetPropagateKeyboardInput(not undo)
-            if undo then ns:Undo() end
-        end)
-        b:SetScript("OnKeyUp", function(frame)
-            if not InCombatLockdown() then frame:SetPropagateKeyboardInput(true) end
-        end)
-        b:RegisterEvent("PLAYER_REGEN_DISABLED")
-        b:RegisterEvent("PLAYER_REGEN_ENABLED")
-        b:SetScript("OnEvent", function(frame, event)
-            if event == "PLAYER_REGEN_DISABLED" then
-                frame:EnableKeyboard(false)
-            else
-                ListenKeyboard(frame:IsShown())
-            end
-        end)
-        b:SetScript("OnShow", function() ListenKeyboard(true) end)
-        b:SetScript("OnHide", function() ListenKeyboard(false) end)
-        ListenKeyboard(true)
+        -- Ctrl + Z undoes while the banner is shown (see ListenForUndo)
+        ListenForUndo(b)
         self.banner = b
     end
     self:SkinWindow(b, b.text)

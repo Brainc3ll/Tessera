@@ -82,6 +82,7 @@ ns.CHANGELOG = {
                 "Blocks tab: one page in place of five sub-tabs. The \"On screen\" switch sits left of the block's name.",
                 "The essentials and the block's own settings come first; its look, when to show it, and its name and clicks fold into sections.",
                 "The block list shows the blocks on your screen first, then those available.",
+                "Ctrl + Z also undoes while the options window is open (taking blocks off, a style...).",
               },
               fr = {
                 "« Retirer » remplace « Masquer » : un bloc que vous retirez sort de son groupe, et ses voisins se resserrent.",
@@ -101,6 +102,7 @@ ns.CHANGELOG = {
                 "Onglet Blocs : une seule page au lieu de cinq sous-onglets. L'interrupteur « Sur l'écran » se trouve à gauche du nom du bloc.",
                 "L'essentiel et les réglages propres au bloc viennent d'abord ; son apparence, quand l'afficher, son nom et ses clics se replient en sections.",
                 "La liste des blocs montre d'abord ceux sur votre écran, puis ceux disponibles.",
+                "Ctrl + Z annule aussi quand la fenêtre d'options est ouverte (blocs retirés, un style...).",
               },
             },
         },

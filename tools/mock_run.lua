@@ -2479,4 +2479,45 @@ if os.getenv("TESSERA_LIST_MODULES") then
         print("MODULE " .. key .. " " .. tostring(ns.modules[key].label) .. " " .. table.concat(fields, ","))
     end
 end
+-- Options that must never get lost (rule: a rework takes nothing away). Dump with
+-- MOCK_WRITE_OPTIONS=1 on a version known good; then every run (enUS only) checks that each
+-- recorded option still exists, or that tools/options_renames.txt says what it became.
+if os.getenv("MOCK_WRITE_OPTIONS") then
+    local list = {}
+    for title in pairs(ns.optionsSeen or {}) do list[#list + 1] = title end
+    table.sort(list)
+    local out = assert(io.open("tools/options_baseline.txt", "w"))
+    for _, title in ipairs(list) do out:write(title, "\n") end
+    out:close()
+    print("options baseline written: " .. #list)
+elseif GetLocale() == "enUS" then
+    local function readLines(path)
+        local fh = io.open(path, "r")
+        if not fh then return nil end
+        local lines = {}
+        for line in fh:lines() do
+            if line ~= "" and line:sub(1, 1) ~= "#" then lines[#lines + 1] = line end
+        end
+        fh:close()
+        return lines
+    end
+    local baseline, renameLines = readLines("tools/options_baseline.txt"), readLines("tools/options_renames.txt") or {}
+    local renames = {}
+    for _, line in ipairs(renameLines) do
+        local old, new = line:match("^(.-)\t(.+)$")
+        if old then renames[old] = new else print("STEP ERROR: tools/options_renames.txt needs 'old<TAB>new': " .. line) end
+    end
+    if not baseline then
+        print("STEP ERROR: tools/options_baseline.txt is missing")
+    else
+        local lost = 0
+        for _, title in ipairs(baseline) do
+            if not ns.optionsSeen[title] and not (renames[title] and ns.optionsSeen[renames[title]]) then
+                lost = lost + 1
+                print("STEP ERROR: option lost: " .. title)
+            end
+        end
+        print("options checked: " .. #baseline .. ", lost: " .. lost)
+    end
+end
 print("mock run finished")

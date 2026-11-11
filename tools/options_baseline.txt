@@ -1,0 +1,161 @@
+24-hour clock
+Active profile
+Add a DataBroker block
+Add a launcher block
+Add a spacer
+All blocks behind
+All blocks in front
+Always shown in combat
+Apply this layout
+Back to the automatic choice
+Background
+Background color and opacity
+Background in class color
+Black and white icon
+Block
+Blocks that touch
+Blocks to configure
+Border
+Border color and opacity
+Border in class color
+Border size
+Bring blocks back on screen
+Coin icons
+Color by threshold
+Color of my status
+Colors: bright or soft
+Configure a launcher
+Copy style to all
+Copy style to group
+Corner join (%)
+Count
+Currency shown
+Custom name
+Date format
+Date shown
+Decimals
+Default
+Delete this profile
+Delete this spacer
+Demo mode
+Duplicate this profile
+Durability shown
+Edit a DataBroker block
+Experience shown
+Export the layout
+Export the style
+Export this profile
+Fit width to text
+Flash to alert
+Font
+Font size
+Frame of all blocks...
+Freeze blocks in combat
+Goal type
+Gold format
+Grid
+Group dropped against a screen edge
+Hide in a vehicle or on a flight
+Hide in combat
+Hide in instances
+Hide when empty
+Hide when resting
+High contrast
+Honor shown
+Icon frame
+Icon frame color
+Icon frame in class color
+Icon size (0 = automatic)
+Import a profile
+Import...
+In front or behind
+Joint between tiles
+Latency shown
+Layer
+Layout
+Leave out Battle.net friends
+Line between merged blocks
+Line color
+Line direction
+Line in class color
+Line thickness (pixels)
+Lines in class color
+Lock
+Lock blocks
+Memory shown
+Middle click
+Minimum height
+Minimum text size
+Minimum width
+New profile
+Only while holding Alt
+Opacity (%)
+Opacity when hidden (%)
+Options
+Outline
+Pin the tooltip
+Profile in dungeons and raids
+Progress bar
+Quests shown
+Quick tour
+Quiet in chat
+Red threshold
+Reload
+Remove
+Remove this block
+Replace with...
+Reputation shown
+Reset
+Reset everything
+Reset shown
+Rested XP shown
+Round
+Same profile for all characters
+Scale of all blocks (%)
+Scale of this group (%)
+Search
+Share my blocks with DataBroker addons
+Share this block
+Shift + click
+Show
+Show click help in tooltips
+Show icon
+Show label
+Show only on hover
+Show rested XP
+Show the minimap button
+Show the seconds
+Show the unit
+Show the value
+Show tooltips in combat
+Shown
+Skill
+Skill shown
+Slots shown
+Snap blocks together
+Snap to Blizzard frames
+Spacer type
+Stat shown on the block
+Streamer mode
+Style of blocks and window
+Switch to DataBroker mode
+Target (gold or level)
+Text alignment
+Text color
+Text in class color
+Text of all blocks...
+Text shadow
+Text to show
+Thousands separator
+Time shown
+Tooltip on hover
+Tooltip position
+Tooltip size (%)
+Undo
+Unit
+Unlock blocks
+Unlock with Edit Mode
+Use Tessera's own blocks
+Volume shown
+Weapons
+Yellow threshold

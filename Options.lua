@@ -324,6 +324,9 @@ end
 
 -- Help tooltip shown when hovering an option
 local function AttachTip(frame, title, tip)
+    -- every option built in this session (read by tools/mock_run.lua: no option may get lost)
+    ns.optionsSeen = ns.optionsSeen or {}
+    ns.optionsSeen[tostring(title)] = true
     if frame and not tip then
         -- every option explains itself: the mock run lists the ones that do not
         ns.optionsWithoutTip = ns.optionsWithoutTip or {}

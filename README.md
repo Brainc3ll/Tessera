@@ -177,7 +177,7 @@ Help tab inside the game explains everything.
 - DataBroker tab: other addons' DataBroker objects as blocks ("Plugins as blocks"); Tessera's
   blocks shared with Titan Panel, Arcana (formerly ChocolateBar), Bazooka... ("Sharing and mode"); a DataBroker mode,
   on automatically when such an addon is installed (Tessera then shows nothing itself), that can
-  be turned off to use both.
+  be turned off to use both. With DaylightUI installed, a note explains how to show Tessera's blocks in its panels.
 - Look tab: styles, how groups look, screen edges, ready-made layouts, blocks in front of or behind
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);

@@ -49,6 +49,8 @@ ns.CHANGELOG = {
                     .. " A profile on another style keeps it, and Tessera offers the new one.",
                 "Placement: Tessera knows the frames of DaylightUI (unit frames, buffs, quest tracker, chat, info panel)"
                     .. " and warns when a block covers one.",
+                "DataBroker tab: with DaylightUI installed, a note explains how to show Tessera's blocks in its panels,"
+                    .. " next to Tessera's own blocks (sharing) or instead of them (DataBroker mode).",
               },
               fr = {
                 "Nouveau style : Aurore, pour DaylightUI. Avec DaylightUI installé, DaylightUI dessine le cadre de chaque bloc"
@@ -58,6 +60,8 @@ ns.CHANGELOG = {
                     .. " Un profil sur un autre style le garde, et Tessera te propose le nouveau.",
                 "Placement : Tessera connaît les cadres de DaylightUI (unités, buffs, suivi de quêtes, discussion, panneau d'infos)"
                     .. " et prévient quand un bloc en recouvre un.",
+                "Onglet DataBroker : avec DaylightUI installé, une note explique comment afficher les blocs de Tessera dans ses panneaux,"
+                    .. " à côté de ceux de Tessera (partage) ou à leur place (mode DataBroker).",
               },
             },
         },

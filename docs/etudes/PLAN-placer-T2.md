@@ -1,5 +1,7 @@
 # Plan T2 : placement au pixel (lot 5a, 11/11/2026, Opus 5.5)
 
+**Statut (12/11) : fait, publié dans la 1.3.0.** L'échelle pixel perfect (lot 5b) est reportée.
+
 Choix de Braincell1980 (11/11) : bouton « Placer » en tête de l'onglet Blocs ; blocs verrouillés déverrouillés le temps du placement puis reverrouillés ; X et Y modifiables, en vrais pixels depuis le coin bas-gauche de l'écran ; la souris reste active ; message de première fois = une ligne du bandeau + « Compris » ; zip test102 (pixel perfect : test103).
 
 ## Ce qui change dans les données

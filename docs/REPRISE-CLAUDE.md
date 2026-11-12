@@ -3,7 +3,7 @@
 But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-1.2.0 publiée le 7/11 (style de groupe, Compétences, Amis) ; 1.2.1 publiée le 10/11 (correctifs : séparateurs, centrage, groupe collé au bord, fondu). 1.3.1 publiée le 12/11 (styles renommés, style Bronze et or, entrée « Automatique », bouton « Blocs vides »). 1.3.0 publiée le 11/11 (fenêtre d'options, « Placer au pixel », onglet Accessibilité, nouveautés). Deux branches depuis le 10/11 : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes (1.3, 2.0…), jamais renommée. Chaque correctif sur `main` est reporté dans `next`. Une conversation par version : handoff dès la publication.
+1.2.0 publiée le 7/11 (style de groupe, Compétences, Amis) ; 1.2.1 le 10/11 (correctifs : séparateurs, centrage, groupe collé au bord, fondu) ; 1.3.0 le 11/11 (fenêtre d'options, « Placer au pixel », onglet Accessibilité, nouveautés) ; 1.3.1 le 12/11 (styles renommés, style Bronze et or, entrée « Automatique », bouton « Blocs vides »). Deux branches depuis le 10/11 : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes (1.4, 2.0…), jamais renommée. Chaque correctif sur `main` est reporté dans `next`. Une conversation par version : handoff dès la publication.
 
 ## Avant chaque publication
 - Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).
@@ -11,7 +11,7 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 ## Travailler avec Braincell1980
 - Dossier du jeu pour WoW Forever : `World of Warcraft/_forever_/Interface/AddOns/` (pas `_classic_`).
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
-- Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (prochain numéro : voir A-REPRENDRE, « Outils »), qu'il teste avant tout commit de publication.
+- Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (prochain numéro : voir A-REPRENDRE, « Où on en est »), qu'il teste avant tout commit de publication.
 - Proposer avant de coder une nouveauté ; corriger directement un bug.
 - Systématique (10/11), avant de lancer le code : demander si c'est une correction de bug (`main`) ou une nouveauté (`next`), dire s'il doit changer de modèle, détailler ce qu'il faut installer, poser les questions, puis attendre son « go ».
 - Ne jamais publier sans « on publie » (ou un « go » clair en réponse à la question).
@@ -64,13 +64,13 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - Le cadre d'aide de la visite rapide partage un seul bouton d'action entre les étapes : le réactiver à chaque étape.
 - Sous Linux (Wine), après une capture d'écran, les menus déroulants du jeu ne répondent plus jusqu'à un Alt-Tab : c'est le focus de Wine, pas Tessera. Un Alt-Tab peut aussi relancer une mise en page.
 
-## Journal court (une ligne par décision ; le détail est dans CHANGELOG.md, A-REPRENDRE, IDEES-FUTUR)
+## Journal court (une ligne par décision ; le détail est dans CHANGELOG.md, A-REPRENDRE, `docs/archive/HISTORIQUE-1.0-1.3.md`, IDEES-FUTUR)
 - 20/10 : rc7 publiée.
 - 21/10 : placement simplifié (rc8) ; bêta des rangées rangée ; FlareUI neutre ; cadres des interfaces connues ; dispositions toutes prêtes corrigées (Double barre en trois rangées, Chemin de ronde sans bloc masqué) ; visite rapide et devant / derrière corrigés ; rc8 publiée ; Retail pas une priorité ; galerie HD refaite (dépôt privé) ; mode démo gardé et corrigé ; fond 50 % des styles FlareUI ; cadres d'EllesmereUI, ElvUI, GW2 UI ajoutés (noms lus dans leur code) ; styles GW2 UI et Tukui notés pour la 1.1 ; pack d'icônes « forever-icons » noté.
 - 21/10 : bêta Forever fermée le 23/10 à 19 h (heure belge) ; sortie de Forever le 5/11 à minuit (heure belge), publier la 1.0.0 le 4/11 dans la journée.
 - 22/10 : titre « Info Bars That Snap Together », résumé et début des descriptions réécrits ; générateur de textes dans `tools/gen` ; outils de dev dans le dépôt privé `Tessera-dev` ; ce fichier créé.
-- 22/10 : six skills Tessera enregistrées ; prochain sujet : review du code (voir A-REPRENDRE).
-- 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42, validé en jeu ; le reste noté pour la 1.1 dans A-REPRENDRE.
+- 22/10 : six skills Tessera enregistrées ; prochain sujet : review du code (voir `docs/archive/HISTORIQUE-1.0-1.3.md`).
+- 22/10 : review du code ; corrections visite rapide (`sv.tourBackup`) et Ctrl+Z (échelle, figé) dans test42, validé en jeu ; le reste noté pour la 1.1 (voir `docs/archive/HISTORIQUE-1.0-1.3.md`).
 - 22/10 : sondes de l'API de WoW Forever (test43, test44) : blocs DPS, Corps, Mode de jeu, Météo validés pour la 1.1 (IDEES-FUTUR) ; commandes de dev révisées ; rc9 publiée.
 - 23/10 : exports 10 fois plus courts (`TESSERA2:`), anciens textes toujours lus (fixtures dans `tools/fixtures`, à garder) ; statistique et texture des barres gardées à l'import ; rc9-hotfix publiée avant la fermeture de la bêta.
 - 24/10 : rangées archivées dans `archive/refonte-rangees` (déplacée le 25/10 dans le dépôt privé Tessera-dev) ; disposition « Portable » notée pour après la 2.0.
@@ -80,14 +80,18 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - 25/10 (soir) : traductions allemande, espagnoles et portugaise finies (dépôt privé `Tessera-dev/traductions-1.0.0/`, 1031 textes, 0 erreur) ; page CurseForge/Wago réécrite avec l'histoire de Braincell1980 (un seul fichier `docs/pages/description.md`) ; ACR.md (E4d) et AI-DECLARATION.md ; merci à Funkeh (StatBlock Core) ; Arcana (ex-ChocolateBar) reconnu ; mode streamer (option, raccourci, bloc) ; clé de personnage = nom complet seul sur Forever (conseil de Funkeh, relecture indépendante faite, test `tools/fixtures/sv-rc9-forever.lua` en CI) ; zip test49. Pause jusqu'au mardi 27/10.
 - 6/11 : 1.1.0 publiée (7 nouveaux blocs, options d'affichage, fenêtre d'options avec pages à gauche et onglet « Ce bloc », traductions sur GitHub). Mode maintenance.
 - 7/11 : 1.2, régler le style d'un groupe d'un coup (entrées « Groupe : … », « Copier sur le groupe » options + menu rapide, copies annulables) ; test84 à tester en jeu.
-- 7/11 : test84 validé en jeu (style d'un groupe d'un coup, aide comprise). Reste pour la 1.2 : voir A-REPRENDRE, feuille de route, point 4.
-- Branches (10/11) : `main` et `next` (voir le haut du fichier). Les skills tessera-sync-branches, tessera-lean-start, tessera-handoff, tessera-release et tessera-wrap-up ont été mis à jour le 10/11 (Opus 5.5 a vérifié).
-- **Correctif d'urgence** (une nouvelle conversation par urgence) : sur `main`, skill tessera-bug-fix (cause, reproduction dans le faux jeu, test qui échoue sans la correction, changelog, vérifications, zip de test), puis fusionner `main` dans `next`. Publication seulement à « on publie ». Sans cause sûre : demander capture, vidéo ou export du profil.
+- 7/11 : test84 validé en jeu (style d'un groupe d'un coup, aide comprise). Reste pour la 1.2 : point 4 de la feuille de route (`docs/archive/HISTORIQUE-1.0-1.3.md`).
 - 7/11 : décision de Braincell1980 : le style d'un groupe d'un coup (validé test84) part en 1.1.3 sur `main` (traduit de/es/mx/pt par Claude, non relu) ; zip test85 ; publication sur son « on publie ». Le reste reste en 1.2.
 - 7/11 : 1.2.0 publiée (tout test84 ; la 1.1.3 prévue est fondue dedans). Décision : une conversation par version, handoff à chaque publication.
 - 10/11 : branche `next` créée depuis `main` ; deux branches (`main` correctifs, `next` versions suivantes) ; chaque commit et note indique la version du modèle utilisé (ex. Haiku 5.5).
+- Branches (10/11) : `main` et `next` (voir le haut du fichier). Les skills tessera-sync-branches, tessera-lean-start, tessera-handoff, tessera-release et tessera-wrap-up ont été mis à jour le 10/11 (Opus 5.5 a vérifié).
+- **Correctif d'urgence** (une nouvelle conversation par urgence) : sur `main`, skill tessera-bug-fix (cause, reproduction dans le faux jeu, test qui échoue sans la correction, changelog, vérifications, zip de test), puis fusionner `main` dans `next`. Publication seulement à « on publie ». Sans cause sûre : demander capture, vidéo ou export du profil.
 - 10/11 : 1.2.1 publiée sur « on publie » (Sonnet 5.5) : correctifs de la 1.2.0 (ligne de séparation contre un bord, groupe centré qui reste centré, groupe collé au bord gauche/droit qui garde son bord quand un bloc s'élargit, ligne sous un espace, fondu fluide). Cause du chevauchement : cadres `SetClampedToScreen` repoussés sur la colonne voisine. Pas de ligne `Claude-Session` dans les commits (règle de Braincell1980).
 - 11/11 : 1.3 lots 0 à 2 faits sur `next` (test « aucun réglage perdu », sonde des modèles du jeu, icône jusqu'à 200, flèche du Cadavre ×1,5, crédit à Malkkav, « Retirer » / « Sur l'écran » en T2 validé en jeu avec test91). Suivant : lot 3.
 - 11/11 : 1.3, lot 3 fait sur `next` (3a lignes et une colonne, 3b cadre de la fenêtre), zips test92 à test94 (Opus 5.5). Choix : aide à droite au lieu de l'infobulle, pas de bouton FlareUI (lien dans sa case). Suivant : lot 4.
 - 11/11 : 1.3, lot 4 fait sur `next` (zips test96 à test101, Opus 5.5 puis Sonnet 5.5) : page Blocs en une page avec sections repliables, onglet Accessibilité, style par bloc (action annulable). Choix : taille des fenêtres = Maj + molette 70 à 130 % seulement (pas de réglage de texte 100/150/200 %), % affiché en haut, bulles d'aide des fenêtres à 125 %. À valider en jeu. Suivant : lot 5 (placement au pixel).
 - 11/11 : 1.3, lot 5a fait sur `next` (Opus 5.5, T2) : « Placer » (onglet Blocs et bandeau), placement au pixel, clic pour changer de bloc, grille dans le bandeau (G), bloc Mode streamer visible au départ ; test105 marche en jeu. Pixel perfect et sélecteur de langue reportés après la 1.3. Suivant : lot 6 (première expérience + montrer les changements de la 1.3), test106.
+
+- 11/11 : 1.3.0 publiée (tag `v1.3.0`, commit `29c89ad`) ; traductions de, es, mx, pt faites par Claude, pas relues.
+- 12/11 : 1.3.1 publiée (tag `v1.3.1`). Le run du 11/11 au soir a échoué (panne de GitHub Actions) ; relancé le 12/11 à 5 h 30, réussi. Zips jusqu'à test117 (Opus 5.5 puis Sonnet 5.5).
+- 12/11 (Sonnet 5.5) : révision de la documentation : `A-REPRENDRE.md` réduit à l'état actuel, historique daté déplacé tel quel dans `docs/archive/HISTORIQUE-1.0-1.3.md` ; README et index `docs/README.md` corrigés.

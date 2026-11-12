@@ -1,4 +1,4 @@
-> **Archive** : liste de tests de la rc5 (15/10/2026), terminée. La liste en cours est `docs/TESTS-1.0.0.md`.
+> **Archive** : liste de tests de la rc5 (15/10/2026), terminée. La liste en cours est `docs/archive/TESTS-1.0.0.md`.
 
 # Tests de la rc5 (jeudi 15 octobre)
 

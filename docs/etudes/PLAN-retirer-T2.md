@@ -1,5 +1,7 @@
 # Plan T2 : « Retirer » au lieu de « masquer » (lot 2 de la 1.3)
 
+**Statut (12/11) : fait, validé en jeu (test91), publié dans la 1.3.0.**
+
 Rédigé le 11/11 (Fable 5.2), avant tout code. Procédure : skill tessera-gate2.
 
 ## Aujourd'hui (1.2.1)

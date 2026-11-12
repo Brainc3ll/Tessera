@@ -1,6 +1,6 @@
 # Plan d'architecture : fenêtre d'options 1.3 (11 novembre 2026)
 
-**Statut : plan, rien n'est codé.** Écrit par Claude (Fable 5.2) après lecture du code de `next` (commit `556c162`), de FlareUI 5.1.2 (MIT, idées seulement) et du code de Blizzard pour Forever (dépôt Gethe/wow-ui-source, branche `forever`). Les décisions de Braincell1980 sont dans `docs/A-REPRENDRE.md` (11/11) ; la structure des pages dans `docs/IDEES-FUTUR.md`, « Fenêtre d'options 1.3 ». Ce que je n'ai pas pu vérifier est listé à la fin.
+**Statut (12/11) : plan réalisé dans la 1.3.0 ; seule l'échelle pixel perfect (lot 5b) est reportée.** Avant le code, c'était : plan, rien n'est codé. Écrit par Claude (Fable 5.2) après lecture du code de `next` (commit `556c162`), de FlareUI 5.1.2 (MIT, idées seulement) et du code de Blizzard pour Forever (dépôt Gethe/wow-ui-source, branche `forever`). Les décisions de Braincell1980 sont dans `docs/archive/HISTORIQUE-1.0-1.3.md` (11/11) ; la structure des pages dans `docs/IDEES-FUTUR.md`, « Fenêtre d'options 1.3 ». Ce que je n'ai pas pu vérifier est listé à la fin.
 
 ## 1. Ce que le code fait déjà (lu, pas supposé)
 

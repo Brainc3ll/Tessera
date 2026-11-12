@@ -112,7 +112,7 @@ Fil pour débutants ; trois choses servent :
 Relevés faits sur le vrai client, page par page. Vérifié pour Tessera :
 - **Événement inconnu = erreur qui arrête le fichier** : les 49 événements que Tessera enregistre existent tous dans la liste de Ketho pour Forever (1 814). À ajouter un jour à `tools/forever_api_check.py`.
 - **Piège du numéro de version** (`GetBuildInfo() >= 100000` pour « client moderne », Forever répond 16001) : Tessera ne lit `GetBuildInfo` que pour le rapport de bug, pas de souci.
-- **`ReloadUI()` protégé** sur la bêta : à vérifier avant la 1.0.0 (voir A-REPRENDRE).
+- **`ReloadUI()` protégé** sur la bêta : à vérifier avant la 1.0.0 (voir `docs/archive/HISTORIQUE-1.0-1.3.md`).
 - **Plafond de 100 erreurs Lua par session** : après, le client ne transmet plus rien. Si Braincell1980 voit une avalanche d'erreurs, la première compte, pas les suivantes.
 - Les sauvegardes jamais relues (bug de la bêta de septembre) : corrigé depuis, les profils de Tessera survivent aux reconnexions dans les tests de Braincell1980.
 - Boîte à outils des valeurs secrètes plus complète que prévu (`C_Secrets`, 27 questions, `canaccesssecrets`, `scrub`…) ; la santé est secrète en combat, les montants de dégâts (`UNIT_COMBAT`) non : utile pour le bloc DPS de la 1.2.

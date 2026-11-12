@@ -5,6 +5,7 @@ Les idées faites sont marquées [Fait] avec leur version.
 
 Rangé par thème le 25 octobre 2026 (avant : par date). Dans chaque partie, la date de chaque idée reste dans son titre. Ce qu'on a appris des autres addons, du code de Blizzard et des autres développeurs : `docs/etudes/SOURCES.md`.
 
+- Pistes en cours (12 novembre 2026)
 - Règles et décisions
 - Nouveaux blocs
 - Placement et affichage
@@ -12,6 +13,13 @@ Rangé par thème le 25 octobre 2026 (avant : par date). Dans chaque partie, la 
 - Accessibilité et manette
 - Traductions
 - Code
+
+## Pistes en cours (12 novembre 2026)
+Pistes notées par Braincell1980 après la 1.3.1 ; aucune n'est choisie ni datée. Chacune renvoie à la partie qui la détaille.
+- **Bouton « Tous les blocs » d'un bloc seul ou d'un groupe** : quand un bloc seul ou un groupe est choisi, le bouton « Tous les blocs » a le même décalage avec l'onglet Apparence que la page « Tous les blocs » (corrigée en 1.3.1 : liste grisée et bouton « Ouvrir l'onglet Apparence »). À revoir si Braincell1980 le veut.
+- **Manette 2.0** : voir « Manette (2.0…) », « Manette native de WoW Forever » et « Ce que FlareUI 6.0 apprend pour la manette », dans Accessibilité et manette.
+- **Polices d'accessibilité** (1.4) : voir « Polices pour l'accessibilité ».
+- **Vol et bateaux** : à sonder ; voir « Idées de blocs du 7/11 » pour les autres idées vérifiées avec forever-lint.
 
 ## Règles et décisions
 
@@ -27,7 +35,7 @@ Fait avec Braincell1980 après la review du code (22/10), les sondes de l'API de
 - Camping : filtrer `UNIT_AURA` sur le joueur.
 - Mode placement plus rapide : caches de groupes, étiquettes non recalculées verrouillé, rechargement des styles regroupé au lancement.
 - Changelog plus léger en jeu (54 Ko en mémoire, cinq fois le module Forever) : à partir de la 1.0.0, l'historique des rc sur GitHub.
-- Petits bugs de la review (voir A-REPRENDRE, 1.1).
+- Petits bugs de la review (voir `docs/archive/HISTORIQUE-1.0-1.3.md`).
 - Améliorations des blocs vues dans la sonde : Compréhension par numéro et sa description, honneur d'hier, durabilité dans les sacs (à sonder une fois).
 - Audit de l'API avec la doc de Forever.
 - Bloc « Batterie de la manette » (`C_GamePad.GetPowerLevel`), à sonder, pour la 2.0.
@@ -357,7 +365,7 @@ Broker_Everything 5.0.0 est sous GPL v3 et Tessera sous MIT : on reprend seuleme
 - **Réglage « nombre seul »** : afficher seulement le nombre, sans texte (« Shorter Broker »).
 - **Clic réglable** : actions de clic configurables par bloc (Tessera a déjà Maj + clic ; clic simple, droit et Ctrl à vérifier).
 
-## Fenêtre d'options 1.3 (maquette du 11/11, rien codé)
+## Fenêtre d'options 1.3 (maquette du 11/11) [Fait dans la 1.3.0, sauf l'échelle pixel perfect]
 Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, le rare est replié. Tous les réglages actuels restent (une refonte n'enlève rien) ; seule leur place change. Commandes sur le modèle des réglages du jeu (◄ valeur ►, curseurs à losange, cases jaunes), pilotables à la manette (D-pad, A, B, LT / RT pour les onglets). Texte × 2 et contraste élevé testés dès le dessin.
 - Barre du haut : titre, recherche d'un réglage, ▲ réduire, ✕ fermer.
 - Onglets : Blocs, Apparence, Général, Accessibilité (nouveau), Lanceurs, Broker, Profils, puis Aide et À propos.
@@ -365,8 +373,8 @@ Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, 
 - Apparence : style général, échelle (celui du jeu, pixel perfect, personnalisée), groupes, écart, aimantation, préréglages, plan avant ou arrière, export et import.
 - Général : déplacement et grille, infobulles, combat, chat, mode streamer, bouton de la minicarte.
 - Accessibilité : contraste élevé, taille minimale du texte, couleurs des niveaux, moins d'animations, renvoi vers les réglages du jeu.
-- Placement : voir `docs/A-REPRENDRE.md` (décisions du 11/11).
-- Fait au lot 4 (11/11, test96) : onglet Accessibilité, page Blocs en une page avec sections repliables, interrupteur « Sur l'écran », liste « Sur l'écran / Disponibles », style d'un bloc ou d'un groupe (action). Reste du lot 5 : X, Y, verrouiller, « Placer », échelle.
+- Placement : voir `docs/archive/HISTORIQUE-1.0-1.3.md` (décisions du 11/11).
+- Fait au lot 4 (11/11, test96) : onglet Accessibilité, page Blocs en une page avec sections repliables, interrupteur « Sur l'écran », liste « Sur l'écran / Disponibles », style d'un bloc ou d'un groupe (action). Lot 5a (« Placer au pixel », X et Y) : fait dans la 1.3.0 ; échelle (lot 5b) : reportée, voir « Échelle Pixel perfect » plus bas.
 - Bandeau d'aide à droite de la fenêtre qui explique le réglage survolé : fait (lot 3b, 11/11) ; recherche, réduire, logo, Maj + molette, liens à copier d'À propos : faits aussi.
 La maquette HTML a été dessinée dans la conversation du 11/11 ; elle n'est pas enregistrée dans le dépôt.
 

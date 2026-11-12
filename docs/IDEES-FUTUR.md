@@ -408,3 +408,8 @@ Bugs de la fenêtre d'options de FlareUI, corrigés chez lui (changelogs 1.1 à 
 
 ## « Montre-moi » élargi (idée de Braincell1980, 11/11, à voir après la 1.3)
 Le bouton « Montre-moi » (fenêtre Nouveautés, visite rapide) ouvre l'endroit et fait clignoter le réglage (`ShowHeadWidget`, `ShowRow`, `Blink` dans Options.lua). Pistes : un lien « Montre-moi » dans les lignes de l'aide (une ligne d'aide qui nomme un réglage l'ouvre et le fait clignoter) ; dans les infobulles du panneau d'aide à droite ; dans les messages du jeu qui nomment un réglage (ex. « Ce bloc est caché… » ouvre « Quand l'afficher ») ; depuis le journal des changements (chaque ligne qui parle d'un réglage). Demande une table « ligne d'aide → réglage » à tenir à jour avec les textes.
+
+## Idées vues dans SimplePanel 0.1.23 (12/11, zip envoyé par Braincell1980, rien codé)
+Addon de Dinoblankie, sans licence : on reprend des idées, jamais son code ni ses textes. Étude faite sur les noms de ses modules seulement, rien lu en détail. Aucun danger trouvé (vérification du 12/11).
+- Modules dont Tessera n'a pas l'équivalent exact (à vérifier avant de proposer) : Alts (suivi des autres personnages), Timers, WorldBuffs, Professions (fenêtre de métiers), Appearance, tiroir pour les boutons de minimap, graphiques (Chart).
+- Il envoie un message d'addon « SuiteVersions » (sa version, au groupe ou à la guilde, une fois par heure) pour prévenir d'une mise à jour. Tessera n'a rien de tel ; à discuter avant tout (vie privée, bruit sur le canal).

@@ -8,7 +8,7 @@ Ce fichier donne l'état actuel. Le détail daté de la 1.0 à la 1.3.1 est dans
 - **En cours sur `next` (1.4.0)** : style Aurore pour DaylightUI (son API dessine le cadre des blocs ; imitation sans l'addon) et ses cadres connus. Pas testé en jeu : voir `docs/IDEES-FUTUR.md`, « Style Aurore ». Le correctif de date de la 1.3.1 (CHANGELOG du 12/11) est sur `main` et reporté dans `next` ; rien n'est poussé tant que Braincell1980 n'a pas testé.
 - **Versions précédentes** : 1.3.0 le 11/11 (fenêtre d'options, Placer au pixel, onglet Accessibilité, nouveautés) ; 1.2.1 le 10/11 (correctifs) ; 1.2.0 le 7/11 (style de groupe, Compétences, Amis).
 - **Branches** : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`) ; `next` = versions suivantes (1.4, 2.0…), jamais renommée ; synchronisées le 12/11. Chaque correctif sur `main` est reporté dans `next`. Un bug urgent : repartir du dernier tag.
-- **Prochain zip de test : test119** (test118 = `next` avec le style Aurore et la date de la 1.3.1 corrigée, 12/11, Sonnet 5.5) (zips construits avec le dépôt privé `Tessera-dev`, voir « Outils »).
+- **Prochain zip de test : test120** (test118 = Aurore + date de la 1.3.1 ; test119 = + note DataBroker pour DaylightUI ; 12/11, Sonnet 5.5) (zips construits avec le dépôt privé `Tessera-dev`, voir « Outils »).
 - **Façon de travailler** : une conversation par version (handoff dès la publication) ; avant de coder, demander si c'est un correctif (`main`) ou une nouveauté (`next`), conseiller modèle et effort, poser les questions, attendre le « go » ; chaque commit et chaque note indique la version du modèle. Détail : `CLAUDE.md`, `docs/REPRISE-CLAUDE.md`.
 
 ## Ouvert

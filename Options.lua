@@ -2213,6 +2213,9 @@ local function BuildBrokerPage(tabPage, showBlockPage)
     local status = Place(CreateNote(page, "\n"), 1)
     status.isShown = hasLib
     status.Refresh = function() status.fs:SetText("|cffffd100" .. (ns:GetBrokerStatus() or "") .. "|r") end
+    -- DaylightUI has panels of its own that take DataBroker objects: how to use them with Tessera
+    local daylight = Place(CreateNote(page, L.BROKER_NOTE_DAYLIGHT), 1)
+    daylight.isShown = function() return hasLib() and ns:GetDaylightAPI() ~= nil end
 
     -- mode button: leave or enter DataBroker mode (same slot)
     local leave = Place(CreateButton(page, L.BROKER_MODE_OFF_BUTTON, function() ns:SetBrokerMode(false) end,

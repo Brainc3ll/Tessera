@@ -76,6 +76,18 @@ Licence « tous droits réservés » : idées seulement, aucun code ni donnée r
 - Cadres lus dans son code et ajoutés à `ns.KNOWN_UI_FRAMES` : `DaylightUIFrame_<unit>` (player, target, targettarget, pet, focus), `DaylightUIBuffs`, `DaylightUIDebuffs`, `DaylightUIQuestTracker`, `DaylightUIChat`, `DaylightUIInfoPanel`, `DaylightUIDataBar`. Sa barre d'XP n'a pas de cadre propre (elle vit dans le panneau d'infos) : pas d'aimantation. `DaylightUIReputationBar` existe, non ajouté. Minimap : celle du jeu.
 - Il lit LibDataBroker dans son panneau d'infos (`InfoPanel/Broker.lua`) : les blocs partagés par Tessera peuvent y apparaître.
 
+### Fenêtres de démarrage des interfaces et versions du 12 novembre 2026 (FlareUI 6.0.3, ElvUI 16.01, EllesmereUI 9.8.4, GW2 UI 12.1.7, DaylightUI 1.6.9)
+Contrôle de sécurité fait : rien de malveillant, pas d'instruction cachée pour une IA (le seul texte adressé aux IA est la notice de licence de DaylightUI, `AGENTS.md`). Les `loadstring` sont l'import de profil d'ElvUI et une table de zones chez DaylightUI.
+- Toutes les cinq chargent sur Forever (`16001` dans le .toc). Licences : FlareUI MIT ; ElvUI et EllesmereUI « licence personnalisée, tous droits réservés » (idées seulement) ; DaylightUI tous droits réservés ; GW2 UI : aucune licence trouvée dans le zip (idées seulement).
+- Tous les noms de cadres déjà dans `ns.KNOWN_UI_FRAMES` (FlareUI, EllesmereUI, ElvUI, GW2 UI) existent encore dans ces versions (recherche du texte du nom ; vérifie la présence, pas l'usage). `Frame_targettarget` et `Frame_pet` de DaylightUI sont fabriqués (`"DaylightUIFrame_" .. unit`), d'où l'absence du texte.
+- **Fenêtres de premier lancement (lues dans le code), à laisser finir avant les fenêtres de Tessera :**
+  - DaylightUI : `DaylightUIInstaller` (installateur, 1 s après la connexion), `DaylightUITour` et `DaylightUITourAsk` (visite guidée et sa question).
+  - FlareUI : `FlareUI_Tour` (dix pages, ouverte 2 s après la connexion si aucun module n'est actif ; une seule fois, `welcomeSeen`), `FlareUI_Welcome` (petite fenêtre, interface manette).
+  - ElvUI : `ElvUIInstallFrame` (installateur, tant que `install_complete` manque), `PluginInstallFrame` (installateur de plugins), `ElvUITutorialWindow` (tutoriel, après l'installation).
+  - EllesmereUI : `EUIFirstInstallPopup` et `EUIFirstInstallDimmer` (choix des modules, à la connexion, avant sa fenêtre de conflits).
+  - GW2 UI : `GwWelcomePage` (version « WELCOME » = première fois). À une mise à jour de version, il ouvre `GwSettingsWindow` (changelog) : non ajouté.
+- GW2 UI n'a pas de style dans Tessera. Il enregistre dans LibSharedMedia les polices « GW2_UI » et « GW2_UI Light » (ses bords et fonds sont des images à lui, non partagés). Un style imitation (fond sombre, bord fin, sa police si présente) resterait possible : à décider par Braincell1980.
+
 ### GW2 UI 12.0.0 (21 octobre 2026)
 - Charge sur Forever (même .toc multi-versions qu'ElvUI, `[AllowLoadGameType camelot]`).
 - [Fait, 1.0.0, pas testé en jeu] Cadres dans `ns.KNOWN_UI_FRAMES` (seulement quand GW2_UI est chargé) : `GwPlayerUnitFrame`, `GwTargetUnitFrame`, `GwFocusUnitFrame`, `GwPlayerPetFrame`, `GwPlayerPowerBar`, `GwPlayerClassPower`, `GwQuestTracker`, `GwExperienceFrame` (aimantation), `Gw2MicroBarFrame`, `GwStanceBar`, `GwTotemBar`.

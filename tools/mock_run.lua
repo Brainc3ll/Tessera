@@ -968,6 +968,57 @@ for _, step in ipairs({
         ns:ApplyTheme("flat")
     end,
     function() for _, t in ipairs(ns.themes) do t.block({}); assert(t.window().title, t.key) end end,
+    -- Aurore (DaylightUI): without the addon an imitation with a note; with a fake API (the calls
+    -- of its API.md: Skin, Font, Accent) the frame is drawn by DaylightUI, and its shell hides
+    -- again when the block changes style
+    function()
+        local theme = ns.db.theme
+        assert(not ns:IsThemeInstalled("aurore") and ns:GetDaylightAPI() == nil, "no DaylightUI yet")
+        local cfg0 = {}
+        ns:ApplyThemeToCfg(cfg0, "aurore")
+        assert(cfg0.border == "solid" and cfg0.borderSize == 1 and not cfg0.separators, "Aurore imitation")
+        assert(ns:ApplyTheme("aurore") and ns:GetThemeNote("aurore"), "Aurore without DaylightUI has a note")
+        for _, t in ipairs(ns:GetAvailableThemes()) do
+            if t.key == "aurore" then assert(t.name:find("DaylightUI", 1, true), "Aurore imitation names its addon") end
+        end
+        local made, last = 0, nil
+        _G.DaylightUI = { API = { major = 1, minor = 3,
+            Skin = function(frame, opts)
+                made = made + 1
+                local shell = frame.__daylight or CreateFrame("Frame", nil, frame)
+                frame.__daylight, last = shell, opts
+                return shell
+            end,
+            Font = function() return "Fonts\\ARIALN.TTF" end,
+            Accent = function() return 0.4, 0.5, 0.9 end } }
+        assert(ns:IsThemeInstalled("aurore") and not ns:GetThemeNote("aurore"), "Aurore with DaylightUI")
+        assert(ns:FindMedia("border", "daylight").daylight and ns:FindMedia("font", "daylight").file, "daylight media")
+        assert(ns:GetAutoTheme() == "aurore", "auto style with DaylightUI: " .. tostring(ns:GetAutoTheme()))
+        local cfg = {}
+        ns:ApplyThemeToCfg(cfg, "aurore")
+        assert(cfg.border == "daylight" and cfg.font == "daylight" and cfg.separators, "Aurore block style")
+        assert(math.abs(cfg.separatorColor.b - 0.9) < 0.01, "separators take DaylightUI's accent")
+        ns:ApplyTheme("aurore")
+        local f = ns.frames.gold
+        ns:ApplyStyle("gold")
+        assert(made > 0 and f.__daylight and f.__daylight:IsShown(), "DaylightUI draws the block")
+        assert(last.borderPx == 2 and f.skinKind == "daylight", "border size passed on")
+        assert(f.tesseraDaylightShell == f.__daylight, "shell kept for later")
+        ns:ApplyTheme("flat")
+        ns:ApplyStyle("gold")
+        assert(not f.__daylight:IsShown() and f.skinKind ~= "daylight", "shell hidden after a style change")
+        ns:ApplyTheme("aurore")
+        ns:ApplyStyle("gold")
+        assert(f.__daylight:IsShown(), "shell back with Aurore")
+        -- a DaylightUI too old or of another major: the plain imitation
+        _G.DaylightUI.API.major = 2
+        assert(ns:GetDaylightAPI() == nil and ns:FindMedia("border", "daylight").file, "other major: plain border")
+        _G.DaylightUI = nil
+        ns:ApplyStyle("gold")
+        assert(f.skinKind ~= "daylight", "DaylightUI gone: no shell")
+        ns.db.theme = theme
+        ns:ApplyTheme(theme or "flat")
+    end,
     -- a profile styled with FlareUI 1.x keeps its look, and FlareUI 2.x is offered in a window
     function()
         local has = ns.HasFlareUIMedia

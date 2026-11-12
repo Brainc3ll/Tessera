@@ -37,6 +37,32 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.4.0",
+        date = "2026-11-12",
+        sections = {
+            { kind = "new",
+              en = {
+                "New style: Aurora, for DaylightUI. With DaylightUI installed, DaylightUI draws the frame of each block"
+                    .. " (rounded border, shadow, background) and the blocks use its font."
+                    .. " Aurora also works without DaylightUI, as a plain imitation."
+                    .. " With only DaylightUI installed, new profiles start with Aurora."
+                    .. " A profile on another style keeps it, and Tessera offers the new one.",
+                "Placement: Tessera knows the frames of DaylightUI (unit frames, buffs, quest tracker, chat, info panel)"
+                    .. " and warns when a block covers one.",
+              },
+              fr = {
+                "Nouveau style : Aurore, pour DaylightUI. Avec DaylightUI installé, DaylightUI dessine le cadre de chaque bloc"
+                    .. " (bord arrondi, ombre, fond) et les blocs prennent sa police."
+                    .. " Aurore marche aussi sans DaylightUI, en simple imitation."
+                    .. " Avec DaylightUI seul installé, les nouveaux profils commencent avec Aurore."
+                    .. " Un profil sur un autre style le garde, et Tessera te propose le nouveau.",
+                "Placement : Tessera connaît les cadres de DaylightUI (unités, buffs, suivi de quêtes, discussion, panneau d'infos)"
+                    .. " et prévient quand un bloc en recouvre un.",
+              },
+            },
+        },
+    },
+    {
         version = "1.3.1",
         date = "2026-11-12",
         sections = {

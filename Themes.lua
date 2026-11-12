@@ -304,6 +304,49 @@ ns.themes = {
             return FlatWindow({ bg.r, bg.g, bg.b, 0.95 }, { border.r, border.g, border.b, 1 })
         end,
     },
+    {
+        -- DaylightUI 1.6: with the addon, its own API draws the frame of each block (shadow, rounded
+        -- border, background) in the player's DaylightUI settings, and the font is theirs. Without
+        -- it: a plain imitation (dark background, thin dark border), values rounded on purpose
+        key = "aurore",
+        name = L.THEME_AURORA,
+        uiName = "DaylightUI",
+        installed = function() return ns:GetDaylightAPI() ~= nil end,
+        available = function() return true end,
+        missingNote = "THEME_NOTE_DAYLIGHT",
+        block = function(cfg)
+            local api = ns:GetDaylightAPI()
+            cfg.bg = "solid"
+            cfg.bgColor = { r = 0.08, g = 0.08, b = 0.09, a = 0.85 }
+            cfg.borderSize = 2
+            cfg.borderColor = { r = 0.03, g = 0.03, b = 0.04, a = 1 }
+            cfg.outline = "OUTLINE"
+            if api then
+                cfg.border = "daylight"
+                cfg.font = "daylight"
+                -- the lines between merged blocks take the player's DaylightUI accent
+                local ok, r, g, b = false, nil, nil, nil
+                if type(api.Accent) == "function" then ok, r, g, b = pcall(api.Accent) end
+                if ok and type(r) == "number" and type(g) == "number" and type(b) == "number" then
+                    cfg.separators = true
+                    cfg.separatorColor = { r = r, g = g, b = b, a = 0.9 }
+                end
+            else
+                cfg.border = "solid"
+                cfg.borderSize = 1
+                cfg.font = LSMFont("Expressway") or "arial"
+            end
+        end,
+        window = function()
+            local api = ns:GetDaylightAPI()
+            local title = { 0.95, 0.95, 0.95 }
+            if api and type(api.Accent) == "function" then
+                local ok, r, g, b = pcall(api.Accent)
+                if ok and type(r) == "number" and type(g) == "number" and type(b) == "number" then title = { r, g, b } end
+            end
+            return FlatWindow({ 0.08, 0.08, 0.09, 0.95 }, { 0.03, 0.03, 0.04, 1 }, title)
+        end,
+    },
     -- The game's modern tooltip frame comes in gold on WoW Forever and in silver on Retail
     -- (same atlas name, different art). Two styles give the same color on both games:
     -- Blizzard modern is silver (Forever's gold art without its color), Blizzard Forever is
@@ -739,7 +782,7 @@ end
 
 -- The style the automatic mode gives: the installed UI's, otherwise Blizzard
 function ns:GetAutoTheme()
-    for _, key in ipairs({ FlareKey(), "ellesmere", "elvui" }) do
+    for _, key in ipairs({ FlareKey(), "ellesmere", "elvui", "aurore" }) do
         if IsInstalled(byKey[key]) then return key end
     end
     if byKey.blizzardModern.available() then
@@ -951,7 +994,7 @@ end
 -- Styles of the UIs installed now (FlareUI in its installed version), by priority
 function ns:GetDetectedUIStyles()
     local list = {}
-    for _, key in ipairs({ FlareKey(), "ellesmere", "elvui" }) do
+    for _, key in ipairs({ FlareKey(), "ellesmere", "elvui", "aurore" }) do
         if IsInstalled(byKey[key]) then table.insert(list, key) end
     end
     return list

@@ -204,6 +204,13 @@ Le 20/10 : le jeu contient 37 cadres HD tout faits (`NineSliceLayouts`), visible
 Le 29/10 : Braincell1980 a adoré les cadres de Blizzard sur la fenêtre d'options (styles The War Within et Midnight, 1.0.1). Suite décidée, pour plus tard (1.1) : il choisit dans `/tes debug hd` un cadre par style (Grimoire, Forgefer, Pierre runique, Sceau royal, Lame runique, Braise, Sylvestre, Arcanes ; pas les styles des interfaces) ; faire la « Forge naine » avec un cadre en métal ; l'écran de sélection et les médaillons ensuite.
 Méthode proposée : d'abord un nouveau style « HD » (points 1 à 3) à côté des autres, puis étendre ses images aux autres styles s'il plaît. Plutôt en 1.1. Avant de coder : une maquette (même barre, style actuel et style HD côte à côte).
 
+### Style Aurore, pour DaylightUI (12 novembre 2026, demande de Braincell1980 : l'addon gagne en popularité)
+
+- [Fait, 1.4.0, pas testé en jeu] Style Aurore : avec DaylightUI, son API dessine le cadre de chaque bloc ; sans lui, imitation. Voir `docs/etudes/SOURCES.md`, « DaylightUI 1.6.9 ».
+- À voir en jeu : blocs fusionnés (contours arrondis à chaque raccord), cadres qui changent de taille, taille du bord de 1 à 4.
+- Piste : un style qui reprend aussi l'accent de DaylightUI sur le texte, ou une option « couleur du contour = accent ».
+- Biais à garder en tête : « l'addon gagne en popularité » est une impression, pas un chiffre vérifié (téléchargements CurseForge non consultés).
+
 ### Cadres de Blizzard (16 octobre 2026)
 
 - [Fait, rc6] Tessera ne déplace plus les cadres de Blizzard : blocs devant ou derrière (bouton temporaire en mode placement, question au verrouillage, onglet Apparence).

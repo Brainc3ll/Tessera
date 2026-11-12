@@ -3,6 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.4.0 — 2026-11-12
+
+### New
+
+- New style: Aurora, for DaylightUI. With DaylightUI installed, DaylightUI draws the frame of each block (rounded border, shadow, background) and the blocks use its font. Aurora also works without DaylightUI, as a plain imitation. With only DaylightUI installed, new profiles start with Aurora. A profile on another style keeps it, and Tessera offers the new one.
+- Placement: Tessera knows the frames of DaylightUI (unit frames, buffs, quest tracker, chat, info panel) and warns when a block covers one.
+
 ## 1.3.1 — 2026-11-12
 
 ### New

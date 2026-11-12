@@ -5035,10 +5035,10 @@ end
 function ns:OfferStylesIfNeeded()
     if not self.built or self.brokerModeActive then return end
     if offer and offer:IsShown() then return end
-    -- not on top of Tessera's other popups (welcome, DataBroker mode, what's new)
+    -- not on top of Tessera's other popups (welcome, DataBroker mode, what's new), nor of another interface's tour
     local busy = StaticPopup_Visible and (StaticPopup_Visible("TESSERA_WELCOME")
         or StaticPopup_Visible("TESSERA_BROKER_MODE") or StaticPopup_Visible("TESSERA_WHATS_NEW"))
-    if InCombatLockdown() or busy then
+    if InCombatLockdown() or busy or self:OtherUIBusy() then
         C_Timer.After(10, function() ns:OfferStylesIfNeeded() end)
         return
     end

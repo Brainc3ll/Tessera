@@ -202,6 +202,49 @@ table.insert(ns.KNOWN_UI_FRAMES, { addon = "GW2_UI", prefix = "", frames = {
     GwTotemBar = { label = "EM_TOTEMS" },
 } })
 
+---------------------------------------------------------------------------
+-- First-run windows of other interfaces (setup guide, tour): Tessera's own popups wait for
+-- them to close, then follow. Names read in each addon's code (docs/etudes/SOURCES.md).
+---------------------------------------------------------------------------
+ns.FIRST_RUN_WINDOWS = {
+    "DaylightUIInstaller", "DaylightUITour", "DaylightUITourAsk", -- DaylightUI
+    "FlareUI_Tour", "FlareUI_Welcome",                             -- FlareUI
+    "ElvUIInstallFrame", "PluginInstallFrame", "ElvUITutorialWindow", -- ElvUI
+    "EUIFirstInstallPopup",                                        -- EllesmereUI
+    "GwWelcomePage",                                               -- GW2 UI
+}
+local WAIT_POLL, WAIT_SETTLE, WAIT_MAX = 2, 2, 1800 -- seconds: check, pause after a close, give up
+
+-- True while one of those windows is open
+function ns:OtherUIBusy()
+    for _, name in ipairs(self.FIRST_RUN_WINDOWS) do
+        local f = _G[name]
+        if type(f) == "table" and type(f.IsShown) == "function" then
+            local ok, shown = pcall(f.IsShown, f)
+            if ok and shown then return true end
+        end
+    end
+    return false
+end
+
+-- Runs fn at once when no such window is open; otherwise when the last one has closed and
+-- stayed closed for a moment (a tour often follows a setup guide). Gives up waiting after 30 minutes.
+function ns:WhenOtherUIFree(fn)
+    local waited, sawBusy = 0, false
+    local function Step()
+        if ns:OtherUIBusy() and waited < WAIT_MAX then
+            waited, sawBusy = waited + WAIT_POLL, true
+            C_Timer.After(WAIT_POLL, Step)
+        elseif sawBusy then
+            sawBusy = false
+            C_Timer.After(WAIT_SETTLE, Step)
+        else
+            fn()
+        end
+    end
+    Step()
+end
+
 -- Calls fn(frame, info) for every existing frame of ns.KNOWN_UI_FRAMES
 function ns:ForEachKnownUIFrame(fn)
     local loaded = C_AddOns and C_AddOns.IsAddOnLoaded
@@ -3232,11 +3275,17 @@ local function Build()
     C_Timer.After(4, function() if ns.CheckEditModeCopies then ns:CheckEditModeCopies() end end)
     if ns.UpdatePlacementBanner then ns:UpdatePlacementBanner() end
     C_Timer.After(5, function()
-        if ns.ShowWelcomeIfNeeded then ns:ShowWelcomeIfNeeded() end
+        -- another interface's setup guide or tour goes first: the welcome waits for it
+        ns:WhenOtherUIFree(function()
+            if ns.ShowWelcomeIfNeeded then ns:ShowWelcomeIfNeeded() end
+        end)
     end)
     -- the style of an interface installed since last time is offered (after the popups above)
     C_Timer.After(8, function()
-        if ns.OfferStylesIfNeeded then ns:OfferStylesIfNeeded() end
+        ns:WhenOtherUIFree(function()
+            -- one second after the welcome, which is then on screen and holds the offer back
+            C_Timer.After(1, function() if ns.OfferStylesIfNeeded then ns:OfferStylesIfNeeded() end end)
+        end)
     end)
 
     -- An addon loaded later registers a media: re-apply the styles

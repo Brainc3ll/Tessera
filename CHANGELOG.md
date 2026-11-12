@@ -11,6 +11,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Placement: Tessera knows the frames of DaylightUI (unit frames, buffs, quest tracker, chat, info panel) and warns when a block covers one.
 - DataBroker tab: with DaylightUI installed, a note explains how to show Tessera's blocks in its panels, next to Tessera's own blocks (sharing) or instead of them (DataBroker mode).
 
+### Improvements
+
+- Tessera waits for another interface addon's setup guide or tour to close before it shows its welcome, news, DataBroker mode notice and style offer, then follows two seconds later.
+
 ## 1.3.1 — 2026-11-12
 
 ### New

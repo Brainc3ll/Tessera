@@ -213,7 +213,7 @@ Méthode proposée : d'abord un nouveau style « HD » (points 1 à 3) à côté
 
 ### Laisser le tuto d'une autre interface finir (12 novembre 2026, demande de Braincell1980)
 
-- À faire : si FlareUI, ElvUI, EllesmereUI, GW2 UI ou DaylightUI affiche son installateur ou sa visite au premier lancement, les fenêtres de Tessera (bienvenue, nouveautés, mode DataBroker, proposition de style) attendent sa fermeture, puis s'affichent 2 s après. Noms des fenêtres : `docs/etudes/SOURCES.md`, « Fenêtres de démarrage ». Reporter l'appel entier de la bienvenue (pas seulement l'affichage : elle est marquée vue avant).
+- [Fait, 1.4.0, pas testé en jeu] Si FlareUI, ElvUI, EllesmereUI, GW2 UI ou DaylightUI affiche son installateur ou sa visite au premier lancement, les fenêtres de Tessera (bienvenue, nouveautés, mode DataBroker, proposition de style) attendent sa fermeture, puis s'affichent 2 s après. Noms des fenêtres : `docs/etudes/SOURCES.md`, « Fenêtres de démarrage ». Reporter l'appel entier de la bienvenue (pas seulement l'affichage : elle est marquée vue avant).
 - Piste : un style pour GW2 UI (voir SOURCES, licence inconnue : imitation seulement).
 
 ### Cadres de Blizzard (16 octobre 2026)

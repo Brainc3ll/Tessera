@@ -602,8 +602,11 @@ function ns:NotifyBrokerModeIfNeeded()
     notifyScheduled = true
     -- a few seconds after login, once the screen has settled
     C_Timer.After(5, function()
-        notifyScheduled = false
-        if WantsNotice() then StaticPopup_Show("TESSERA_BROKER_MODE", ns.brokerDisplay) end
+        -- another interface's setup guide or tour goes first
+        ns:WhenOtherUIFree(function()
+            notifyScheduled = false
+            if WantsNotice() then StaticPopup_Show("TESSERA_BROKER_MODE", ns.brokerDisplay) end
+        end)
     end)
 end
 

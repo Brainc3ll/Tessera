@@ -64,6 +64,16 @@ ns.CHANGELOG = {
                     .. " à côté de ceux de Tessera (partage) ou à leur place (mode DataBroker).",
               },
             },
+            { kind = "improved",
+              en = {
+                "Tessera waits for another interface addon's setup guide or tour to close before it shows its welcome,"
+                    .. " news, DataBroker mode notice and style offer, then follows two seconds later.",
+              },
+              fr = {
+                "Tessera attend la fermeture du guide d'installation ou de la visite d'une autre interface avant d'afficher"
+                    .. " sa bienvenue, ses nouveautés, l'avis du mode DataBroker et sa proposition de style, puis enchaîne deux secondes après.",
+              },
+            },
         },
     },
     {

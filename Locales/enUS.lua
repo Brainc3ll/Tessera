@@ -1301,6 +1301,7 @@ local L = {
     HELP_T_HELPABOUT = "Help and About tabs",
     HELP_HELPABOUT_1 = "- Help tab: these topics, the \"Quick tour\" button (a few short steps, also offered on first launch), the \"Demo mode\" button (every block at once, by category) and the \"What's new in 1.3\" button (the big changes, each with a button that opens the right place).",
     HELP_HELPABOUT_2 = "- About tab: version, author, translators, license, source code, thanks, and the Changelog (what changed in each version). After an update to 1.3, a window lists the big changes; other updates offer to open the Changelog.",
+    HELP_HELPABOUT_4 = "- When another interface addon shows its own setup guide or tour at first launch, Tessera's welcome, news and style offer wait for it to close, then follow.",
     HELP_HELPABOUT_3 = "- Tessera comes in English and French; Claude (an AI) translated the German, Spanish and Brazilian Portuguese versions. With CurseForge's localization tool (Localization page of the Tessera project), you can correct them or add your language: your help is welcome!",
     HELP_T_COMMANDS = "Commands",
     HELP_COMMANDS_1 = "/tessera or /tes: options",
@@ -1354,7 +1355,7 @@ ns.HELP_LAYOUT = {
     { title = "HELP_T_PROFILES", lines = { "HELP_PROFILES_1", "HELP_PROFILES_2", "HELP_PROFILES_3", "HELP_PROFILES_4" } },
     { title = "HELP_T_LAUNCHERS", lines = { "HELP_LAUNCHERS_1" } },
     { title = "HELP_T_BROKER", lines = { "HELP_BROKER_1", "HELP_BROKER_2", "HELP_BROKER_3" } },
-    { title = "HELP_T_HELPABOUT", lines = { "HELP_HELPABOUT_1", "HELP_HELPABOUT_2", "HELP_HELPABOUT_3" } },
+    { title = "HELP_T_HELPABOUT", lines = { "HELP_HELPABOUT_1", "HELP_HELPABOUT_2", "HELP_HELPABOUT_4", "HELP_HELPABOUT_3" } },
     { title = "HELP_T_COMMANDS", lines = { "HELP_COMMANDS_1", "HELP_COMMANDS_2", "HELP_COMMANDS_3", "HELP_COMMANDS_4", "HELP_COMMANDS_5", "HELP_COMMANDS_6", "HELP_COMMANDS_12", "HELP_COMMANDS_8", "HELP_COMMANDS_9", "HELP_COMMANDS_10", "", "HELP_COMMANDS_11" } },
 }
 ns.HELP_LAYOUT_BROKER = {

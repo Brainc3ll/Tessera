@@ -13,7 +13,7 @@ Ce fichier donne l'état actuel. Le détail daté de la 1.0 à la 1.3.1 est dans
 
 ## Ouvert
 - **1.4.0, à tester en jeu** : Aurore avec des blocs fusionnés (contours arrondis à chaque raccord, non vu) ; note DataBroker dans l'onglet DataBroker avec DaylightUI ; attente des tutos des autres interfaces (premier lancement avec DaylightUI, FlareUI, ElvUI, EllesmereUI ou GW2 UI).
-- **Avant « on publie » la 1.4.0** : traduire les nouveaux textes en de, es, mx, pt (`THEME_AURORA`, `THEME_NOTE_DAYLIGHT`, `EM_INFO_PANEL`, `BROKER_NOTE_DAYLIGHT`, `HELP_LOOK_19`, `HELP_LOOK_20`, `HELP_HELPABOUT_4`, et les lignes `HELP_LOOK_1`, `_8`, `_18` changées), puis `tools/check_translation.py` ; date du changelog 1.4.0 à mettre au jour de la publication.
+- **Avant « on publie » la 1.4.0** : traductions de, es, mx, pt faites le 12/11 (Sonnet 5.5) pour les textes Aurora, DaylightUI et attente des tutos (`check_translation.py` : 0 erreur ; faux jeu OK dans les 4 langues), non relues par un humain. À refaire seulement si un de ces textes change avant la publication. Date du changelog 1.4.0 à mettre au jour de la publication.
 - **Bug des flèches** (placement au pixel) : avec les flèches seules, le bloc GSF a sauté de 10 à 40 px par appui (vidéo du 11/11, test105). Jamais reproduit ; Braincell1980 pense à une mauvaise manipulation.
 - **« Tous les blocs » pour un bloc seul ou un groupe** : le bouton garde le même décalage avec l'onglet Apparence que la page « Tous les blocs » (corrigée en 1.3.1). À revoir si Braincell1980 le veut.
 - **Style choisi à la main dont l'interface disparaît** : il reste en imitation et ne passe pas en Blizzard Forever. Le changer modifie l'allure sans demander et touche aux profils (`tessera-gate2`).

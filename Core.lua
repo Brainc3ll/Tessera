@@ -168,6 +168,15 @@ ns.KNOWN_UI_FRAMES = {
         QTBackground = { label = "EM_OBJECTIVES" }, MicroMenu = { label = "EM_MENU" },
     } },
     { prefix = "ERB_", frames = { CastBarFrame = { label = "EM_CAST_BAR" } } },
+    -- DaylightUI 1.6 (names read in its code; its XP bar has no frame of its own, it lives in the info panel)
+    { prefix = "DaylightUI", frames = {
+        Frame_player = { label = "EM_UNIT_FRAMES" }, Frame_target = { label = "EM_UNIT_FRAMES" },
+        Frame_targettarget = { label = "EM_UNIT_FRAMES" }, Frame_pet = { label = "EM_UNIT_FRAMES" },
+        Frame_focus = { label = "EM_UNIT_FRAMES" },
+        Buffs = { label = "EM_BUFFS" }, Debuffs = { label = "EM_BUFFS" },
+        QuestTracker = { label = "EM_OBJECTIVES" }, Chat = { label = "EM_CHAT" },
+        InfoPanel = { label = "EM_INFO_PANEL" }, DataBar = { label = "EM_INFO_PANEL" },
+    } },
     -- ElvUI 16 (names read in its code). Some names carry no prefix: only with ElvUI loaded
     { addon = "ElvUI", prefix = "", frames = {
         ElvUF_Player = { label = "EM_UNIT_FRAMES" }, ElvUF_Target = { label = "EM_UNIT_FRAMES" },
@@ -326,6 +335,10 @@ end
 
 function ns:ApplySkin(frame, spec)
     if spec.kind ~= "atlas" and frame.tesseraArtBg then AtlasArt(frame, nil) end
+    -- DaylightUI draws its look on a child frame it keeps for good: hide it when the look changes
+    if spec.kind ~= "daylight" and frame.tesseraDaylightShell then
+        frame.tesseraDaylightShell:Hide()
+    end
     if frame.skinKind and frame.skinKind ~= spec.kind then
         if frame.backdropInfo then frame:SetBackdrop(nil) end
         ResetPieces(frame)
@@ -358,6 +371,20 @@ function ns:ApplySkin(frame, spec)
         if frame.backdropInfo then frame:SetBackdrop(nil) end
         ResetPieces(frame)
         AtlasArt(frame, spec)
+    elseif spec.kind == "daylight" then
+        if frame.backdropInfo then frame:SetBackdrop(nil) end
+        ResetPieces(frame)
+        -- the shell (shadow, rounded border, background) comes from DaylightUI's own API;
+        -- the border thickness is the block's, the colors are the player's DaylightUI settings
+        local api = self:GetDaylightAPI()
+        local ok, shell = false, nil
+        if api then
+            ok, shell = pcall(api.Skin, frame, { borderPx = spec.borderPx, bgAlpha = spec.bgAlpha })
+        end
+        if ok and type(shell) == "table" and shell.Show then
+            frame.tesseraDaylightShell = shell
+            shell:Show()
+        end
     elseif spec.kind == "backdrop" then
         frame:SetBackdrop(spec.info)
         if spec.info.bgFile then
@@ -397,11 +424,30 @@ function ns:FindMedia(kind, key)
         -- Providing addon missing: fall back to a game media
         key = (kind == "font") and "friz" or "solid"
     end
+    -- DaylightUI's own look (not in the lists: only its style sets it); without it, the plain one
+    if key == "daylight" then
+        local api = self:GetDaylightAPI()
+        if kind == "border" and api then
+            return { key = key, daylight = true, insetRatio = 0, reach = 0.5, size = 2 }
+        elseif kind == "font" and api and type(api.Font) == "function" then
+            local ok, file = pcall(api.Font)
+            if ok and type(file) == "string" and file ~= "" then return { key = key, file = file } end
+        end
+        key = (kind == "font") and "arial" or "solid"
+    end
     local list = BUILTIN[kind]
     for _, item in ipairs(list) do
         if item.key == key then return item end
     end
     return list[1]
+end
+
+-- DaylightUI's public API (version 1), or nil. Read through _G: it is another addon's global.
+-- Only the calls its API.md promises are used: Skin, Font, Accent.
+function ns:GetDaylightAPI()
+    local dui = _G["DaylightUI"]
+    local api = type(dui) == "table" and dui.API
+    if type(api) == "table" and api.major == 1 and type(api.Skin) == "function" then return api end
 end
 
 -- True when FlareUI's media are registered (used to pick the FlareUI-style default layout)
@@ -1764,7 +1810,12 @@ function ns:SkinBlockFrame(f, cfg)
     local inset = border.file and math.floor(cfg.borderSize * border.insetRatio + 0.5) or 0
 
     f.nineSliceInfo = nil
-    if border.nineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
+    if border.daylight then
+        -- DaylightUI draws the whole frame: its background opacity follows the block's
+        local px = math.max(1, math.min(4, cfg.borderSize or 2))
+        self:ApplySkin(f, { kind = "daylight", borderPx = px, bgAlpha = bgColor and bgColor.a })
+        inset = px
+    elseif border.nineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
         -- Modern Blizzard frame: border and background come from its atlases, tinted
         -- with the block's colors (the chosen background only decides whether it shows)
         local edge = self:ApplySkin(f, {

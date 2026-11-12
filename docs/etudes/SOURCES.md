@@ -67,6 +67,15 @@ Licence « tous droits réservés » : idées seulement, aucun code ni donnée r
 - ElvUI charge sur Forever grâce aux directives du .toc (`[AllowLoadGameType camelot]` dans le titre ; « camelot » = WoW Forever).
 - Tukui 20.463 n'a pas de .toc pour Forever (Classic, Mists, Retail seulement) : rien à faire ; un style Tukui reste possible plus tard.
 
+### DaylightUI 1.6.9 (12 novembre 2026)
+- Charge sur Forever (`## Interface: 16001`). Suite de modules (UnitFrames, ActionBars, Buffs, Quests, Chat, InfoPanel, Bags, Tooltip, Skins, QoL, Nameplates) autour d'un cœur.
+- **Licence : tous droits réservés.** Rien du code, des images ni des dispositions ne se copie. Chaque dossier a un `AGENTS.md` qui le dit aux assistants IA. Seule porte ouverte : les plugins qui tournent par-dessus et ne contiennent rien de lui, via son API publique (`DaylightUI/API.md`, version 1.3). Tessera n'utilise que les appels promis : `API.Skin`, `API.Font`, `API.Accent`.
+- Style Aurore (1.4.0) : avec l'addon, `API.Skin(bloc, { borderPx, bgAlpha })` dessine ombre, bord arrondi et fond sur un cadre enfant que DaylightUI garde pour de bon ; Tessera le cache (`Hide`) quand le style change. Sans l'addon : imitation à valeurs arrondies exprès (fond sombre, bord fin), pas ses constantes. Version de l'API différente de 1 : imitation.
+- Son bord par défaut fait 8 px (« bord épais » de fenêtre) : trop pour un bloc, donc Tessera passe `borderPx` entre 1 et 4 (réglage « taille du bord » du bloc).
+- Limites connues, à voir en jeu : les blocs fusionnés gardent chacun leur contour arrondi (Tessera ne dessine pas les raccords) ; les couleurs de bord et de fond du bloc n'agissent plus ; la taille d'un cadre qui change n'est pas redonnée à l'API (« appeler de nouveau après un redimensionnement »).
+- Cadres lus dans son code et ajoutés à `ns.KNOWN_UI_FRAMES` : `DaylightUIFrame_<unit>` (player, target, targettarget, pet, focus), `DaylightUIBuffs`, `DaylightUIDebuffs`, `DaylightUIQuestTracker`, `DaylightUIChat`, `DaylightUIInfoPanel`, `DaylightUIDataBar`. Sa barre d'XP n'a pas de cadre propre (elle vit dans le panneau d'infos) : pas d'aimantation. `DaylightUIReputationBar` existe, non ajouté. Minimap : celle du jeu.
+- Il lit LibDataBroker dans son panneau d'infos (`InfoPanel/Broker.lua`) : les blocs partagés par Tessera peuvent y apparaître.
+
 ### GW2 UI 12.0.0 (21 octobre 2026)
 - Charge sur Forever (même .toc multi-versions qu'ElvUI, `[AllowLoadGameType camelot]`).
 - [Fait, 1.0.0, pas testé en jeu] Cadres dans `ns.KNOWN_UI_FRAMES` (seulement quand GW2_UI est chargé) : `GwPlayerUnitFrame`, `GwTargetUnitFrame`, `GwFocusUnitFrame`, `GwPlayerPetFrame`, `GwPlayerPowerBar`, `GwPlayerClassPower`, `GwQuestTracker`, `GwExperienceFrame` (aimantation), `Gw2MicroBarFrame`, `GwStanceBar`, `GwTotemBar`.

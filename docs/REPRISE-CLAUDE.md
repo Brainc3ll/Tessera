@@ -41,6 +41,8 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - Le réseau du terminal ne sort que vers GitHub et les dépôts de paquets ; le web passe par WebSearch / WebFetch.
 
 ## Décisions déjà prises (ne pas les reproposer)
+- 12/11 : style **Aurore** pour DaylightUI (API publique : `Skin`, `Font`, `Accent`, jamais son code ; imitation sans l'addon). DaylightUI n'est **pas** dans la liste des addons d'affichage du mode DataBroker : il l'activerait seul et cacherait tous les blocs. Une note explique le partage et le mode.
+- 12/11 : Tessera attend la fermeture du tuto des autres interfaces (installateur, visite) avant bienvenue, nouveautés, avis DataBroker et proposition de style (`ns:WhenOtherUIFree`, noms lus dans leur code, `docs/etudes/SOURCES.md`). Pas de style GW2 UI pour l'instant (licence inconnue).
 - Dès la 1.3, chaque chantier prépare l'accessibilité et la manette (règle dans CLAUDE.md, détail dans A-REPRENDRE) : rien ne doit être refait pour elles.
 - Placement libre au pixel (rc8) : plus de recentrage automatique ; un bloc masqué garde sa place ; les rangées des barres toutes prêtes partent du bord gauche de la barre et restent bord à bord ; un groupe s'aligne par ses bords extérieurs. Le resserrement des voisins d'un bloc masqué : option « à l'étude » (il causait la plupart des bugs).
 - Rien ne disparaît pour un joueur qui avait une option ; ses dispositions continuent de marcher.

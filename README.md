@@ -55,8 +55,8 @@ Plans, not promises:
 ## Screenshots
 
 Demo mode (`/tessera demo`) shows every block at once with sample values. The same blocks in
-19 of the styles, as in version 1.0.0 (FlareUI is shown with the addon installed; without their addon, the interface
-styles are an imitation):
+19 of the 26 styles (screenshots from version 1.0.0). FlareUI is shown with the addon installed; without it, the
+interface styles are an imitation:
 
 **Interface and Blizzard styles**
 
@@ -146,8 +146,8 @@ Help tab inside the game explains everything.
   - Camping: time left on your camp buffs, or your campfire kit's cooldown; a click lights a
     campfire with the kit;
   - Honor: your honor points (PvP ranks in a later version);
-  - skills read from Forever's skill list (the weapon in hand, the ranged one while you shoot, or one you pick); profession, talent and Legacy blocks that open
-    Forever's own windows.
+  - skills read from Forever's skill list (the weapon in hand, the ranged one while you shoot, or
+    one you pick); profession, talent and Legacy blocks that open Forever's own windows.
 - More than 50 blocks in all: gold (with history and your characters' gold; Alt + right-click forgets a deleted character), bags (with junk value), durability (with the
   repair cost), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
   zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
@@ -188,9 +188,10 @@ Help tab inside the game explains everything.
   Parchment; Arcane), styles made of the game's own frames (Royal seal, Ironforge, Runeblade,
   Ember, Sylvan), The War Within and Midnight (Blizzard's frames of these expansions on the options
   window) and Tessera, in the addon's own colors.
-- Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile; an Accessibility tab (threshold colors, high contrast, fewer animations, minimum text size)
-  (bright or soft colors for values and class colors, or colorblind values; high contrast;
-  minimum text size). Class color on the text, background, border, icon frame and lines.
+- Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile.
+- Accessibility tab: bright or soft colors for values and class colors, or colorblind values;
+  high contrast; fewer animations; minimum text size. Class color on the text, background,
+  border, icon frame and lines.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
 - Tooltips your way: bigger or smaller, or only while holding Alt (General tab).
@@ -259,11 +260,11 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Demo.lua` | Demo mode: every block by category with sample values, style switcher (also mixed styles, one per column), the player's profile put aside and given back. |
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
-| `Options.lua` | Options window: a list of pages on the left (Blocks — one scrolling page: the "On screen" switch and the block list at the top, the essentials and its own settings, then sections that fold (`CreateSection`): look of this block, when to show it, this block —, Look, General, Accessibility, Launchers, DataBroker — Plugins as blocks, Sharing and mode —, Profiles, Help, About) and a hint per page; widgets (since 1.3 one row per setting, label on the left and control on the right, in one scrolling column; `ns.optionRows` lists every row with its page and section for the search, the help panel and the gamepad; a top bar with logo, search, fold button; a help panel on the right; Shift + mouse wheel for the window size; a copy box for the About links; Shift + mouse wheel sizes every Tessera window and its help tooltips, shown at the top), placement banner, text window (export / import / bug report), welcome popup and quick tour, side windows kept beside the options (never over them), Blizzard Settings page. |
+| `Options.lua` | Options window. Pages in a list on the left: Blocks (one scrolling page: the "On screen" switch and the block list, the essentials, its own settings, then foldable sections built by `CreateSection`: look of this block, when to show it, this block), Look, General, Accessibility, Launchers, DataBroker (Plugins as blocks, Sharing and mode), Profiles, Help, About. Since 1.3 each setting is one row (label on the left, control on the right) in one scrolling column; `ns.optionRows` lists every row with its page and section, for the search, the help panel and the gamepad. The top bar holds the logo, the search and the fold button; the help panel sits on the right; Shift + mouse wheel sizes every Tessera window and its help tooltips (the percentage shows at the top). Also here: the placement banner, the text window (export / import / bug report) with a copy box for the About links, the welcome popup and quick tour, side windows kept beside the options (never over them), and the Blizzard Settings page. |
 
 The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the release guide
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions
-(`docs/pages`), studies (`docs/etudes`), finished plans (`docs/archive`), the English and French strings
+(`docs/pages`), studies (`docs/etudes`), finished plans and the dated project history (`docs/archive`), the English and French strings
 for translators (`docs/localization`, how to translate: `docs/TRANSLATING.md`), the logo and the name in large sizes (`docs/art`), and the
 banner and screenshots used on this page (`docs/media`). `CLAUDE.md` holds the working rules of the project. `ACR.md` and `AI-DECLARATION.md` describe how AI is used in the project.
 

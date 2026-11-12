@@ -14,7 +14,7 @@ Ce fichier donne l'état actuel. Le détail daté de la 1.0 à la 1.3.1 est dans
 - **Bug des flèches** (placement au pixel) : avec les flèches seules, le bloc GSF a sauté de 10 à 40 px par appui (vidéo du 11/11, test105). Jamais reproduit ; Braincell1980 pense à une mauvaise manipulation.
 - **« Tous les blocs » pour un bloc seul ou un groupe** : le bouton garde le même décalage avec l'onglet Apparence que la page « Tous les blocs » (corrigée en 1.3.1). À revoir si Braincell1980 le veut.
 - **Style choisi à la main dont l'interface disparaît** : il reste en imitation et ne passe pas en Blizzard Forever. Le changer modifie l'allure sans demander et touche aux profils (`tessera-gate2`).
-- **À valider en jeu** : les notes d'origine marquent « à valider en jeu » pour l'entrée « Automatique » (test117), le bouton « Blocs vides » (test115) et la page « Tous les blocs » grisée (test116) ; la validation n'y est pas notée. À voir aussi : largeur des 5 boutons de liens d'À propos.
+- **Validé en jeu (Braincell1980, 12/11)** : l'entrée « Automatique » (test117), le bouton « Blocs vides » (test115), la page « Tous les blocs » grisée (test116) et la largeur des 5 boutons de liens d'À propos. Plus rien à valider pour la 1.3.1.
 - **Flèche du bloc Corps** : attendre une capture en jeu pour voir la marge de la texture, avant de proposer.
 - **Reportés après la 1.3** (choix de Braincell1980, 11/11) : échelle pixel perfect (lot 5b, voir `IDEES-FUTUR.md`) et sélecteur de langue.
 

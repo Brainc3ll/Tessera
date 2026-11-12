@@ -95,3 +95,4 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 - 11/11 : 1.3.0 publiée (tag `v1.3.0`, commit `29c89ad`) ; traductions de, es, mx, pt faites par Claude, pas relues.
 - 12/11 : 1.3.1 publiée (tag `v1.3.1`). Le run du 11/11 au soir a échoué (panne de GitHub Actions) ; relancé le 12/11 à 5 h 30, réussi. Zips jusqu'à test117 (Opus 5.5 puis Sonnet 5.5).
 - 12/11 (Sonnet 5.5) : révision de la documentation : `A-REPRENDRE.md` réduit à l'état actuel, historique daté déplacé tel quel dans `docs/archive/HISTORIQUE-1.0-1.3.md` ; README et index `docs/README.md` corrigés.
+- 12/11 : Braincell1980 a validé en jeu les derniers points de la 1.3.1 (entrée « Automatique », « Blocs vides », page « Tous les blocs » grisée, boutons de liens d'À propos).

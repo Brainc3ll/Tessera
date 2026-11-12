@@ -211,6 +211,11 @@ Méthode proposée : d'abord un nouveau style « HD » (points 1 à 3) à côté
 - Piste : un style qui reprend aussi l'accent de DaylightUI sur le texte, ou une option « couleur du contour = accent ».
 - Biais à garder en tête : « l'addon gagne en popularité » est une impression, pas un chiffre vérifié (téléchargements CurseForge non consultés).
 
+### Laisser le tuto d'une autre interface finir (12 novembre 2026, demande de Braincell1980)
+
+- À faire : si FlareUI, ElvUI, EllesmereUI, GW2 UI ou DaylightUI affiche son installateur ou sa visite au premier lancement, les fenêtres de Tessera (bienvenue, nouveautés, mode DataBroker, proposition de style) attendent sa fermeture, puis s'affichent 2 s après. Noms des fenêtres : `docs/etudes/SOURCES.md`, « Fenêtres de démarrage ». Reporter l'appel entier de la bienvenue (pas seulement l'affichage : elle est marquée vue avant).
+- Piste : un style pour GW2 UI (voir SOURCES, licence inconnue : imitation seulement).
+
 ### Cadres de Blizzard (16 octobre 2026)
 
 - [Fait, rc6] Tessera ne déplace plus les cadres de Blizzard : blocs devant ou derrière (bouton temporaire en mode placement, question au verrouillage, onglet Apparence).

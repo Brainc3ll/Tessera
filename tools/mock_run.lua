@@ -968,6 +968,63 @@ for _, step in ipairs({
         ns:ApplyTheme("flat")
     end,
     function() for _, t in ipairs(ns.themes) do t.block({}); assert(t.window().title, t.key) end end,
+    -- another interface's setup guide or tour: Tessera's popups wait for it, then follow
+    function()
+        local function Flush()
+            local queued = __timers; __timers = {}
+            for _, fn in ipairs(queued) do fn() end
+        end
+        local function Fake(name, shown)
+            local f = { shown = shown, IsShown = function(self) return self.shown end }
+            _G[name] = f
+            return f
+        end
+        local ran = 0
+        -- nothing open: runs at once
+        assert(not ns:OtherUIBusy(), "no first-run window yet")
+        ns:WhenOtherUIFree(function() ran = ran + 1 end)
+        assert(ran == 1, "nothing open: at once")
+        -- a window open: waits, however often it checks
+        local guide = Fake("ElvUIInstallFrame", true)
+        assert(ns:OtherUIBusy(), "ElvUI's installer is seen")
+        ns:WhenOtherUIFree(function() ran = ran + 1 end)
+        assert(ran == 1, "waits while the installer is open")
+        Flush(); Flush()
+        assert(ran == 1, "still waiting")
+        -- it closes, and a tour opens during the pause: still waits
+        guide.shown = false
+        Flush()                                   -- sees it closed, starts the pause
+        local tour = Fake("DaylightUITour", true)
+        Flush()                                   -- the pause ends: a tour is open
+        assert(ran == 1, "a tour that follows the guide is waited for too")
+        tour.shown = false
+        Flush(); Flush(); Flush()
+        assert(ran == 2, "runs after everything closed, once")
+        Flush(); Flush()
+        assert(ran == 2, "never twice")
+        -- a window that never closes: gives up after 30 minutes
+        local stuck = Fake("GwWelcomePage", true)
+        ns:WhenOtherUIFree(function() ran = ran + 1 end)
+        for _ = 1, 905 do Flush() end
+        assert(ran == 3, "gives up after the longest wait")
+        stuck.shown = false
+        for _, name in ipairs(ns.FIRST_RUN_WINDOWS) do _G[name] = nil end
+        assert(not ns:OtherUIBusy(), "back to none")
+        -- the style offer holds back while a window is open
+        local offerShown = false
+        local showOffer = ns.ShowStyleOffer
+        ns.ShowStyleOffer = function() offerShown = true end
+        local getList = ns.GetStylesToOffer
+        ns.GetStylesToOffer = function() return { "elvui" } end
+        Fake("FlareUI_Tour", true)
+        ns:OfferStylesIfNeeded()
+        assert(not offerShown, "no style offer on top of another interface's tour")
+        _G["FlareUI_Tour"].shown = false
+        ns:OfferStylesIfNeeded()
+        assert(offerShown, "style offer once it is closed")
+        _G["FlareUI_Tour"] = nil
+        ns.ShowStyleOffer, ns.GetStylesToOffer = showOffer, getList
+    end,
     -- Aurore (DaylightUI): without the addon an imitation with a note; with a fake API (the calls
     -- of its API.md: Skin, Font, Accent) the frame is drawn by DaylightUI, and its shell hides
     -- again when the block changes style

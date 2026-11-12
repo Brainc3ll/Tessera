@@ -1304,6 +1304,7 @@ L.HELP_BROKER_3 = "- Partage et mode : partage les blocs de Tessera avec Titan P
 L.HELP_T_HELPABOUT = "Onglets Aide et À propos"
 L.HELP_HELPABOUT_1 = "- Onglet Aide : ces sujets, le bouton « Visite rapide » (quelques courtes étapes, aussi proposées au premier lancement), le bouton « Mode démo » (tous les blocs d'un coup, par catégorie) et le bouton « Nouveautés de la 1.3 » (les grands changements, chacun avec un bouton qui ouvre le bon endroit)."
 L.HELP_HELPABOUT_2 = "- Onglet À propos : version, auteur, traducteurs, licence, code source, remerciements, et le Changelog (les nouveautés de chaque version). Après une mise à jour vers la 1.3, une fenêtre liste les grands changements ; les autres mises à jour proposent d'ouvrir le Changelog."
+L.HELP_HELPABOUT_4 = "- Quand une autre interface affiche son propre guide d'installation ou sa visite au premier lancement, la bienvenue, les nouveautés et la proposition de style de Tessera attendent sa fermeture, puis suivent."
 L.HELP_HELPABOUT_3 = "- Tessera est en anglais et en français ; Claude (une IA) a traduit les versions allemande, espagnole et portugaise du Brésil. Avec l'outil de traduction de CurseForge (page Localization du projet Tessera), tu peux les corriger ou ajouter ta langue : ton aide est la bienvenue !"
 L.HELP_T_COMMANDS = "Commandes"
 L.HELP_COMMANDS_1 = "/tessera ou /tes : options"

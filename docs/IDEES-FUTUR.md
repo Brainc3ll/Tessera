@@ -409,7 +409,16 @@ Bugs de la fenêtre d'options de FlareUI, corrigés chez lui (changelogs 1.1 à 
 ## « Montre-moi » élargi (idée de Braincell1980, 11/11, à voir après la 1.3)
 Le bouton « Montre-moi » (fenêtre Nouveautés, visite rapide) ouvre l'endroit et fait clignoter le réglage (`ShowHeadWidget`, `ShowRow`, `Blink` dans Options.lua). Pistes : un lien « Montre-moi » dans les lignes de l'aide (une ligne d'aide qui nomme un réglage l'ouvre et le fait clignoter) ; dans les infobulles du panneau d'aide à droite ; dans les messages du jeu qui nomment un réglage (ex. « Ce bloc est caché… » ouvre « Quand l'afficher ») ; depuis le journal des changements (chaque ligne qui parle d'un réglage). Demande une table « ligne d'aide → réglage » à tenir à jour avec les textes.
 
-## Idées vues dans SimplePanel 0.1.23 (12/11, zip envoyé par Braincell1980, rien codé)
-Addon de Dinoblankie, sans licence : on reprend des idées, jamais son code ni ses textes. Étude faite sur les noms de ses modules seulement, rien lu en détail. Aucun danger trouvé (vérification du 12/11).
-- Modules dont Tessera n'a pas l'équivalent exact (à vérifier avant de proposer) : Alts (suivi des autres personnages), Timers, WorldBuffs, Professions (fenêtre de métiers), Appearance, tiroir pour les boutons de minimap, graphiques (Chart).
-- Il envoie un message d'addon « SuiteVersions » (sa version, au groupe ou à la guilde, une fois par heure) pour prévenir d'une mise à jour. Tessera n'a rien de tel ; à discuter avant tout (vie privée, bruit sur le canal).
+## Idées vues dans SimplePanel 0.1.23 (12/11, analyse validée par Braincell1980, rien codé)
+Addon de Dinoblankie (33 plugins, ~24 000 lignes), **sans licence** : on reprend des idées, jamais son code ni ses textes. Aucun danger trouvé. Étude faite sur les en-têtes et commentaires des modules, pas ligne par ligne.
+À étudier une par une (ordre de préférence) :
+- **Alts** : tableau de tous les personnages (niveau, XP, repos qui monte hors ligne, lieu, dernière connexion, or). Tessera n'a que l'or par personnage dans le bloc Or.
+- **Timers** : alarmes rapides (« dans 10 minutes » ou durée libre), décompte sur le bloc, clignote et sonne, survit au rechargement.
+- **Recommandation de l'assistant de premier lancement selon la largeur réelle de la barre**, avec démo en direct pendant chaque étape.
+- **Instances et courrier de tous les personnages** : réinitialisations par personnage ; courrier qui va expirer, même hors ligne. À comparer au bloc `instances` et au bloc courrier avant de proposer.
+- **Interrupteurs « ne pas me déranger »** (échanges, invitations de canal, filtre de langage) lus depuis les réglages du jeu, sans les recopier.
+- **Un œil sur chaque faction** de la fenêtre Réputation du jeu pour choisir la faction affichée (cadres de Blizzard seulement accrochés, jamais modifiés).
+- **Lanceurs placés « n'importe où à l'écran »** (en plus de la barre) ; graphiques en fenêtres flottantes avec sélecteur de plage.
+- WorldBuffs : seulement si ces buffs existent sur Forever (à vérifier).
+Écartés : le message d'addon « SuiteVersions » (envoie la version et la liste des addons au groupe ou à la guilde chaque heure : bruit et vie privée) ; ses fenêtres maison (personnage, métiers, social, guilde : trop lourdes, contraires à « ne pas recoder ce que le jeu offre ») ; le carré de minimap qui retire tout ce que le jeu dessine autour.
+Garde-fou : chaque idée ajoutée coûte des textes à traduire en 4 langues et à maintenir ; Tessera a déjà plus de 50 blocs.

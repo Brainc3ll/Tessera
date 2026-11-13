@@ -18,7 +18,7 @@ MAX_LOCALS = 160    # Lua refuses 200; 160 keeps a margin (rule of 13/11/2026)
 MAX_UPVALUES = 50   # Lua refuses 60
 # Files already over the limit, waiting to be split (docs/A-REPRENDRE.md): they may not grow.
 # Remove the line when the file is split.
-KNOWN_DEBT = {"Options.lua": (199, 42)}
+KNOWN_DEBT = {}
 
 HEADER = re.compile(r"^(main|function) <([^:>]+):(\d+),\d+> ")
 COUNTS = re.compile(r"(\d+) upvalues?, (\d+) locals?")

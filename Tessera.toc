@@ -42,4 +42,11 @@ Launchers.lua
 Spacers.lua
 Broker.lua
 Options.lua
+OptionsWidgets.lua
+OptionsBlocks.lua
+OptionsPages.lua
+OptionsHelp.lua
+OptionsWindow.lua
+OptionsPlacement.lua
+OptionsTour.lua
 Demo.lua

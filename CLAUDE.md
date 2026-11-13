@@ -44,7 +44,8 @@ with more than 60 upvalues: the addon would not load at all. `tools/check_locals
 locals or 50 upvalues. When a file gets near that, split it before adding anything: shared tools in
 one file (exported through a table on `ns`), then one file per topic, in the same commit and with no
 change a player can see (see the `tessera-refactor` skill). Never add a local to a file that is over
-the limit. `Options.lua` is still over (`KNOWN_DEBT` in the tool): its split comes before the 1.4 work.
+the limit (`KNOWN_DEBT` in the tool lists a file waiting for its split; it is empty since 13/11).
+`Options.lua` is split in `Options*.lua` (shared tools through `ns.OptionsTools`, shared state in its table `S`).
 Data blocks go in the `Modules*.lua` file of their category; the order of the older blocks is
 `ns.MODULE_ORDER` in `Modules.lua`.
 

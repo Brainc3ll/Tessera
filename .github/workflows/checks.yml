@@ -25,6 +25,10 @@ jobs:
       - name: Static checks
         run: luacheck .
 
+      # Lua refuses a file with more than 200 locals alive at once: we keep every file under 160
+      - name: Locals and upvalues per file
+        run: python3 tools/check_locals.py .
+
       # forever-lint (JoseArgento, MIT): what Forever 1.60.1 changed for addons. Pinned version;
       # stops on a warning or worse (notes, like the old chat names kept as fallbacks, pass)
       - name: forever-lint

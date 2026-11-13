@@ -24,6 +24,7 @@ or visible fix, update:
 Then run, and fix everything they report:
 ```sh
 luacheck .
+python3 tools/check_locals.py .   # Lua's limit of 200 locals per file (we keep 160); needs luac5.1
 lua5.1 tools/mock_run.lua . enUS      # also: frFR, "frFR broker" (includes a dungeon + combat scenario)
 lua5.1 tools/fuzz_blocks.lua .        # WoW Forever's blocks survive a changing game
 lua5.1 tools/check_docs.lua .         # add "release" before publishing
@@ -36,6 +37,16 @@ global: WoW Forever-only functions and other addons' globals are read through `_
 `tools/check_docs.lua` also runs on every push (`.github/workflows/checks.yml`) and stops a
 release (`.github/workflows/release.yml`) when the documentation is behind. The release guide
 is `docs/RELEASE.md`.
+
+## Files stay small enough to load
+Lua refuses a file (or a function) with more than 200 local variables alive at once, and a function
+with more than 60 upvalues: the addon would not load at all. `tools/check_locals.py` fails above 160
+locals or 50 upvalues. When a file gets near that, split it before adding anything: shared tools in
+one file (exported through a table on `ns`), then one file per topic, in the same commit and with no
+change a player can see (see the `tessera-refactor` skill). Never add a local to a file that is over
+the limit. `Options.lua` is still over (`KNOWN_DEBT` in the tool): its split comes before the 1.4 work.
+Data blocks go in the `Modules*.lua` file of their category; the order of the older blocks is
+`ns.MODULE_ORDER` in `Modules.lua`.
 
 ## Texts that are easy to translate
 Changing a text makes translators redo all of it. Keep every text short: one key

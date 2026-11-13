@@ -30,6 +30,12 @@ Profiles.lua
 SecureClicks.lua
 Changelog.lua
 Modules.lua
+ModulesCharacter.lua
+ModulesSocial.lua
+ModulesWorld.lua
+ModulesProgress.lua
+ModulesSystem.lua
+ModulesForever.lua
 MicroMenu.lua
 Pins.lua
 Launchers.lua

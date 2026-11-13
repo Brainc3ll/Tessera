@@ -3210,6 +3210,7 @@ local eventMap = {}
 -- events and data requests, starts the update timer, then creates the blocks
 local function Build()
     ns:UpdateMinimapButton()
+    ns:SortModules() -- the blocks sit in several files: put them back in their order
     for _, key in ipairs(ns.order) do
         local mod = ns.modules[key]
         for _, event in ipairs(mod.events or {}) do

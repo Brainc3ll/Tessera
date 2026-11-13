@@ -236,7 +236,7 @@ into a new issue (a template is provided), or in the comments of the
 
 The code is plain Lua with no build step and no embedded libraries. Every file starts with a
 header explaining its role, and the tricky parts (secure clicks, secret values, border seams)
-are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and `Merge.lua`.
+are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and `Merge.lua`. Lua refuses a file with more than 200 local variables alive at once: `tools/check_locals.py` keeps every file under 160, so a big file is split before it gets there.
 
 ### Files (in load order, see `Tessera.toc`)
 
@@ -253,7 +253,13 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Profiles.lua` | Profile export / import (compact text; older texts still read), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
 | `Changelog.lua` | Version history for the in-game About tab (Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
-| `Modules.lua` | Definitions of all data blocks. **This is where you add a block.** |
+| `Modules.lua` | Tools shared by the data blocks (thresholds, durations, money, item counts; `ns.BlockTools`), the order of the blocks (`ns.MODULE_ORDER`) and the guide to adding a block. |
+| `ModulesCharacter.lua` | Data blocks about your character: gold, bags, durability, experience, rested, stats, regeneration, speed, talents, item level, pet, buffs, corpse. **Add a block in the file of its category.** |
+| `ModulesSocial.lua` | Data blocks about other players: friends, guild, group, whispers, mail, loot. |
+| `ModulesWorld.lua` | Data blocks about the world: zone, subzone, coordinates, clocks, date, hearthstone, instances, reset. |
+| `ModulesProgress.lua` | Data blocks about progress: reputation, currencies, quests, goal, professions, ammo, reagents, experience rate, gold gained. |
+| `ModulesSystem.lua` | Data blocks about the computer and the game: FPS, latency, memory, volume, time played, streamer mode. |
+| `ModulesForever.lua` | Data blocks for WoW Forever only: Legacy, Comprehension, Camping, Honor, weapon skills. |
 | `MicroMenu.lua` | Micro-menu block: Blizzard's micro menu in a tooltip and a list of secure buttons that open each menu. |
 | `Pins.lua` | Pinned tooltips: a block's tooltip kept open next to it and refreshed every second. |
 | `Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
@@ -279,7 +285,7 @@ do. All of them run on every push (`.github/workflows/checks.yml`).
 
 ### How a value gets on screen
 
-1. `Modules.lua` registers each block with `ns:RegisterModule(key, def)`.
+1. `ModulesCharacter.lua` and the other `Modules*.lua` files register each block with `ns:RegisterModule(key, def)`.
 2. At login, `Core.lua` loads the profile from `TesseraDB`, creates one frame per block and
    applies its style (`ns:ApplyStyle`), position and docking (`Merge.lua`).
 3. A block is refreshed by `ns:UpdateBlock(key)` when one of its `events` fires, or by the
@@ -293,7 +299,8 @@ do. All of them run on every push (`.github/workflows/checks.yml`).
 ### Adding a data block
 
 Open `Modules.lua`: its header documents every field a block can define, with a minimal
-example. In short:
+example. Put the block in the `Modules*.lua` file of its category (the same categories as the
+demo) and take the shared tools it needs from `ns.BlockTools` at the top of that file. In short:
 
 ```lua
 ns:RegisterModule("level", {
@@ -346,7 +353,7 @@ branch `forever`), an API reference built from the client
 ([Atraeau/WoW-Addons](https://atraeau.github.io/WoW-Addons/)) and the notes pinned on the
 WoWUIDev Discord. What Tessera found, with those sources and the development probes below:
 
-- **Legacy points** (`legacy` block, `Modules.lua`): the "Legacy" reward track is a renown track
+- **Legacy points** (`legacy` block, `ModulesForever.lua`): the "Legacy" reward track is a renown track
   of Blizzard's major factions system, faction ID `2802`. The points are
   `C_MajorFactions.GetMajorFactionData(2802).renownLevel`; the reward levels come from
   `C_MajorFactions.GetRenownLevels(2802)` and each reward from

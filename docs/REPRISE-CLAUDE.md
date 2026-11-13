@@ -8,6 +8,9 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 ## Avant chaque publication
 - Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).
 
+## Limite de Lua : 200 locales par fichier (décidé le 13/11)
+Un fichier ou une fonction de plus de 200 variables locales actives ne se charge pas ; le faux jeu ne la montre qu'une fois la limite dépassée. `tools/check_locals.py` échoue à 160 locales ou 50 upvalues. Un fichier proche de la limite se découpe avant d'y ajouter quoi que ce soit, sans changement visible pour les joueurs. Les blocs de données vont dans le fichier `Modules*.lua` de leur catégorie ; l'ordre des anciens blocs est `ns.MODULE_ORDER` (liste des blocs, options, place par défaut).
+
 ## Travailler avec Braincell1980
 - Dossier du jeu pour WoW Forever : `World of Warcraft/_forever_/Interface/AddOns/` (pas `_classic_`).
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.

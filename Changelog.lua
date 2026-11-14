@@ -54,7 +54,8 @@ ns.CHANGELOG = {
                 "Reset session: a new choice for the Shift + click and middle click actions on Gold and XP."
                     .. " Gains and rates per hour start again from now.",
                 "Guild: the tooltip can show the message of the day, the members online out of the total,"
-                    .. " and each member's rank and public note.",
+                    .. " and each member's rank and public note. Sort the members (name, level, zone, rank)"
+                    .. " and put the top ranks, guild master and officers, above everyone else.",
                 "Friends: choose which parts of the tooltip show, show the note you wrote on a friend,"
                     .. " sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.",
                 "Item level: show the equipped level, the best available one or both, and list the weakest items first in the tooltip.",
@@ -75,7 +76,8 @@ ns.CHANGELOG = {
                 "Remise à zéro de la session : un nouveau choix pour les actions du Maj + clic et du clic milieu sur l'Or et l'XP."
                     .. " Les gains et les rythmes par heure repartent de maintenant.",
                 "Guilde : l'infobulle peut montrer le message du jour, les membres en ligne sur le total,"
-                    .. " et le rang et la note publique de chaque membre.",
+                    .. " et le rang et la note publique de chaque membre. Trie les membres (nom, niveau, zone, rang)"
+                    .. " et place les rangs les plus hauts, maître de guilde et officiers, au-dessus des autres.",
                 "Amis : choisis les parties de l'infobulle à afficher, montre la note écrite sur un ami,"
                     .. " trie la liste par nom, niveau ou zone, et garde seulement les amis Battle.net qui jouent à WoW.",
                 "Niveau d'objet : affiche le niveau équipé, le meilleur disponible ou les deux, et liste d'abord les objets les plus faibles dans l'infobulle.",
@@ -88,12 +90,12 @@ ns.CHANGELOG = {
               en = {
                 "Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip."
                     .. " Checkboxes sit two by two, and rows and titles are tighter, so you scroll less."
-                    .. " The options window opens 15 % larger (115 %), which leaves room for text at 100 %.",
+                    .. " The options window opens 15 % larger (115 %) and is a little taller, which leaves room for text at 100 % and less scrolling.",
               },
               fr = {
                 "Réglages des blocs : un bloc qui a beaucoup de réglages les range sous deux titres repliables, Affichage et Infobulle."
                     .. " Les cases se placent deux par deux et les lignes et titres sont resserrés : moins de molette."
-                    .. " La fenêtre d'options s'ouvre 15 % plus grande (115 %), ce qui laisse la place à du texte à 100 %.",
+                    .. " La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute, ce qui laisse la place à du texte à 100 % et moins de molette.",
               },
             },
         },

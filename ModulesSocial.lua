@@ -66,6 +66,25 @@ local function SortFriends(list, mode)
     end)
 end
 
+-- Guild tooltip order: "leaders" top ranks (0 = off, 1 = guild master, 2 = two ranks...) come first,
+-- by rank; then the chosen order. "game" keeps the roster's own order.
+local GUILD_SORT = { game = true, name = true, level = true, zone = true, rank = true }
+local function SortGuild(list, mode, leaders)
+    if not GUILD_SORT[mode] then mode = "game" end
+    if mode == "game" and leaders < 1 then return end
+    table.sort(list, function(a, b)
+        local la, lb = leaders > 0 and a.rankIndex < leaders, leaders > 0 and b.rankIndex < leaders
+        if la ~= lb then return la end
+        if la and a.rankIndex ~= b.rankIndex then return a.rankIndex < b.rankIndex end
+        if mode == "level" and a.level ~= b.level then return a.level > b.level end
+        if mode == "zone" and a.zone ~= b.zone then return a.zone < b.zone end
+        if mode == "rank" and a.rankIndex ~= b.rankIndex then return a.rankIndex < b.rankIndex end
+        if mode == "game" then return a.order < b.order end
+        if a.name ~= b.name then return a.name < b.name end
+        return a.order < b.order
+    end)
+end
+
 ns:RegisterModule("friends", {
     label = "FRIENDS",
     icon = "Interface\\Icons\\INV_Misc_GroupNeedMore",
@@ -199,8 +218,17 @@ ns:RegisterModule("guild", {
         if cfg and cfg.countFormat == "online" then return tostring(online or 0) end
         return ("%d / %d"):format(online or 0, total or 0)
     end,
-    defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true },
+    defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
+                 guildSort = "game", guildLeaders = "0" },
     options = { COUNT_OPTION,
+                { kind = "dropdown", field = "guildSort", section = "tooltip", tab = "text", label = "GUILD_SORT", tip = "TIP_GUILD_SORT",
+                  values = { { key = "game", label = "FRIENDS_SORT_GAME" }, { key = "name", label = "FRIENDS_SORT_NAME" },
+                             { key = "level", label = "FRIENDS_SORT_LEVEL" }, { key = "zone", label = "FRIENDS_SORT_ZONE" },
+                             { key = "rank", label = "GUILD_SORT_RANK" } } },
+                { kind = "dropdown", field = "guildLeaders", section = "tooltip", tab = "text", label = "GUILD_LEADERS", tip = "TIP_GUILD_LEADERS",
+                  values = { { key = "0", label = "GUILD_LEADERS_0" }, { key = "1", label = "GUILD_LEADERS_1" },
+                             { key = "2", label = "GUILD_LEADERS_2" }, { key = "3", label = "GUILD_LEADERS_3" },
+                             { key = "4", label = "GUILD_LEADERS_4" } } },
                 { kind = "check", field = "guildTipMotd", section = "tooltip", tab = "text", label = "GUILD_TIP_MOTD", tip = "TIP_GUILD_TIP_MOTD" },
                 { kind = "check", field = "guildTipCount", section = "tooltip", tab = "text", label = "GUILD_TIP_COUNT", tip = "TIP_GUILD_TIP_COUNT" },
                 { kind = "check", field = "guildTipRank", section = "tooltip", tab = "text", label = "GUILD_TIP_RANK", tip = "TIP_GUILD_TIP_RANK" },
@@ -221,23 +249,30 @@ ns:RegisterModule("guild", {
         -- message of the day
         local motd = On(cfg, "guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and Try(C_GuildInfo.GetMOTD)
         if type(motd) == "string" and motd ~= "" then tt:AddLine(Masked(motd), 0.9, 0.9, 0.55, true) end
-        local shown = 0
+        -- online members first, then the order the player chose
+        local members = {}
         for i = 1, total do
             -- name, rank, rank index, level, class, zone, public note, officer note, online, status, class file
-            local name, rank, _, level, _, zone, note, _, online, _, class = GetGuildRosterInfo(i)
+            local name, rank, rankIndex, level, _, zone, note, _, online, _, class = GetGuildRosterInfo(i)
             if online and name then
-                shown = shown + 1
-                if shown <= MAX_LINES then
-                    local r, g, b = ClassColor(class)
-                    local shownName = Masked(Ambiguate and Ambiguate(name, "guild") or name)
-                    local left = ("%s (%d)"):format(shownName, level or 0)
-                    if On(cfg, "guildTipRank") and type(rank) == "string" and rank ~= "" then left = left .. " - " .. Masked(rank) end
-                    local right = Masked(zone or "")
-                    if On(cfg, "guildTipNote") and type(note) == "string" and note ~= "" then
-                        right = Masked(note) .. (right ~= "" and " - " .. right or "")
-                    end
-                    tt:AddDoubleLine(left, right, r, g, b, 0.8, 0.8, 0.8)
+                members[#members + 1] = { name = name, rank = rank, rankIndex = rankIndex or 99, level = level or 0,
+                    zone = zone or "", note = note, class = class, order = i }
+            end
+        end
+        SortGuild(members, cfg and cfg.guildSort, tonumber(cfg and cfg.guildLeaders) or 0)
+        local shown = 0
+        for _, m in ipairs(members) do
+            shown = shown + 1
+            if shown <= MAX_LINES then
+                local r, g, b = ClassColor(m.class)
+                local shownName = Masked(Ambiguate and Ambiguate(m.name, "guild") or m.name)
+                local left = ("%s (%d)"):format(shownName, m.level)
+                if On(cfg, "guildTipRank") and type(m.rank) == "string" and m.rank ~= "" then left = left .. " - " .. Masked(m.rank) end
+                local right = Masked(m.zone)
+                if On(cfg, "guildTipNote") and type(m.note) == "string" and m.note ~= "" then
+                    right = Masked(m.note) .. (right ~= "" and " - " .. right or "")
                 end
+                tt:AddDoubleLine(left, right, r, g, b, 0.8, 0.8, 0.8)
             end
         end
         if shown > MAX_LINES then tt:AddLine(L.TT_MORE:format(shown - MAX_LINES), 0.8, 0.8, 0.8) end

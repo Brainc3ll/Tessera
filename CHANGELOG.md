@@ -12,7 +12,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Durability: show the repair cost in the block, list only the worn items (the most worn first), and choose which parts of the tooltip show.
 - XP: show the time to the next level and the XP of the quests you can hand in, and choose which parts of the tooltip show.
 - Reset session: a new choice for the Shift + click and middle click actions on Gold and XP. Gains and rates per hour start again from now.
-- Guild: the tooltip can show the message of the day, the members online out of the total, and each member's rank and public note.
+- Guild: the tooltip can show the message of the day, the members online out of the total, and each member's rank and public note. Sort the members (name, level, zone, rank) and put the top ranks, guild master and officers, above everyone else.
 - Friends: choose which parts of the tooltip show, show the note you wrote on a friend, sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.
 - Item level: show the equipped level, the best available one or both, and list the weakest items first in the tooltip.
 - Stats: a second stat next to the first.
@@ -20,7 +20,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
-- Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip. Checkboxes sit two by two, and rows and titles are tighter, so you scroll less. The options window opens 15 % larger (115 %), which leaves room for text at 100 %.
+- Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip. Checkboxes sit two by two, and rows and titles are tighter, so you scroll less. The options window opens 15 % larger (115 %) and is a little taller, which leaves room for text at 100 % and less scrolling.
 
 ## 1.4.0 — 2026-11-14
 

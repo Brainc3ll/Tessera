@@ -2762,6 +2762,21 @@ for _, step in ipairs({
         all = Tip({ guildTipMotd = false, guildTipCount = false, guildTipRank = false, guildTipNote = false })
         assert(not all:find("Raid", 1, true) and not all:find("2/3", 1, true) and not all:find("Officer", 1, true)
             and not all:find("Alchemist", 1, true) and all:find("Ana-Realm (60) | Orgrimmar", 1, true), "every part off: " .. all)
+        all = Tip({ guildSort = "level" })
+        assert(all:find("Ana%-Realm.*Cy%-Realm"), "guild sort by level: " .. all)
+        all = Tip({ guildSort = "name", guildLeaders = "2" })
+        assert(all:find("Ana%-Realm.*Cy%-Realm"), "leaders first, then by name: " .. all)
+        GetGuildRosterInfo = function(i)
+            if i == 1 then return "Zed-Realm", "Member", 2, 70, "Mage", "A", "", "", true, 0, "MAGE" end
+            if i == 2 then return "Ana-Realm", "Guild Master", 0, 10, "Priest", "B", "", "", true, 0, "PRIEST" end
+            return "Cy-Realm", "Officer", 1, 40, "Rogue", "C", "", "", true, 0, "ROGUE"
+        end
+        all = Tip({ guildLeaders = "2", guildSort = "level" })
+        assert(all:find("Ana%-Realm.*Cy%-Realm.*Zed%-Realm"), "guild master, officer, then the rest: " .. all:gsub("\n", " / "))
+        all = Tip({ guildLeaders = "1", guildSort = "name" })
+        assert(all:find("Ana%-Realm.*Cy%-Realm.*Zed%-Realm"), "top rank only: " .. all)
+        all = Tip({ guildSort = "rank" })
+        assert(all:find("Ana%-Realm.*Cy%-Realm.*Zed%-Realm"), "by rank: " .. all)
         IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, C_GuildInfo, GetGuildInfo = oldIn, oldNum, oldRoster, oldGI, oldInfo
         -- item level
         local il = ns.modules.itemLevel

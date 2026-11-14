@@ -268,6 +268,8 @@ Règle de Braincell1980 : le jeu a déjà ses options d'accessibilité (Réglage
 
 ### Polices pour l'accessibilité (24 octobre 2026, pour la 1.4)
 
+**Fait le 14/11 (premier lot, test125)** : Atkinson Hyperlegible Next, OpenDyslexic, Luciole, voir `docs/A-REPRENDRE.md`. Reste : Lexend (version fixe), Andika, Inclusive Sans, espacement des lettres, addon `Tessera_Fonts`. Décision : pas de champ de chemin libre.
+
 Idée de Braincell1980 : donner le choix de polices pensées pour l'accessibilité, et les rendre disponibles pour les autres addons. Licences vérifiées en ligne le 24/10 ; toutes compatibles avec la licence MIT de Tessera (livrées sans modification, avec leur fichier de licence).
 
 | Police | Pour qui | Licence |

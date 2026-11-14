@@ -77,6 +77,46 @@ ns.CHANGELOG = {
         },
     },
     {
+        version = "1.3.2",
+        date = "2026-11-14",
+        sections = {
+            { kind = "new",
+              en = {
+                "New style: Aurora, for DaylightUI. With DaylightUI installed, DaylightUI draws the frame of each block"
+                    .. " (rounded border, shadow, background) and the blocks use its font."
+                    .. " Aurora also works without DaylightUI, as a plain imitation."
+                    .. " With only DaylightUI installed, new profiles start with Aurora."
+                    .. " A profile on another style keeps it, and Tessera offers the new one.",
+                "Placement: Tessera knows the frames of DaylightUI (unit frames, buffs, quest tracker, chat, info panel)"
+                    .. " and warns when a block covers one.",
+                "DataBroker tab: with DaylightUI installed, a note explains how to show Tessera's blocks in its panels,"
+                    .. " next to Tessera's own blocks (sharing) or instead of them (DataBroker mode).",
+              },
+              fr = {
+                "Nouveau style : Aurore, pour DaylightUI. Avec DaylightUI installé, DaylightUI dessine le cadre de chaque bloc"
+                    .. " (bord arrondi, ombre, fond) et les blocs prennent sa police."
+                    .. " Aurore marche aussi sans DaylightUI, en simple imitation."
+                    .. " Avec DaylightUI seul installé, les nouveaux profils commencent avec Aurore."
+                    .. " Un profil sur un autre style le garde, et Tessera te propose le nouveau.",
+                "Placement : Tessera connaît les cadres de DaylightUI (unités, buffs, suivi de quêtes, discussion, panneau d'infos)"
+                    .. " et prévient quand un bloc en recouvre un.",
+                "Onglet DataBroker : avec DaylightUI installé, une note explique comment afficher les blocs de Tessera dans ses panneaux,"
+                    .. " à côté de ceux de Tessera (partage) ou à leur place (mode DataBroker).",
+              },
+            },
+            { kind = "improved",
+              en = {
+                "Tessera waits for another interface addon's setup guide or tour to close before it shows its welcome,"
+                    .. " news, DataBroker mode notice and style offer, then follows two seconds later.",
+              },
+              fr = {
+                "Tessera attend la fermeture du guide d'installation ou de la visite d'une autre interface avant d'afficher"
+                    .. " sa bienvenue, ses nouveautés, l'avis du mode DataBroker et sa proposition de style, puis enchaîne deux secondes après.",
+              },
+            },
+        },
+    },
+    {
         version = "1.3.1",
         date = "2026-11-12",
         sections = {

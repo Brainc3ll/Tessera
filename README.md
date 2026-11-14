@@ -97,6 +97,8 @@ Tessera is a collaboration between me, a player, and an AI.
 
 **Thanks** to Malkkav, author of [FlareUI](https://www.curseforge.com/wow/addons/flareui) (MIT license): the options window takes its look from it.
 
+**Fonts**, shipped unchanged in `Media/Fonts` with their license files: [Atkinson Hyperlegible Next](https://github.com/googlefonts/atkinson-hyperlegible-next) (SIL Open Font License 1.1, copyright The Atkinson Hyperlegible Next Project Authors), [OpenDyslexic](https://github.com/antijingoist/opendyslexic) (SIL Open Font License 1.1, copyright Abbie Gonzalez) and [Luciole](https://www.luciole-vision.com/) (CC BY 4.0, copyright Laurent Bourcellier and Jonathan Fabreguettes (Perez)). The About tab has a Licenses chapter with the same credits.
+
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
 
 In short, Tessera's [AI Code Rating](https://aicoderating.com) is **E4d**: a maintainer who does not program, 76–100% of the code written by AI, changes tested but not read by a human (details in `ACR.md`). `AI-DECLARATION.md` gives the AI's part at each stage (design, code, tests, docs, review, release).
@@ -193,6 +195,9 @@ Help tab inside the game explains everything.
 - Accessibility tab: bright or soft colors for values and class colors, or colorblind values;
   high contrast; fewer animations; minimum text size. Class color on the text, background,
   border, icon frame and lines.
+- Fonts for easier reading, in every font menu: Atkinson Hyperlegible Next and Luciole (low vision), OpenDyslexic
+  (dyslexia), each in regular and bold. The menu shows in grey which alphabets each one covers. Other addons that
+  use LibSharedMedia can pick them too.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
 - Tooltips your way: bigger or smaller, or only while holding Alt (General tab).

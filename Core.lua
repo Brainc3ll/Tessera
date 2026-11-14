@@ -142,6 +142,20 @@ ns.fonts = {
     -- Morpheus draws small letters: shown 2 points larger to read like the others
     { key = "morpheus", name = "Morpheus",      file = "Fonts\\MORPHEUS.TTF", sizeBoost = 2 },
     { key = "skurri",   name = "Skurri",        file = "Fonts\\SKURRI.TTF" },
+    -- Accessibility fonts shipped with Tessera (licences: Media/Fonts and the About tab).
+    -- share = true: also offered to other addons through LibSharedMedia (ns:ShareFonts)
+    { key = "atkinson",     name = "Atkinson Hyperlegible",      share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\AtkinsonHyperlegibleNext-Regular.ttf" },
+    { key = "atkinsonbold", name = "Atkinson Hyperlegible Bold", share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\AtkinsonHyperlegibleNext-Bold.ttf" },
+    { key = "opendyslexic",     name = "OpenDyslexic",      share = true, scripts = {"latin", "greek", "cyrillic"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\OpenDyslexic-Regular.otf" },
+    { key = "opendyslexicbold", name = "OpenDyslexic Bold", share = true, scripts = {"latin", "greek", "cyrillic"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\OpenDyslexic-Bold.otf" },
+    { key = "luciole",     name = "Luciole",      share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Luciole-Regular.ttf" },
+    { key = "luciolebold", name = "Luciole Bold", share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Luciole-Bold.ttf" },
 }
 
 ---------------------------------------------------------------------------
@@ -283,6 +297,28 @@ local function LSMInsetRatio(file)
         return 3 / 8  -- FlareUI: 8 px Thin border, 3 px gap
     end
     return 3 / 16     -- FlareUI: 16 px borders, 3 px gap
+end
+
+-- Offers Tessera's own fonts to other addons (ElvUI, Details, WeakAuras...) when some addon
+-- already loaded LibSharedMedia. A name another addon registered first is left alone.
+function ns:ShareFonts()
+    local LSM = self:GetLSM()
+    if not (LSM and LSM.Register) then return end
+    for _, item in ipairs(ns.fonts) do
+        if item.share then pcall(LSM.Register, LSM, "font", item.name, item.file) end
+    end
+end
+
+-- Menu text of a media entry: its name, then in grey the alphabets it covers (set for
+-- Tessera's own fonts only, measured on the font files: other fonts show no note)
+function ns:MediaLabel(opt)
+    if not opt.scripts then return opt.name end
+    local texts = { latin = L.SCRIPT_LATIN, greek = L.SCRIPT_GREEK, cyrillic = L.SCRIPT_CYRILLIC }
+    local names = {}
+    for _, script in ipairs(opt.scripts) do
+        table.insert(names, texts[script] or script)
+    end
+    return opt.name .. "  |cff999999(" .. table.concat(names, ", ") .. ")|r"
 end
 
 -- Full list for one media kind: the game's media, then LibSharedMedia's
@@ -3351,6 +3387,7 @@ eventFrame:RegisterEvent("PLAYER_CONTROL_GAINED") -- end of a flight path
 eventFrame:SetScript("OnEvent", function(_, event, unit)
     if event == "PLAYER_LOGIN" then
         InitDB()
+        ns:ShareFonts()
         ns.sessionMoney = GetMoney() or 0
         ns:RecordMoney()
         Build()

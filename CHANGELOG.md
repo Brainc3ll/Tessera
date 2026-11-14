@@ -7,13 +7,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### New
 
-- New style: Aurora, for DaylightUI. With DaylightUI installed, DaylightUI draws the frame of each block (rounded border, shadow, background) and the blocks use its font. Aurora also works without DaylightUI, as a plain imitation. With only DaylightUI installed, new profiles start with Aurora. A profile on another style keeps it, and Tessera offers the new one.
-- Placement: Tessera knows the frames of DaylightUI (unit frames, buffs, quest tracker, chat, info panel) and warns when a block covers one.
-- DataBroker tab: with DaylightUI installed, a note explains how to show Tessera's blocks in its panels, next to Tessera's own blocks (sharing) or instead of them (DataBroker mode).
-
-### Improvements
-
-- Tessera waits for another interface addon's setup guide or tour to close before it shows its welcome, news, DataBroker mode notice and style offer, then follows two seconds later.
+- Three fonts made for easier reading, in the font choice of every block: Atkinson Hyperlegible (low vision), OpenDyslexic (dyslexia) and Luciole (low vision), each in regular and bold. The menu shows in grey which alphabets each one covers. Other addons that use LibSharedMedia can pick them too.
+- About tab: a new Licenses chapter lists the credits and licenses of these fonts.
 
 ## 1.3.2 — 2026-11-14
 

@@ -437,7 +437,7 @@ local function SetupChoices(dd, label, options, getter, setter)
                 if opt.isTitle then
                     root:CreateTitle(opt.name)
                 else
-                    root:CreateRadio(opt.name,
+                    root:CreateRadio(ns:MediaLabel(opt),
                         function(value) return getter() == value end,
                         function(value) setter(value) end,
                         opt.key)

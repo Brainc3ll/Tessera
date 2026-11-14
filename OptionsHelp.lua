@@ -465,12 +465,24 @@ local function BuildAboutLinks(page)
     AttachTip(box, L.ABOUT_LINKS, L.TIP_ABOUT_COPY)
 end
 
+-- Licenses and credits of the fonts shipped in Media/Fonts (decided 14/11)
+local function LicensesText()
+    return table.concat({
+        L.LICENSES_INTRO, "",
+        L.LICENSES_ATKINSON, "",
+        L.LICENSES_OPENDYSLEXIC, "",
+        L.LICENSES_LUCIOLE, "",
+        L.LICENSES_SHARE,
+    }, "\n")
+end
+
 local function BuildAboutPage(page)
     local sections -- built once: the version and language do not change in a session
     S.aboutContent = BuildTopicPage(page, function()
         sections = sections or {
             { title = L.TAB_ABOUT, body = AboutText(), raw = true },
             { title = L.CHANGELOG_TITLE, body = ChangelogText(), raw = true },
+            { title = L.LICENSES_TITLE, body = LicensesText(), raw = true },
         }
         return "about", sections
     end, 88)

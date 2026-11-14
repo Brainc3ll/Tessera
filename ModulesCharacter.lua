@@ -7,7 +7,7 @@ local Tools = ns.BlockTools
 local AtMaxLevel, BAD, COIN_ICONS, ClassColor = Tools.AtMaxLevel, Tools.BAD, Tools.COIN_ICONS, Tools.ClassColor
 local FormatDuration, FormatGold = Tools.FormatDuration, Tools.FormatGold
 local GOOD, GetItemInfoFn, LevelColor, MicroButtonMacro = Tools.GOOD, Tools.GetItemInfoFn, Tools.LevelColor, Tools.MicroButtonMacro
-local Percent, ShortTime = Tools.Percent, Tools.ShortTime
+local Percent, ResetSession, ShortDuration, ShortTime = Tools.Percent, Tools.ResetSession, Tools.ShortDuration, Tools.ShortTime
 local THRESHOLDS, Threshold, Try, WARN = Tools.THRESHOLDS, Tools.Threshold, Tools.Try, Tools.WARN
 local WHITE, session = Tools.WHITE, Tools.session
 
@@ -17,22 +17,54 @@ local function SignedMoney(diff)
     return sign .. ns.FormatMoney(math.abs(diff))
 end
 
+-- A tooltip part is on unless its checkbox was cleared (a profile from before the checkbox keeps it on)
+local function On(cfg, field)
+    return not cfg or cfg[field] ~= false
+end
+
+-- The money the Gold block shows: this character's, or the total of the characters that can trade
+-- with it (same faction and same realm; the others, and entries saved before this existed, do not
+-- count). Every other character keeps the amount it had when last seen.
+local function IsTrader(data, faction, realm)
+    return data.faction ~= nil and data.faction == faction and data.realm ~= nil and data.realm == realm
+end
+
+local function Faction()
+    return UnitFactionGroup and UnitFactionGroup("player") or nil
+end
+
+local function ShownMoney(cfg)
+    local mine = GetMoney() or 0
+    if not (cfg and cfg.goldScope == "total") then return mine end
+    local faction, realm = Faction(), GetRealmName and GetRealmName() or ""
+    local total = mine
+    for name, data in pairs(ns.sv.chars) do
+        if name ~= ns.charKey and IsTrader(data, faction, realm) then total = total + (data.money or 0) end
+    end
+    return total
+end
+
 ns:RegisterModule("gold", {
     label = "GOLD",
     icon = COIN_ICONS.gold,
     events = { "PLAYER_MONEY" },
     update = function(cfg)
         if ns:IsStreamer() then return ns.HIDDEN end
-        return FormatGold(GetMoney() or 0, cfg)
+        return FormatGold(ShownMoney(cfg), cfg)
     end,
     -- Shift + click "copy to chat": plain text, without coin textures
-    chatText = function()
+    chatText = function(cfg)
         if ns:IsStreamer() then return ns.HIDDEN end
-        local money = GetMoney() or 0
+        local money = ShownMoney(cfg)
         return L.CHAT_MONEY:format(math.floor(money / 10000), math.floor(money % 10000 / 100), money % 100)
     end,
-    defaults = { goldIcons = true, goldRound = false, goldSeparator = true },
+    defaults = { goldIcons = true, goldRound = false, goldSeparator = true, goldScope = "character", goldHistoryDays = "7",
+                 goldTipSession = true, goldTipHour = true, goldTipHistory = true, goldTipChars = true },
+    -- extra click action (Shift / middle click list): gains and rates start again from now
+    extraAction = { key = "resetSession", label = "ACTION_RESET_SESSION", run = ResetSession },
     options = {
+        { kind = "dropdown", field = "goldScope", tab = "text", label = "GOLD_SCOPE", tip = "TIP_GOLD_SCOPE",
+          values = { { key = "character", label = "GOLD_SCOPE_CHARACTER" }, { key = "total", label = "GOLD_SCOPE_TOTAL" } } },
         { kind = "dropdown", field = "goldFormat", tab = "text", label = "GOLD_FORMAT", tip = "TIP_GOLD_FORMAT",
           values = { { key = "full", label = "GOLD_FULL" }, { key = "goldSilver", label = "GOLD_SILVER" },
                      { key = "gold", label = "GOLD_ONLY" }, { key = "short", label = "GOLD_SHORT" } } },
@@ -40,22 +72,31 @@ ns:RegisterModule("gold", {
         { kind = "check", field = "goldRound", tab = "text", label = "GOLD_ROUND", tip = "TIP_GOLD_ROUND",
           shown = function(cfg) return cfg.goldFormat == "gold" or cfg.goldFormat == "goldSilver" end },
         { kind = "check", field = "goldSeparator", tab = "text", label = "GOLD_SEPARATOR", tip = "TIP_GOLD_SEPARATOR" },
+        { kind = "check", field = "goldTipSession", tab = "text", label = "GOLD_TIP_SESSION", tip = "TIP_GOLD_TIP_SESSION" },
+        { kind = "check", field = "goldTipHour", tab = "text", label = "GOLD_TIP_HOUR", tip = "TIP_GOLD_TIP_HOUR" },
+        { kind = "check", field = "goldTipHistory", tab = "text", label = "GOLD_TIP_HISTORY", tip = "TIP_GOLD_TIP_HISTORY" },
+        { kind = "dropdown", field = "goldHistoryDays", tab = "text", label = "GOLD_HISTORY_DAYS", tip = "TIP_GOLD_HISTORY_DAYS",
+          shown = function(cfg) return cfg.goldTipHistory ~= false end,
+          values = { { key = "7", label = "DAYS_7" }, { key = "14", label = "DAYS_14" }, { key = "30", label = "DAYS_30" } } },
+        { kind = "check", field = "goldTipChars", tab = "text", label = "GOLD_TIP_CHARS", tip = "TIP_GOLD_TIP_CHARS" },
     },
-    tooltip = function(tt)
+    tooltip = function(tt, cfg)
         if ns:IsStreamer() then
             tt:AddLine(L.STREAMER_TOOLTIP, 0.8, 0.8, 0.8, true)
             return
         end
         local money = GetMoney() or 0
         local diff = money - (ns.sessionMoney or money)
-        tt:AddDoubleLine(L.TT_SESSION, SignedMoney(diff), 1, 1, 1, 1, 1, 1)
-        local hours = (GetTime() - session.start) / 3600
-        if hours >= 0.1 and diff ~= 0 then
+        if On(cfg, "goldTipSession") then
+            tt:AddDoubleLine(L.TT_SESSION, SignedMoney(diff), 1, 1, 1, 1, 1, 1)
+        end
+        local hours = (GetTime() - session.gainStart) / 3600
+        if On(cfg, "goldTipHour") and hours >= 0.1 and diff ~= 0 then
             tt:AddDoubleLine(L.TT_GOLD_HOUR, SignedMoney(math.floor(diff / hours)), 1, 1, 1, 1, 1, 1)
         end
 
-        -- last 7 days for this character (net gain or loss per day), newest first
-        local days = ns.sv.goldHistory and ns.sv.goldHistory[ns.charKey]
+        -- last days for this character (net gain or loss per day), newest first
+        local days = On(cfg, "goldTipHistory") and ns.sv.goldHistory and ns.sv.goldHistory[ns.charKey]
         if days then
             local list = {}
             for day, net in pairs(days) do table.insert(list, { day = day, net = net }) end
@@ -63,17 +104,23 @@ ns:RegisterModule("gold", {
             if #list > 0 then
                 tt:AddLine(" ")
                 tt:AddLine(L.TT_GOLD_HISTORY, 1, 0.82, 0)
-                for i = 1, math.min(7, #list) do
+                for i = 1, math.min(tonumber(cfg and cfg.goldHistoryDays) or 7, #list) do
                     local m, d = list[i].day:match("%d+-(%d+)-(%d+)")
                     tt:AddDoubleLine(d and (d .. "/" .. m) or list[i].day, SignedMoney(list[i].net), 1, 1, 1, 1, 1, 1)
                 end
             end
         end
 
+        if not On(cfg, "goldTipChars") then return end
+        -- "total" mode lists only the characters the total counts; the default lists them all
+        local onlyTraders = cfg and cfg.goldScope == "total"
+        local faction, realm = Faction(), GetRealmName and GetRealmName() or ""
         local chars, total = {}, 0
         for name, data in pairs(ns.sv.chars) do
-            table.insert(chars, { name = name, money = data.money or 0, class = data.class })
-            total = total + (data.money or 0)
+            if not onlyTraders or name == ns.charKey or IsTrader(data, faction, realm) then
+                table.insert(chars, { name = name, money = data.money or 0, class = data.class })
+                total = total + (data.money or 0)
+            end
         end
         if #chars > 1 then
             table.sort(chars, function(a, b) return a.money > b.money end)
@@ -102,13 +149,14 @@ end
 -- Free and total slots of the bags that hold anything: a profession bag (herbs, soul
 -- shards, reagents...) only takes its own items, so its free slots do not count
 -- (GetContainerNumFreeSlots' second value is the bag family: 0 = any item)
-local function GeneralBagSlots()
+-- (withSpecial: the "Count profession bags" setting counts them too)
+local function GeneralBagSlots(withSpecial)
     local free, total = 0, 0
     for bag = 0, LastBag() do
         local slots = C_Container.GetContainerNumSlots(bag) or 0
         if slots > 0 then
             local bagFree, family = C_Container.GetContainerNumFreeSlots(bag)
-            if not family or family == 0 then
+            if withSpecial or not family or family == 0 then
                 total = total + slots
                 free = free + (bagFree or 0)
             end
@@ -117,32 +165,65 @@ local function GeneralBagSlots()
     return free, total
 end
 
+-- Sell value of the junk (grey items) in the bags. The price is only known once the item is
+-- cached: only known prices count.
+local function JunkValue()
+    local junk = 0
+    for bag = 0, LastBag() do
+        local slots = C_Container.GetContainerNumSlots(bag) or 0
+        for slot = 1, slots do
+            local info = C_Container.GetContainerItemInfo and C_Container.GetContainerItemInfo(bag, slot)
+            if info and info.quality == 0 and info.itemID then
+                local price = select(11, GetItemInfoFn(info.itemID))
+                if price then junk = junk + price * (info.stackCount or 1) end
+            end
+        end
+    end
+    return junk
+end
+
 ns:RegisterModule("bags", {
     label = "BAGS",
     icon = "Interface\\Icons\\INV_Misc_Bag_08",
     events = { "BAG_UPDATE_DELAYED" },
     update = function(cfg)
-        local free, total = GeneralBagSlots()
+        local free, total = GeneralBagSlots(cfg and cfg.bagsProfession)
         local level = Threshold(cfg, free, THRESHOLDS.bags)
         local mode = cfg and cfg.bagsFormat or "freeTotal"
-        if mode == "free" then return tostring(free), level end
-        if mode == "usedTotal" then return L.BAGS_FORMAT:format(total - free, total), level end
-        return L.BAGS_FORMAT:format(free, total), level
+        local text
+        if mode == "free" then
+            text = tostring(free)
+        elseif mode == "usedTotal" then
+            text = L.BAGS_FORMAT:format(total - free, total)
+        else
+            text = L.BAGS_FORMAT:format(free, total)
+        end
+        -- junk value next to the places (streamer mode hides amounts); nothing while no price is known
+        if cfg and cfg.bagsJunk and not ns:IsStreamer() then
+            local junk = JunkValue()
+            if junk > 0 then text = text .. " |cff9d9d9d" .. ns.FormatMoney(junk) .. "|r" end
+        end
+        return text, level
     end,
-    defaults = { bagsFormat = "usedTotal" }, -- new profiles; saved profiles keep their choice
+    defaults = { bagsFormat = "usedTotal", bagsProfession = false, bagsJunk = false,
+                 bagsTipBags = true, bagsTipProfession = true, bagsTipJunk = true }, -- new profiles; saved profiles keep their choice
     options = {
         { kind = "dropdown", field = "bagsFormat", tab = "text", label = "BAGS_SHOWN", tip = "TIP_BAGS_SHOWN",
           values = { { key = "freeTotal", label = "BAGS_FREE_TOTAL" }, { key = "free", label = "BAGS_FREE" },
                      { key = "usedTotal", label = "BAGS_USED_TOTAL" } } },
+        { kind = "check", field = "bagsProfession", tab = "text", label = "BAGS_PROFESSION", tip = "TIP_BAGS_PROFESSION" },
+        { kind = "check", field = "bagsJunk", tab = "text", label = "BAGS_JUNK", tip = "TIP_BAGS_JUNK" },
+        { kind = "check", field = "bagsTipBags", tab = "text", label = "BAGS_TIP_BAGS", tip = "TIP_BAGS_TIP_BAGS" },
+        { kind = "check", field = "bagsTipProfession", tab = "text", label = "BAGS_TIP_PROFESSION", tip = "TIP_BAGS_TIP_PROFESSION" },
+        { kind = "check", field = "bagsTipJunk", tab = "text", label = "BAGS_TIP_JUNK", tip = "TIP_BAGS_TIP_JUNK" },
     },
     thresholds = THRESHOLDS.bags,
     -- progress bar: how full the bags are
-    progress = function()
-        local free, total = GeneralBagSlots()
+    progress = function(cfg)
+        local free, total = GeneralBagSlots(cfg and cfg.bagsProfession)
         return total > 0 and (total - free) / total or 0
     end,
-    tooltip = function(tt)
-        local junk = 0
+    tooltip = function(tt, cfg)
         local special = {} -- profession bags: listed apart, after the bags that take anything
         for bag = 0, LastBag() do
             local slots = C_Container.GetContainerNumSlots(bag) or 0
@@ -153,24 +234,17 @@ ns:RegisterModule("bags", {
                 name = name or (bag == 0 and L.TT_BACKPACK or L.TT_BAG:format(bag))
                 if family and family ~= 0 then
                     table.insert(special, { name = name, text = L.BAGS_FORMAT:format(free, slots) })
-                else
+                elseif On(cfg, "bagsTipBags") then
                     tt:AddDoubleLine(name, L.BAGS_FORMAT:format(free, slots), 1, 1, 1, 1, 1, 1)
-                end
-                -- junk (grey items) sell value; the price is only known once the item is cached
-                for slot = 1, slots do
-                    local info = C_Container.GetContainerItemInfo and C_Container.GetContainerItemInfo(bag, slot)
-                    if info and info.quality == 0 and info.itemID then
-                        local price = select(11, GetItemInfoFn(info.itemID))
-                        if price then junk = junk + price * (info.stackCount or 1) end
-                    end
                 end
             end
         end
-        if #special > 0 then
+        if #special > 0 and On(cfg, "bagsTipProfession") then
             tt:AddLine(" ")
             tt:AddLine(L.TT_PROFESSION_BAGS, 0.4, 0.8, 1)
             for _, b in ipairs(special) do tt:AddDoubleLine(b.name, b.text, 0.4, 0.8, 1, 0.4, 0.8, 1) end
         end
+        local junk = On(cfg, "bagsTipJunk") and JunkValue() or 0
         if junk > 0 then
             tt:AddLine(" ")
             tt:AddDoubleLine(L.TT_JUNK, ns.FormatMoney(junk), 0.62, 0.62, 0.62, 1, 1, 1)
@@ -254,12 +328,24 @@ ns:RegisterModule("durability", {
     update = function(cfg)
         local pct = ShownDurability(cfg)
         if not pct then return nil end
-        return ("%d%%"):format(math.floor(pct + 0.5)), DurabilityLevel(pct, cfg)
+        local text = ("%d%%"):format(math.floor(pct + 0.5))
+        -- repair cost next to the percentage (streamer mode hides amounts; nothing when this client gives none)
+        if cfg and cfg.durabilityCost and not ns:IsStreamer() then
+            local cost = RepairCost()
+            if cost and cost > 0 then text = text .. " " .. ns.FormatMoney(cost) end
+        end
+        return text, DurabilityLevel(pct, cfg)
     end,
-    defaults = { durabilityMode = "lowest" },
+    defaults = { durabilityMode = "lowest", durabilityCost = false, durabilityWornOnly = false,
+                 durabilityTipEquipped = true, durabilityTipBags = true, durabilityTipCost = true },
     options = {
         { kind = "dropdown", field = "durabilityMode", tab = "text", label = "DURABILITY_SHOWN", tip = "TIP_DURABILITY_SHOWN",
           values = { { key = "lowest", label = "DURABILITY_LOWEST" }, { key = "average", label = "DURABILITY_AVERAGE" } } },
+        { kind = "check", field = "durabilityCost", tab = "text", label = "DURABILITY_COST", tip = "TIP_DURABILITY_COST" },
+        { kind = "check", field = "durabilityWornOnly", tab = "text", label = "DURABILITY_WORN_ONLY", tip = "TIP_DURABILITY_WORN_ONLY" },
+        { kind = "check", field = "durabilityTipEquipped", tab = "text", label = "DURABILITY_TIP_EQUIPPED", tip = "TIP_DURABILITY_TIP_EQUIPPED" },
+        { kind = "check", field = "durabilityTipBags", tab = "text", label = "DURABILITY_TIP_BAGS", tip = "TIP_DURABILITY_TIP_BAGS" },
+        { kind = "check", field = "durabilityTipCost", tab = "text", label = "DURABILITY_TIP_COST", tip = "TIP_DURABILITY_TIP_COST" },
     },
     thresholds = THRESHOLDS.durability,
     progress = function(cfg)
@@ -267,55 +353,102 @@ ns:RegisterModule("durability", {
         return lowest and lowest / 100 or nil
     end,
     tooltip = function(tt, cfg)
-        for slot = 1, 19 do
-            local cur, max = GetInventoryItemDurability(slot)
-            if cur and max and max > 0 then
-                local pct = Percent(cur, max)
-                local ok, link = pcall(GetInventoryItemLink, "player", slot)
-                link = ok and link or "?"
-                tt:AddDoubleLine(link, LevelColor(DurabilityLevel(pct, cfg)) .. ("%d%%"):format(math.floor(pct + 0.5)) .. "|r")
+        local wornOnly = cfg and cfg.durabilityWornOnly
+        -- "Only worn items" hides the ones at 100 % and puts the most worn first
+        local function Prepare(items)
+            if not wornOnly then return items end
+            local worn = {}
+            for _, item in ipairs(items) do
+                if math.floor(item.pct + 0.5) < 100 then table.insert(worn, item) end
             end
+            table.sort(worn, function(x, y) return x.pct < y.pct end)
+            return worn
+        end
+        -- one line per item: the item and its percentage, colored by level
+        local function AddItems(items)
+            for _, item in ipairs(items) do
+                tt:AddDoubleLine(item.link, LevelColor(DurabilityLevel(item.pct, cfg)) .. ("%d%%"):format(math.floor(item.pct + 0.5)) .. "|r")
+            end
+        end
+        if On(cfg, "durabilityTipEquipped") then
+            local items = {}
+            for slot = 1, 19 do
+                local cur, max = GetInventoryItemDurability(slot)
+                if cur and max and max > 0 then
+                    local ok, link = pcall(GetInventoryItemLink, "player", slot)
+                    table.insert(items, { link = ok and link or "?", pct = Percent(cur, max) })
+                end
+            end
+            AddItems(Prepare(items))
         end
         -- items with durability carried in the bags, under their own title
         local getDurability = C_Container and C_Container.GetContainerItemDurability
-        if getDurability then
-            local title = false
+        if getDurability and On(cfg, "durabilityTipBags") then
+            local items = {}
             for bag = 0, LastBag() do
                 local okS, slots = pcall(C_Container.GetContainerNumSlots, bag)
                 for slot = 1, (okS and tonumber(slots)) or 0 do
                     local okD, cur, max = pcall(getDurability, bag, slot)
                     if not okD then cur, max = nil, nil end
                     if type(cur) == "number" and type(max) == "number" and max > 0 then
-                        if not title then
-                            tt:AddLine(" ")
-                            tt:AddLine(L.TT_IN_BAGS, 1, 0.82, 0)
-                            title = true
-                        end
-                        local pct = Percent(cur, max)
                         local okI, info = pcall(C_Container.GetContainerItemInfo, bag, slot)
                         if not okI then info = nil end
-                        local link = type(info) == "table" and info.hyperlink or "?"
-                        tt:AddDoubleLine(link, LevelColor(DurabilityLevel(pct, cfg)) .. ("%d%%"):format(math.floor(pct + 0.5)) .. "|r")
+                        table.insert(items, { link = type(info) == "table" and info.hyperlink or "?", pct = Percent(cur, max) })
                     end
                 end
             end
+            items = Prepare(items)
+            if #items > 0 then
+                tt:AddLine(" ")
+                tt:AddLine(L.TT_IN_BAGS, 1, 0.82, 0)
+                AddItems(items)
+            end
         end
-        local cost = RepairCost()
-        if cost and cost > 0 then
-            tt:AddLine(" ")
-            tt:AddDoubleLine(L.TT_REPAIR_COST, ns.FormatMoney(cost), 1, 1, 1, 1, 1, 1)
+        if On(cfg, "durabilityTipCost") then
+            local cost = RepairCost()
+            if cost and cost > 0 then
+                tt:AddLine(" ")
+                tt:AddDoubleLine(L.TT_REPAIR_COST, ns.FormatMoney(cost), 1, 1, 1, 1, 1, 1)
+            end
         end
     end,
     secureMacro = "/click CharacterMicroButton",
     clickHint = L.HINT_CHARACTER,
 })
 
+-- XP of the quests that are done but not handed in yet (nil when this client cannot say)
+local function QuestXPToTurnIn()
+    local log = C_QuestLog
+    if not (log and log.GetNumQuestLogEntries and log.GetInfo and GetQuestLogRewardXP) then return nil end
+    local total = 0
+    for i = 1, Try(log.GetNumQuestLogEntries) or 0 do
+        local info = Try(log.GetInfo, i)
+        if type(info) == "table" and not info.isHeader and info.questID then
+            local done = (log.ReadyForTurnIn and Try(log.ReadyForTurnIn, info.questID))
+                or (log.IsComplete and Try(log.IsComplete, info.questID))
+            local xp = done and Try(GetQuestLogRewardXP, info.questID)
+            if type(xp) == "number" then total = total + xp end
+        end
+    end
+    return total
+end
+
+-- Seconds left before the next level at this session's pace, or nil while the session is too short
+local function TimeToLevel()
+    local elapsed = GetTime() - session.gainStart
+    if session.xpGained <= 0 or elapsed < 60 then return nil end
+    return (UnitXPMax("player") - UnitXP("player")) / (session.xpGained / elapsed)
+end
+
 ns:RegisterModule("xp", {
     label = "XP",
     icon = "Interface\\Icons\\Spell_Holy_SurgeOfLight",
-    events = { "PLAYER_XP_UPDATE", "UPDATE_EXHAUSTION", "PLAYER_LEVEL_UP" },
+    events = { "PLAYER_XP_UPDATE", "UPDATE_EXHAUSTION", "PLAYER_LEVEL_UP", "QUEST_LOG_UPDATE" },
     defaultEnabled = false,
-    defaults = { progressBar = true, xpFormat = "percent", xpRested = true },
+    defaults = { progressBar = true, xpFormat = "percent", xpRested = true, xpTimeLeft = false, xpQuests = false,
+                 xpTipLevel = true, xpTipRested = true, xpTipSession = true, xpTipRate = true },
+    -- extra click action (Shift / middle click list): gains and rates start again from now
+    extraAction = { key = "resetSession", label = "ACTION_RESET_SESSION", run = ResetSession },
     progress = function()
         if AtMaxLevel() then return nil end
         local max = UnitXPMax("player")
@@ -338,6 +471,15 @@ ns:RegisterModule("xp", {
         if rested and rested > 0 and not (cfg and cfg.xpRested == false) then
             text = text .. (" |cff4da6ff+%.0f%%|r"):format(Percent(rested, max))
         end
+        -- quests to hand in: in square brackets, so it is not taken for the rested bonus (no color alone)
+        if cfg and cfg.xpQuests then
+            local quests = QuestXPToTurnIn()
+            if quests and quests > 0 then text = text .. (" |cffffd24d[+%.0f%%]|r"):format(Percent(quests, max)) end
+        end
+        if cfg and cfg.xpTimeLeft then
+            local left = TimeToLevel()
+            if left then text = text .. " (" .. ShortDuration(left) .. ")" end
+        end
         return text
     end,
     options = {
@@ -345,24 +487,41 @@ ns:RegisterModule("xp", {
           values = { { key = "percent", label = "XP_PERCENT" }, { key = "values", label = "XP_VALUES" },
                      { key = "remaining", label = "XP_REMAINING" } } },
         { kind = "check", field = "xpRested", tab = "text", label = "XP_RESTED", tip = "TIP_XP_RESTED" },
+        { kind = "check", field = "xpTimeLeft", tab = "text", label = "XP_TIME_LEFT", tip = "TIP_XP_TIME_LEFT" },
+        { kind = "check", field = "xpQuests", tab = "text", label = "XP_QUESTS", tip = "TIP_XP_QUESTS" },
+        { kind = "check", field = "xpTipLevel", tab = "text", label = "XP_TIP_LEVEL", tip = "TIP_XP_TIP_LEVEL" },
+        { kind = "check", field = "xpTipRested", tab = "text", label = "XP_TIP_RESTED", tip = "TIP_XP_TIP_RESTED" },
+        { kind = "check", field = "xpTipSession", tab = "text", label = "XP_TIP_SESSION", tip = "TIP_XP_TIP_SESSION" },
+        { kind = "check", field = "xpTipRate", tab = "text", label = "XP_TIP_RATE", tip = "TIP_XP_TIP_RATE" },
     },
-    tooltip = function(tt)
-        tt:AddLine(L.TT_LEVEL:format(UnitLevel("player")), 1, 1, 1)
+    tooltip = function(tt, cfg)
+        if On(cfg, "xpTipLevel") then tt:AddLine(L.TT_LEVEL:format(UnitLevel("player")), 1, 1, 1) end
         if AtMaxLevel() then return end
         local cur, max = UnitXP("player"), UnitXPMax("player")
         local fmt = BreakUpLargeNumbers or tostring
-        tt:AddDoubleLine(L.TT_XP_CURRENT, ("%s / %s"):format(fmt(cur), fmt(max)), 1, 1, 1, 1, 1, 1)
-        tt:AddDoubleLine(L.TT_XP_REMAINING, fmt(max - cur), 1, 1, 1, 1, 1, 1)
+        if On(cfg, "xpTipLevel") then
+            tt:AddDoubleLine(L.TT_XP_CURRENT, ("%s / %s"):format(fmt(cur), fmt(max)), 1, 1, 1, 1, 1, 1)
+            tt:AddDoubleLine(L.TT_XP_REMAINING, fmt(max - cur), 1, 1, 1, 1, 1, 1)
+        end
         local rested = GetXPExhaustion()
-        if rested and rested > 0 then
+        if On(cfg, "xpTipRested") and rested and rested > 0 then
             tt:AddDoubleLine(L.TT_XP_RESTED, fmt(rested), 1, 1, 1, 0.3, 0.65, 1)
         end
+        if cfg and cfg.xpQuests then
+            local quests = QuestXPToTurnIn()
+            if quests and quests > 0 then tt:AddDoubleLine(L.TT_XP_QUESTS, fmt(quests), 1, 1, 1, 1, 0.82, 0.3) end
+        end
 
-        local elapsed = GetTime() - session.start
+        local elapsed = GetTime() - session.gainStart
         if session.xpGained > 0 then
-            tt:AddLine(" ")
-            tt:AddDoubleLine(L.TT_XP_SESSION, fmt(session.xpGained), 1, 1, 1, 1, 1, 1)
-            if elapsed >= 60 then
+            local first = true
+            if On(cfg, "xpTipSession") then
+                tt:AddLine(" ")
+                first = false
+                tt:AddDoubleLine(L.TT_XP_SESSION, fmt(session.xpGained), 1, 1, 1, 1, 1, 1)
+            end
+            if On(cfg, "xpTipRate") and elapsed >= 60 then
+                if first then tt:AddLine(" ") end
                 local perSecond = session.xpGained / elapsed
                 tt:AddDoubleLine(L.TT_XP_HOUR, fmt(math.floor(perSecond * 3600)), 1, 1, 1, 1, 1, 1)
                 tt:AddDoubleLine(L.TT_XP_TO_LEVEL, FormatDuration((max - cur) / perSecond), 1, 1, 1, 1, 0.82, 0)

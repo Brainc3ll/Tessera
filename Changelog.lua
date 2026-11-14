@@ -37,6 +37,40 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.5.0",
+        date = "2026-11-14",
+        sections = {
+            { kind = "new",
+              en = {
+                "Gold: choose which parts of the tooltip show (session gain, gold per hour, history, characters)."
+                    .. " The block can show the total of your characters of the same faction and realm."
+                    .. " The history keeps 7, 14 or 30 days.",
+                "Bags: count the profession bags, show the value of your junk in the block,"
+                    .. " and choose which parts of the tooltip show (each bag, profession bags, junk value).",
+                "Durability: show the repair cost in the block, list only the worn items (the most worn first),"
+                    .. " and choose which parts of the tooltip show.",
+                "XP: show the time to the next level and the XP of the quests you can hand in,"
+                    .. " and choose which parts of the tooltip show.",
+                "Reset session: a new choice for the Shift + click and middle click actions on Gold and XP."
+                    .. " Gains and rates per hour start again from now.",
+              },
+              fr = {
+                "Or : choisis les parties de l'infobulle à afficher (gain de la session, or par heure, historique, personnages)."
+                    .. " Le bloc peut afficher le total de tes personnages de la même faction et du même serveur."
+                    .. " L'historique garde 7, 14 ou 30 jours.",
+                "Sacs : compte les sacs de métier, affiche la valeur de ton bric-à-brac dans le bloc,"
+                    .. " et choisis les parties de l'infobulle à afficher (chaque sac, sacs de métier, valeur du bric-à-brac).",
+                "Durabilité : affiche le coût de réparation dans le bloc, liste seulement les pièces abîmées (les plus usées en premier),"
+                    .. " et choisis les parties de l'infobulle à afficher.",
+                "XP : affiche le temps avant le niveau suivant et l'XP des quêtes à rendre,"
+                    .. " et choisis les parties de l'infobulle à afficher.",
+                "Remise à zéro de la session : un nouveau choix pour les actions du Maj + clic et du clic milieu sur l'Or et l'XP."
+                    .. " Les gains et les rythmes par heure repartent de maintenant.",
+              },
+            },
+        },
+    },
+    {
         version = "1.4.0",
         date = "2026-11-14",
         sections = {

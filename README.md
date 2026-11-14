@@ -25,7 +25,7 @@ LibDataBroker to exchange data with DataBroker addons.
 
 - **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
 - **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills, your hunter pet's happiness, poisons and sharpening stones, Well Fed and other long buffs.
-- **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level: most blocks give you a choice.
+- **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level, the total gold of your characters, the repair cost, the parts of a tooltip: most blocks give you a choice.
 - **Pin a tooltip, rename a block.** Keep a block's tooltip open next to it, updated every second, and give any block a name of your own.
 - **A micro-menu that grows with you.** Blizzard's micro menu in one block: its tooltip lists the menus, a click opens them; a menu you have not unlocked yet stays grey until you reach it.
 - **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, Bronze and Bronze and gold (FlareUI), Elven (ElvUI), Emerald (EllesmereUI), Aurora (DaylightUI), or fantasy styles built from the game's own frames.
@@ -150,8 +150,8 @@ Help tab inside the game explains everything.
   - Honor: your honor points (PvP ranks in a later version);
   - skills read from Forever's skill list (the weapon in hand, the ranged one while you shoot, or
     one you pick); profession, talent and Legacy blocks that open Forever's own windows.
-- More than 50 blocks in all: gold (with history and your characters' gold; Alt + right-click forgets a deleted character), bags (with junk value), durability (with the
-  repair cost), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
+- More than 50 blocks in all: gold (history of 7, 14 or 30 days, your characters' gold and their total for the same faction and realm; Alt + right-click forgets a deleted character), bags (with junk value and
+  profession bags), durability (with the repair cost), XP (with the time to the next level and the quests to hand in; "Reset session" is a click action on gold and XP), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
   zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
   reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, goal, mana

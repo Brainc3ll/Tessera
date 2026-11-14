@@ -229,6 +229,7 @@ GetNetStats = function() return 1, 1, 50, 60 end
 GetMoney = function() return 123456 end
 UnitName = function() return "Ellen" end
 GetRealmName = function() return "Realm" end
+UnitFactionGroup = function() return "Alliance", "Alliance" end
 UnitClass = function() return "Mage", "MAGE" end
 UnitLevel = function() return 20 end
 UnitXP = function() return 500 end UnitXPMax = function() return 2000 end
@@ -2148,6 +2149,63 @@ for _, step in ipairs({
                 end
             end
         end
+    end,
+    -- Gold, Bags, Durability and XP settings (1.5): every checkbox on and off draws the block and its
+    -- tooltip; the account total counts only characters of the same faction and realm; the history
+    -- length follows its setting; "reset session" restarts the gains
+    function()
+        for _, key in ipairs({ "gold", "bags", "durability", "xp" }) do
+            local mod, cfg = ns.modules[key], ns.db.blocks[key]
+            for _, o in ipairs(mod.options) do
+                assert(ns.L[o.label] and ns.L[o.tip], key .. ": text missing for " .. o.field)
+                if o.kind == "check" then
+                    local saved = cfg[o.field]
+                    for _, v in ipairs({ true, false }) do
+                        cfg[o.field] = v
+                        local ok, err = pcall(mod.update, cfg)
+                        assert(ok, key .. " " .. o.field .. "=" .. tostring(v) .. ": " .. tostring(err))
+                        ok, err = pcall(mod.tooltip, GameTooltip, cfg)
+                        assert(ok, key .. " tooltip " .. o.field .. "=" .. tostring(v) .. ": " .. tostring(err))
+                    end
+                    cfg[o.field] = saved
+                end
+            end
+        end
+        local gold, tools = ns.modules.gold, ns.BlockTools
+        local cfg, saved = ns.db.blocks.gold, ns.sv.chars
+        ns:RecordMoney()
+        assert(ns.sv.chars[ns.charKey].faction == "Alliance" and ns.sv.chars[ns.charKey].realm == GetRealmName(),
+            "faction and realm are recorded")
+        ns.sv.chars = {
+            [ns.charKey] = { money = 1, class = "MAGE", faction = "Alliance", realm = GetRealmName() },
+            ["Ally-Same"] = { money = 100, class = "MAGE", faction = "Alliance", realm = GetRealmName() },
+            ["Horde-Same"] = { money = 1000, class = "MAGE", faction = "Horde", realm = GetRealmName() },
+            ["Ally-Other"] = { money = 10000, class = "MAGE", faction = "Alliance", realm = "Elsewhere" },
+            ["Old-Entry"] = { money = 100000, class = "MAGE" },
+        }
+        cfg.goldScope = "total"
+        assert(gold.update(cfg) == tools.FormatGold((GetMoney() or 0) + 100, cfg), "total: same faction and realm only")
+        cfg.goldScope = "character"
+        assert(gold.update(cfg) == tools.FormatGold(GetMoney() or 0, cfg), "this character by default")
+        ns.sv.chars = saved
+        -- history length
+        local old = date("%Y-%m-%d", time() - 10 * 86400)
+        ns.sv.goldHistory = ns.sv.goldHistory or {}
+        ns.sv.goldHistory[ns.charKey] = { [old] = 5 }
+        cfg.goldHistoryDays = "14"
+        ns.lastMoney = (GetMoney() or 0) - 1
+        ns:RecordMoney()
+        assert(ns.sv.goldHistory[ns.charKey][old], "14 days keep a 10 day old entry")
+        cfg.goldHistoryDays = "7"
+        ns.lastMoney = (GetMoney() or 0) - 1
+        ns:RecordMoney()
+        assert(not ns.sv.goldHistory[ns.charKey][old], "7 days drop it")
+        -- reset session
+        tools.session.xpGained = 5000
+        ns.sessionMoney = 0
+        tools.ResetSession()
+        assert(tools.session.xpGained == 0 and ns.sessionMoney == (GetMoney() or 0), "reset session")
+        assert(ns.modules.gold.extraAction.key == "resetSession" and ns.modules.xp.extraAction.key == "resetSession")
     end,
     -- micro-menu block: one block; its tooltip lists the menus (Legacy locked); a click opens
     -- the list of secure rows, out of combat only

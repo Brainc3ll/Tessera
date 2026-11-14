@@ -3271,9 +3271,12 @@ function ns:RecordMoney()
     if not self.sv then return end
     local _, class = UnitClass("player")
     local money = GetMoney() or 0
-    self.sv.chars[self.charKey] = { money = money, class = class }
+    -- faction and realm: the Gold block's account total counts the characters that can trade
+    -- with this one (same faction, same realm); an older entry has neither until its next login
+    self.sv.chars[self.charKey] = { money = money, class = class,
+        faction = UnitFactionGroup and UnitFactionGroup("player") or nil, realm = GetRealmName and GetRealmName() or "" }
 
-    -- daily history (net gain / loss per day, last 7 days) for the gold tooltip
+    -- daily history (net gain / loss per day, 7 days by default) for the gold tooltip
     if self.lastMoney then
         local diff = money - self.lastMoney
         if diff ~= 0 then
@@ -3282,7 +3285,10 @@ function ns:RecordMoney()
             self.sv.goldHistory[self.charKey] = days
             local today = date("%Y-%m-%d")
             days[today] = (days[today] or 0) + diff
-            local oldest = date("%Y-%m-%d", time() - 7 * 86400)
+            -- days kept: the Gold block's "History" setting (7, 14 or 30; 7 when the block never set it)
+            local gold = self.db and self.db.blocks and self.db.blocks.gold
+            local keep = tonumber(gold and gold.goldHistoryDays) or 7
+            local oldest = date("%Y-%m-%d", time() - keep * 86400)
             for day in pairs(days) do
                 if day < oldest then days[day] = nil end
             end

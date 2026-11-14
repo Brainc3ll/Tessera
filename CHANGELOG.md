@@ -3,6 +3,16 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.5.0 — 2026-11-14
+
+### New
+
+- Gold: choose which parts of the tooltip show (session gain, gold per hour, history, characters). The block can show the total of your characters of the same faction and realm. The history keeps 7, 14 or 30 days.
+- Bags: count the profession bags, show the value of your junk in the block, and choose which parts of the tooltip show (each bag, profession bags, junk value).
+- Durability: show the repair cost in the block, list only the worn items (the most worn first), and choose which parts of the tooltip show.
+- XP: show the time to the next level and the XP of the quests you can hand in, and choose which parts of the tooltip show.
+- Reset session: a new choice for the Shift + click and middle click actions on Gold and XP. Gains and rates per hour start again from now.
+
 ## 1.4.0 — 2026-11-14
 
 ### New

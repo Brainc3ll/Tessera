@@ -87,9 +87,22 @@ local GetItemInfoFn = (C_Item and C_Item.GetItemInfo) or function() end
 ---------------------------------------------------------------------------
 local session = {
     start = GetTime(),
+    gainStart = GetTime(), -- start of the gains counted per hour (gold, XP); "reset session" moves it
     fps = { sum = 0, count = 0 },
     xpGained = 0,
 }
+
+-- "Reset session" click action (gold and XP blocks): gains and per-hour rates start again from now.
+-- The session time itself (session.start) is left alone: other blocks show it.
+local function ResetSession()
+    session.gainStart = GetTime()
+    session.xpGained = 0
+    ns.sessionMoney = GetMoney() or 0
+    for _, key in ipairs({ "gold", "xp", "goldSession" }) do
+        if ns.frames[key] then ns:UpdateBlock(key) end
+    end
+    ns.Print(L.SESSION_RESET)
+end
 
 -- "1 hr 5 min" style duration (game API if available, else "1h 05m")
 local function FormatDuration(seconds)
@@ -337,6 +350,7 @@ ns.BlockTools = {
     Masked = Masked,
     MicroButtonMacro = MicroButtonMacro,
     Percent = Percent,
+    ResetSession = ResetSession,
     ShortDuration = ShortDuration,
     ShortTime = ShortTime,
     SkillLines = SkillLines,

@@ -10,9 +10,9 @@ Little info blocks you put anywhere, or stick into a panel. Accessibility fonts 
 
 ## GitHub "About" (repository description)
 
-Info blocks that snap together, for WoW Forever: drag blocks against each other and they merge like mosaic tiles. Matches FlareUI, ElvUI, EllesmereUI. Gold, bags, FPS, Legacy, camping, minimap buttons, DataBroker.
+Info blocks that snap together, for WoW Forever: drag blocks against each other and they merge like mosaic tiles. Matches FlareUI, ElvUI, EllesmereUI. Gold, bags, FPS, Legacy, camping, minimap buttons, DataBroker. Reading fonts for dyslexia and low vision.
 
-Topics: world-of-warcraft, world-of-warcraft-addon, wow-forever, wow-forever-addon, lua, databroker, info-bar, data-broker-display
+Topics: world-of-warcraft, world-of-warcraft-addon, wow-forever, wow-forever-addon, lua, databroker, info-bar, data-broker-display, accessibility, dyslexia, font, legibility
 
 ## Résumé en français (quelques lignes)
 

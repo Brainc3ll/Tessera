@@ -158,7 +158,7 @@ Help tab inside the game explains everything.
   regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode,
   micro-menu (the menus in its tooltip, grey until unlocked), hunter pet, weapon enchant,
   long buffs, XP per hour, gold this session, corpse...
-- Streamer mode (General tab, a key binding or its block): for streams and videos, other players' names,
+- Streamer mode (Placement and more tab, a key binding or its block): for streams and videos, other players' names,
   your other characters, your guild's name and your gold show as `***`.
 - Blocks that have nothing to show hide themselves and keep their place (in the ready-made bars,
   they sit in the second row). A group stays exactly where you drop it: no automatic recentering.
@@ -167,10 +167,10 @@ Help tab inside the game explains everything.
 - Replace a block in place: the arrows on a hovered block (placement mode) put another block
   exactly there, with the same look, without moving anything else; a shown block swaps places,
   and the spacers of the ready-made layouts can be filled this way. A cross removes the block: it leaves its group and the others close the gap.
-- Place to the pixel: "Place by pixel" (Blocks tab or placement banner) moves a block's group one screen pixel at a time
+- Place to the pixel: "Place by pixel" (Blocks and groups tab or placement banner) moves a block's group one screen pixel at a time
   with the arrow keys (Shift: 10 pixels) or the arrows of the banner, or to the X and Y you type;
   click another block to place it instead; Enter (or "Keep") keeps the place, Escape puts the groups back.
-- Groups: each bar of merged blocks has its entry in the Blocks tab, so its settings apply to the
+- Groups: each bar of merged blocks has its entry in the Blocks and groups tab, so its settings apply to the
   whole bar and its rows; "Copy style to group" (options or quick menu) gives one block's look to
   the rest of its group.
 - Per-block style, icons (same size, square or round frame, black and white), opacity, scale,
@@ -181,7 +181,7 @@ Help tab inside the game explains everything.
   on automatically when such an addon is installed (Tessera then shows nothing itself), that can
   be turned off to use both. With DaylightUI installed, a note explains how to show Tessera's blocks in its panels.
 - First launch next to another interface: Tessera's welcome, news, DataBroker notice and style offer wait for that interface's setup guide or tour (DaylightUI, FlareUI, ElvUI, EllesmereUI, GW2 UI) to close.
-- Look tab: styles, how groups look, screen edges, ready-made layouts, blocks in front of or behind
+- Style and layouts tab: styles, how groups look, screen edges, ready-made layouts, blocks in front of or behind
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
@@ -193,14 +193,14 @@ Help tab inside the game explains everything.
   window) and Tessera, in the addon's own colors.
 - Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile.
 - Accessibility tab: bright or soft colors for values and class colors, or colorblind values;
-  high contrast; fewer animations; minimum text size; the font of all blocks (the same setting as in the Blocks tab). Class color on the text, background,
+  high contrast; fewer animations; minimum text size; the font of all blocks (the same setting as in the Blocks and groups tab). Class color on the text, background,
   border, icon frame and lines.
 - Fonts for easier reading, in every font menu: Atkinson Hyperlegible Next and Luciole (low vision), OpenDyslexic
   (dyslexia), Lexend (reading flow), Andika (beginning readers) and Inclusive Sans (general legibility), each in regular and bold. The menu shows in grey which alphabets each one covers. Other addons that
   use LibSharedMedia can pick them too.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
-- Tooltips your way: bigger or smaller, or only while holding Alt (General tab).
+- Tooltips your way: bigger or smaller, or only while holding Alt (Placement and more tab).
 - A quick tour on first launch (again from the Help tab), where the ready-made layouts can be
   tried one after the other right on the screen, a demo mode showing every block by category
   with sample values and a style switcher, and a "What's new in 1.3" window (after the update,
@@ -273,10 +273,10 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
 | `Options.lua` | Options window, first part: constants, the selection (all blocks, launchers, a group or one block), placing newly shown blocks and the state shared by the `Options*.lua` files (`ns.OptionsTools`). Together the nine `Options*.lua` files are the options window. Pages in a list on the left: Blocks (the "On screen" switch and the block list, then three tabs: Content, Appearance, Behaviour), Look, General, Accessibility, Launchers, DataBroker (Plugins as blocks, Sharing and mode, as two tabs), Profiles, Help, About. Since 1.5 every page sits in boxes (`OptionsBoxes.lua`, after FlareUI's settings panel): one setting per row (label on the left, control on the right), two short ones per line; `ns.optionRows` lists every row with its page, tab and box, for the search, the help panel and the gamepad. The top bar holds the logo, the search and the fold button; the help panel sits on the right; Shift + mouse wheel sizes every Tessera window and its help tooltips (the percentage shows at the top). Also here: the placement banner, the text window (export / import / bug report) with a copy box for the About links, the welcome popup and quick tour, side windows kept beside the options (never over them), and the Blizzard Settings page. |
-| `OptionsWidgets.lua` | The widget factory (rows, checkbox, slider, dropdown, color, edit box, button) and the small stack that places the head of the Blocks tab. Every widget has a `Refresh()` method and is registered so `ns:RefreshOptions()` can update them all. |
+| `OptionsWidgets.lua` | The widget factory (rows, checkbox, slider, dropdown, color, edit box, button) and the small stack that places the head of the Blocks and groups tab. Every widget has a `Refresh()` method and is registered so `ns:RefreshOptions()` can update them all. |
 | `OptionsBoxes.lua` | Pages laid out in boxes, as in FlareUI's settings panel (1.5): each section in its own box with a Reset button, two short settings per line, indented settings that grey out under the one they depend on, only the shown rows placed; tabs at the top of a page; the keyboard order of the rows. |
-| `OptionsBlocks.lua` | The Blocks tab: its head, its three tabs (Content, Appearance, Behaviour), the options of the selection and of every block, style targets. |
-| `OptionsPages.lua` | The Look, General, Accessibility, Launchers, DataBroker and Profiles tabs, with their popups (new profile, import, preset, reset). |
+| `OptionsBlocks.lua` | The Blocks and groups tab: its head, its three tabs (Content, Appearance, Behaviour), the options of the selection and of every block, style targets. |
+| `OptionsPages.lua` | The Style and layouts, Placement and more, Accessibility, Launchers, DataBroker and Profiles and sharing tabs, with their popups (new profile, import, preset, reset). |
 | `OptionsHelp.lua` | Themed windows (`ns:SkinWindow`), the help text (`ns.HelpText`) and the Help and About tabs. |
 | `OptionsWindow.lua` | Side windows, folding and zoom, the search box, the main window (`BuildPanel`), open / toggle functions and the Blizzard settings page. |
 | `OptionsPlacement.lua` | The placement banner shown while blocks are unlocked and the nudge pad (move a block by the pixel). |

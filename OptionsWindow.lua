@@ -310,7 +310,7 @@ end
 
 local function PlaceName(r)
     local names = { [PAGE_BLOCKS] = L.TAB_BLOCK, [PAGE_LOOK] = L.TAB_LOOK, [PAGE_GENERAL] = L.TAB_GENERAL,
-        [PAGE_LAUNCHERS] = L.LAUNCHERS, [PAGE_BROKER] = L.TAB_BROKER, [PAGE_PROFILES] = L.PROFILES,
+        [PAGE_LAUNCHERS] = L.LAUNCHERS, [PAGE_BROKER] = L.TAB_BROKER, [PAGE_PROFILES] = L.TAB_PROFILES,
         [PAGE_ACCESS] = L.SECTION_ACCESSIBILITY }
     -- the page, the block, the tab, the box: "Blocks › Guild › Content › Tooltip"
     local parts = { names[r.page] or "" }
@@ -661,7 +661,7 @@ local function BuildPanel()
         ns:RefreshOptions()
     end
 
-    local names = { L.TAB_BLOCK, L.TAB_LOOK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.PROFILES, L.TAB_HELP,
+    local names = { L.TAB_BLOCK, L.TAB_LOOK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.TAB_PROFILES, L.TAB_HELP,
         L.TAB_ABOUT, L.SECTION_ACCESSIBILITY }
     -- the navigation list: a thin frame, one line per page, the open one marked by a gold
     -- bar and white text (also a shape, not only a color: the bar)

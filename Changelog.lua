@@ -88,6 +88,8 @@ ns.CHANGELOG = {
             },
             { kind = "improved",
               en = {
+                "The left tabs of the options window say what they hold: Blocks and groups, Style and layouts,"
+                    .. " Placement and more, Profiles and sharing. \"Appearance\" now names only a block's own tab.",
                 "Block settings: three tabs, Content (name, value, icon, style, its own settings and its tooltip),"
                     .. " Appearance (size, text, background, icon, border, separators, opacity and layer)"
                     .. " and Behaviour (when to show the block, hover, clicks, alerts and thresholds). You scroll less.",
@@ -95,10 +97,12 @@ ns.CHANGELOG = {
                     .. " that puts its settings back to their defaults once you confirm."
                     .. " Two short settings share a line, and a setting that depends on another sits under it"
                     .. " and greys out while that one is off.",
-                "The search shows where each setting sits, for example Blocks › Guild › Content › Tooltip, and opens its tab.",
+                "The search shows where each setting sits, for example Blocks and groups › Guild › Content › Tooltip, and opens its tab.",
                 "The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.",
               },
               fr = {
+                "Les onglets de gauche de la fenêtre d'options disent ce qu'ils contiennent : Blocs et groupes, Style et dispositions,"
+                    .. " Placement et général, Profils et partage. « Apparence » ne nomme plus que l'onglet propre à un bloc.",
                 "Réglages des blocs : trois onglets, Contenu (nom, valeur, icône, style, ses propres réglages et son infobulle),"
                     .. " Apparence (taille, texte, fond, icône, bordure, séparateurs, opacité et plan)"
                     .. " et Comportement (quand afficher le bloc, survol, clics, alertes et seuils). Moins de molette.",
@@ -106,7 +110,7 @@ ns.CHANGELOG = {
                     .. " qui remet ses réglages par défaut une fois que tu confirmes."
                     .. " Deux réglages courts partagent une ligne, et un réglage qui dépend d'un autre se place dessous"
                     .. " et se grise tant que l'autre est désactivé.",
-                "La recherche indique où se trouve chaque réglage, par exemple Blocs › Guilde › Contenu › Infobulle, et ouvre son onglet.",
+                "La recherche indique où se trouve chaque réglage, par exemple Blocs et groupes › Guilde › Contenu › Infobulle, et ouvre son onglet.",
                 "La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute : le texte à 100 % tient avec moins de molette.",
               },
             },

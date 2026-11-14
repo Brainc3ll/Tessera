@@ -2377,7 +2377,21 @@ local function StepFades(_, elapsed)
     if not busy then fader:SetScript("OnUpdate", nil) end
 end
 
+-- True when no shown block fades out and none is still moving or aiming away from full opacity:
+-- UpdateFades then has nothing to do (no mouse test per block, 10 times a second)
+local function NothingFades(self)
+    for key, f in pairs(self.frames) do
+        local cfg = self.db.blocks[key]
+        if cfg and f:IsShown()
+            and (cfg.fadeOut or math.abs((f.fade or 1) - 1) > 0.001 or (f.fadeTarget or 1) ~= 1) then
+            return false
+        end
+    end
+    return true
+end
+
 function ns:UpdateFades()
+    if NothingFades(self) then return end
     wipe(hovered)
     for key, f in pairs(self.frames) do
         if f:IsShown() and f:IsMouseOver() then hovered[self:GetVisualRoot(key)] = true end

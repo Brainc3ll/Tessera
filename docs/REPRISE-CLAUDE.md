@@ -101,5 +101,6 @@ Un fichier ou une fonction de plus de 200 variables locales actives ne se charge
 - 12/11 : 1.3.1 publiée (tag `v1.3.1`). Le run du 11/11 au soir a échoué (panne de GitHub Actions) ; relancé le 12/11 à 5 h 30, réussi. Zips jusqu'à test117 (Opus 5.5 puis Sonnet 5.5).
 - 12/11 (Sonnet 5.5) : révision de la documentation : `A-REPRENDRE.md` réduit à l'état actuel, historique daté déplacé tel quel dans `docs/archive/HISTORIQUE-1.0-1.3.md` ; README et index `docs/README.md` corrigés.
 - 12/11 : Braincell1980 a validé en jeu les derniers points de la 1.3.1 (entrée « Automatique », « Blocs vides », page « Tous les blocs » grisée, boutons de liens d'À propos).
-- 14/11 : 1.4.0 publiée (tag `v1.4.0`, Sonnet 5.5) : polices de lecture, dossier Licenses, optimisations ; `main` = `next`. Description CurseForge/Wago à coller à la main.
 - 14/11 : 1.3.2 publiée (tag `v1.3.2`, Sonnet 5.5) : style Aurore pour DaylightUI ; date du changelog mise au 14/11. Report dans `next` fait.
+- 14/11 : 1.4.0 publiée (tag `v1.4.0`, Sonnet 5.5) : polices de lecture, dossier Licenses, optimisations ; `main` = `next`. Description CurseForge/Wago à coller à la main.
+- 14/11 (Sonnet 5.5) : descriptions CurseForge/Wago collées ; manette en pause (Blizzard peaufine) ; pas d'addon `Tessera_Fonts` ; vol et bateaux écarté ; notes de `docs/` revues, refactor rangé dans `docs/archive/HISTORIQUE-1.4.md`.

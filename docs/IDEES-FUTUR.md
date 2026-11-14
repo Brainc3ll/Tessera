@@ -14,12 +14,12 @@ Rangé par thème le 25 octobre 2026 (avant : par date). Dans chaque partie, la 
 - Traductions
 - Code
 
-## Pistes en cours (12 novembre 2026)
+## Pistes en cours (12 novembre 2026, revues le 14/11)
 Pistes notées par Braincell1980 après la 1.3.1 ; aucune n'est choisie ni datée. Chacune renvoie à la partie qui la détaille.
 - **Bouton « Tous les blocs » d'un bloc seul ou d'un groupe** : quand un bloc seul ou un groupe est choisi, le bouton « Tous les blocs » a le même décalage avec l'onglet Apparence que la page « Tous les blocs » (corrigée en 1.3.1 : liste grisée et bouton « Ouvrir l'onglet Apparence »). À revoir si Braincell1980 le veut.
-- **Manette 2.0** : voir « Manette (2.0…) », « Manette native de WoW Forever » et « Ce que FlareUI 6.0 apprend pour la manette », dans Accessibilité et manette.
-- **Polices d'accessibilité, suite** (1.4 publiée le 14/11 avec six polices) : espacement des lettres, addon `Tessera_Fonts` ; voir « Polices pour l'accessibilité ».
-- **Vol et bateaux** : à sonder ; voir « Idées de blocs du 7/11 » pour les autres idées vérifiées avec forever-lint.
+- **Manette 2.0 : en pause (14/11)**, on laisse Blizzard peaufiner ; voir « Manette en pause », « Manette (2.0…) », « Manette native de WoW Forever » et « Ce que FlareUI 6.0 apprend pour la manette », dans Accessibilité et manette.
+- **Polices d'accessibilité, suite** (1.4 publiée le 14/11 avec six polices) : espacement des lettres seulement (`Tessera_Fonts` abandonné le 14/11) ; voir « Polices pour l'accessibilité ».
+- **Vol et bateaux** : écarté pour le moment (14/11) ; voir « Idées de blocs du 7/11 » pour les autres idées vérifiées avec forever-lint.
 
 ## Règles et décisions
 
@@ -268,7 +268,7 @@ Règle de Braincell1980 : le jeu a déjà ses options d'accessibilité (Réglage
 
 ### Polices pour l'accessibilité (24 octobre 2026, pour la 1.4)
 
-**Publié le 14/11 dans la 1.4.0** (premier lot, test125) : Atkinson Hyperlegible Next, OpenDyslexic, Luciole, voir `docs/A-REPRENDRE.md`. Lot 2 fait le même jour (test129) : Lexend, Andika, Inclusive Sans. Reste : espacement des lettres, addon `Tessera_Fonts`. Décision : pas de champ de chemin libre.
+**Publié le 14/11 dans la 1.4.0** (premier lot, test125) : Atkinson Hyperlegible Next, OpenDyslexic, Luciole, voir `docs/A-REPRENDRE.md`. Lot 2 fait le même jour (test129) : Lexend, Andika, Inclusive Sans. Reste : espacement des lettres. `Tessera_Fonts` abandonné le 14/11 : pas de bibliothèque embarquée pour l'instant ; Tessera enregistre déjà ses polices dans LibSharedMedia quand un autre addon l'a chargé (`ns:ShareFonts`, dans la 1.4.0). À vérifier un jour en jeu : elles apparaissent-elles dans le choix de police de FlareUI ? Décision : pas de champ de chemin libre.
 
 Idée de Braincell1980 : donner le choix de polices pensées pour l'accessibilité, et les rendre disponibles pour les autres addons. Licences vérifiées en ligne le 24/10 ; toutes compatibles avec la licence MIT de Tessera (livrées sans modification, avec leur fichier de licence).
 
@@ -301,6 +301,14 @@ Lu dans FlareUI 6.0.1 (MIT). Ces trois fichiers existaient déjà en 5.1.2 : Gam
 - Pause de la navigation pendant une boîte de dialogue, la saisie d'une touche, et en combat (on ne peut pas changer l'écoute des boutons en combat).
 - `GamepadMode.lua` : bascule le CVar `InputDeviceInterfaceStyle` (recharge l'interface). FlareUI le propose au premier appui sur la manette si on joue au clavier et à la souris (une fois par session, jamais en combat). Il gère aussi les noms des touches de la manette et les vibrations (`C_GamePad.SetVibration`, seulement si la manette sert, `GAME_PAD_ACTIVE_CHANGED`). Pour Tessera : ne pas recoder la bascule (le jeu et FlareUI la font), juste suivre l'appareil actif.
 - `Modules/RadialMenu.lua` : maintenir la touche, viser, relâcher pour lancer ; marche en combat. La roue n'est qu'un dessin : un seul `SecureActionButton` lance l'action, et un bout de code sécurisé choisit le bouton avec le même calcul. Pour Tessera : un menu radial des blocs devrait passer par un bouton sécurisé si une action doit marcher en combat (pierre de foyer, montures).
+
+### Manette en pause (14 novembre 2026, Sonnet 5.5)
+Décision de Braincell1980 : la manette 2.0 attend que Blizzard peaufine la sienne. Il cherchait une remarque de Malkkav (FlareUI) disant que le mode manette de base gêne l'accès aux addons ; le message n'a pas été retrouvé, ce qui suit est ce qu'on a pu vérifier.
+- Blizzard parle d'une manette « en bêta » avec des améliorations prévues ; le réglage en jeu porte « Gamepad UI (Alpha) ». Un guide note que certains menus demandent encore la souris. Sources : `docs/etudes/SOURCES.md`, 14/11.
+- Risque de gel : FlareUI écoute la manette avec son propre cadre (voir plus haut) ; l'addon Easy Controller Forever dit aussi n'écrire jamais dans le chat et se couper en combat pour éviter blocages et gels.
+- Il existe déjà des addons de manette pour Forever (Controller Forever, Easy Controller Forever).
+- Déduction non vérifiée : FlareUI renvoie vers `/fui` pour ses réglages en mode manette, donc l'interface manette ne mène pas d'elle-même aux fenêtres d'addons.
+- Pour reprendre : test de 10 minutes en jeu avec « Gamepad UI (Alpha) » (la fenêtre d'options de Tessera s'ouvre-t-elle et se manie-t-elle à la manette ?), puis relire les notes de Blizzard.
 
 ## Traductions
 

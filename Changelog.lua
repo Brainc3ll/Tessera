@@ -95,7 +95,8 @@ ns.CHANGELOG = {
               fr = {
                 "Réglages des blocs : un bloc qui a beaucoup de réglages les range sous deux titres repliables, Affichage et Infobulle."
                     .. " Les cases se placent deux par deux et les lignes et titres sont resserrés : moins de molette."
-                    .. " La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute, ce qui laisse la place à du texte à 100 % et moins de molette.",
+                    .. " La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute,"
+                    .. " ce qui laisse la place à du texte à 100 % et moins de molette.",
               },
             },
         },

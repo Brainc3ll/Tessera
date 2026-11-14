@@ -15,6 +15,13 @@ Aujourd'hui : 4 options (format, icônes, arrondi, séparateur) ; infobulle avec
 - **C. Historique de 7, 14 ou 30 jours** : liste ; défaut 7 (ancien comportement). Le nettoyage de `goldHistory` suit le réglage ; les anciens profils gardent 7.
 - **D. Remise à zéro de la session** : Ctrl + clic (ou menu) repart de zéro pour la session et l'or par heure ; une ligne d'aide dans l'infobulle.
 
+## Sacs (validé le 14/11, pas encore codé)
+Aujourd'hui : une option (libres / total, libres, utilisés / total), couleur par seuils, barre de progression ; infobulle avec chaque sac, les sacs de métier à part et la valeur du bric-à-brac gris ; le total ne compte que les sacs qui prennent tout (`GeneralBagSlots`). Écarté : vendre le bric-à-brac d'un clic (le jeu l'offre peut-être déjà chez le marchand, non vérifié ; règle « ne pas recoder ce que le jeu offre »).
+- **A. Choisir l'infobulle** : trois cases (détail de chaque sac, sacs de métier, valeur du bric-à-brac), cochées par défaut.
+- **B. Compter les sacs de métier** : case, décochée par défaut (comportement actuel) ; cochée, ils entrent dans le total et la barre.
+- **C. Valeur du bric-à-brac dans le bloc** : case, décochée par défaut ; ajoute la valeur du gris à côté des places. Le prix n'est connu qu'une fois l'objet en cache : afficher seulement ce qui est connu.
+- **D. Alerte quand c'est plein** : le bloc se met en évidence quand il reste peu de places (seuils existants) ; mécanisme d'alerte du bloc, et respect du réglage « moins d'animations » (pas de clignotement). Case décochée par défaut.
+
 ## Guilde (choix validés le 14/11, à coder dans le lot Social)
 Infobulle actuelle : nom de la guilde, puis les membres en ligne (nom, niveau, zone, couleur de classe), 20 lignes au plus. À ajouter, chacun avec sa case à cocher : message du jour, compteur en-tête (en ligne sur total), rang du membre, note publique (souvent le métier). Deux colonnes, celles de l'infobulle du jeu : à gauche niveau, nom et rang, à droite note et zone. Mode streamer : noms masqués comme aujourd'hui.
 

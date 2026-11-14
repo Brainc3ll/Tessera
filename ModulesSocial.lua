@@ -219,7 +219,7 @@ ns:RegisterModule("guild", {
             end
         end
         -- message of the day
-        local motd = On(cfg, "guildTipMotd") and GetGuildRosterMOTD and GetGuildRosterMOTD()
+        local motd = On(cfg, "guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and Try(C_GuildInfo.GetMOTD)
         if type(motd) == "string" and motd ~= "" then tt:AddLine(Masked(motd), 0.9, 0.9, 0.55, true) end
         local shown = 0
         for i = 1, total do

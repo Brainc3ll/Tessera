@@ -2735,11 +2735,11 @@ for _, step in ipairs({
     end,
     -- guild tooltip parts, item level and stats choices, time-left thresholds (1.5)
     function()
-        local oldIn, oldNum, oldRoster, oldMotd, oldInfo = IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, GetGuildRosterMOTD, GetGuildInfo
+        local oldIn, oldNum, oldRoster, oldGI, oldInfo = IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, C_GuildInfo, GetGuildInfo
         IsInGuild = function() return true end
         GetNumGuildMembers = function() return 3, 2 end
         GetGuildInfo = function() return "The Mosaic" end
-        GetGuildRosterMOTD = function() return "Raid on Friday" end
+        C_GuildInfo = { GetMOTD = function() return "Raid on Friday" end }
         GetGuildRosterInfo = function(i)
             if i == 1 then return "Ana-Realm", "Officer", 1, 60, "Mage", "Orgrimmar", "Alchemist", "", true, 0, "MAGE" end
             if i == 2 then return "Bob-Realm", "Member", 2, 50, "Priest", "Tanaris", "", "", false, 0, "PRIEST" end
@@ -2762,7 +2762,7 @@ for _, step in ipairs({
         all = Tip({ guildTipMotd = false, guildTipCount = false, guildTipRank = false, guildTipNote = false })
         assert(not all:find("Raid", 1, true) and not all:find("2/3", 1, true) and not all:find("Officer", 1, true)
             and not all:find("Alchemist", 1, true) and all:find("Ana-Realm (60) | Orgrimmar", 1, true), "every part off: " .. all)
-        IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, GetGuildRosterMOTD, GetGuildInfo = oldIn, oldNum, oldRoster, oldMotd, oldInfo
+        IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, C_GuildInfo, GetGuildInfo = oldIn, oldNum, oldRoster, oldGI, oldInfo
         -- item level
         local il = ns.modules.itemLevel
         assert(il.update({}) == "50.1" and il.update({ itemLevelShown = "overall" }) == "52.4"

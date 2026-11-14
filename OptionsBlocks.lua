@@ -142,13 +142,30 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
                 min = t.min, max = t.max, step = t.step, default = t.bad })
         end
         if #list > 0 then hasOptions[key] = true end
+        -- options that name a section (section = "tooltip") go under folding titles: "Display"
+        -- (the others), then "Tooltip". A block with no such option keeps its plain list.
+        local grouped = false
+        for _, opt in ipairs(list) do
+            if opt.section then grouped = true end
+        end
+        if grouped then
+            local plain, tipped = {}, {}
+            for _, opt in ipairs(list) do table.insert(opt.section == "tooltip" and tipped or plain, opt) end
+            list = { { kind = "section", label = "SECTION_DISPLAY" } }
+            for _, opt in ipairs(plain) do table.insert(list, opt) end
+            table.insert(list, { kind = "section", label = "SECTION_TOOLTIP" })
+            for _, opt in ipairs(tipped) do table.insert(list, opt) end
+        end
+        local section -- the folding title above the options being placed
         local firstWidget = #widgets + 1
         P.currentBlock = key -- (search: a setting of this block opens it)
         P.untracked = true -- stacked widgets: measured when packed (relayout below)
         for _, opt in ipairs(list) do
+            local mySection = section
             local shown = function()
                 if SelectedModuleKey() ~= key then return false end
                 if condition and not condition() then return false end
+                if mySection and mySection.folded and opt.kind ~= "section" then return false end
                 local cfg = Cfg()
                 return not opt.shown or (cfg and opt.shown(cfg)) or false
             end
@@ -160,8 +177,17 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
                 if ns.UpdatePublishing then ns:UpdatePublishing() end -- shared value follows
                 ns:RefreshOptions() -- an option can show or hide others (spacer mode)
             end
-            if opt.kind == "check" then
-                P.Place(CreateCheck(sub, label, get, setter, shown, tip), col)
+            if opt.kind == "section" then
+                section = CreateSection(sub, label, false)
+                section.isShown = shown
+                P.Place(section, col)
+            elseif opt.kind == "check" then
+                local check = P.Place(CreateCheck(sub, label, get, setter, shown, tip), col)
+                -- tooltip checkboxes sit two by two (half-width rows, see the relayout below)
+                if opt.section == "tooltip" then
+                    check:SetWidth(COL_W + 20)
+                    check.pairable = true
+                end
             elseif opt.kind == "dropdown" then
                 -- values: a list, or a function (a list that changes: the player's skills...)
                 local values = function()
@@ -207,10 +233,20 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
         local low = stackTop
         for _, stack in ipairs(stacks) do
             local y = stackTop
+            local left -- a half-width check waiting for a neighbour on its right: { y, h }
             for _, w in ipairs(stack) do
                 if w:IsShown() then
-                    P.Point(w, col, y + shift)
-                    y = y - w.layoutHeight - SPACING
+                    if w.pairable and left then
+                        P.Point(w, col, left.y + shift)
+                        local point, rel, relPoint, x, yy = w:GetPoint(1)
+                        w:SetPoint(point, rel, relPoint, x + COL_X[2] - COL_X[1], yy)
+                        y = left.y - math.max(left.h, w.layoutHeight) - SPACING
+                        left = nil
+                    else
+                        P.Point(w, col, y + shift)
+                        left = w.pairable and { y = y, h = w.layoutHeight } or nil
+                        y = y - w.layoutHeight - SPACING
+                    end
                 end
             end
             low = math.min(low, y)

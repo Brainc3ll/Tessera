@@ -52,7 +52,10 @@ local L = ns.L
 --   options         Optional. Settings shown in the Behaviour tab for this block only:
 --                   list of { kind = "check" | "dropdown" | "slider" | "number" |
 --                   "text" | "color", field, label, tip (locale keys), values (for
---                   dropdowns: { key, label }), min / max / step, shown(cfg) }.
+--                   dropdowns: { key, label }), min / max / step, shown(cfg),
+--                   section = "tooltip" }. An option with section = "tooltip" goes under
+--                   the folding "Tooltip" title (checkboxes two by two); the others go
+--                   under "Display". Without any such option, the list stays plain.
 --   defaults        Optional. Default settings for this block (e.g. progressBar = true).
 --   forced          Optional. Settings always applied (e.g. a spacer never has an icon).
 --   chatText(cfg)   Optional. Plain text for "copy to chat" (Shift + click by default).

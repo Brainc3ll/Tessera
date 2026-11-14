@@ -102,15 +102,15 @@ ns:RegisterModule("friends", {
     options = { COUNT_OPTION, { kind = "check", field = "noBNetFriends", tab = "text", label = "NO_BNET_FRIENDS",
                                 tip = "TIP_NO_BNET_FRIENDS" },
                 { kind = "check", field = "statusColor", tab = "text", label = "STATUS_COLOR", tip = "TIP_STATUS_COLOR" },
-                { kind = "dropdown", field = "friendsSort", tab = "text", label = "FRIENDS_SORT", tip = "TIP_FRIENDS_SORT",
+                { kind = "dropdown", field = "friendsSort", section = "tooltip", tab = "text", label = "FRIENDS_SORT", tip = "TIP_FRIENDS_SORT",
                   values = { { key = "game", label = "FRIENDS_SORT_GAME" }, { key = "name", label = "FRIENDS_SORT_NAME" },
                              { key = "level", label = "FRIENDS_SORT_LEVEL" }, { key = "zone", label = "FRIENDS_SORT_ZONE" } } },
-                { kind = "check", field = "friendsNotes", tab = "text", label = "FRIENDS_NOTES", tip = "TIP_FRIENDS_NOTES" },
-                { kind = "check", field = "friendsWoWOnly", tab = "text", label = "FRIENDS_WOW_ONLY", tip = "TIP_FRIENDS_WOW_ONLY",
+                { kind = "check", field = "friendsNotes", section = "tooltip", tab = "text", label = "FRIENDS_NOTES", tip = "TIP_FRIENDS_NOTES" },
+                { kind = "check", field = "friendsWoWOnly", section = "tooltip", tab = "text", label = "FRIENDS_WOW_ONLY", tip = "TIP_FRIENDS_WOW_ONLY",
                   shown = function(cfg) return not cfg.noBNetFriends end },
-                { kind = "check", field = "friendsTipStatus", tab = "text", label = "FRIENDS_TIP_STATUS", tip = "TIP_FRIENDS_TIP_STATUS" },
-                { kind = "check", field = "friendsTipWoW", tab = "text", label = "FRIENDS_TIP_WOW", tip = "TIP_FRIENDS_TIP_WOW" },
-                { kind = "check", field = "friendsTipBNet", tab = "text", label = "FRIENDS_TIP_BNET", tip = "TIP_FRIENDS_TIP_BNET",
+                { kind = "check", field = "friendsTipStatus", section = "tooltip", tab = "text", label = "FRIENDS_TIP_STATUS", tip = "TIP_FRIENDS_TIP_STATUS" },
+                { kind = "check", field = "friendsTipWoW", section = "tooltip", tab = "text", label = "FRIENDS_TIP_WOW", tip = "TIP_FRIENDS_TIP_WOW" },
+                { kind = "check", field = "friendsTipBNet", section = "tooltip", tab = "text", label = "FRIENDS_TIP_BNET", tip = "TIP_FRIENDS_TIP_BNET",
                   shown = function(cfg) return not cfg.noBNetFriends end } },
     tooltip = function(tt, cfg)
         -- your status, in words as well as in color
@@ -201,10 +201,10 @@ ns:RegisterModule("guild", {
     end,
     defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true },
     options = { COUNT_OPTION,
-                { kind = "check", field = "guildTipMotd", tab = "text", label = "GUILD_TIP_MOTD", tip = "TIP_GUILD_TIP_MOTD" },
-                { kind = "check", field = "guildTipCount", tab = "text", label = "GUILD_TIP_COUNT", tip = "TIP_GUILD_TIP_COUNT" },
-                { kind = "check", field = "guildTipRank", tab = "text", label = "GUILD_TIP_RANK", tip = "TIP_GUILD_TIP_RANK" },
-                { kind = "check", field = "guildTipNote", tab = "text", label = "GUILD_TIP_NOTE", tip = "TIP_GUILD_TIP_NOTE" } },
+                { kind = "check", field = "guildTipMotd", section = "tooltip", tab = "text", label = "GUILD_TIP_MOTD", tip = "TIP_GUILD_TIP_MOTD" },
+                { kind = "check", field = "guildTipCount", section = "tooltip", tab = "text", label = "GUILD_TIP_COUNT", tip = "TIP_GUILD_TIP_COUNT" },
+                { kind = "check", field = "guildTipRank", section = "tooltip", tab = "text", label = "GUILD_TIP_RANK", tip = "TIP_GUILD_TIP_RANK" },
+                { kind = "check", field = "guildTipNote", section = "tooltip", tab = "text", label = "GUILD_TIP_NOTE", tip = "TIP_GUILD_TIP_NOTE" } },
     tooltip = function(tt, cfg)
         if not IsInGuild() then return end
         local guildName = GetGuildInfo("player")

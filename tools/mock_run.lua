@@ -3165,8 +3165,9 @@ if os.getenv("TESSERA_LIST_MODULES") then
         print("MODULE " .. key .. " " .. tostring(ns.modules[key].label) .. " " .. table.concat(fields, ","))
     end
 end
--- One column of rows (1.3): in each page and sub-tab, the shown rows never overlap,
--- sit in one column (same left edge) and stay inside the page's scroll area; every
+-- One column of rows (1.3; since 1.5 the tooltip checkboxes of a block may sit two by two): in each
+-- page and sub-tab, the shown rows never overlap, sit in one column (same left edge, or the right
+-- one for a paired checkbox) and stay inside the page's scroll area; every
 -- row is listed with its page and has a tooltip; a section that folds hides its rows
 -- and the rows below move up. Checked with the anchor geometry, for every block.
 do
@@ -3186,16 +3187,16 @@ do
             local _, cb, _, ct = Rect(g.content)
             local x0
             for i, a in ipairs(g.rows) do
-                local al, ab, _, at = Rect(a.frame)
+                local al, ab, ar, at = Rect(a.frame)
                 x0 = x0 or al
-                if math.abs(al - x0) > 0.5 then print("STEP ERROR: row out of the column (" .. what .. "): " .. tostring(a.label)) end
+                if not a.frame.pairable and math.abs(al - x0) > 0.5 then print("STEP ERROR: row out of the column (" .. what .. "): " .. tostring(a.label)) end
                 if g.content.scroll and (ab < cb - 0.5 or at > ct + 0.5) then
                     print("STEP ERROR: row outside its scroll area (" .. what .. "): " .. tostring(a.label))
                 end
                 for j = i + 1, #g.rows do
                     local b2 = g.rows[j]
-                    local _, bb, _, bt = Rect(b2.frame)
-                    if math.min(at, bt) - math.max(ab, bb) > 0.5 then
+                    local bl, bb, br, bt = Rect(b2.frame)
+                    if math.min(at, bt) - math.max(ab, bb) > 0.5 and math.min(ar, br) - math.max(al, bl) > 0.5 then
                         print("STEP ERROR: rows overlap (" .. what .. "): " .. tostring(a.label) .. " / " .. tostring(b2.label))
                     end
                 end
@@ -3242,6 +3243,34 @@ do
     end
     sec:Activate()
     if not inside.__shown then print("STEP ERROR: an unfolded section shows its rows again") end
+    -- (1.5) a block's tooltip settings: under their own folding title, the checkboxes two by two
+    do
+        ns:OpenOptionsFor("gold")
+        ns.ShowBlockSub(1)
+        ns:RefreshOptions()
+        local function Find(label)
+            for _, r in ipairs(ns.optionWidgets) do
+                if r.frame.__shown and (r.frame.headerText or r.label) == label then return r.frame end
+            end
+        end
+        local tipSection, a, b, hist = Find(L.SECTION_TOOLTIP), Find(L.GOLD_TIP_SESSION), Find(L.GOLD_TIP_HOUR), Find(L.GOLD_TIP_CHARS)
+        if not (tipSection and tipSection.isSection and a and b and hist) then
+            print("STEP ERROR: gold: tooltip title and checkboxes are shown")
+        else
+            local al, _, _, at = Rect(a)
+            local bl, _, _, bt = Rect(b)
+            if math.abs(at - bt) > 0.5 or math.abs((bl - al) - 340) > 0.5 then
+                print("STEP ERROR: two tooltip checkboxes share a line: " .. al .. "," .. at .. " / " .. bl .. "," .. bt)
+            end
+            local _, _, _, top1 = Rect(hist)
+            tipSection:Activate()
+            if a.__shown or b.__shown then print("STEP ERROR: a folded Tooltip title hides its checkboxes") end
+            tipSection:Activate()
+            if not (a.__shown and b.__shown) then print("STEP ERROR: an unfolded Tooltip title shows them again") end
+            local _, _, _, top2 = Rect(hist)
+            if math.abs(top1 - top2) > 0.5 then print("STEP ERROR: unfolding puts the rows back where they were") end
+        end
+    end
     MOCK_GEOMETRY = nil
 end
 -- Window frame (1.3): search (old names too), going to a result, folding, size

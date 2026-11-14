@@ -25,7 +25,7 @@ LibDataBroker to exchange data with DataBroker addons.
 
 - **Blocks that snap together.** Drag a block against another and they merge into one bar. Build a top bar, a column, a corner cluster, or keep each block on its own.
 - **Made for WoW Forever.** Legacy points (next reward, challenges per category), Comprehension (with the scrolls in your bags), Camping (buffs and kit), Honor, weapon skills, your hunter pet's happiness, poisons and sharpening stones, Well Fed and other long buffs.
-- **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level, the total gold of your characters, the repair cost, the parts of a tooltip: most blocks give you a choice.
+- **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level, the total gold of your characters, the repair cost, the parts of a tooltip: most blocks give you a choice, grouped under folding titles (Display, Tooltip).
 - **Pin a tooltip, rename a block.** Keep a block's tooltip open next to it, updated every second, and give any block a name of your own.
 - **A micro-menu that grows with you.** Blizzard's micro menu in one block: its tooltip lists the menus, a click opens them; a menu you have not unlocked yet stays grey until you reach it.
 - **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, Bronze and Bronze and gold (FlareUI), Elven (ElvUI), Emerald (EllesmereUI), Aurora (DaylightUI), or fantasy styles built from the game's own frames.

@@ -18,6 +18,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Stats: a second stat next to the first.
 - Weapon enchant and Long buffs: the yellow and red thresholds are now settings (in seconds). Red now starts under one minute, so "Flash to alert" can warn you before the time runs out.
 
+### Improvements
+
+- Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip. The tooltip checkboxes sit two by two.
+
 ## 1.4.0 — 2026-11-14
 
 ### New

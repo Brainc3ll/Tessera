@@ -84,6 +84,16 @@ ns.CHANGELOG = {
                     .. " Le rouge commence sous une minute, pour que « Clignoter pour alerter » te prévienne avant la fin.",
               },
             },
+            { kind = "improved",
+              en = {
+                "Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip."
+                    .. " The tooltip checkboxes sit two by two.",
+              },
+              fr = {
+                "Réglages des blocs : un bloc qui a beaucoup de réglages les range sous deux titres repliables, Affichage et Infobulle."
+                    .. " Les cases de l'infobulle se placent deux par deux.",
+              },
+            },
         },
     },
     {

@@ -320,6 +320,10 @@ local function ScrollsInBags()
 end
 
 -- Aura on the player by spell ID: { name, left (seconds, nil = no duration) } or nil
+local function AuraSecondsLeft(aura)
+    if aura.expirationTime and aura.expirationTime > 0 then return math.max(0, aura.expirationTime - GetTime()) end
+end
+
 local function PlayerAura(spellID)
     local UA = C_UnitAuras
     local aura
@@ -333,9 +337,7 @@ local function PlayerAura(spellID)
         end
     end
     if type(aura) ~= "table" then return nil end
-    local ok, left = pcall(function()
-        if aura.expirationTime and aura.expirationTime > 0 then return math.max(0, aura.expirationTime - GetTime()) end
-    end)
+    local ok, left = pcall(AuraSecondsLeft, aura)
     return { name = aura.name, left = ok and left or nil }
 end
 

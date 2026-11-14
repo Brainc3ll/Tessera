@@ -53,19 +53,22 @@ ns.LAUNCHER_PREFIX = LAUNCHER_PREFIX
 -- textures is measured without them (on a hidden string with the same font), then each
 -- texture adds its own width (w, or h when w is 0) and its horizontal offset.
 local measure
+local iconsWidth -- filled by AddIconWidth, read right after the gsub (no closure per call)
+local function AddIconWidth(spec)
+    local _, h, w, x = spec:match("^([^:]*):?(%-?%d*):?(%-?%d*):?(%-?%d*)")
+    h, w, x = tonumber(h) or 0, tonumber(w) or 0, tonumber(x) or 0
+    if w == 0 then w = h end
+    -- measured in game (29/10): each icon takes about 3 px more than its size and offset
+    iconsWidth = iconsWidth + math.max(0, w) + math.max(0, x) + 3
+    return ""
+end
 function ns.TextWidth(fontString, text)
     local plain = (fontString.GetUnboundedStringWidth and fontString:GetUnboundedStringWidth())
         or fontString:GetStringWidth() or 0
     if type(text) ~= "string" or not text:find("|T", 1, true) then return plain end
-    local icons = 0
-    local stripped = text:gsub("|T([^|]*)|t", function(spec)
-        local _, h, w, x = spec:match("^([^:]*):?(%-?%d*):?(%-?%d*):?(%-?%d*)")
-        h, w, x = tonumber(h) or 0, tonumber(w) or 0, tonumber(x) or 0
-        if w == 0 then w = h end
-        -- measured in game (29/10): each icon takes about 3 px more than its size and offset
-        icons = icons + math.max(0, w) + math.max(0, x) + 3
-        return ""
-    end)
+    iconsWidth = 0
+    local stripped = text:gsub("|T([^|]*)|t", AddIconWidth)
+    local icons = iconsWidth
     if not measure and CreateFrame and UIParent then
         measure = UIParent:CreateFontString(nil, "BACKGROUND")
         measure:Hide()
@@ -2130,6 +2133,16 @@ end
 -- Refreshes a block's text and icon from its module. mod.update(cfg, key)
 -- returns the value to display and an optional threshold level (1-3).
 -- Errors are reported once per block, then the block shows "N/A".
+-- Helpers of UpdateBlock, kept outside it so no function is created on each update
+local function InkColor(a, r, g, b)
+    return ("|c%s%02x%02x%02x"):format(a,
+        math.floor(tonumber(r, 16) * 0.38), math.floor(tonumber(g, 16) * 0.38), math.floor(tonumber(b, 16) * 0.38))
+end
+local function BlockIcon(mod, cfg)
+    if mod.getIcon then return mod.getIcon(cfg) end
+    return mod.icon
+end
+
 function ns:UpdateBlock(key)
     local f, cfg = self.frames[key], self.db.blocks[key]
     if not f or not cfg then return end
@@ -2194,10 +2207,7 @@ function ns:UpdateBlock(key)
     end
     if cfg.inkColors then
         -- light background (Parchment): bright colors would not read, they get darker
-        value = value:gsub("|c(%x%x)(%x%x)(%x%x)(%x%x)", function(a, r, g, b)
-            local function ink(h) return math.floor(tonumber(h, 16) * 0.38) end
-            return ("|c%s%02x%02x%02x"):format(a, ink(r), ink(g), ink(b))
-        end)
+        value = value:gsub("|c(%x%x)(%x%x)(%x%x)(%x%x)", InkColor)
     end
 
     local text = value
@@ -2224,10 +2234,7 @@ function ns:UpdateBlock(key)
     end
 
     if cfg.showIcon then
-        local okIcon, icon = pcall(function()
-            if mod.getIcon then return mod.getIcon(cfg) end
-            return mod.icon
-        end)
+        local okIcon, icon = pcall(BlockIcon, mod, cfg)
         if okIcon and icon then
             self:SetIcon(f.icon, icon)
             -- an icon can ask to be drawn bigger than the icon size (the corpse arrow: x1.5)

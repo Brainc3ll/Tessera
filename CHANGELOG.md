@@ -14,6 +14,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Reset session: a new choice for the Shift + click and middle click actions on Gold and XP. Gains and rates per hour start again from now.
 - Guild: the tooltip can show the message of the day, the members online out of the total, and each member's rank and public note. Sort the members (name, level, zone, rank) and put the top ranks, guild master and officers, above everyone else.
 - Friends: choose which parts of the tooltip show, show the note you wrote on a friend, sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.
+- Quests: sort the tooltip by level or finished first, list 10, 20 or all quests, show each zone or only the quests to hand in, and set the alert on the free slots left in the quest log.
+- Reputation: show the points left before the next standing and the reputation gained this session, and choose which parts of the tooltip show. "Reset session" also restarts the reputation gain.
 - Item level: show the equipped level, the best available one or both, and list the weakest items first in the tooltip.
 - Stats: a second stat next to the first.
 - Weapon enchant and Long buffs: the yellow and red thresholds are now settings (in seconds). Red now starts under one minute, so "Flash to alert" can warn you before the time runs out.

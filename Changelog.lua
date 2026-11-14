@@ -58,6 +58,10 @@ ns.CHANGELOG = {
                     .. " and put the top ranks, guild master and officers, above everyone else.",
                 "Friends: choose which parts of the tooltip show, show the note you wrote on a friend,"
                     .. " sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.",
+                "Quests: sort the tooltip by level or finished first, list 10, 20 or all quests, show each zone or only the quests to hand in,"
+                    .. " and set the alert on the free slots left in the quest log.",
+                "Reputation: show the points left before the next standing and the reputation gained this session,"
+                    .. " and choose which parts of the tooltip show. \"Reset session\" also restarts the reputation gain.",
                 "Item level: show the equipped level, the best available one or both, and list the weakest items first in the tooltip.",
                 "Stats: a second stat next to the first.",
                 "Weapon enchant and Long buffs: the yellow and red thresholds are now settings (in seconds)."
@@ -80,6 +84,10 @@ ns.CHANGELOG = {
                     .. " et place les rangs les plus hauts, maître de guilde et officiers, au-dessus des autres.",
                 "Amis : choisis les parties de l'infobulle à afficher, montre la note écrite sur un ami,"
                     .. " trie la liste par nom, niveau ou zone, et garde seulement les amis Battle.net qui jouent à WoW.",
+                "Quêtes : trie l'infobulle par niveau ou les terminées d'abord, liste 10, 20 ou toutes les quêtes,"
+                    .. " montre chaque zone ou seulement les quêtes à rendre, et règle l'alerte sur les places libres du journal.",
+                "Réputation : affiche les points restants avant le rang suivant et la réputation gagnée pendant la session,"
+                    .. " et choisis les parties de l'infobulle à afficher. « Remettre la session à zéro » relance aussi le gain de réputation.",
                 "Niveau d'objet : affiche le niveau équipé, le meilleur disponible ou les deux, et liste d'abord les objets les plus faibles dans l'infobulle.",
                 "Stats : une deuxième statistique à côté de la première.",
                 "Enchant d'arme et Buffs longs : les seuils jaune et rouge deviennent des réglages (en secondes)."

@@ -7,12 +7,16 @@ All blocks
 All blocks behind
 All blocks in front
 Always shown in combat
+Appearance
 Apply this layout
 Apply this style to
 Back to the automatic choice
 Background
 Background color and opacity
 Background in class color
+Battle.net friends
+Battle.net friends in WoW only
+Behaviour
 Black and white icon
 Block
 Blocks that touch
@@ -23,15 +27,18 @@ Border in class color
 Border size
 Bring blocks back on screen
 Bugs and ideas
+Characters
 Coin icons
 Color by threshold
 Color of my status
 Colors: bright or soft
 Configure a launcher
+Content
 Copy style to all
 Copy style to group
 Corner join (%)
 Count
+Count profession bags
 Currency shown
 CurseForge
 Custom name
@@ -44,22 +51,31 @@ Delete this spacer
 Demo mode
 Duplicate this profile
 Durability shown
+Each bag
 Edit a DataBroker block
+Empty blocks
+Equipped items
 Experience shown
 Export the layout
 Export the style
 Export this profile
+Faction name
 Fewer animations
+Finished quests only
 Fit width to text
+FlareUI
 Flash to alert
 Fold the window
 Font
 Font size
 Frame of all blocks...
 Freeze blocks in combat
+Friend's note
 GitHub
 Goal type
 Gold format
+Gold per hour
+Gold shown
 Grid
 Group dropped against a screen edge
 Hide in a vehicle or on a flight
@@ -68,6 +84,8 @@ Hide in instances
 Hide when empty
 Hide when resting
 High contrast
+History
+History length
 Honor shown
 Icon frame
 Icon frame color
@@ -76,12 +94,18 @@ Icon size (0 = automatic)
 Import a profile
 Import...
 In front or behind
+Item level shown
+Items in bags
 Its group
 Joint between tiles
+Junk value
+Junk value in the block
 Latency shown
 Layer
 Layout
+Leaders on top
 Leave out Battle.net friends
+Level and XP
 Line between merged blocks
 Line color
 Line direction
@@ -91,7 +115,9 @@ Lines in class color
 Links
 Lock
 Lock blocks
+Members online
 Memory shown
+Message of the day
 Middle click
 Minimum height
 Minimum text size
@@ -101,24 +127,36 @@ On screen
 Only while holding Alt
 Opacity (%)
 Opacity when hidden (%)
+Open the Style and layouts tab
 Options
 Outline
 Pin the tooltip
-Place
+Place by pixel
+Points left
+Points left in the block
+Profession bags
 Profile in dungeons and raids
 Progress bar
+Public note
+Quest level
+Quest zone
+Quests listed
 Quests shown
 Quick tour
 Quiet in chat
+Rank
 Red threshold
 Reload
 Remove
 Remove this block
+Repair cost
+Repair cost in the block
 Replace with...
 Reputation shown
 Reset
 Reset everything
 Reset shown
+Rested XP
 Rested XP shown
 Round
 Same profile for all characters
@@ -126,6 +164,10 @@ Scale of all blocks (%)
 Scale of this group (%)
 Search
 Search a setting
+Second stat
+Session XP
+Session gain
+Session reputation
 Share my blocks with DataBroker addons
 Share this block
 Shift + click
@@ -147,7 +189,11 @@ Skill shown
 Slots shown
 Snap blocks together
 Snap to Blizzard frames
+Sort friends
+Sort members
+Sort quests
 Spacer type
+Standing and progress
 Stat shown on the block
 Streamer mode
 Style of blocks and window
@@ -163,6 +209,7 @@ Text to show
 This block
 Thousands separator
 Time shown
+Time to next level in the block
 Tooltip on hover
 Tooltip position
 Tooltip size (%)
@@ -173,5 +220,11 @@ Unlock with Edit Mode
 Use Tessera's own blocks
 Volume shown
 Wago
+Weakest items first
 Weapons
+WoW friends
+Worn items only
+XP of quests to hand in
+XP per hour and time left
 Yellow threshold
+Your status

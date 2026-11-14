@@ -95,13 +95,15 @@ local session = {
     xpGained = 0,
 }
 
--- "Reset session" click action (gold and XP blocks): gains and per-hour rates start again from now.
+-- "Reset session" click action (gold, XP and reputation blocks): gains and per-hour rates start again from now.
 -- The session time itself (session.start) is left alone: other blocks show it.
 local function ResetSession()
     session.gainStart = GetTime()
     session.xpGained = 0
+    session.repBase = {}
+    if ns.RepSnapshot then ns.RepSnapshot() end
     ns.sessionMoney = GetMoney() or 0
-    for _, key in ipairs({ "gold", "xp", "goldSession" }) do
+    for _, key in ipairs({ "gold", "xp", "goldSession", "reputation" }) do
         if ns.frames[key] then ns:UpdateBlock(key) end
     end
     ns.Print(L.SESSION_RESET)
@@ -152,6 +154,7 @@ local THRESHOLDS = {
     fps        = { warn = 45, bad = 25, low = true, min = 5, max = 144, step = 1 },
     latency    = { warn = 100, bad = 250, low = false, min = 20, max = 1000, step = 10 },
     ammo       = { warn = 200, bad = 50, low = true, min = 0, max = 1000, step = 10 },
+    quests     = { warn = 2, bad = 0, low = true, min = 0, max = 10, step = 1 }, -- free slots in the quest log
 }
 
 local function LevelColor(level)

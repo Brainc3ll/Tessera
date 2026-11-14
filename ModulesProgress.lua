@@ -4,13 +4,18 @@ local L = ns.L
 -- Blocks about progress: reputation, currencies, quests, goal, professions, ammo, session gains.
 -- Shared tools come from Modules.lua (ns.BlockTools); see its header for how to add a block.
 local Tools = ns.BlockTools
-local AtMaxLevel, BAD, FormatDuration, FormatGold = Tools.AtMaxLevel, Tools.BAD, Tools.FormatDuration, Tools.FormatGold
+local AtMaxLevel, FormatDuration, FormatGold = Tools.AtMaxLevel, Tools.FormatDuration, Tools.FormatGold
 local GOOD, GetItemCountFn = Tools.GOOD, Tools.GetItemCountFn
 local GetItemInfoFn, MAX_LINES, Masked, MicroButtonMacro = Tools.GetItemInfoFn, Tools.MAX_LINES, Tools.Masked, Tools.MicroButtonMacro
 local Percent, ShortDuration = Tools.Percent, Tools.ShortDuration
 local SkillLines, SkillTooltip, THRESHOLDS, Threshold = Tools.SkillLines, Tools.SkillTooltip, Tools.THRESHOLDS, Tools.Threshold
 local Try, WARN = Tools.Try, Tools.WARN
-local WHITE = Tools.WHITE
+local WHITE, session = Tools.WHITE, Tools.session
+
+-- A tooltip part is on unless its checkbox was cleared (a profile from before the checkbox keeps it on)
+local function On(cfg, field)
+    return not cfg or cfg[field] ~= false
+end
 
 ---------------------------------------------------------------------------
 -- Quests: count in the quest log, list in the tooltip
@@ -21,11 +26,14 @@ local function QuestList()
     local list = {}
     if C_QuestLog and C_QuestLog.GetNumQuestLogEntries and C_QuestLog.GetInfo then
         local n = Try(C_QuestLog.GetNumQuestLogEntries) or 0
+        local zone -- the quest log groups the quests under a header named after their zone
         for i = 1, n do
             local info = Try(C_QuestLog.GetInfo, i)
-            if info and not info.isHeader and not info.isHidden and not info.isTask then
+            if info and info.isHeader then
+                zone = info.title
+            elseif info and not info.isHidden and not info.isTask then
                 local complete = info.questID and C_QuestLog.IsComplete and Try(C_QuestLog.IsComplete, info.questID)
-                table.insert(list, { title = info.title, level = info.level, complete = complete })
+                table.insert(list, { title = info.title, level = info.level, complete = complete, zone = zone, order = #list + 1 })
             end
         end
     end
@@ -49,7 +57,7 @@ ns:RegisterModule("quests", {
     update = function(cfg)
         local list = QuestList()
         local count, max = #list, MaxQuests()
-        local level = count >= max and BAD or (count >= max - 2 and WARN or GOOD)
+        local level = Threshold(cfg, math.max(0, max - count), THRESHOLDS.quests) -- free slots: yellow at 2, red at 0
         local mode = cfg and cfg.questsFormat or "countMax"
         if mode == "count" then return tostring(count), level end
         if mode == "complete" then
@@ -59,23 +67,54 @@ ns:RegisterModule("quests", {
         end
         return ("%d / %d"):format(count, max), level
     end,
-    defaults = { questsFormat = "countMax" },
+    thresholds = THRESHOLDS.quests,
+    defaults = { questsFormat = "countMax", questsSort = "game", questsLines = "20", questsTipLevel = true,
+                 questsOnlyDone = false, questsTipZone = false },
     options = {
         { kind = "dropdown", field = "questsFormat", tab = "text", label = "QUESTS_SHOWN", tip = "TIP_QUESTS_SHOWN",
           values = { { key = "countMax", label = "QUESTS_COUNT_MAX" }, { key = "count", label = "QUESTS_COUNT" },
                      { key = "complete", label = "QUESTS_COMPLETE" } } },
+        { kind = "check", field = "questsTipLevel", section = "tooltip", tab = "text", label = "QUESTS_TIP_LEVEL", tip = "TIP_QUESTS_TIP_LEVEL" },
+        { kind = "check", field = "questsTipZone", section = "tooltip", tab = "text", label = "QUESTS_TIP_ZONE", tip = "TIP_QUESTS_TIP_ZONE" },
+        { kind = "check", field = "questsOnlyDone", section = "tooltip", tab = "text", label = "QUESTS_ONLY_DONE", tip = "TIP_QUESTS_ONLY_DONE" },
+        { kind = "dropdown", field = "questsSort", section = "tooltip", tab = "text", label = "QUESTS_SORT", tip = "TIP_QUESTS_SORT",
+          values = { { key = "game", label = "QUESTS_SORT_GAME" }, { key = "level", label = "QUESTS_SORT_LEVEL" },
+                     { key = "done", label = "QUESTS_SORT_DONE" } } },
+        { kind = "dropdown", field = "questsLines", section = "tooltip", tab = "text", label = "QUESTS_LINES", tip = "TIP_QUESTS_LINES",
+          values = { { key = "10", label = "QUESTS_LINES_10" }, { key = "20", label = "QUESTS_LINES_20" }, { key = "all", label = "QUESTS_LINES_ALL" } } },
     },
-    tooltip = function(tt)
-        local list = QuestList()
-        for i = 1, math.min(#list, MAX_LINES) do
+    tooltip = function(tt, cfg)
+        local all = QuestList()
+        local list = {}
+        for _, q in ipairs(all) do
+            if q.complete or not (cfg and cfg.questsOnlyDone) then table.insert(list, q) end
+        end
+        local sort = cfg and cfg.questsSort
+        if sort == "level" then
+            table.sort(list, function(a, b)
+                if (a.level or 0) ~= (b.level or 0) then return (a.level or 0) > (b.level or 0) end
+                return a.order < b.order
+            end)
+        elseif sort == "done" then
+            table.sort(list, function(a, b)
+                if (a.complete and 1 or 0) ~= (b.complete and 1 or 0) then return a.complete and true or false end
+                return a.order < b.order
+            end)
+        end
+        local setting = cfg and cfg.questsLines
+        local limit = setting == "all" and #list or (tonumber(setting) or MAX_LINES)
+        for i = 1, math.min(#list, limit) do
             local q = list[i]
             local right = q.complete and ("|cff4dff4d" .. L.TT_COMPLETE .. "|r") or ""
             local color = q.level and GetQuestDifficultyColor and GetQuestDifficultyColor(q.level)
             local r, g, b = 1, 1, 1
             if color then r, g, b = color.r, color.g, color.b end
-            tt:AddDoubleLine(("[%s] %s"):format(q.level or "?", q.title or "?"), right, r, g, b)
+            local left = q.title or "?"
+            if On(cfg, "questsTipLevel") then left = ("[%s] %s"):format(q.level or "?", left) end
+            if cfg and cfg.questsTipZone and q.zone then left = left .. " |cff999999- " .. q.zone .. "|r" end
+            tt:AddDoubleLine(left, right, r, g, b)
         end
-        if #list > MAX_LINES then tt:AddLine(L.TT_MORE:format(#list - MAX_LINES), 0.8, 0.8, 0.8) end
+        if #list > limit then tt:AddLine(L.TT_MORE:format(#list - limit), 0.8, 0.8, 0.8) end
         if #list == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
     end,
     secureMacro = "/run if ToggleQuestLog then ToggleQuestLog() end",
@@ -91,10 +130,41 @@ local function WatchedFaction()
     if C_Reputation and C_Reputation.GetWatchedFactionData then
         local d = Try(C_Reputation.GetWatchedFactionData)
         if d and d.name then
-            return d.name, d.reaction, d.currentReactionThreshold, d.nextReactionThreshold, d.currentStanding
+            return d.name, d.reaction, d.currentReactionThreshold, d.nextReactionThreshold, d.currentStanding, d.factionID
         end
     end
     return nil
+end
+
+-- Reputation gained this session: the standing of each faction when first seen (session.repBase, kept
+-- by faction id). Standings are absolute, so a gain that crosses into a new standing still adds up.
+-- Reset session (Modules.lua) empties the table and calls ns.RepSnapshot.
+local function RepSnapshot(full)
+    session.repBase = session.repBase or {}
+    local _, _, _, _, value, id = WatchedFaction()
+    if id and value and session.repBase[id] == nil then session.repBase[id] = value end
+    -- the factions of the reputation list too (the ones under a closed header are not listed)
+    if full and C_Reputation and C_Reputation.GetNumFactions and C_Reputation.GetFactionDataByIndex then
+        for i = 1, Try(C_Reputation.GetNumFactions) or 0 do
+            local d = Try(C_Reputation.GetFactionDataByIndex, i)
+            if d and d.factionID and d.currentStanding and session.repBase[d.factionID] == nil then
+                session.repBase[d.factionID] = d.currentStanding
+            end
+        end
+    end
+end
+ns.RepSnapshot = function() RepSnapshot(true) end
+
+local repTracker = CreateFrame("Frame")
+repTracker:RegisterEvent("PLAYER_ENTERING_WORLD")
+repTracker:RegisterEvent("UPDATE_FACTION")
+repTracker:SetScript("OnEvent", function(_, event) RepSnapshot(event == "PLAYER_ENTERING_WORLD") end)
+
+-- Points gained with the watched faction this session, or nil
+local function RepGain()
+    local _, _, _, _, value, id = WatchedFaction()
+    local base = id and session.repBase and session.repBase[id]
+    return base and value and (value - base) or nil
 end
 
 -- Localized standing name ("Friendly", "Honored"...) from the game's globals
@@ -107,7 +177,10 @@ ns:RegisterModule("reputation", {
     icon = "Interface\\Icons\\INV_BannerPVP_02",
     events = { "UPDATE_FACTION" },
     isEmpty = function() return WatchedFaction() == nil end,
-    defaults = { progressBar = true, repFormat = "standingPercent" },
+    defaults = { progressBar = true, repFormat = "standingPercent", repLeft = false, repTipName = true,
+                 repTipStanding = true, repTipLeft = false, repTipSession = false },
+    -- extra click action (Shift / middle click list): gains start again from now
+    extraAction = { key = "resetSession", label = "ACTION_RESET_SESSION", run = Tools.ResetSession },
     progress = function()
         local name, _, min, max, value = WatchedFaction()
         if not name or not (max and min and max > min) then return nil end
@@ -116,28 +189,53 @@ ns:RegisterModule("reputation", {
     update = function(cfg)
         local name, reaction, min, max, value = WatchedFaction()
         if not name then return L.NONE end
-        local pct = math.floor((max and min and max > min) and Percent(value - min, max - min) or 100)
+        local hasRange = max and min and max > min
+        local pct = math.floor(hasRange and Percent(value - min, max - min) or 100)
         local mode = cfg and cfg.repFormat or "standingPercent"
-        if mode == "namePercent" then return ("%s %d%%"):format(name, pct) end
-        if mode == "percent" then return ("%d%%"):format(pct) end
-        if mode == "standing" then return StandingLabel(reaction) end
-        return ("%s %d%%"):format(StandingLabel(reaction), pct)
+        local text
+        if mode == "namePercent" then
+            text = ("%s %d%%"):format(name, pct)
+        elseif mode == "percent" then
+            text = ("%d%%"):format(pct)
+        elseif mode == "standing" then
+            text = StandingLabel(reaction)
+        else
+            text = ("%s %d%%"):format(StandingLabel(reaction), pct)
+        end
+        -- points left: in brackets, so it is not read as part of the percent
+        if cfg and cfg.repLeft and hasRange then
+            text = text .. (" (%s)"):format((BreakUpLargeNumbers or tostring)(max - value))
+        end
+        return text
     end,
     options = {
         { kind = "dropdown", field = "repFormat", tab = "text", label = "REP_SHOWN", tip = "TIP_REP_SHOWN",
           values = { { key = "standingPercent", label = "REP_STANDING_PERCENT" },
                      { key = "namePercent", label = "REP_NAME_PERCENT" },
                      { key = "percent", label = "REP_PERCENT" }, { key = "standing", label = "REP_STANDING" } } },
+        { kind = "check", field = "repLeft", tab = "text", label = "REP_LEFT", tip = "TIP_REP_LEFT" },
+        { kind = "check", field = "repTipName", section = "tooltip", tab = "text", label = "REP_TIP_NAME", tip = "TIP_REP_TIP_NAME" },
+        { kind = "check", field = "repTipStanding", section = "tooltip", tab = "text", label = "REP_TIP_STANDING", tip = "TIP_REP_TIP_STANDING" },
+        { kind = "check", field = "repTipLeft", section = "tooltip", tab = "text", label = "REP_TIP_LEFT", tip = "TIP_REP_TIP_LEFT" },
+        { kind = "check", field = "repTipSession", section = "tooltip", tab = "text", label = "REP_TIP_SESSION", tip = "TIP_REP_TIP_SESSION" },
     },
-    tooltip = function(tt)
+    tooltip = function(tt, cfg)
         local name, reaction, min, max, value = WatchedFaction()
         if not name then
             tt:AddLine(L.TT_NO_WATCHED, 0.8, 0.8, 0.8, true)
             return
         end
-        tt:AddLine(name, 1, 1, 1)
-        WHITE(tt, StandingLabel(reaction),
-            (max and min and max > min) and ("%d / %d"):format(value - min, max - min) or "")
+        local fmt = BreakUpLargeNumbers or tostring
+        local hasRange = max and min and max > min
+        if On(cfg, "repTipName") then tt:AddLine(name, 1, 1, 1) end
+        if On(cfg, "repTipStanding") then
+            WHITE(tt, StandingLabel(reaction), hasRange and ("%d / %d"):format(value - min, max - min) or "")
+        end
+        if cfg and cfg.repTipLeft and hasRange then WHITE(tt, L.TT_REP_LEFT, fmt(max - value)) end
+        if cfg and cfg.repTipSession then
+            local gain = RepGain()
+            if gain and gain ~= 0 then WHITE(tt, L.TT_XP_SESSION, (gain > 0 and "+" or "-") .. fmt(math.abs(gain))) end
+        end
     end,
     secureMacro = "/run if ToggleCharacter then ToggleCharacter('ReputationFrame') end",
     clickHint = L.HINT_REPUTATION,

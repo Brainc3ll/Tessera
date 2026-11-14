@@ -156,6 +156,18 @@ ns.fonts = {
       file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Luciole-Regular.ttf" },
     { key = "luciolebold", name = "Luciole Bold", share = true, scripts = {"latin"},
       file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Luciole-Bold.ttf" },
+    { key = "lexend", name = "Lexend", share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Lexend-Regular.ttf" },
+    { key = "lexendbold", name = "Lexend Bold", share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Lexend-Bold.ttf" },
+    { key = "andika", name = "Andika", share = true, scripts = {"latin", "cyrillic"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Andika-Regular.ttf" },
+    { key = "andikabold", name = "Andika Bold", share = true, scripts = {"latin", "cyrillic"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Andika-Bold.ttf" },
+    { key = "inclusivesans", name = "Inclusive Sans", share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\InclusiveSans-Regular.ttf" },
+    { key = "inclusivesansbold", name = "Inclusive Sans Bold", share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\InclusiveSans-Bold.ttf" },
 }
 
 ---------------------------------------------------------------------------

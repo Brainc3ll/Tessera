@@ -472,6 +472,9 @@ local function LicensesText()
         L.LICENSES_ATKINSON, "",
         L.LICENSES_OPENDYSLEXIC, "",
         L.LICENSES_LUCIOLE, "",
+        L.LICENSES_LEXEND, "",
+        L.LICENSES_ANDIKA, "",
+        L.LICENSES_INCLUSIVESANS, "",
         L.LICENSES_SHARE,
     }, "\n")
 end

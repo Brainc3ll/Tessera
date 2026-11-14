@@ -17,7 +17,7 @@ Other things you might like:
 - Style a whole bar at once: pick its group in the options, or copy one block's look to the rest of the bar.
 - Place a bar to the exact pixel with the arrow keys, or type where it goes.
 - An options window with a search, a help panel for each setting and an Accessibility tab: high contrast, fewer animations, a minimum text size.
-- Three fonts for easier reading: Atkinson Hyperlegible and Luciole (low vision), OpenDyslexic (dyslexia).
+- Six fonts for easier reading, among them Atkinson Hyperlegible, Luciole (low vision) and OpenDyslexic (dyslexia).
 - English and French, plus German, Spanish and Brazilian Portuguese.
 
 Over 50 blocks, plus launchers for your minimap buttons. Type **/tessera** for the options, or **/tessera demo** to see every block at once.
@@ -88,7 +88,7 @@ D'autres choses qui pourraient te plaire :
 - Règle toute une barre d'un coup : choisis son groupe dans les options, ou copie l'apparence d'un bloc sur le reste de la barre.
 - Place une barre au pixel près avec les flèches du clavier, ou tape où elle va.
 - Une fenêtre d'options avec une recherche, un panneau d'aide pour chaque réglage et un onglet Accessibilité : contraste élevé, moins d'animations, une taille minimale du texte.
-- Trois polices pour lire plus facilement : Atkinson Hyperlegible et Luciole (malvoyance), OpenDyslexic (dyslexie).
+- Six polices pour lire plus facilement, dont Atkinson Hyperlegible, Luciole (malvoyance) et OpenDyslexic (dyslexie).
 - Anglais et français, plus l'allemand, l'espagnol et le portugais du Brésil.
 
 Plus de 50 blocs, et des lanceurs pour les boutons de ta minicarte. Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup.

@@ -42,8 +42,9 @@ ns.CHANGELOG = {
         sections = {
             { kind = "new",
               en = {
-                "Three fonts made for easier reading, in the font choice of every block: Atkinson Hyperlegible (low vision),"
-                    .. " OpenDyslexic (dyslexia) and Luciole (low vision), each in regular and bold."
+                "Six fonts made for easier reading, in the font choice of every block: Atkinson Hyperlegible and Luciole (low vision),"
+                    .. " OpenDyslexic (dyslexia), Lexend (reading flow), Andika (beginning readers) and Inclusive Sans (general legibility),"
+                    .. " each in regular and bold."
                     .. " The menu shows in grey which alphabets each one covers."
                     .. " Other addons that use LibSharedMedia can pick them too.",
                 "Accessibility tab: a Font setting for all blocks. It is the same setting as Font under \"All blocks\""
@@ -51,8 +52,9 @@ ns.CHANGELOG = {
                 "About tab: a new Licenses chapter lists the credits and licenses of these fonts.",
               },
               fr = {
-                "Trois polices pensées pour lire plus facilement, dans le choix de police de chaque bloc : Atkinson Hyperlegible (malvoyance),"
-                    .. " OpenDyslexic (dyslexie) et Luciole (malvoyance), chacune en normal et en gras."
+                "Six polices pensées pour lire plus facilement, dans le choix de police de chaque bloc : Atkinson Hyperlegible et Luciole (malvoyance),"
+                    .. " OpenDyslexic (dyslexie), Lexend (fluidité de lecture), Andika (lecteurs débutants) et Inclusive Sans (lisibilité générale),"
+                    .. " chacune en normal et en gras."
                     .. " Le menu indique en gris les alphabets couverts par chacune."
                     .. " Les autres addons qui utilisent LibSharedMedia peuvent les choisir aussi.",
                 "Onglet Accessibilité : un réglage Police pour tous les blocs. C'est le même réglage que Police sous « Tous les blocs »"

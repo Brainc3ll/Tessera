@@ -18,7 +18,7 @@ Rangé par thème le 25 octobre 2026 (avant : par date). Dans chaque partie, la 
 Pistes notées par Braincell1980 après la 1.3.1 ; aucune n'est choisie ni datée. Chacune renvoie à la partie qui la détaille.
 - **Bouton « Tous les blocs » d'un bloc seul ou d'un groupe** : quand un bloc seul ou un groupe est choisi, le bouton « Tous les blocs » a le même décalage avec l'onglet Apparence que la page « Tous les blocs » (corrigée en 1.3.1 : liste grisée et bouton « Ouvrir l'onglet Apparence »). À revoir si Braincell1980 le veut.
 - **Manette 2.0** : voir « Manette (2.0…) », « Manette native de WoW Forever » et « Ce que FlareUI 6.0 apprend pour la manette », dans Accessibilité et manette.
-- **Polices d'accessibilité** (1.4) : voir « Polices pour l'accessibilité ».
+- **Polices d'accessibilité, suite** (1.4 publiée le 14/11 avec six polices) : espacement des lettres, addon `Tessera_Fonts` ; voir « Polices pour l'accessibilité ».
 - **Vol et bateaux** : à sonder ; voir « Idées de blocs du 7/11 » pour les autres idées vérifiées avec forever-lint.
 
 ## Règles et décisions
@@ -268,7 +268,7 @@ Règle de Braincell1980 : le jeu a déjà ses options d'accessibilité (Réglage
 
 ### Polices pour l'accessibilité (24 octobre 2026, pour la 1.4)
 
-**Fait le 14/11 (premier lot, test125)** : Atkinson Hyperlegible Next, OpenDyslexic, Luciole, voir `docs/A-REPRENDRE.md`. Lot 2 fait le même jour (test129) : Lexend, Andika, Inclusive Sans. Reste : espacement des lettres, addon `Tessera_Fonts`. Décision : pas de champ de chemin libre.
+**Publié le 14/11 dans la 1.4.0** (premier lot, test125) : Atkinson Hyperlegible Next, OpenDyslexic, Luciole, voir `docs/A-REPRENDRE.md`. Lot 2 fait le même jour (test129) : Lexend, Andika, Inclusive Sans. Reste : espacement des lettres, addon `Tessera_Fonts`. Décision : pas de champ de chemin libre.
 
 Idée de Braincell1980 : donner le choix de polices pensées pour l'accessibilité, et les rendre disponibles pour les autres addons. Licences vérifiées en ligne le 24/10 ; toutes compatibles avec la licence MIT de Tessera (livrées sans modification, avec leur fichier de licence).
 

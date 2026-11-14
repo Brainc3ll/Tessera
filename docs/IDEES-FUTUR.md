@@ -20,6 +20,7 @@ Pistes notées par Braincell1980 après la 1.3.1 ; aucune n'est choisie ni daté
 - **Manette 2.0 : en pause (14/11)**, on laisse Blizzard peaufiner ; voir « Manette en pause », « Manette (2.0…) », « Manette native de WoW Forever » et « Ce que FlareUI 6.0 apprend pour la manette », dans Accessibilité et manette.
 - **Polices d'accessibilité, suite** (1.4 publiée le 14/11 avec six polices) : espacement des lettres seulement si des joueurs le demandent (décision du 14/11) ; `Tessera_Fonts` abandonné ; voir « Polices pour l'accessibilité ».
 - **[Fait, 1.5.0, test130, testé en jeu le 14/11] Modernisation des blocs, lot Personnage** (Or, Sacs, Durabilité, XP) ; les autres blocs suivent un par un, voir `docs/etudes/PLAN-modernisation-blocs.md`.
+- **Mettre en évidence les réglages propres de chaque bloc** (demandé le 14/11, une fois la modernisation finie) : voir la fin de `docs/etudes/PLAN-modernisation-blocs.md`.
 - **Vol et bateaux** : écarté pour le moment (14/11) ; voir « Idées de blocs du 7/11 » pour les autres idées vérifiées avec forever-lint.
 
 ## Règles et décisions

@@ -51,3 +51,6 @@ Infobulle actuelle : nom de la guilde, puis les membres en ligne (nom, niveau, z
 
 ## Blocs à voir ensuite
 Ordre à choisir avec Braincell1980. Social d'abord (guild, friends, mail, loot, group, whispers), puis Personnage, Progression, Monde, Système, Forever.
+
+## À faire quand tous les blocs seront finis (demandé le 14/11)
+Isoler les réglages propres à chaque bloc (ceux de `options` : format, cases d'infobulle, etc.) pour les mettre en évidence dans l'onglet Blocs, car la liste grossit (22 réglages pour 4 blocs). Pistes à étudier alors : section repliable « Infobulle » pour les cases d'infobulle, section « Réglages de ce bloc » visible d'emblée. Contrôle à prévoir : texte deux fois plus grand, sans souris, contraste élevé.

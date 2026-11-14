@@ -1,6 +1,6 @@
 # Réorganisation de la fenêtre d'options (1.5.0, branche `next`)
 
-Validé par Braincell1980 le 14/11/2026 (maquette, Opus 5.5). À faire AVANT de reprendre la
+Validé par Braincell1980 le 14/11/2026 (maquette, Opus 5.5). **Codé le 14/11 (Opus 5.5, test135), à tester en jeu.** À faire AVANT de reprendre la
 modernisation des blocs (Progression, Monde, Système, Forever) : la révision des blocs est en pause.
 
 ## Pourquoi
@@ -51,3 +51,10 @@ ligne, petites listes en flèches. Le contenu ne change pas, seulement le rangem
 - `OptionsPages.lua` : les autres onglets.
 - `Options.lua` : constantes (COL_W, COL_X, FULL_W, SPACING, PANEL_H).
 - Vérifier `tools/check_locals.py` avant d'ajouter des locales (scinder si besoin, skill tessera-refactor).
+
+## Ce qui a été fait (14/11, Opus 5.5)
+- `OptionsBoxes.lua` : `NewFlow(content)` place seulement les lignes visibles, cadre par cadre ; `box.Add(w, { half, parent, field, default })` ; un cadre vide disparaît ; `CreateTabs` pour les onglets (Blocs et DataBroker) ; `ns.OptionsFocusOrder` pour le clavier et la manette.
+- Réinitialiser : réglages de bloc remis aux valeurs d'un nouveau bloc (`GetBlockDefaults`, sans les choix de « Tous les blocs » sur cette page), autres réglages par leur propre setter (`default`, valeurs de `PROFILE_DEFAULTS`). Confirmation (`TESSERA_RESET_BOX`), Ctrl + Z pour l'apparence.
+- Écarts avec la maquette : « Afficher l'infobulle », sa position et « Épingler l'infobulle » sont dans le cadre Infobulle de Contenu ; « Masquer si vide » dans Quand l'afficher ; les seuils dans Alertes et seuils. Pas de Réinitialiser dans Profils, Lanceurs, Partager, Dispositions toutes prêtes, Cadres de Blizzard, Mode streamer (boutons ou actions seulement).
+- Textes supprimés (plus utilisés) : SECTION_ESSENTIAL, SECTION_OWN, SECTION_BLOCK_LOOK, SECTION_DISPLAY. SECTION_CLICKS devient « Clics » (clé gardée).
+

@@ -8,13 +8,13 @@ local S = Tools.S
 local ALL, AsSetting, AttachTip, COL_W = Tools.ALL, Tools.AsSetting, Tools.AttachTip, Tools.COL_W
 local COL_X, Cfg, ColorField, CreateButton = Tools.COL_X, Tools.Cfg, Tools.ColorField, Tools.CreateButton
 local CreateCheck, CreateColor, CreateDropdown, CreateEditBox = Tools.CreateCheck, Tools.CreateColor, Tools.CreateDropdown, Tools.CreateEditBox
-local CreateHeader, CreateNote, CreateSection, CreateSlider = Tools.CreateHeader, Tools.CreateNote, Tools.CreateSection, Tools.CreateSlider
+local CreateNote, CreateSlider, CreateTabs, NewFlow = Tools.CreateNote, Tools.CreateSlider, Tools.CreateTabs, Tools.NewFlow
 local CreateSwitch, FULL_W, Field, FitButtonText = Tools.CreateSwitch, Tools.FULL_W, Tools.Field, Tools.FitButtonText
 local FitRow, GROUP_PREFIX, GroupHead, IsGroup = Tools.FitRow, Tools.GROUP_PREFIX, Tools.GroupHead, Tools.IsGroup
 local LAUNCHERS, LauncherKeys, NewLayout, NewRow = Tools.LAUNCHERS, Tools.LauncherKeys, Tools.NewLayout, Tools.NewRow
 local PAGE_LOOK, ROW_CONTROL_W, ROW_CONTROL_X, ROW_LABEL_W = Tools.PAGE_LOOK, Tools.ROW_CONTROL_W, Tools.ROW_CONTROL_X, Tools.ROW_LABEL_W
-local Register, RowHover, RowLabel, SPACING = Tools.Register, Tools.RowHover, Tools.RowLabel, Tools.SPACING
-local SWITCH_W, ScrollArea, SetField, widgets = Tools.SWITCH_W, Tools.ScrollArea, Tools.SetField, Tools.widgets
+local Register, RowHover, RowLabel, ScrollToBox = Tools.Register, Tools.RowHover, Tools.RowLabel, Tools.ScrollToBox
+local SWITCH_W, ScrollArea, SetField = Tools.SWITCH_W, Tools.ScrollArea, Tools.SetField
 
 
 ---------------------------------------------------------------------------
@@ -98,74 +98,39 @@ local function SelectedModuleKey()
     return S.selected
 end
 
--- Functions that pack the module option stacks (see BuildModuleOptions)
-local relayouts = {}
-function ns.RelayoutBlockOptions()
-    for _, f in ipairs(relayouts) do f() end
-end
-
--- Builds every module's own options (Modules.lua "options", hide when empty,
--- thresholds) in column col of a page, all stacked from the same top: only the
--- selected block's are visible. Used by the Behaviour sub-tab and the DataBroker
--- tab. condition (optional) must also be true for them to show. Returns the set of
--- module keys that have options.
--- filter(opt) picks the options of this page: by default those of the Behaviour tab
--- (options marked tab = "text", how the value is shown, are in the Text tab)
-local function BuildModuleOptions(sub, P, col, keys, condition, filter)
-    filter = filter or function(opt) return opt.tab ~= "text" end
-    -- two stacks in one column of one page draw over each other: the mock run refuses it
-    ns.optionStacks = ns.optionStacks or {}
-    local slot = tostring(sub) .. col
-    ns.optionStacks[slot] = (ns.optionStacks[slot] or 0) + 1
+-- Builds every module's own options (Modules.lua "options", "Hide when empty", thresholds)
+-- into boxes (OptionsBoxes.lua): route(opt) gives the box of an option (opt.where = "when"
+-- for "Hide when empty", "alerts" for the thresholds, opt.section = "tooltip" for what the
+-- tooltip shows). Only the selected block's options show. condition (optional) must also be
+-- true for them to show. Returns the set of module keys that have options.
+local function BuildModuleOptions(keys, route, condition)
     local function ModuleOf(key)
         return key == "spacer" and ns.spacerModule or ns.modules[key]
     end
-    local stackTop = P.Bottom(col)
-    local stacks = {}
     local hasOptions = {}
     for _, key in ipairs(keys) do
         local mod = ModuleOf(key)
         local list = {}
-        for _, opt in ipairs(mod.options or {}) do
-            if filter(opt) then table.insert(list, opt) end
-        end
-        if mod.isEmpty and filter({}) then
+        for _, opt in ipairs(mod.options or {}) do table.insert(list, opt) end
+        if mod.isEmpty then
             table.insert(list, { kind = "check", field = "hideEmpty", label = "HIDE_EMPTY", tip = "TIP_HIDE_EMPTY",
-                after = function() ns:UpdateAllVisibility() end })
+                where = "when", after = function() ns:UpdateAllVisibility() end })
         end
-        if mod.thresholds and filter({}) then
+        if mod.thresholds then
             local t = mod.thresholds
             local tip = t.low and "TIP_THRESHOLD_LOW" or "TIP_THRESHOLD_HIGH"
             table.insert(list, { kind = "slider", field = "warnAt", label = "THRESHOLD_WARN", tip = tip,
-                min = t.min, max = t.max, step = t.step, default = t.warn })
+                min = t.min, max = t.max, step = t.step, default = t.warn, where = "alerts" })
             table.insert(list, { kind = "slider", field = "badAt", label = "THRESHOLD_BAD", tip = tip,
-                min = t.min, max = t.max, step = t.step, default = t.bad })
+                min = t.min, max = t.max, step = t.step, default = t.bad, where = "alerts" })
         end
         if #list > 0 then hasOptions[key] = true end
-        -- options that name a section (section = "tooltip") go under folding titles: "Display"
-        -- (the others), then "Tooltip". A block with no such option keeps its plain list.
-        local grouped = false
         for _, opt in ipairs(list) do
-            if opt.section then grouped = true end
-        end
-        if grouped then
-            local plain, tipped = {}, {}
-            for _, opt in ipairs(list) do table.insert(opt.section == "tooltip" and tipped or plain, opt) end
-            list = { { kind = "section", label = "SECTION_DISPLAY" } }
-            for _, opt in ipairs(plain) do table.insert(list, opt) end
-            table.insert(list, { kind = "section", label = "SECTION_TOOLTIP" })
-            for _, opt in ipairs(tipped) do table.insert(list, opt) end
-        end
-        local section -- the folding title above the options being placed
-        local firstWidget = #widgets + 1
-        P.currentBlock = key -- (search: a setting of this block opens it)
-        P.untracked = true -- stacked widgets: measured when packed (relayout below)
-        for _, opt in ipairs(list) do
-            local mySection = section
+            local box = route(opt)
+            local sub = box.content
             local shown = function()
                 if SelectedModuleKey() ~= key then return false end
                 if condition and not condition() then return false end
-                if mySection and mySection.folded and opt.kind ~= "section" then return false end
                 local cfg = Cfg()
                 return not opt.shown or (cfg and opt.shown(cfg)) or false
             end
@@ -177,15 +142,9 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
                 if ns.UpdatePublishing then ns:UpdatePublishing() end -- shared value follows
                 ns:RefreshOptions() -- an option can show or hide others (spacer mode)
             end
-            if opt.kind == "section" then
-                section = CreateSection(sub, label, false)
-                section.isShown = shown
-                P.Place(section, col)
-            elseif opt.kind == "check" then
-                local check = P.Place(CreateCheck(sub, label, get, setter, shown, tip), col)
-                -- checkboxes sit two by two (half-width rows, see the relayout below)
-                check:SetWidth(COL_W)
-                check.pairable = true
+            local w
+            if opt.kind == "check" then
+                w = CreateCheck(sub, label, get, setter, shown, tip)
             elseif opt.kind == "dropdown" then
                 -- values: a list, or a function (a list that changes: the player's skills...)
                 local values = function()
@@ -196,61 +155,34 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
                     end
                     return entries
                 end
-                P.Place(CreateDropdown(sub, label, values, get, setter, shown, nil, tip), col)
+                w = CreateDropdown(sub, label, values, get, setter, shown, nil, tip)
             elseif opt.kind == "slider" then
-                P.Place(CreateSlider(sub, label, opt.min, opt.max, opt.step or 1,
-                    function() return get() or opt.default end, setter, shown, tip), col)
+                w = CreateSlider(sub, label, opt.min, opt.max, opt.step or 1,
+                    function() return get() or opt.default end, setter, shown, tip)
             elseif opt.kind == "number" or opt.kind == "text" then
-                P.Place(CreateEditBox(sub, label, get, function(v)
+                w = CreateEditBox(sub, label, get, function(v)
                     if opt.kind == "number" then
                         v = tonumber(v)
                         if not v then return end
                         if opt.min then v = math.max(opt.min, v) end
                     end
                     setter(v)
-                end, shown, tip, opt.kind == "number"), col)
+                end, shown, tip, opt.kind == "number")
             elseif opt.kind == "color" then
                 local getC, setC = ColorField(opt.field)
-                P.Place(CreateColor(sub, label, true, getC, function(...)
+                w = CreateColor(sub, label, true, getC, function(...)
                     setC(...)
                     ns:ApplyStyle(S.selected)
-                end, shown, tip), col)
+                end, shown, tip)
+            end
+            if w then
+                box.flow.currentBlock = key -- (search: a setting of this block opens it)
+                -- check boxes two by two (a short list with arrows too, when its label is short)
+                box.Add(w, { half = opt.kind == "check", field = opt.field })
+                box.flow.currentBlock = nil
             end
         end
-        -- remember this module's widgets: hidden ones must not leave a gap
-        local stack = {}
-        for w = firstWidget, #widgets do table.insert(stack, widgets[w]) end
-        table.insert(stacks, stack)
-        P.Gap(col, P.Bottom(col) - stackTop) -- back to the top for the next module
-        P.untracked, P.currentBlock = nil, nil
     end
-    -- packs the visible widgets of each stack from the top (called after every refresh);
-    -- the rows under the stacks (column 2 since 1.3) follow its lowest point
-    table.insert(relayouts, function()
-        local shift = P.FoldedAbove(col, stackTop)
-        local low = stackTop
-        for _, stack in ipairs(stacks) do
-            local y = stackTop
-            local left -- a half-width check waiting for a neighbour on its right: { y, h }
-            for _, w in ipairs(stack) do
-                if w:IsShown() then
-                    if w.pairable and left then
-                        P.Point(w, col, left.y + shift)
-                        local point, rel, relPoint, x, yy = w:GetPoint(1)
-                        w:SetPoint(point, rel, relPoint, x + COL_W + 20, yy)
-                        y = left.y - math.max(left.h, w.layoutHeight) - SPACING
-                        left = nil
-                    else
-                        P.Point(w, col, y + shift)
-                        left = w.pairable and { y = y, h = w.layoutHeight } or nil
-                        y = y - w.layoutHeight - SPACING
-                    end
-                end
-            end
-            low = math.min(low, y)
-        end
-        P.SetPacked(col, low + shift)
-    end)
     return hasOptions
 end
 
@@ -334,32 +266,43 @@ local function CreateStyleTargets(parent, getStyle)
     return Register(AsSetting(row, L.APPLY_STYLE_TO, L.TIP_APPLY_STYLE_TO, "button"))
 end
 
--- Builds the "Blocks" tab: the head (switch, selection), one page that scrolls, with
--- sections that fold, and the single-block actions at the bottom
+-- Builds the "Blocks" tab (1.5, as FlareUI's pages): the head (switch, selection, Replace,
+-- Place), three tabs (Content, Appearance, Behaviour) whose settings sit in boxes, and the
+-- single-block actions at the bottom
 local function BuildBlockPage(page)
     local single = function() return not IsGroup() end
     local isLauncher = function() return ns.IsLauncherKey(S.selected) end
+    local notSpacer = function() return not ns.IsSpacerKey(S.selected) end
 
-    -- shortcuts: a widget bound to a block field, with its help tooltip
-    local function Check(parent, label, field, tip)
+    -- shortcuts: a widget bound to a block field, with its help tooltip (the field: for Reset)
+    local function Check(parent, label, field, tip, isShown)
         local get, set = Field(field)
-        return CreateCheck(parent, label, get, set, nil, tip)
+        local w = CreateCheck(parent, label, get, set, isShown, tip)
+        w.field = field
+        return w
     end
     local function Slider(parent, label, minV, maxV, field, tip, isShown)
         local get, set = Field(field)
-        return CreateSlider(parent, label, minV, maxV, 1, get, set, isShown, tip)
+        local w = CreateSlider(parent, label, minV, maxV, 1, get, set, isShown, tip)
+        w.field = field
+        return w
     end
-    local function Dropdown(parent, label, options, field, tip)
+    local function Dropdown(parent, label, options, field, tip, isShown)
         local get, set = Field(field)
-        return CreateDropdown(parent, label, options, get, set, nil, nil, tip)
+        local w = CreateDropdown(parent, label, options, get, set, isShown, nil, tip)
+        w.field = field
+        return w
     end
     local function Color(parent, label, hasAlpha, field, tip)
         local get, set = ColorField(field)
-        return CreateColor(parent, label, hasAlpha, get, set, nil, tip)
+        local w = CreateColor(parent, label, hasAlpha, get, set, nil, tip)
+        w.field = field
+        return w
     end
+    local function IsOn(field) return function() local cfg = Cfg() return cfg and cfg[field] and true or false end end
 
-    -- Head, above the part that scrolls: the "On screen" switch, left of the block's
-    -- name (the selection list), then "Replace with..."
+    -- Head, above the tabs: the "On screen" switch, left of the block's name (the
+    -- selection list), then "Replace with..." and "Place by pixel"
     local top = NewLayout(page)
     local REPLACE_W, PLACE_W = 140, 140
     local getE, setE = Field("enabled")
@@ -393,26 +336,49 @@ local function BuildBlockPage(page)
             and not InCombatLockdown() and true or false)
     end
     ns.placeButton = place -- (tools/mock_run.lua)
-    top.Gap(1, 6)
+    top.Gap(1, 4)
 
-    -- One page that scrolls (1.3, in place of five sub-tabs): what matters first, then
-    -- the block's own settings; the rest in sections that fold (closed when the
-    -- window is built): its look, when to show it, this block (name, clicks, tooltip).
-    local bodyY = top.Bottom(1) - 4
-    local body = CreateFrame("Frame", nil, page)
-    body:SetPoint("TOPLEFT", page, "TOPLEFT", 0, bodyY)
-    body:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", 0, 56)
-    body.layoutBase = bodyY
-    body.pageIndex = page.pageIndex
-    local sub = ScrollArea(body)
-    local P = NewLayout(sub)
-    local notSpacer = function() return not ns.IsSpacerKey(S.selected) end
+    -- The tabs, then one page per tab that scrolls (only when it has to)
+    local names = { L.BLOCK_TAB_CONTENT, L.BLOCK_TAB_LOOK, L.BLOCK_TAB_BEHAVIOUR }
+    local tips = { L.TIP_BLOCK_TAB_CONTENT, L.TIP_BLOCK_TAB_LOOK, L.TIP_BLOCK_TAB_BEHAVIOUR }
+    local bodies, flows = {}, {}
+    local tabBar
+    local function ShowTab(i)
+        S.blockTab = i -- kept while the window is open: another block opens on the same tab
+        for n, body in ipairs(bodies) do body:SetShown(n == i) end
+        tabBar.Select(i)
+    end
+    tabBar = CreateTabs(page, names, tips, function(i)
+        ShowTab(i)
+        ns:RefreshOptions()
+    end)
+    tabBar:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1], top.Bottom(1))
+    local bodyY = top.Bottom(1) - 34
+    for i = 1, #names do
+        local body = CreateFrame("Frame", nil, page)
+        body:SetPoint("TOPLEFT", page, "TOPLEFT", 0, bodyY)
+        body:SetPoint("BOTTOMRIGHT", page, "BOTTOMRIGHT", 0, 56)
+        body.layoutBase = bodyY
+        body.pageIndex, body.subIndex = page.pageIndex, i
+        local sub = ScrollArea(body)
+        sub.tabName = names[i]
+        bodies[i], flows[i] = body, NewFlow(sub)
+    end
+    local C, A, B = flows[1], flows[2], flows[3]
+    local c, a, b = C.content, A.content, B.content
 
-    -- Column 1: what matters, then the block's own settings (the option stacks: last)
-    P.Place(CreateHeader(sub, L.SECTION_ESSENTIAL), 1)
-    P.Place(Check(sub, L.SHOW_LABEL, "showLabel", L.TIP_SHOW_LABEL), 1)
-    P.Place(Check(sub, L.SHOW_VALUE, "showValue", L.TIP_SHOW_VALUE), 1)
-    P.Place(Check(sub, L.SHOW_ICON, "showIcon", L.TIP_SHOW_ICON), 1)
+    -- 1. Content: what the block shows (its name, value, icon, style and its own settings),
+    -- then what its tooltip shows
+    local valueBox = C.Box(L.BOX_VALUE, { reset = true })
+    local named = function() return not IsGroup() and notSpacer() end
+    local getN = Field("customName")
+    valueBox.Add(CreateEditBox(c, L.CUSTOM_NAME, getN, function(v)
+        v = type(v) == "string" and strtrim(v) or ""
+        SetField("customName", v ~= "" and v or nil)
+    end, named, L.TIP_CUSTOM_NAME), { field = "customName" })
+    valueBox.Add(Check(c, L.SHOW_LABEL, "showLabel", L.TIP_SHOW_LABEL), { half = true })
+    valueBox.Add(Check(c, L.SHOW_VALUE, "showValue", L.TIP_SHOW_VALUE), { half = true })
+    valueBox.Add(Check(c, L.SHOW_ICON, "showIcon", L.TIP_SHOW_ICON), { half = true })
     -- style of this block, its group or every block: an action (written into their
     -- settings, Ctrl + Z undoes it); the window keeps the style of the Look tab
     local pickStyle
@@ -421,9 +387,9 @@ local function BuildBlockPage(page)
         for _, t in ipairs(ns:GetAvailableThemes()) do table.insert(list, { key = t.key, name = t.name }) end
         return list
     end
-    local styleDropdown = P.Place(CreateDropdown(sub, L.BLOCK_STYLE, StyleChoices,
+    local styleDropdown = valueBox.Add(CreateDropdown(c, L.BLOCK_STYLE, StyleChoices,
         function() return pickStyle or ns:GetTheme() end,
-        function(v) pickStyle = v end, nil, nil, L.TIP_BLOCK_STYLE), 1)
+        function(v) pickStyle = v end, nil, nil, L.TIP_BLOCK_STYLE))
     -- greyed on the "All blocks" page: the Look tab picks that style (see CreateStyleTargets)
     local styleRefresh = styleDropdown.Refresh
     styleDropdown.Refresh = function(self)
@@ -432,100 +398,72 @@ local function BuildBlockPage(page)
         self.dropdown:SetEnabled(not off)
         self:SetAlpha(off and 0.45 or 1)
     end
-    P.Place(CreateStyleTargets(sub, function() return pickStyle or ns:GetTheme() end), 1)
-    P.Place(CreateHeader(sub, L.SECTION_SIZE), 1)
-    P.Place(Check(sub, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP), 1)
-    local sizeNote = P.Place(CreateNote(sub, L.SIZE_GROUP_HINT), 1)
+    valueBox.Add(CreateStyleTargets(c, function() return pickStyle or ns:GetTheme() end))
+
+    local tipBox = C.Box(L.SECTION_TOOLTIP, { reset = true })
+    local showTip = tipBox.Add(Check(c, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP))
+    tipBox.Add(Dropdown(c, L.TOOLTIP_ANCHOR, {
+        { key = "auto", name = L.TOOLTIP_AUTO },
+        { key = "top", name = L.TOOLTIP_TOP },
+        { key = "bottom", name = L.TOOLTIP_BOTTOM },
+    }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR, notSpacer), { parent = IsOn("tooltip") })
+    ns.blockTooltipCheck = showTip -- (tools/mock_run.lua)
+
+    -- 2. Appearance: size, text, background, icon, border, separators, opacity and layer,
+    -- colors by level and progress bar
+    local sizeBox = A.Box(L.SECTION_SIZE, { reset = true })
+    sizeBox.Add(Check(a, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP))
+    -- a group selection shows the note in place of the sliders
+    local sizeNote = sizeBox.Add(CreateNote(a, L.SIZE_GROUP_HINT))
     sizeNote.isShown = IsGroup
-    -- a group selection shows the note in place of the sliders (same slot)
-    P.Gap(1, -(sizeNote.layoutHeight + SPACING))
-    P.Place(Slider(sub, L.WIDTH, 16, 600, "width", L.TIP_WIDTH, single), 1)
-    P.Place(Slider(sub, L.HEIGHT, 10, 100, "height", L.TIP_HEIGHT, single), 1)
-    P.Place(Slider(sub, L.ICON_SIZE, 0, 200, "iconSize", L.TIP_ICON_SIZE), 1)
+    sizeBox.Add(Slider(a, L.WIDTH, 16, 600, "width", L.TIP_WIDTH, single))
+    sizeBox.Add(Slider(a, L.HEIGHT, 10, 100, "height", L.TIP_HEIGHT, single))
+    sizeBox.Add(Slider(a, L.ICON_SIZE, 0, 200, "iconSize", L.TIP_ICON_SIZE))
     -- scale of the whole merged group the block belongs to (stored on its root)
-    P.Place(CreateSlider(sub, L.GROUP_SCALE, 50, 300, 5,
+    sizeBox.Add(CreateSlider(a, L.GROUP_SCALE, 50, 300, 5,
         function()
             local root = not IsGroup() and ns.db.blocks[ns:GetRoot(S.selected)]
             return math.floor(((root and root.scale) or 1) * 100 + 0.5)
         end,
         function(v) if not IsGroup() then ns:SetGroupScale(S.selected, v / 100) end end,
-        single, L.TIP_GROUP_SCALE), 1)
+        single, L.TIP_GROUP_SCALE))
 
-    -- its own settings: what the value looks like (gold format, clock...), a spacer's
-    -- type, text and line. A group selection gets a note: they belong to one block.
-    P.Place(CreateHeader(sub, L.SECTION_OWN), 1)
-    local pick = P.Place(CreateNote(sub, L.THIS_BLOCK_PICK), 1)
-    pick.isShown = IsGroup
-    local none = P.Place(CreateNote(sub, L.NO_BLOCK_OPTIONS), 1)
-    P.Gap(1, -(pick.layoutHeight + none.layoutHeight + 2 * SPACING))
-    local keys = { "spacer" }
-    for _, key in ipairs(ns.order) do table.insert(keys, key) end
-    -- (one stack per column: two would draw over each other)
-    local hasOptions = BuildModuleOptions(sub, P, 1, keys, nil, function() return true end)
-    none.isShown = function()
-        local key = SelectedModuleKey()
-        return not IsGroup() and not (key and hasOptions[key])
-    end
-
-    -- Column 2 (shown under column 1): the sections that fold
-    -- 1. The look of this block: display, text, background, icon, border, lines
-    local lookSection = P.Place(CreateSection(sub, L.SECTION_BLOCK_LOOK, true), 2)
-    P.Place(CreateHeader(sub, L.SECTION_DISPLAY), 2)
-    P.Place(Check(sub, L.COLORIZE, "colorize", L.TIP_COLORIZE), 2)
-    -- progress bar: only for blocks that have a progress (or a group selection)
-    local getP, setP = Field("progressBar")
-    P.Place(CreateCheck(sub, L.PROGRESS_BAR, getP, setP, function()
-        if IsGroup() then return true end
-        local mod = ns:GetModule(S.selected)
-        return mod and mod.progress ~= nil or false
-    end, L.TIP_PROGRESS_BAR), 2)
-    local getA, setA = Field("alpha")
-    P.Place(CreateSlider(sub, L.OPACITY, 10, 100, 5,
-        function() return math.floor((getA() or 1) * 100 + 0.5) end,
-        function(v) setA(v / 100) end, nil, L.TIP_OPACITY), 2)
-    P.Place(Dropdown(sub, L.STRATA, {
-        { key = "BACKGROUND", name = L.STRATA_BACKGROUND },
-        { key = "LOW", name = L.STRATA_LOW },
-        { key = "MEDIUM", name = L.STRATA_MEDIUM },
-        { key = "HIGH", name = L.STRATA_HIGH },
-    }, "strata", L.TIP_STRATA), 2)
-
-    P.Place(CreateHeader(sub, L.SECTION_TEXT), 2)
-    P.Place(Dropdown(sub, L.FONT, function() return ns:GetMediaList("font") end, "font", L.TIP_FONT), 2)
-    P.Place(Slider(sub, L.FONT_SIZE, 6, 32, "fontSize", L.TIP_FONT_SIZE), 2)
-    P.Place(Dropdown(sub, L.OUTLINE, {
+    local textBox = A.Box(L.SECTION_TEXT, { reset = true })
+    textBox.Add(Dropdown(a, L.FONT, function() return ns:GetMediaList("font") end, "font", L.TIP_FONT))
+    textBox.Add(Slider(a, L.FONT_SIZE, 6, 32, "fontSize", L.TIP_FONT_SIZE))
+    textBox.Add(Dropdown(a, L.OUTLINE, {
         { key = "NONE", name = L.OUTLINE_NONE },
         { key = "OUTLINE", name = L.OUTLINE_THIN },
         { key = "THICKOUTLINE", name = L.OUTLINE_THICK },
-    }, "outline", L.TIP_OUTLINE), 2)
-    P.Place(Check(sub, L.TEXT_SHADOW, "textShadow", L.TIP_TEXT_SHADOW), 2)
-    P.Place(Dropdown(sub, L.JUSTIFY, {
+    }, "outline", L.TIP_OUTLINE), { half = true })
+    textBox.Add(Dropdown(a, L.JUSTIFY, {
         { key = "LEFT", name = L.LEFT },
         { key = "CENTER", name = L.CENTER },
         { key = "RIGHT", name = L.RIGHT },
-    }, "justify", L.TIP_JUSTIFY), 2)
-    P.Place(Color(sub, L.TEXT_COLOR, false, "textColor", L.TIP_TEXT_COLOR), 2)
-    P.Place(Check(sub, L.CLASS_COLOR_TEXT, "classColorText", L.TIP_CLASS_COLOR_TEXT), 2)
+    }, "justify", L.TIP_JUSTIFY), { half = true })
+    textBox.Add(Color(a, L.TEXT_COLOR, false, "textColor", L.TIP_TEXT_COLOR))
+    textBox.Add(Check(a, L.CLASS_COLOR_TEXT, "classColorText", L.TIP_CLASS_COLOR_TEXT), { half = true })
+    textBox.Add(Check(a, L.TEXT_SHADOW, "textShadow", L.TIP_TEXT_SHADOW), { half = true })
 
-    P.Place(CreateHeader(sub, L.BACKGROUND), 2)
-    P.Place(Dropdown(sub, L.BACKGROUND, function() return ns:GetMediaList("background") end, "bg", L.TIP_BACKGROUND), 2)
-    P.Place(Color(sub, L.BG_COLOR, true, "bgColor", L.TIP_BG_COLOR), 2)
-    P.Place(Check(sub, L.CLASS_COLOR_BG, "classColorBg", L.TIP_CLASS_COLOR_BG), 2)
+    local bgBox = A.Box(L.BACKGROUND, { reset = true })
+    bgBox.Add(Dropdown(a, L.BACKGROUND, function() return ns:GetMediaList("background") end, "bg", L.TIP_BACKGROUND))
+    bgBox.Add(Color(a, L.BG_COLOR, true, "bgColor", L.TIP_BG_COLOR))
+    bgBox.Add(Check(a, L.CLASS_COLOR_BG, "classColorBg", L.TIP_CLASS_COLOR_BG))
 
-    -- the icon: same frame and colors for every block (e.g. with "All blocks"); its size is above
-    P.Place(CreateHeader(sub, L.SECTION_ICON), 2)
-    P.Place(Dropdown(sub, L.ICON_SHAPE, {
+    -- the icon: same frame and colors for every block (e.g. with "All blocks"); its size is in Size
+    local iconBox = A.Box(L.SECTION_ICON, { reset = true })
+    iconBox.Add(Dropdown(a, L.ICON_SHAPE, {
         { key = "none", name = L.ICON_SHAPE_NONE },
         { key = "square", name = L.ICON_SHAPE_SQUARE },
         { key = "round", name = L.ICON_SHAPE_ROUND },
-    }, "iconShape", L.TIP_ICON_SHAPE), 2)
-    P.Place(Color(sub, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR), 2)
-    P.Place(Check(sub, L.CLASS_COLOR_ICON, "classColorIcon", L.TIP_CLASS_COLOR_ICON), 2)
-    P.Place(Check(sub, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), 2)
+    }, "iconShape", L.TIP_ICON_SHAPE))
+    iconBox.Add(Color(a, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR))
+    iconBox.Add(Check(a, L.CLASS_COLOR_ICON, "classColorIcon", L.TIP_CLASS_COLOR_ICON), { half = true })
+    iconBox.Add(Check(a, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), { half = true })
 
-    P.Place(CreateHeader(sub, L.BORDER), 2)
+    local borderBox = A.Box(L.BORDER, { reset = true })
     -- picking a border also restores its original thickness
-    P.Place(CreateDropdown(sub, L.BORDER, function() return ns:GetMediaList("border") end,
+    local border = CreateDropdown(a, L.BORDER, function() return ns:GetMediaList("border") end,
         function()
             local cfg = Cfg()
             return cfg and cfg.border
@@ -536,8 +474,9 @@ local function BuildBlockPage(page)
             local size = media and media.size
             if size then SetField("borderSize", size) end
             ns:RefreshOptions()
-        end, nil, nil, L.TIP_BORDER), 2)
-    P.Place(Slider(sub, L.BORDER_SIZE, 1, 32, "borderSize", L.TIP_BORDER_SIZE), 2)
+        end, nil, nil, L.TIP_BORDER)
+    borderBox.Add(border, { field = "border" })
+    borderBox.Add(Slider(a, L.BORDER_SIZE, 1, 32, "borderSize", L.TIP_BORDER_SIZE))
 
     -- Corner join: belongs to the border (not the block), with a reset to the original value
     local function CurrentBorder()
@@ -545,27 +484,28 @@ local function BuildBlockPage(page)
         return cfg and cfg.border
     end
     local function HasCorners()
-        local b = CurrentBorder()
-        return b and b ~= "none" and b ~= "solid"
+        local bd = CurrentBorder()
+        return bd and bd ~= "none" and bd ~= "solid"
     end
-    local corner = CreateSlider(sub, L.CORNER_JOIN, 0, 100, 1,
+    local corner = CreateSlider(a, L.CORNER_JOIN, 0, 100, 1,
         function()
-            local b = CurrentBorder()
-            return b and math.floor(ns:GetBorderReach(b) * 100 + 0.5) or 0
+            local bd = CurrentBorder()
+            return bd and math.floor(ns:GetBorderReach(bd) * 100 + 0.5) or 0
         end,
         function(v)
-            local b = CurrentBorder()
-            if b then ns:SetBorderReach(b, v / 100) end
+            local bd = CurrentBorder()
+            if bd then ns:SetBorderReach(bd, v / 100) end
         end, HasCorners, L.TIP_CORNER_JOIN)
     local default = CreateFrame("Button", nil, corner, "UIPanelButtonTemplate")
     default:SetSize(64, 18)
     default:SetPoint("RIGHT", corner.slider, "LEFT", -8, 0) -- between the label and the slider
-    corner.label:SetWidth(ROW_LABEL_W - 80)
+    corner.labelW = ROW_LABEL_W - 80
+    corner.label:SetWidth(corner.labelW)
     default:SetText(L.DEFAULT_SHORT)
     default:SetScript("OnClick", function()
-        local b = CurrentBorder()
-        if b then
-            ns:SetBorderReach(b, nil)
+        local bd = CurrentBorder()
+        if bd then
+            ns:SetBorderReach(bd, nil)
             ns:RefreshOptions()
         end
     end)
@@ -573,57 +513,63 @@ local function BuildBlockPage(page)
     local refreshCorner = corner.Refresh
     corner.Refresh = function(self)
         refreshCorner(self)
-        local b = CurrentBorder()
-        default:SetEnabled(b ~= nil and ns:HasCustomBorderReach(b))
+        local bd = CurrentBorder()
+        default:SetEnabled(bd ~= nil and ns:HasCustomBorderReach(bd))
     end
-    P.Place(corner, 2)
-    P.Place(Color(sub, L.BORDER_COLOR, true, "borderColor", L.TIP_BORDER_COLOR), 2)
-    P.Place(Check(sub, L.CLASS_COLOR_BORDER, "classColorBorder", L.TIP_CLASS_COLOR_BORDER), 2)
-    -- thin lines between merged blocks
-    P.Place(CreateHeader(sub, L.SECTION_SEPARATORS), 2)
-    P.Place(Check(sub, L.SEPARATORS, "separators", L.TIP_SEPARATORS), 2)
-    P.Place(Color(sub, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), 2)
-    P.Place(Check(sub, L.CLASS_COLOR_SEPARATOR, "classColorSeparator", L.TIP_CLASS_COLOR_SEPARATOR), 2)
+    borderBox.Add(corner)
+    borderBox.Add(Color(a, L.BORDER_COLOR, true, "borderColor", L.TIP_BORDER_COLOR))
+    borderBox.Add(Check(a, L.CLASS_COLOR_BORDER, "classColorBorder", L.TIP_CLASS_COLOR_BORDER))
 
-    -- 2. When to show it: hidden in some places, hover fade
-    local whenSection = P.Place(CreateSection(sub, L.SECTION_WHEN, true), 2)
-    P.Place(Check(sub, L.HIDE_COMBAT, "hideInCombat", L.TIP_HIDE_COMBAT), 2)
-    P.Place(Check(sub, L.HIDE_INSTANCE, "hideInInstance", L.TIP_HIDE_INSTANCE), 2)
-    P.Place(Check(sub, L.HIDE_VEHICLE, "hideInVehicle", L.TIP_HIDE_VEHICLE), 2)
-    P.Place(Check(sub, L.HIDE_RESTING, "hideWhenResting", L.TIP_HIDE_RESTING), 2)
-    P.Place(CreateHeader(sub, L.SECTION_FADE), 2)
+    -- thin lines between merged blocks: their color only matters when they are on
+    local sepBox = A.Box(L.SECTION_SEPARATORS, { reset = true })
+    sepBox.Add(Check(a, L.SEPARATORS, "separators", L.TIP_SEPARATORS))
+    sepBox.Add(Color(a, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), { parent = IsOn("separators") })
+    sepBox.Add(Check(a, L.CLASS_COLOR_SEPARATOR, "classColorSeparator", L.TIP_CLASS_COLOR_SEPARATOR),
+        { parent = IsOn("separators") })
+
+    local layerBox = A.Box(L.BOX_OPACITY_LAYER, { reset = true })
+    local getA, setA = Field("alpha")
+    layerBox.Add(CreateSlider(a, L.OPACITY, 10, 100, 5,
+        function() return math.floor((getA() or 1) * 100 + 0.5) end,
+        function(v) setA(v / 100) end, nil, L.TIP_OPACITY), { field = "alpha" })
+    layerBox.Add(Dropdown(a, L.STRATA, {
+        { key = "BACKGROUND", name = L.STRATA_BACKGROUND },
+        { key = "LOW", name = L.STRATA_LOW },
+        { key = "MEDIUM", name = L.STRATA_MEDIUM },
+        { key = "HIGH", name = L.STRATA_HIGH },
+    }, "strata", L.TIP_STRATA))
+
+    -- colors by level (green, yellow, red) and the progress bar, only for blocks that have a
+    -- progress (or a group selection)
+    local levelBox = A.Box(L.BOX_LEVELS, { reset = true })
+    levelBox.Add(Check(a, L.COLORIZE, "colorize", L.TIP_COLORIZE), { half = true })
+    levelBox.Add(Check(a, L.PROGRESS_BAR, "progressBar", L.TIP_PROGRESS_BAR, function()
+        if IsGroup() then return true end
+        local mod = ns:GetModule(S.selected)
+        return mod and mod.progress ~= nil or false
+    end), { half = true })
+
+    -- 3. Behaviour: when to show it, hover fade, clicks, alerts and thresholds
+    local whenBox = B.Box(L.SECTION_WHEN, { reset = true })
+    whenBox.Add(Check(b, L.HIDE_COMBAT, "hideInCombat", L.TIP_HIDE_COMBAT), { half = true })
+    whenBox.Add(Check(b, L.HIDE_INSTANCE, "hideInInstance", L.TIP_HIDE_INSTANCE), { half = true })
+    whenBox.Add(Check(b, L.HIDE_VEHICLE, "hideInVehicle", L.TIP_HIDE_VEHICLE), { half = true })
+    whenBox.Add(Check(b, L.HIDE_RESTING, "hideWhenResting", L.TIP_HIDE_RESTING), { half = true })
+
+    local fadeBox = B.Box(L.SECTION_FADE, { reset = true })
     local getF, setF = Field("fadeOut")
-    P.Place(CreateCheck(sub, L.FADE_OUT, getF, function(v)
+    fadeBox.Add(CreateCheck(b, L.FADE_OUT, getF, function(v)
         setF(v)
         ns:RefreshOptions()
-    end, nil, L.TIP_FADE_OUT), 2)
-    local fading = function() local cfg = Cfg() return cfg and cfg.fadeOut or false end
+    end, nil, L.TIP_FADE_OUT), { field = "fadeOut" })
     local getFA, setFA = Field("fadeAlpha")
-    P.Place(CreateSlider(sub, L.FADE_ALPHA, 0, 90, 5,
+    fadeBox.Add(CreateSlider(b, L.FADE_ALPHA, 0, 90, 5,
         function() return math.floor((getFA() or 0) * 100 + 0.5) end,
-        function(v) setFA(v / 100) end, fading, L.TIP_FADE_ALPHA), 2)
-    local getFC, setFC = Field("fadeShowCombat")
-    P.Place(CreateCheck(sub, L.FADE_COMBAT, getFC, setFC, fading, L.TIP_FADE_COMBAT), 2)
+        function(v) setFA(v / 100) end, nil, L.TIP_FADE_ALPHA), { field = "fadeAlpha", parent = IsOn("fadeOut") })
+    fadeBox.Add(Check(b, L.FADE_COMBAT, "fadeShowCombat", L.TIP_FADE_COMBAT), { parent = IsOn("fadeOut") })
 
-    -- 3. This block: its name, its tooltip, its alert, its clicks and its pinned tooltip
-    local thisSection = P.Place(CreateSection(sub, L.SECTION_THIS_BLOCK, true), 2)
-    local named = function() return not IsGroup() and notSpacer() end
-    local getN = Field("customName")
-    P.Place(CreateEditBox(sub, L.CUSTOM_NAME, getN, function(v)
-        v = type(v) == "string" and strtrim(v) or ""
-        SetField("customName", v ~= "" and v or nil)
-    end, named, L.TIP_CUSTOM_NAME), 2)
-    P.Place(Check(sub, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP), 2)
-    P.Place(Dropdown(sub, L.TOOLTIP_ANCHOR, {
-        { key = "auto", name = L.TOOLTIP_AUTO },
-        { key = "top", name = L.TOOLTIP_TOP },
-        { key = "bottom", name = L.TOOLTIP_BOTTOM },
-    }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR), 2).isShown = notSpacer
-    P.Place(Check(sub, L.ALERT, "alert", L.TIP_ALERT), 2).isShown = notSpacer
-    local clicksHeader = P.Place(CreateHeader(sub, L.SECTION_CLICKS), 2)
+    local clicksBox = B.Box(L.SECTION_CLICKS, { reset = true })
     local clickShown = function() return not ns.IsForwardingKey(S.selected) and notSpacer() end
-    local getS, setS = Field("shiftClick")
-    local getM, setM = Field("middleClick")
     local function Actions(withOpen)
         local list = {}
         if withOpen then table.insert(list, { key = "open", name = L.ACTION_OPEN }) end
@@ -632,53 +578,65 @@ local function BuildBlockPage(page)
         if mod and mod.extraAction then
             table.insert(list, { key = mod.extraAction.key, name = L[mod.extraAction.label] })
         end
-        for _, a in ipairs({ { "none", L.ACTION_NONE }, { "chat", L.ACTION_CHAT },
-                             { "options", L.ACTION_OPTIONS }, { "hide", L.ACTION_HIDE },
-                             { "pin", L.ACTION_PIN } }) do
-            table.insert(list, { key = a[1], name = a[2] })
+        for _, act in ipairs({ { "none", L.ACTION_NONE }, { "chat", L.ACTION_CHAT },
+                               { "options", L.ACTION_OPTIONS }, { "hide", L.ACTION_HIDE },
+                               { "pin", L.ACTION_PIN } }) do
+            table.insert(list, { key = act[1], name = act[2] })
         end
         return list
     end
-    P.Place(CreateDropdown(sub, L.SHIFT_CLICK, function() return Actions(false) end, getS, setS,
-        clickShown, nil, L.TIP_SHIFT_CLICK), 2)
-    P.Place(CreateDropdown(sub, L.MIDDLE_CLICK, function() return Actions(true) end, getM, function(v)
+    local getS, setS = Field("shiftClick")
+    local getM, setM = Field("middleClick")
+    clicksBox.Add(CreateDropdown(b, L.SHIFT_CLICK, function() return Actions(false) end, getS, setS,
+        clickShown, nil, L.TIP_SHIFT_CLICK), { field = "shiftClick" })
+    clicksBox.Add(CreateDropdown(b, L.MIDDLE_CLICK, function() return Actions(true) end, getM, function(v)
         setM(v)
         ns:RequestOverlaySync() -- the secure button listens to middle clicks only for "open"
-    end, clickShown, nil, L.TIP_MIDDLE_CLICK), 2)
-    local pin = P.Place(CreateButton(sub, L.MENU_PIN, function()
+    end, clickShown, nil, L.TIP_MIDDLE_CLICK), { field = "middleClick" })
+
+    local alertBox = B.Box(L.BOX_ALERTS, { reset = true })
+    alertBox.Add(Check(b, L.ALERT, "alert", L.TIP_ALERT, notSpacer))
+
+    -- the block's own settings: what the value looks like (gold format, clock...), a spacer's
+    -- type, text and line, what its tooltip shows, "Hide when empty", its thresholds
+    local keys = { "spacer" }
+    for _, key in ipairs(ns.order) do table.insert(keys, key) end
+    BuildModuleOptions(keys, function(opt)
+        if opt.where == "when" then return whenBox end
+        if opt.where == "alerts" then return alertBox end
+        if opt.section == "tooltip" then return tipBox end
+        return valueBox
+    end)
+    -- a group selection: its own settings belong to one block
+    local pick = valueBox.Add(CreateNote(c, L.THIS_BLOCK_PICK))
+    pick.isShown = IsGroup
+    -- a pinned tooltip stays on the screen (last in the Tooltip box)
+    local pin = tipBox.Add(CreateButton(c, L.MENU_PIN, function()
         ns:TogglePin(S.selected)
         ns:RefreshOptions()
     end, function() return named() and ns.CanPinTooltip and ns.CanPinTooltip(S.selected) or false end,
-        COL_W - 8, L.TIP_PIN_BUTTON), 2)
-    -- the header only when a click setting or the pin button is under it
-    -- (a DataBroker block keeps its own clicks)
-    clicksHeader.isShown = function() return clickShown() or pin.isShown() end
+        COL_W - 8, L.TIP_PIN_BUTTON))
     pin.Refresh = function(self)
         self:SetText(ns.IsPinned and ns:IsPinned(S.selected) and L.MENU_UNPIN or L.MENU_PIN)
     end
 
-    -- Opens a part of the page (the old sub-tabs, still used by other pages and the tour):
-    -- 1 and 5 the top (what matters, its own settings), 2 and 3 its look, 4 when to
-    -- show it, 6 this block. The section unfolds and the page scrolls to it.
-    local SUB_SECTION = { [2] = lookSection, [3] = lookSection, [4] = whenSection, [6] = thisSection }
+    -- Opens a tab (the old sub-tabs, still used by the Look tab, the tour and the search):
+    -- 1, 5 and 6 Content, 2 and 3 Appearance (at Text and at Background), 4 Behaviour
+    local SUB_TAB = { 1, 2, 2, 3, 1, 1 }
+    local SUB_BOX = { [2] = textBox, [3] = bgBox }
     local function ShowSub(index)
-        local section = SUB_SECTION[index]
-        if section then section.folded = false end
+        local tab = SUB_TAB[index] or 1
+        ShowTab(tab)
         ns:RefreshOptions()
-        C_Timer.After(0, function()
-            local scroll = sub.scroll
-            if not (scroll and scroll.SetVerticalScroll) then return end
-            local y = 0
-            if section and section:IsShown() then
-                local top0, at = sub:GetTop(), section:GetTop()
-                if top0 and at then y = top0 - at end
-            end
-            local range = scroll.GetVerticalScrollRange and scroll:GetVerticalScrollRange() or 0
-            scroll:SetVerticalScroll(math.max(0, math.min(range, y)))
-        end)
+        ScrollToBox(flows[tab].content, SUB_BOX[index])
     end
     ns.ShowBlockSub = ShowSub
-    ns.blockSections = { lookSection, whenSection, thisSection }
+    ns.ShowBlockTab = function(i)
+        ShowTab(i)
+        ns:RefreshOptions()
+    end
+    ns.blockTabs = { bar = tabBar, flows = flows } -- (tools/mock_run.lua)
+    ShowTab(S.blockTab or 1)
 
     -- Single-block actions, at the bottom (four slots; "Copy to group" only for a
     -- block in a group, the fourth button takes its slot otherwise)
@@ -721,16 +679,16 @@ local function BuildBlockPage(page)
     local addSpacer = CreateButton(page, L.ADD_SPACER, function()
         S.selected = ns:AddSpacer()
         ns:PlaceNearOptions(S.selected)
-        ShowSub(5) -- the spacer's settings (type, text, line): its own settings, at the top
+        ShowSub(5) -- the spacer's settings (type, text, line): its own settings, in Content
         if ns.db.locked then ns:SetLocked(false) end
         ns:RefreshOptions()
     end, function() return not ns.IsForwardingKey(S.selected) and not isSpacer() end, bw, L.TIP_ADD_SPACER)
     table.insert(lastSlot, addSpacer)
     copyGroup.Refresh = function(self)
         local after = self:IsShown() and self or copy
-        for _, b in ipairs(lastSlot) do
-            b:ClearAllPoints()
-            b:SetPoint("LEFT", after, "RIGHT", 12, 0)
+        for _, btn in ipairs(lastSlot) do
+            btn:ClearAllPoints()
+            btn:SetPoint("LEFT", after, "RIGHT", 12, 0)
         end
     end
     copyGroup:Refresh()

@@ -13,7 +13,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 - DataBroker both ways: your Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 - Streamer mode hides other players' names, your other characters, your guild and your gold.
 - Accessibility: high contrast, fewer animations, a minimum text size and six reading fonts.
-- An options window with a search and a help panel for each setting. English, French, German, Spanish and Brazilian Portuguese.
+- An options window with a search and a help panel for each setting. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
 - Your layouts and profiles carry over between versions.
 
 Type **/tessera** for the options, or **/tessera demo** to see every block at once. The [README on GitHub](https://github.com/Brainc3ll/Tessera#readme) lists every block, command and setting.
@@ -41,7 +41,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - DataBroker dans les deux sens : les plugins Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (ex-ChocolateBar).
 - Le mode streamer cache les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
 - Accessibilité : contraste élevé, moins d'animations, taille de texte minimale et six polices de lecture.
-- Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Anglais, français, allemand, espagnol et portugais du Brésil.
+- Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.
 - Tes dispositions et tes profils passent d'une version à l'autre.
 
 Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup. Le [README sur GitHub](https://github.com/Brainc3ll/Tessera#readme) liste chaque bloc, commande et réglage.

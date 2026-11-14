@@ -5,88 +5,86 @@ local L = ns.L
 -- Shared with the other Options*.lua files through ns.OptionsTools (see Options.lua).
 local Tools = ns.OptionsTools
 local S = Tools.S
-local AttachTip, BuildModuleOptions, COL_W, COL_X = Tools.AttachTip, Tools.BuildModuleOptions, Tools.COL_W, Tools.COL_X
-local CreateActionDropdown, CreateButton, CreateCheck = Tools.CreateActionDropdown, Tools.CreateButton, Tools.CreateCheck
-local CreateDropdown, CreateEditBox, CreateHeader, CreateNote = Tools.CreateDropdown, Tools.CreateEditBox, Tools.CreateHeader, Tools.CreateNote
-local CreateSlider, FULL_W, Field, FitButtonText = Tools.CreateSlider, Tools.FULL_W, Tools.Field, Tools.FitButtonText
-local LAUNCHERS, LauncherKeys, NewLayout, Register = Tools.LAUNCHERS, Tools.LauncherKeys, Tools.NewLayout, Tools.Register
-local SPACING, ScrollArea, SelectedModuleKey, SortKey = Tools.SPACING, Tools.ScrollArea, Tools.SelectedModuleKey, Tools.SortKey
+local AttachTip, BOX_INNER_W, BuildModuleOptions, COL_W = Tools.AttachTip, Tools.BOX_INNER_W, Tools.BuildModuleOptions, Tools.COL_W
+local COL_X, CreateActionDropdown, CreateButton, CreateCheck = Tools.COL_X, Tools.CreateActionDropdown, Tools.CreateButton, Tools.CreateCheck
+local CreateDropdown, CreateEditBox, CreateNote, CreateSlider = Tools.CreateDropdown, Tools.CreateEditBox, Tools.CreateNote, Tools.CreateSlider
+local CreateTabs, Field, LAUNCHERS, LauncherKeys = Tools.CreateTabs, Tools.Field, Tools.LAUNCHERS, Tools.LauncherKeys
+local NewFlow, Register, ScrollArea, SelectedModuleKey = Tools.NewFlow, Tools.Register, Tools.ScrollArea, Tools.SelectedModuleKey
+local SortKey = Tools.SortKey
 
 
 ---------------------------------------------------------------------------
 -- "General" tab
 ---------------------------------------------------------------------------
 -- Builds the "General" tab: global settings shared by all blocks
+-- (defaults: what Reset puts back, the values of a new profile, Core.lua PROFILE_DEFAULTS)
 local function BuildGeneralPage(page)
     page = ScrollArea(page, 16)
-    local P = NewLayout(page)
-    local function Place(w, col) return P.Place(w, col) end
+    local F = NewFlow(page)
+    local D = ns.PROFILE_DEFAULTS
 
-    -- Left column: moving
-    Place(CreateHeader(page, L.SECTION_MOVE), 1)
-    Place(CreateCheck(page, L.LOCKED,
+    local move = F.Box(L.SECTION_MOVE, { reset = true })
+    move.Add(CreateCheck(page, L.LOCKED,
         function() return ns.db.locked end,
-        function(v) ns:SetLocked(v) end, nil, L.TIP_LOCKED), 1)
-    Place(CreateCheck(page, L.SNAP,
+        function(v) ns:SetLocked(v) end, nil, L.TIP_LOCKED), { half = true, default = D.locked })
+    move.Add(CreateCheck(page, L.SNAP,
         function() return ns.db.snap end,
-        function(v) ns.db.snap = v end, nil, L.TIP_SNAP), 1)
-    Place(CreateCheck(page, L.SNAP_BLIZZARD,
+        function(v) ns.db.snap = v end, nil, L.TIP_SNAP), { half = true, default = D.snap })
+    move.Add(CreateCheck(page, L.SNAP_BLIZZARD,
         function() return ns.db.snapBlizzard end,
-        function(v) ns.db.snapBlizzard = v end, nil, L.TIP_SNAP_BLIZZARD), 1)
-    Place(CreateCheck(page, L.EDIT_MODE_SYNC,
+        function(v) ns.db.snapBlizzard = v end, nil, L.TIP_SNAP_BLIZZARD), { half = true, default = D.snapBlizzard })
+    move.Add(CreateCheck(page, L.EDIT_MODE_SYNC,
         function() return ns.db.editModeSync ~= false end,
-        function(v) ns.db.editModeSync = v end, nil, L.TIP_EDIT_MODE_SYNC), 1)
-    Place(CreateDropdown(page, L.GRID, {
+        function(v) ns.db.editModeSync = v end, nil, L.TIP_EDIT_MODE_SYNC), { half = true, default = D.editModeSync })
+    move.Add(CreateDropdown(page, L.GRID, {
         { key = 0, name = L.GRID_OFF },
         { key = 8, name = "8 px" },
         { key = 16, name = "16 px" },
         { key = 32, name = "32 px" },
     }, function() return ns.db.grid or 0 end,
-       function(v) ns.db.grid = v; ns:UpdateGrid() end, nil, nil, L.TIP_GRID), 1)
-    Place(CreateButton(page, L.RECOVER_BUTTON, function() ns:RecoverBlocksCommand() end,
-        nil, nil, L.TIP_RECOVER), 1)
+       function(v) ns.db.grid = v; ns:UpdateGrid() end, nil, nil, L.TIP_GRID), { half = true, default = D.grid })
+    move.Add(CreateButton(page, L.RECOVER_BUTTON, function() ns:RecoverBlocksCommand() end,
+        nil, nil, L.TIP_RECOVER), { half = true })
 
-    -- Left column: tooltips of the blocks
-    P.Gap(1, 8)
-    Place(CreateHeader(page, L.SECTION_TOOLTIPS), 1)
-    Place(CreateCheck(page, L.TOOLTIP_HINTS,
+    -- tooltips of the blocks
+    local tooltips = F.Box(L.SECTION_TOOLTIPS, { reset = true })
+    tooltips.Add(CreateCheck(page, L.TOOLTIP_HINTS,
         function() return ns.db.tooltipHints ~= false end,
-        function(v) ns.db.tooltipHints = v end, nil, L.TIP_TOOLTIP_HINTS), 1)
-    Place(CreateCheck(page, L.TOOLTIP_IN_COMBAT,
+        function(v) ns.db.tooltipHints = v end, nil, L.TIP_TOOLTIP_HINTS), { half = true, default = D.tooltipHints })
+    tooltips.Add(CreateCheck(page, L.TOOLTIP_IN_COMBAT,
         function() return ns.db.tooltipInCombat end,
-        function(v) ns.db.tooltipInCombat = v end, nil, L.TOOLTIP_IN_COMBAT_TIP), 1)
-    Place(CreateCheck(page, L.TOOLTIP_ALT_ONLY,
+        function(v) ns.db.tooltipInCombat = v end, nil, L.TOOLTIP_IN_COMBAT_TIP),
+        { half = true, default = D.tooltipInCombat })
+    tooltips.Add(CreateCheck(page, L.TOOLTIP_ALT_ONLY,
         function() return ns.db.tooltipAltOnly end,
-        function(v) ns.db.tooltipAltOnly = v or false end, nil, L.TIP_TOOLTIP_ALT_ONLY), 1)
-    Place(CreateSlider(page, L.TOOLTIP_SCALE, 50, 150, 5,
+        function(v) ns.db.tooltipAltOnly = v or false end, nil, L.TIP_TOOLTIP_ALT_ONLY),
+        { half = true, default = D.tooltipAltOnly })
+    tooltips.Add(CreateSlider(page, L.TOOLTIP_SCALE, 50, 150, 5,
         function() return math.floor((ns.db.tooltipScale or 1) * 100 + 0.5) end,
-        function(v) ns.db.tooltipScale = v / 100 end, nil, L.TIP_TOOLTIP_SCALE), 1)
+        function(v) ns.db.tooltipScale = v / 100 end, nil, L.TIP_TOOLTIP_SCALE), { default = D.tooltipScale * 100 })
 
-    P.Gap(1, 8)
-    Place(CreateHeader(page, L.SECTION_STREAMER), 1)
-    Place(CreateCheck(page, L.STREAMER_MODE,
+    local streamer = F.Box(L.SECTION_STREAMER)
+    streamer.Add(CreateCheck(page, L.STREAMER_MODE,
         function() return ns:IsStreamer() end,
-        function(v) ns:SetStreamerMode(v) end, nil, L.TIP_STREAMER_MODE), 1)
-    Place(CreateNote(page, L.STREAMER_NOTE), 1)
+        function(v) ns:SetStreamerMode(v) end, nil, L.TIP_STREAMER_MODE))
+    streamer.Add(CreateNote(page, L.STREAMER_NOTE))
 
-    -- Right column: combat
-    Place(CreateHeader(page, L.SECTION_COMBAT), 2)
-    Place(CreateCheck(page, L.LOCK_IN_COMBAT,
+    local combat = F.Box(L.SECTION_COMBAT, { reset = true })
+    combat.Add(CreateCheck(page, L.LOCK_IN_COMBAT,
         function() return ns.db.lockInCombat end,
-        function(v) ns.db.lockInCombat = v; ns:RefreshLockState() end, nil, L.LOCK_IN_COMBAT_TIP), 2)
-    Place(CreateNote(page, L.COMBAT_HINT), 2)
+        function(v) ns.db.lockInCombat = v; ns:RefreshLockState() end, nil, L.LOCK_IN_COMBAT_TIP),
+        { default = D.lockInCombat })
+    combat.Add(CreateNote(page, L.COMBAT_HINT))
 
-    P.Gap(2, 8)
-    Place(CreateHeader(page, L.SECTION_CHAT), 2)
-    Place(CreateCheck(page, L.QUIET,
+    local chat = F.Box(L.SECTION_CHAT, { reset = true })
+    chat.Add(CreateCheck(page, L.QUIET,
         function() return ns.sv.quiet end,
-        function(v) ns.sv.quiet = v or nil end, nil, L.TIP_QUIET), 2)
+        function(v) ns.sv.quiet = v or nil end, nil, L.TIP_QUIET), { default = false })
 
-    P.Gap(2, 8)
-    Place(CreateHeader(page, L.SECTION_MINIMAP), 2)
-    Place(CreateCheck(page, L.SHOW_MINIMAP_BUTTON,
+    local minimap = F.Box(L.SECTION_MINIMAP, { reset = true })
+    minimap.Add(CreateCheck(page, L.SHOW_MINIMAP_BUTTON,
         function() return not ns.sv.hideMinimapButton end,
-        function(v) ns:SetMinimapButtonShown(v) end, nil, L.TIP_MINIMAP_BUTTON), 2)
+        function(v) ns:SetMinimapButtonShown(v) end, nil, L.TIP_MINIMAP_BUTTON), { default = true })
 end
 
 ---------------------------------------------------------------------------
@@ -96,14 +94,13 @@ end
 ---------------------------------------------------------------------------
 local function BuildAccessPage(page)
     page = ScrollArea(page, 16)
-    local P = NewLayout(page)
-    local function Place(w, col) return P.Place(w, col) end
+    local F = NewFlow(page)
 
-    Place(CreateNote(page, L.ACCESS_GAME_NOTE), 1)
+    F.Box(nil).Add(CreateNote(page, L.ACCESS_GAME_NOTE))
     -- colors and motion
-    Place(CreateHeader(page, L.SECTION_ACCESS_SEE), 1)
+    local see = F.Box(L.SECTION_ACCESS_SEE, { reset = true })
     -- threshold colors: automatic (soft with a FlareUI style), bright, soft, colorblind
-    Place(CreateDropdown(page, L.LEVEL_PALETTE, {
+    see.Add(CreateDropdown(page, L.LEVEL_PALETTE, {
             { key = "auto", name = L.LEVEL_PALETTE_AUTO },
             { key = "bright", name = L.LEVEL_PALETTE_BRIGHT },
             { key = "soft", name = L.LEVEL_PALETTE_SOFT },
@@ -115,31 +112,32 @@ local function BuildAccessPage(page)
             ns:ApplyLevelPalette()
             ns:RefreshAllBlocks() -- the class colors of frames and lines too
             ns:UpdateAll()
-        end, nil, nil, L.TIP_LEVEL_PALETTE), 1)
-    Place(CreateCheck(page, L.HIGH_CONTRAST,
+        end, nil, nil, L.TIP_LEVEL_PALETTE), { default = "auto" })
+    see.Add(CreateCheck(page, L.HIGH_CONTRAST,
         function() return ns.sv.highContrast end,
         function(v)
             ns.sv.highContrast = v or nil
             ns:RefreshAllBlocks()
-        end, nil, L.TIP_HIGH_CONTRAST), 1)
+            ns:RepaintAccents() -- the boxes of this window are darker too
+        end, nil, L.TIP_HIGH_CONTRAST), { half = true, default = false })
     -- no fade, no flash, no pulse: blocks and windows change at once
-    Place(CreateCheck(page, L.REDUCE_MOTION,
+    see.Add(CreateCheck(page, L.REDUCE_MOTION,
         function() return ns.sv.reduceMotion end,
         function(v)
             ns.sv.reduceMotion = v or nil
             if ns.UpdateFades then ns:UpdateFades() end
-        end, nil, L.TIP_REDUCE_MOTION), 1)
+        end, nil, L.TIP_REDUCE_MOTION), { half = true, default = false })
 
     -- text sizes
-    Place(CreateHeader(page, L.SECTION_ACCESS_TEXT), 1)
-    Place(CreateSlider(page, L.MIN_FONT_SIZE, 0, 24, 1,
+    local text = F.Box(L.SECTION_ACCESS_TEXT, { reset = true })
+    text.Add(CreateSlider(page, L.MIN_FONT_SIZE, 0, 24, 1,
         function() return ns.sv.minFontSize or 0 end,
         function(v)
             ns.sv.minFontSize = v > 0 and v or nil
             ns:RefreshAllBlocks()
-        end, nil, L.TIP_MIN_FONT_SIZE), 1)
+        end, nil, L.TIP_MIN_FONT_SIZE), { default = 0 })
     -- the font of all blocks: the same setting as "Font" under "All blocks" in the Blocks tab
-    Place(CreateDropdown(page, L.FONT, function()
+    text.Add(CreateDropdown(page, L.FONT, function()
             local list = {}
             if not ns:AllBlocksFont() then table.insert(list, { key = "mixed", name = L.FONT_MIXED }) end
             for _, item in ipairs(ns:GetMediaList("font")) do table.insert(list, item) end
@@ -149,7 +147,7 @@ local function BuildAccessPage(page)
         function() return ns:AllBlocksFont() or "mixed" end,
         function(v)
             if v ~= "mixed" then ns:SetAllBlocksFont(v) end
-        end, nil, nil, L.TIP_FONT_ACCESS), 1)
+        end, nil, nil, L.TIP_FONT_ACCESS))
 end
 
 ---------------------------------------------------------------------------
@@ -158,13 +156,10 @@ end
 -- Builds the "Launchers" tab; showBlockPage switches to the Blocks tab after a choice
 local function BuildLaunchersPage(page, showBlockPage)
     page = ScrollArea(page, 16)
-    local P = NewLayout(page)
-    local function Place(w, col) return P.Place(w, col) end
+    local box = NewFlow(page).Box(L.LAUNCHERS)
+    box.Add(CreateNote(page, L.LAUNCHERS_HINT))
 
-    Place(CreateHeader(page, L.LAUNCHERS), 1)
-    Place(CreateNote(page, L.LAUNCHERS_HINT, FULL_W), 1)
-
-    Place(CreateActionDropdown(page, L.ADD_LAUNCHER, function()
+    box.Add(CreateActionDropdown(page, L.ADD_LAUNCHER, function()
         local entries = {}
         for _, source in ipairs(ns:GetLauncherSources()) do
             if not ns.db.blocks[source.key] then
@@ -180,9 +175,9 @@ local function BuildLaunchersPage(page, showBlockPage)
             end
         end
         return entries
-    end, L.NO_LAUNCHER_SOURCE, L.TIP_ADD_LAUNCHER), 1)
+    end, L.NO_LAUNCHER_SOURCE, L.TIP_ADD_LAUNCHER))
 
-    Place(CreateActionDropdown(page, L.EDIT_LAUNCHER, function()
+    box.Add(CreateActionDropdown(page, L.EDIT_LAUNCHER, function()
         local entries = {}
         if #LauncherKeys() > 0 then
             table.insert(entries, { name = L.ALL_LAUNCHERS, func = function()
@@ -197,8 +192,7 @@ local function BuildLaunchersPage(page, showBlockPage)
             end })
         end
         return entries
-    end, L.NO_LAUNCHER, L.TIP_EDIT_LAUNCHER), 1)
-
+    end, L.NO_LAUNCHER, L.TIP_EDIT_LAUNCHER))
 end
 
 ---------------------------------------------------------------------------
@@ -216,18 +210,16 @@ end
 -- First part of the DataBroker tab.
 local function BuildBrokerPlugins(page, showBlockPage)
     page = ScrollArea(page, 16)
-    local P = NewLayout(page)
-    local function Place(w, col) return P.Place(w, col) end
-    Place(CreateHeader(page, L.BROKERS), 1)
-    Place(CreateNote(page, L.BROKERS_HINT, FULL_W), 1)
-    local noLib = Place(CreateNote(page, L.BROKER_NOTE_NONE, FULL_W), 1)
+    local box = NewFlow(page).Box(L.BROKERS)
+    box.Add(CreateNote(page, L.BROKERS_HINT))
+    local noLib = box.Add(CreateNote(page, L.BROKER_NOTE_NONE))
     noLib.isShown = function() return not ns.GetLDB() end
     local hasLib = function() return ns.GetLDB() ~= nil end
 
     -- search: filters the "Add" menu by name or addon while typing
     local filter = ""
-    local search = Place(CreateEditBox(page, L.BROKER_SEARCH, function() return filter end,
-        function(v) filter = strtrim(v or "") end, hasLib, L.TIP_BROKER_SEARCH), 1)
+    local search = box.Add(CreateEditBox(page, L.BROKER_SEARCH, function() return filter end,
+        function(v) filter = strtrim(v or "") end, hasLib, L.TIP_BROKER_SEARCH))
     local add
     search.box:HookScript("OnTextChanged", function(self, userInput)
         if not userInput then return end
@@ -247,7 +239,7 @@ local function BuildBrokerPlugins(page, showBlockPage)
     end)
     AttachTip(clear, L.BROKER_SEARCH, L.BROKER_SEARCH_CLEAR)
     search.box:SetWidth(COL_W - 48)
-    add = Place(CreateActionDropdown(page, L.ADD_BROKER, function()
+    add = box.Add(CreateActionDropdown(page, L.ADD_BROKER, function()
         local entries, needle = {}, filter:lower()
         for _, source in ipairs(ns:GetBrokerSources()) do
             local haystack = (source.label .. " " .. (source.addon or "") .. " " .. source.name):lower()
@@ -268,10 +260,10 @@ local function BuildBrokerPlugins(page, showBlockPage)
             end
         end
         return entries
-    end, L.NO_BROKER_SOURCE, L.TIP_ADD_BROKER), 1)
+    end, L.NO_BROKER_SOURCE, L.TIP_ADD_BROKER))
     add.isShown = hasLib
 
-    local edit = Place(CreateActionDropdown(page, L.EDIT_BROKER, function()
+    local edit = box.Add(CreateActionDropdown(page, L.EDIT_BROKER, function()
         local entries = {}
         for _, key in ipairs(ns:GetBlockKeys()) do
             if ns.IsBrokerKey(key) then
@@ -282,7 +274,7 @@ local function BuildBrokerPlugins(page, showBlockPage)
             end
         end
         return entries
-    end, L.NO_BROKER, L.TIP_EDIT_BROKER), 1)
+    end, L.NO_BROKER, L.TIP_EDIT_BROKER))
     edit.isShown = hasLib
 end
 
@@ -291,27 +283,24 @@ local function BuildBrokerPage(tabPage, showBlockPage)
     -- (with DataBroker mode). In DataBroker mode Tessera shows no block, so only
     -- the second part is offered.
     local SUB_TOP = -40
-    local subs, buttons, current = {}, {}, 1
+    local subs, current = {}, 1
     local subNames = { L.BROKER_SUB_PLUGINS, L.BROKER_SUB_SHARE }
-    local subW = (FULL_W - 6) / 2
+    local bar
     local function ShowSub(i)
         if ns.brokerModeActive then i = 2 end
         current = i
-        for n, sub in ipairs(subs) do
-            sub:SetShown(n == i)
-            buttons[n]:SetEnabled(n ~= i)
-        end
+        for n, sub in ipairs(subs) do sub:SetShown(n == i) end
+        bar.Select(i)
     end
-    for i, name in ipairs(subNames) do
-        local b = CreateFrame("Button", nil, tabPage, "UIPanelButtonTemplate")
-        b:SetSize(subW, 22)
-        b:SetPoint("TOPLEFT", tabPage, "TOPLEFT", COL_X[1] + (i - 1) * (subW + 6), -6)
-        b:SetText(name)
-        FitButtonText(b)
-        b:SetScript("OnClick", function() ShowSub(i) end)
-        b.Refresh = function() end
-        Register(b, function() return not ns.brokerModeActive end)
-        buttons[i] = b
+    -- tabs at the top, as in the Blocks tab
+    bar = CreateTabs(tabPage, subNames, nil, function(i)
+        ShowSub(i)
+        ns:RefreshOptions()
+    end)
+    bar:SetPoint("TOPLEFT", tabPage, "TOPLEFT", COL_X[1], -6)
+    bar.Refresh = function() end
+    Register(bar, function() return not ns.brokerModeActive end)
+    for i in ipairs(subNames) do
         local sub = CreateFrame("Frame", nil, tabPage)
         sub:SetPoint("TOPLEFT", tabPage, "TOPLEFT", 0, SUB_TOP)
         sub:SetPoint("BOTTOMRIGHT", tabPage, "BOTTOMRIGHT", 0, 0)
@@ -327,60 +316,63 @@ local function BuildBrokerPage(tabPage, showBlockPage)
     ns.ShowBrokerSub = ShowSub -- (search: opens the part a setting is in)
     BuildBrokerPlugins(subs[1], showBlockPage)
     local page = ScrollArea(subs[2], 16)
-    local P = NewLayout(page)
-    local function Place(w, col) return P.Place(w, col) end
+    page.tabName = subNames[2]
+    subs[1].content.tabName = subNames[1]
+    local F = NewFlow(page)
     local sharing = function() return ns:IsSharing() and true or false end
     local hasLib = function() return ns.GetLDB() ~= nil end
 
-    -- Left column: state, mode, sharing
-    Place(CreateHeader(page, L.BROKER_TITLE), 1)
-    -- one explanation per state, in the same slot
+    -- state, mode, sharing
+    local share = F.Box(L.BROKER_TITLE)
+    -- one explanation per state (one shows at a time)
     local notes = {
         { L.BROKER_NOTE_NONE, function() return not hasLib() end },
         { L.BROKER_NOTE_MODE:format(ns.brokerDisplay or "DataBroker"), function() return ns.brokerModeActive end },
         { L.BROKER_NOTE_NORMAL, function() return hasLib() and not ns.brokerModeActive end },
     }
-    local top, height = P.Bottom(1), 0
     for i, n in ipairs(notes) do
-        local w = CreateNote(page, n[1])
+        local w = share.Add(CreateNote(page, n[1]))
         w.isShown = n[2]
         if i == 2 then -- names the display addon detected now
             w.Refresh = function() w.fs:SetText(L.BROKER_NOTE_MODE:format(ns.brokerDisplay or "DataBroker")) end
         end
-        w:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1], top)
-        height = math.max(height, w.layoutHeight)
     end
-    P.Gap(1, height)
 
     -- current state in one sentence (e.g. "off: your choice for Bazooka")
-    local status = Place(CreateNote(page, "\n"), 1)
+    local status = share.Add(CreateNote(page, "\n"))
     status.isShown = hasLib
     status.Refresh = function() status.fs:SetText("|cffffd100" .. (ns:GetBrokerStatus() or "") .. "|r") end
     -- DaylightUI has panels of its own that take DataBroker objects: how to use them with Tessera
-    local daylight = Place(CreateNote(page, L.BROKER_NOTE_DAYLIGHT), 1)
+    local daylight = share.Add(CreateNote(page, L.BROKER_NOTE_DAYLIGHT))
     daylight.isShown = function() return hasLib() and ns:GetDaylightAPI() ~= nil end
 
-    -- mode button: leave or enter DataBroker mode (same slot)
-    local leave = Place(CreateButton(page, L.BROKER_MODE_OFF_BUTTON, function() ns:SetBrokerMode(false) end,
-        function() return ns.brokerModeActive end, nil, L.TIP_BROKER_MODE_OFF), 1)
-    local enter = CreateButton(page, L.BROKER_MODE_ON_BUTTON, function() ns:SetBrokerMode(true) end,
-        function() return hasLib() and not ns.brokerModeActive end, nil, L.TIP_BROKER_MODE_ON)
-    enter:SetPoint("TOPLEFT", leave, "TOPLEFT")
+    -- mode button: leave or enter DataBroker mode (one shows at a time)
+    share.Add(CreateButton(page, L.BROKER_MODE_OFF_BUTTON, function() ns:SetBrokerMode(false) end,
+        function() return ns.brokerModeActive end, nil, L.TIP_BROKER_MODE_OFF), { half = true })
+    share.Add(CreateButton(page, L.BROKER_MODE_ON_BUTTON, function() ns:SetBrokerMode(true) end,
+        function() return hasLib() and not ns.brokerModeActive end, nil, L.TIP_BROKER_MODE_ON), { half = true })
     -- forget the choices made for each display addon
-    Place(CreateButton(page, L.BROKER_RESET_CHOICES, function() ns:ResetBrokerChoices() end,
-        function() return hasLib() and ns:HasBrokerChoices() end, nil, L.TIP_BROKER_RESET_CHOICES), 1)
+    share.Add(CreateButton(page, L.BROKER_RESET_CHOICES, function() ns:ResetBrokerChoices() end,
+        function() return hasLib() and ns:HasBrokerChoices() end, nil, L.TIP_BROKER_RESET_CHOICES), { half = true })
 
-    Place(CreateCheck(page, L.BROKER_SHARE_ALL,
+    share.Add(CreateCheck(page, L.BROKER_SHARE_ALL,
         function() return ns.sv.brokerShare end,
         function(v)
             ns.sv.brokerShare = v or nil
             ns:UpdatePublishing()
             ns:RefreshOptions()
-        end, function() return hasLib() and not ns.brokerModeActive end, L.TIP_BROKER_SHARE_ALL), 1)
-    P.Gap(1, 6)
+        end, function() return hasLib() and not ns.brokerModeActive end, L.TIP_BROKER_SHARE_ALL))
+    local reload = share.Add(CreateNote(page, L.BROKER_RELOAD_NOTE))
+    -- also shown with the Reload button below, which it explains
+    reload.isShown = function() return sharing() or ns:BrokerNeedsReload() end
+    -- only useful once a published block was unshared
+    share.Add(CreateButton(page, L.RELOAD_SHORT, function() ReloadUI() end,
+        function() return ns:BrokerNeedsReload() end, nil, L.TIP_BROKER_RELOAD))
 
-    -- the shared block being edited (shares the selection with the Blocks tab)
-    Place(CreateDropdown(page, L.BROKER_BLOCK, function()
+    -- the shared block being edited (shares the selection with the Blocks tab), then its own
+    -- settings (formats, thresholds...) and what its tooltip shows
+    local block = F.Box(L.SECTION_THIS_BLOCK, { reset = true, isShown = sharing })
+    block.Add(CreateDropdown(page, L.BROKER_BLOCK, function()
         local list = {}
         for _, key in ipairs(DataModuleKeys()) do
             local cfg = ns.db.blocks[key]
@@ -392,31 +384,23 @@ local function BuildBrokerPage(tabPage, showBlockPage)
     end, function() return S.selected end, function(v)
         S.selected = v
         ns:RefreshOptions()
-    end, sharing, nil, L.TIP_BROKER_BLOCK), 1)
+    end, sharing, nil, L.TIP_BROKER_BLOCK))
     local getS, setS = Field("brokerShare")
-    Place(CreateCheck(page, L.BROKER_SHARE_BLOCK, getS, function(v)
+    block.Add(CreateCheck(page, L.BROKER_SHARE_BLOCK, getS, function(v)
         setS(v)
         ns:UpdatePublishing()
         ns:RefreshOptions()
-    end, sharing, L.TIP_BROKER_SHARE_BLOCK), 1)
+    end, sharing, L.TIP_BROKER_SHARE_BLOCK), { half = true, field = "brokerShare" })
     local getC, setC = Field("colorize")
-    Place(CreateCheck(page, L.COLORIZE, getC, function(v)
+    block.Add(CreateCheck(page, L.COLORIZE, getC, function(v)
         setC(v)
         ns:UpdatePublishing()
-    end, sharing, L.TIP_COLORIZE), 1)
-    local reload = Place(CreateNote(page, L.BROKER_RELOAD_NOTE), 1)
-    -- also shown with the Reload button below, which it explains
-    reload.isShown = function() return sharing() or ns:BrokerNeedsReload() end
-    -- only useful once a published block was unshared
-    Place(CreateButton(page, L.RELOAD_SHORT, function() ReloadUI() end,
-        function() return ns:BrokerNeedsReload() end, nil, L.TIP_BROKER_RELOAD), 1)
-
-    -- Right column: the selected block's own settings (formats, thresholds...)
-    local header = Place(CreateHeader(page, L.SECTION_THIS_BLOCK), 2)
-    header.isShown = sharing
-    local none = Place(CreateNote(page, L.NO_BLOCK_OPTIONS), 2)
-    P.Gap(2, -(none.layoutHeight + SPACING))
-    local hasOptions = BuildModuleOptions(page, P, 2, ns.order, sharing, function() return true end)
+    end, sharing, L.TIP_COLORIZE), { half = true, field = "colorize" })
+    local none = block.Add(CreateNote(page, L.NO_BLOCK_OPTIONS))
+    local tips = F.Box(L.SECTION_TOOLTIP, { reset = true, isShown = sharing })
+    local hasOptions = BuildModuleOptions(ns.order, function(opt)
+        return opt.section == "tooltip" and tips or block
+    end, sharing)
     none.isShown = function()
         local key = SelectedModuleKey()
         return sharing() and not (key and hasOptions[key])
@@ -564,13 +548,12 @@ StaticPopupDialogs["TESSERA_RESET_PROFILE"] = {
 ---------------------------------------------------------------------------
 local function BuildLookPage(page)
     page = ScrollArea(page, 16)
-    local P = NewLayout(page)
-    local function Place(w, col) return P.Place(w, col) end
+    local F = NewFlow(page)
 
-    -- Left column: style and how groups look
-    Place(CreateHeader(page, L.SECTION_THEME), 1)
-    Place(CreateNote(page, L.THEME_HINT), 1)
-    Place(CreateDropdown(page, L.THEME, function() return ns:GetStyleChoices() end,
+    -- style
+    local theme = F.Box(L.SECTION_THEME, { reset = true })
+    theme.Add(CreateNote(page, L.THEME_HINT))
+    theme.Add(CreateDropdown(page, L.THEME, function() return ns:GetStyleChoices() end,
        function() return ns:GetStyleChoice() end,
        function(v)
            ns:PickStyleChoice(v)
@@ -578,64 +561,57 @@ local function BuildLookPage(page)
            local note = ns:GetThemeNote()
            if note then ns.Print(note) end
            ns:RefreshOptions()
-       end, nil, nil, L.TIP_THEME), 1)
-    Place(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
+       end, nil, nil, L.TIP_THEME))
+    theme.Add(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
         function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
-        function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), 1)
+        function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), { default = ns.PROFILE_DEFAULTS.scale * 100 })
     -- the frame and text of every block are set in the Blocks tab ("All blocks"): two
     -- shortcuts here, where players look first (not in DataBroker mode: no blocks)
-    -- side by side, on one row
     local function HasBlocks() return not ns.brokerModeActive end
-    local half = (COL_W - 6) / 2
-    local frameAll = Place(CreateButton(page, L.LOOK_ALL_FRAME, function() ns:OpenAllBlocks(3) end,
-        HasBlocks, half, L.TIP_LOOK_ALL_FRAME), 1)
-    local textAll = CreateButton(page, L.LOOK_ALL_TEXT, function() ns:OpenAllBlocks(2) end,
-        HasBlocks, half, L.TIP_LOOK_ALL_TEXT)
-    textAll:SetPoint("LEFT", frameAll, "RIGHT", 6, 0)
+    theme.Add(CreateButton(page, L.LOOK_ALL_FRAME, function() ns:OpenAllBlocks(3) end,
+        HasBlocks, nil, L.TIP_LOOK_ALL_FRAME), { half = true })
+    theme.Add(CreateButton(page, L.LOOK_ALL_TEXT, function() ns:OpenAllBlocks(2) end,
+        HasBlocks, nil, L.TIP_LOOK_ALL_TEXT), { half = true })
 
-    P.Gap(1, 10)
-    Place(CreateHeader(page, L.SECTION_GROUP_LOOK), 1)
-    Place(CreateDropdown(page, L.GROUP_LOOK, {
+    -- how groups look
+    local groups = F.Box(L.SECTION_GROUP_LOOK, { reset = true })
+    groups.Add(CreateDropdown(page, L.GROUP_LOOK, {
             { key = "fused", name = L.GROUP_LOOK_FUSED },
             { key = "tiles", name = L.GROUP_LOOK_TILES },
             { key = "separate", name = L.GROUP_LOOK_SEPARATE },
         },
         function() return ns:GetGroupLook() end,
-        function(v) ns:SetGroupLook(v); ns:RefreshOptions() end, nil, nil, L.TIP_GROUP_LOOK), 1)
-    Place(CreateSlider(page, L.JOINT_GAP, 2, 12, 1,
+        function(v) ns:SetGroupLook(v); ns:RefreshOptions() end, nil, nil, L.TIP_GROUP_LOOK))
+    groups.Add(CreateSlider(page, L.JOINT_GAP, 2, 12, 1,
         function() return ns.db.jointGap or 3 end,
         function(v) ns.db.jointGap = v; ns:ReanchorAll(); ns:RequestLayout() end,
-        nil, L.TIP_JOINT_GAP), 1) -- always shown: a single group can use tiles too
+        nil, L.TIP_JOINT_GAP), { default = 3 }) -- always shown: a single group can use tiles too
 
     -- sharing the style or the layout alone (the import window reads both, and profiles)
-    P.Gap(1, 10)
-    Place(CreateHeader(page, L.SECTION_SHARE), 1)
-    -- the two exports side by side, on one row
-    local exportStyle = Place(CreateButton(page, L.EXPORT_STYLE, function()
+    local shareBox = F.Box(L.SECTION_SHARE)
+    shareBox.Add(CreateButton(page, L.EXPORT_STYLE, function()
         ns:ShowTextWindow(L.EXPORT_STYLE_TITLE, ns:ExportStyle())
-    end, nil, half, L.TIP_EXPORT_STYLE), 1)
-    local exportLayout = CreateButton(page, L.EXPORT_LAYOUT, function()
+    end, nil, nil, L.TIP_EXPORT_STYLE), { half = true })
+    shareBox.Add(CreateButton(page, L.EXPORT_LAYOUT, function()
         ns:ShowTextWindow(L.EXPORT_LAYOUT_TITLE, ns:ExportLayout())
-    end, nil, half, L.TIP_EXPORT_LAYOUT)
-    exportLayout:SetPoint("LEFT", exportStyle, "RIGHT", 6, 0)
-    Place(CreateButton(page, L.IMPORT_SHARED, function() ns:OpenImportWindow() end,
-        nil, nil, L.TIP_IMPORT_SHARED), 1)
+    end, nil, nil, L.TIP_EXPORT_LAYOUT), { half = true })
+    shareBox.Add(CreateButton(page, L.IMPORT_SHARED, function() ns:OpenImportWindow() end,
+        nil, nil, L.TIP_IMPORT_SHARED), { half = true })
 
-    -- Right column: screen edges and ready-made layouts
-    Place(CreateHeader(page, L.SECTION_EDGES), 2)
-    Place(CreateDropdown(page, L.EDGE_SNAP, {
+    -- screen edges
+    local edges = F.Box(L.SECTION_EDGES, { reset = true })
+    edges.Add(CreateDropdown(page, L.EDGE_SNAP, {
             { key = "ask", name = L.EDGE_SNAP_ASK },
             { key = "always", name = L.EDGE_SNAP_ALWAYS },
             { key = "never", name = L.EDGE_SNAP_NEVER },
         },
         function() return ns.db.edgeSnap or "ask" end,
-        function(v) ns.db.edgeSnap = v end, nil, nil, L.TIP_EDGE_SNAP), 2)
+        function(v) ns.db.edgeSnap = v end, nil, nil, L.TIP_EDGE_SNAP), { default = ns.PROFILE_DEFAULTS.edgeSnap })
 
     -- ready-made layouts: pick one in the list, then apply it (replaces the current
     -- profile after a confirmation). The note below the list describes the choice.
-    P.Gap(2, 10)
-    Place(CreateHeader(page, L.SECTION_PRESETS), 2)
-    Place(CreateNote(page, L.PRESETS_HINT), 2)
+    local presets = F.Box(L.SECTION_PRESETS)
+    presets.Add(CreateNote(page, L.PRESETS_HINT))
     local chosenPreset = ns.PRESETS[1]
     local presetOptions = {}
     for _, preset in ipairs(ns.PRESETS) do
@@ -648,72 +624,59 @@ local function BuildLookPage(page)
         if #tip > #longest then longest = tip end
     end
     local presetNote = CreateNote(page, longest)
+    presetNote.fs:SetWidth(BOX_INNER_W)
+    presetNote.minNoteH = presetNote.fs:GetStringHeight()
     presetNote.Refresh = function()
         presetNote.fs:SetText(L["TIP_PRESET_" .. chosenPreset:upper()] or "")
     end
-    Place(CreateDropdown(page, L.PRESET_CHOOSE, presetOptions,
+    presets.Add(CreateDropdown(page, L.PRESET_CHOOSE, presetOptions,
         function() return chosenPreset end,
         function(v)
             chosenPreset = v
             presetNote:Refresh()
-        end, nil, nil, L.PRESETS_HINT), 2)
-    Place(presetNote, 2)
+        end, nil, nil, L.PRESETS_HINT))
+    presets.Add(presetNote)
     presetNote:Refresh()
-    Place(CreateButton(page, L.PRESET_APPLY, function()
+    presets.Add(CreateButton(page, L.PRESET_APPLY, function()
         StaticPopup_Show("TESSERA_APPLY_PRESET", nil, nil, chosenPreset)
-    end, nil, nil, L.TIP_PRESET_APPLY), 2)
+    end, nil, nil, L.TIP_PRESET_APPLY))
 
     -- Blizzard's frames: all blocks in front of them or behind them (Layers.lua)
-    P.Gap(2, 10)
-    Place(CreateHeader(page, L.SECTION_LAYER), 2)
-    Place(CreateButton(page, L.LAYER_ALL_FRONT, function() ns:SetLayer("front") end,
-        nil, nil, L.TIP_LAYER_ALL_FRONT), 2)
-    Place(CreateButton(page, L.LAYER_ALL_BEHIND, function() ns:SetLayer("behind") end,
-        nil, nil, L.TIP_LAYER_ALL_BEHIND), 2)
+    local layer = F.Box(L.SECTION_LAYER)
+    layer.Add(CreateButton(page, L.LAYER_ALL_FRONT, function() ns:SetLayer("front") end,
+        nil, nil, L.TIP_LAYER_ALL_FRONT), { half = true })
+    layer.Add(CreateButton(page, L.LAYER_ALL_BEHIND, function() ns:SetLayer("behind") end,
+        nil, nil, L.TIP_LAYER_ALL_BEHIND), { half = true })
 end
 
 -- Builds the "Profiles" tab
 local function BuildProfilesPage(page)
     page = ScrollArea(page, 16)
-    local P = NewLayout(page)
-    local function Place(w, col) return P.Place(w, col) end
+    local F = NewFlow(page)
 
-    Place(CreateHeader(page, L.PROFILES), 1)
-    Place(CreateCheck(page, L.USE_GLOBAL,
+    local profiles = F.Box(L.PROFILES)
+    profiles.Add(CreateCheck(page, L.USE_GLOBAL,
         function() return ns.sv.useGlobal end,
-        function(v) ns:SetUseGlobal(v) end, nil, L.TIP_USE_GLOBAL), 1)
-    P.Gap(1, 4)
-    Place(CreateDropdown(page, L.PROFILE, function()
+        function(v) ns:SetUseGlobal(v) end, nil, L.TIP_USE_GLOBAL))
+    profiles.Add(CreateDropdown(page, L.PROFILE, function()
         local list = {}
         for _, name in ipairs(ns:GetProfileNames()) do
             table.insert(list, { key = name, name = ns:ProfileDisplayName(name) })
         end
         return list
     end, function() return ns.profileName end,
-       function(v) ns:SetProfile(v) end, nil, nil, L.TIP_PROFILE), 1)
-    P.Gap(1, 4)
-    Place(CreateButton(page, L.NEW_PROFILE, function()
+       function(v) ns:SetProfile(v) end, nil, nil, L.TIP_PROFILE))
+    profiles.Add(CreateButton(page, L.NEW_PROFILE, function()
         StaticPopup_Show("TESSERA_NEW_PROFILE")
-    end, nil, nil, L.TIP_NEW_PROFILE), 1)
-    Place(CreateButton(page, L.DUPLICATE_PROFILE, function()
+    end, nil, nil, L.TIP_NEW_PROFILE), { half = true })
+    profiles.Add(CreateButton(page, L.DUPLICATE_PROFILE, function()
         StaticPopup_Show("TESSERA_DUPLICATE_PROFILE")
-    end, nil, nil, L.TIP_DUPLICATE_PROFILE), 1)
-    Place(CreateButton(page, L.DELETE_PROFILE, function()
+    end, nil, nil, L.TIP_DUPLICATE_PROFILE), { half = true })
+    profiles.Add(CreateButton(page, L.DELETE_PROFILE, function()
         if not ns:DeleteProfile(ns.profileName) then ns.Print(L.CANNOT_DELETE_DEFAULT) end
-    end, function() return ns.profileName ~= ns.DEFAULT_PROFILE end, nil, L.TIP_DELETE_PROFILE), 1)
-
-    -- sharing a layout as a line of text
-    P.Gap(1, 8)
-    Place(CreateHeader(page, L.SECTION_SHARE), 1)
-    Place(CreateButton(page, L.EXPORT_PROFILE, function()
-        ns:ShowTextWindow(L.EXPORT_TITLE, ns:ExportProfile())
-    end, nil, nil, L.TIP_EXPORT_PROFILE), 1)
-    Place(CreateButton(page, L.IMPORT_PROFILE, function() ns:OpenImportWindow() end,
-        nil, nil, L.TIP_IMPORT_PROFILE), 1)
-
+    end, function() return ns.profileName ~= ns.DEFAULT_PROFILE end, nil, L.TIP_DELETE_PROFILE), { half = true })
     -- automatic profile in dungeons and raids
-    P.Gap(1, 8)
-    Place(CreateDropdown(page, L.INSTANCE_PROFILE, function()
+    profiles.Add(CreateDropdown(page, L.INSTANCE_PROFILE, function()
         local list = { { key = "", name = L.NONE } }
         for _, name in ipairs(ns:GetProfileNames()) do
             table.insert(list, { key = name, name = ns:ProfileDisplayName(name) })
@@ -723,14 +686,21 @@ local function BuildProfilesPage(page)
        function(v)
            ns.sv.instanceProfile = v ~= "" and v or nil
            ns:CheckSituationProfile()
-       end, nil, nil, L.TIP_INSTANCE_PROFILE), 1)
+       end, nil, nil, L.TIP_INSTANCE_PROFILE))
 
-    Place(CreateHeader(page, L.SECTION_RESET), 2)
-    Place(CreateNote(page, L.RESET_HINT), 2)
-    Place(CreateButton(page, L.RESET_PROFILE, function()
+    -- sharing a layout as a line of text
+    local shareBox = F.Box(L.SECTION_SHARE)
+    shareBox.Add(CreateButton(page, L.EXPORT_PROFILE, function()
+        ns:ShowTextWindow(L.EXPORT_TITLE, ns:ExportProfile())
+    end, nil, nil, L.TIP_EXPORT_PROFILE), { half = true })
+    shareBox.Add(CreateButton(page, L.IMPORT_PROFILE, function() ns:OpenImportWindow() end,
+        nil, nil, L.TIP_IMPORT_PROFILE), { half = true })
+
+    local resetBox = F.Box(L.SECTION_RESET)
+    resetBox.Add(CreateNote(page, L.RESET_HINT))
+    resetBox.Add(CreateButton(page, L.RESET_PROFILE, function()
         StaticPopup_Show("TESSERA_RESET_PROFILE")
-    end, nil, nil, L.TIP_RESET_PROFILE), 2)
-
+    end, nil, nil, L.TIP_RESET_PROFILE))
 end
 
 -- Shared with the files loaded after this one

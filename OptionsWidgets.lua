@@ -140,8 +140,15 @@ local function AccentLine(line, fs)
     table.insert(accentLines, { line = line, fs = fs })
     PaintAccent(line, fs)
 end
+-- other parts painted in the accent colors (boxes and tabs, OptionsBoxes.lua): fn() repaints one
+local accentHooks = {}
+local function OnAccents(fn)
+    table.insert(accentHooks, fn)
+    fn()
+end
 function ns:RepaintAccents()
     for _, e in ipairs(accentLines) do PaintAccent(e.line, e.fs) end
+    for _, fn in ipairs(accentHooks) do fn() end
 end
 
 local function NewRow(parent, frameType)
@@ -199,6 +206,7 @@ end
 
 -- Row height: the taller of its label and its control, plus some air
 local function FitRow(row, controlHeight)
+    row.controlH = controlHeight -- (boxes fit the row again when its label changes width)
     local h = math.max(controlHeight, row.label and row.label:GetStringHeight() or 0) + ROW_PAD
     row:SetHeight(h)
     row.layoutHeight = h
@@ -228,51 +236,6 @@ local function CreateHeader(parent, text)
     holder.layoutHeight = h + 2
     holder.isHeader, holder.headerText = true, text
     return Register(holder)
-end
-
--- Section that folds: a header with a + / - button (a shape, not only a color).
--- The rows placed under it, up to the next section of the same column (plain headers
--- inside it fold with it), hide when it is folded and the rows below move up (see
--- NewLayout). Not saved: every section opens folded or not as its page decides.
-local function CreateSection(parent, text, folded)
-    local b = CreateFrame("Button", nil, parent)
-    local sign = b:CreateTexture(nil, "ARTWORK")
-    sign:SetSize(16, 16)
-    sign:SetPoint("BOTTOMLEFT", 0, 5)
-    local fs = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    fs:SetPoint("LEFT", sign, "RIGHT", 6, 0)
-    fs:SetText(text)
-    local h = math.max(24, (fs:GetStringHeight() or 0) + 10) -- (bigger text: taller)
-    b:SetSize(FULL_W, h)
-    local line = b:CreateTexture(nil, "ARTWORK")
-    AccentLine(line, fs)
-    line:SetHeight(1)
-    line:SetPoint("BOTTOMLEFT")
-    line:SetPoint("BOTTOMRIGHT")
-    b.hover = b:CreateTexture(nil, "BACKGROUND")
-    b.hover:SetAllPoints()
-    b.hover:SetColorTexture(1, 1, 1, 0.08)
-    b.hover:Hide()
-    b:SetScript("OnEnter", function(self)
-        local c = ns:WindowAccents().hover
-        self.hover:SetColorTexture(c[1], c[2], c[3], (c[4] or 0.1) * 0.8)
-        self.hover:Show()
-    end)
-    b:SetScript("OnLeave", function(self) self.hover:Hide() end)
-    b.folded = folded and true or false
-    b.Refresh = function(self)
-        sign:SetTexture(self.folded and "Interface\\Buttons\\UI-PlusButton-Up" or "Interface\\Buttons\\UI-MinusButton-Up")
-    end
-    -- what "confirm" does (mouse, keyboard or gamepad)
-    b.Activate = function(self)
-        self.folded = not self.folded
-        ns:RefreshOptions()
-    end
-    b:SetScript("OnClick", function(self) self:Activate() end)
-    b:Refresh()
-    b.layoutHeight = h + 2
-    b.isHeader, b.isSection, b.headerText = true, true, text
-    return Register(b)
 end
 
 -- Multi-line help text (default width: the whole page)
@@ -315,6 +278,7 @@ local function CreateCheck(parent, label, getter, setter, isShown, tip)
     row.check = cb
     row.Activate = function() cb:Click() end
     row.Refresh = function() cb:SetChecked(getter() and true or false) end
+    row.getter, row.setter = getter, setter -- (a box's Reset button)
     FitRow(row, 24)
     return Register(AsSetting(row, label, tip, "check"), isShown)
 end
@@ -422,6 +386,7 @@ local function CreateSlider(parent, label, minV, maxV, step, getter, setter, isS
         slider:SetValue(getter() or minV)
         self.updating = false
     end
+    holder.getter, holder.setter = getter, setter -- (a box's Reset button)
     FitRow(holder, 24)
     return Register(AsSetting(holder, label, tip, "slider"), isShown)
 end
@@ -509,6 +474,7 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
     holder.Activate = function() if dd.OpenMenu then dd:OpenMenu() end end
 
     holder.Refresh = function() dd:GenerateMenu() end
+    holder.getter, holder.setter = getter, setter -- (a box's Reset button)
     return Register(AsSetting(holder, label, tip, "dropdown"), isShown)
 end
 
@@ -711,162 +677,31 @@ end
 ---------------------------------------------------------------------------
 -- Layout
 ---------------------------------------------------------------------------
--- Returns a layout helper for a page. The pages are still written in two columns
--- (Place(w, col)), but since 1.3 they show as ONE column of rows: column 2 follows
--- column 1, under it. Positions are kept "per column" (virtual), so the old tricks
--- still work: Gap(col, h) adds (or, if negative, removes) vertical space, two
--- widgets can share a slot, Bottom(col) gives the current virtual y. Column 2
--- hangs from an anchor that sits under column 1 and moves when column 1 grows or
--- shrinks (stacks of module options, folded sections).
-local COLUMN_GAP = 10
-local allLayouts = {}
+-- A plain stack for the few widgets placed by hand (the head of the Blocks tab): Place(w)
+-- puts w under the previous one, Gap(h) adds space, Bottom() gives the current y. The
+-- pages themselves are laid out in boxes (OptionsBoxes.lua, 1.5).
 local function NewLayout(page, top)
-    local top0 = top or -6
-    local y = { top0, top0 }
-    local items = { {}, {} } -- placed widgets of each column and their virtual y
-    local packed = {}        -- lowest virtual y of the option stacks of a column (BuildModuleOptions)
-    local used = {}
-    local section = {}       -- current section title of each column
-    local foldSection = {}   -- current section that folds, in each column
+    local y = top or -6
     local layout = {}
-    local anchor = CreateFrame("Frame", nil, page)
-    anchor:SetSize(1, 1)
-
-    -- lowest virtual y of a column: its shown widgets (two can share a slot, the one
-    -- shown counts) and its option stacks; nothing shown: its top
-    -- (real positions: a row's virtual y moved up by the sections folded above it)
-    local function Low(col)
-        local low = packed[col] or top0
-        for _, it in ipairs(items[col]) do
-            if not it.w.foldedAway and it.w:IsShown() then
-                low = math.min(low, it.vy + (it.shift or 0) - it.w.layoutHeight - SPACING)
-            end
-        end
-        return low
-    end
-
-    -- y of column 2's anchor; the lowest point of the page
-    local function Settle()
-        local ay = 0
-        if used[1] then ay = Low(1) - COLUMN_GAP - top0 end
-        anchor:ClearAllPoints()
-        anchor:SetPoint("TOPLEFT", page, "TOPLEFT", 0, ay)
-        local lowest = used[2] and (ay + Low(2)) or Low(1)
-        if page.scroll then
-            page:SetHeight(math.max(10, -lowest + 12))
-        else
-            -- lowest point reached by any page (checked by tools/mock_run.lua: must fit the window)
-            ns.optionsLowestY = math.min(ns.optionsLowestY or 0, (page.layoutBase or 0) + lowest)
-        end
-        layout.lowest = lowest
-    end
-
-    function layout.Point(w, col, vy)
+    function layout.Place(w)
         w:ClearAllPoints()
-        if col == 2 then
-            w:SetPoint("TOPLEFT", anchor, "TOPLEFT", COL_X[1], vy)
-        else
-            w:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1], vy)
-        end
-    end
-
-    function layout.Place(w, col)
-        col = col or 1
-        layout.Point(w, col, y[col])
-        if w.isHeader then section[col] = w.headerText end
-        if w.isSection then foldSection[col] = w end
-        if w.optionLabel then
+        w:SetPoint("TOPLEFT", page, "TOPLEFT", COL_X[1], y)
+        if w.optionLabel then -- (the search, the help panel, the keyboard)
             table.insert(ns.optionRows, { frame = w, label = w.optionLabel, tip = w.optionTip,
-                kind = w.optionKind, page = page.pageIndex, sub = page.subIndex, section = section[col],
-                content = page, block = layout.currentBlock, foldSection = foldSection[col] })
+                kind = w.optionKind, page = page.pageIndex, content = page })
         end
-        if not layout.untracked then table.insert(items[col], { w = w, vy = y[col] }) end
         -- every placed widget, settings or not (tools/mock_run.lua: nothing overlaps)
         ns.optionWidgets = ns.optionWidgets or {}
         table.insert(ns.optionWidgets, { frame = w, label = w.optionLabel or w.headerText or "note", content = page })
-        used[col] = true
-        y[col] = y[col] - w.layoutHeight - SPACING
-        Settle()
+        y = y - w.layoutHeight - SPACING
         return w
     end
-    function layout.Gap(col, h)
-        y[col] = y[col] - h
-        Settle()
-    end
-    function layout.Bottom(col) return y[col] end
-
-    -- height hidden by folded sections above virtual y (stacks of module options)
-    local foldedAbove = { {}, {} }
-    function layout.FoldedAbove(col, vy)
-        local h = 0
-        for _, f in ipairs(foldedAbove[col]) do
-            if f.vy > vy then h = h + f.h end
-        end
-        return h
-    end
-    -- lowest y (real: folded sections above counted) of the shown widgets of a column's option stacks
-    function layout.SetPacked(col, low)
-        packed[col] = low
-        Settle()
-    end
-
-    -- after every refresh: folded sections hide their rows, the rows below move up
-    function layout.Reflow()
-        for col = 1, 2 do
-            local list, shift, current = items[col], 0, nil
-            foldedAbove[col] = {}
-            for idx, it in ipairs(list) do
-                local w = it.w
-                it.shift = shift
-                if w.isSection then
-                    layout.Point(w, col, it.vy + shift)
-                    current = nil
-                    if w.folded and w:IsShown() then
-                        -- down to the next section, or to the lowest row that would show
-                        -- (rows folded by the last pass count: they are still there)
-                        local nextVy
-                        for j = idx + 1, #list do
-                            if list[j].w.isSection then nextVy = list[j].vy break end
-                        end
-                        if not nextVy then
-                            nextVy = math.min(packed[col] or it.vy, it.vy - w.layoutHeight - SPACING)
-                            for j = idx + 1, #list do
-                                local o = list[j].w
-                                local would = o:IsShown() or (o.foldedAway and (not o.isShown or o.isShown()))
-                                if would then nextVy = math.min(nextVy, list[j].vy - o.layoutHeight - SPACING) end
-                            end
-                        end
-                        current = w
-                        local hidden = (it.vy - w.layoutHeight - SPACING) - nextVy
-                        if hidden > 0 then
-                            table.insert(foldedAbove[col], { vy = it.vy, h = hidden })
-                            shift = shift + hidden
-                        end
-                    end
-                elseif current then
-                    w.foldedAway = true
-                    SetRowShown(w, false)
-                else
-                    if w.foldedAway then
-                        w.foldedAway = nil
-                        SetRowShown(w, not w.isShown or w.isShown())
-                    end
-                    layout.Point(w, col, it.vy + shift)
-                end
-            end
-        end
-        Settle()
-    end
-    table.insert(allLayouts, layout)
+    function layout.Gap(_, h) y = y - h end
+    function layout.Bottom() return y end
     return layout
 end
--- (sections that fold are placed by the 1.3 page layout; tools/mock_run.lua tests them now)
-ns.CreateOptionsSection, ns.NewOptionsLayout, ns.CreateOptionsCheck = CreateSection, NewLayout, CreateCheck
-function ns.ReflowOptionLayouts()
-    for _, layout in ipairs(allLayouts) do layout.Reflow() end
-end
+ns.NewOptionsLayout, ns.CreateOptionsCheck = NewLayout, CreateCheck
 
--- Shared with the files loaded after this one
 Tools.AsSetting = AsSetting
 Tools.AttachTip = AttachTip
 Tools.ColorField = ColorField
@@ -878,7 +713,6 @@ Tools.CreateDropdown = CreateDropdown
 Tools.CreateEditBox = CreateEditBox
 Tools.CreateHeader = CreateHeader
 Tools.CreateNote = CreateNote
-Tools.CreateSection = CreateSection
 Tools.CreateSlider = CreateSlider
 Tools.CreateSwitch = CreateSwitch
 Tools.Field = Field
@@ -886,6 +720,7 @@ Tools.FitButtonText = FitButtonText
 Tools.FitRow = FitRow
 Tools.NewLayout = NewLayout
 Tools.NewRow = NewRow
+Tools.OnAccents = OnAccents
 Tools.ROW_CONTROL_W = ROW_CONTROL_W
 Tools.ROW_CONTROL_X = ROW_CONTROL_X
 Tools.ROW_LABEL_W = ROW_LABEL_W
@@ -895,4 +730,6 @@ Tools.RowLabel = RowLabel
 Tools.SWITCH_W = SWITCH_W
 Tools.ScrollArea = ScrollArea
 Tools.SetField = SetField
+Tools.SetRowShown = SetRowShown
+Tools.STEPPER_MAX = STEPPER_MAX
 

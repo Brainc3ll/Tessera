@@ -10,9 +10,10 @@ local function NewObject(kind)
     local o = { __kind = kind, __scripts = {}, __shown = true, __w = 100, __h = 20, __events = {}, __attrs = {} }
     return setmetatable(o, FrameMT)
 end
+-- (MOCK_TEXT_SCALE = 2: every text twice as big, as the options window must allow)
 function MockTextWidth(text)
     local n = #((text or ""):gsub("|T.-|t", "##"):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""))
-    return n > 40 and 6 * n or 40
+    return (n > 40 and 6 * n or 40) * (MOCK_TEXT_SCALE or 1)
 end
 local methods = {
     SetScript = function(self, name, fn) self.__scripts[name] = fn end,
@@ -65,9 +66,9 @@ local methods = {
         local text = tostring(self.__text or "")
         local lines = 0
         for para in (text .. "\n"):gmatch("([^\n]*)\n") do
-            lines = lines + math.max(1, math.ceil(#para * 5.6 / math.max(40, self.__w or 250)))
+            lines = lines + math.max(1, math.ceil(#para * 5.6 * (MOCK_TEXT_SCALE or 1) / math.max(40, self.__w or 250)))
         end
-        return 13 * lines
+        return 13 * lines * (MOCK_TEXT_SCALE or 1)
     end,
     SetFont = function() return true end,
     GetText = function(self) return self.__text or "" end, SetText = function(self, t) self.__text = t end,
@@ -3180,11 +3181,11 @@ if os.getenv("TESSERA_LIST_MODULES") then
         print("MODULE " .. key .. " " .. tostring(ns.modules[key].label) .. " " .. table.concat(fields, ","))
     end
 end
--- One column of rows (1.3; since 1.5 the tooltip checkboxes of a block may sit two by two): in each
--- page and sub-tab, the shown rows never overlap, sit in one column (same left edge, or the right
--- one for a paired checkbox) and stay inside the page's scroll area; every
--- row is listed with its page and has a tooltip; a section that folds hides its rows
--- and the rows below move up. Checked with the anchor geometry, for every block.
+-- Boxes (1.5, as FlareUI's settings panel): in each page and tab, the shown rows never
+-- overlap, sit inside their box and the page's scroll area, start at the box's left edge (or
+-- at the right half of a shared line); every row is listed with its page and has a tooltip;
+-- the keyboard order follows the screen; a text twice as big still fits. Checked with the
+-- anchor geometry, for every block and every tab.
 do
     MOCK_GEOMETRY = true
     local L = ns.L
@@ -3199,12 +3200,25 @@ do
             end
         end
         for _, g in pairs(groups) do
-            local _, cb, _, ct = Rect(g.content)
-            local x0
+            local cl, cb, _, ct = Rect(g.content)
             for i, a in ipairs(g.rows) do
                 local al, ab, ar, at = Rect(a.frame)
-                x0 = x0 or al
-                if not a.frame.pairable and math.abs(al - x0) > 0.5 then print("STEP ERROR: row out of the column (" .. what .. "): " .. tostring(a.label)) end
+                local box = a.box
+                if box and box.framed then
+                    if not box.frame.__shown then
+                        print("STEP ERROR: a row shows in a hidden box (" .. what .. "): " .. tostring(a.label))
+                    else
+                        local fl, fb, fr, ft = Rect(box.frame)
+                        if al < fl - 0.5 or ar > fr + 0.5 or ab < fb - 0.5 or at > ft + 0.5 then
+                            print("STEP ERROR: row outside its box (" .. what .. "): " .. tostring(a.label)
+                                .. " in " .. tostring(box.title))
+                        end
+                    end
+                    local x = al - cl
+                    if math.abs(x - 40) > 0.5 and not (a.frame.halfRight and math.abs(x - 365) < 0.5) then
+                        print("STEP ERROR: row out of its column (" .. what .. "): " .. tostring(a.label) .. " at " .. x)
+                    end
+                end
                 if g.content.scroll and (ab < cb - 0.5 or at > ct + 0.5) then
                     print("STEP ERROR: row outside its scroll area (" .. what .. "): " .. tostring(a.label))
                 end
@@ -3214,6 +3228,18 @@ do
                     if math.min(at, bt) - math.max(ab, bb) > 0.5 and math.min(ar, br) - math.max(al, bl) > 0.5 then
                         print("STEP ERROR: rows overlap (" .. what .. "): " .. tostring(a.label) .. " / " .. tostring(b2.label))
                     end
+                end
+            end
+            -- keyboard and gamepad order: left to right, then the next line
+            local order = ns.OptionsFocusOrder(g.content)
+            for k = 2, #order do
+                local _, _, _, t1 = Rect(order[k - 1])
+                local l1 = Rect(order[k - 1])
+                local _, _, _, t2 = Rect(order[k])
+                local l2 = Rect(order[k])
+                if t2 > t1 + 0.5 or (math.abs(t2 - t1) <= 0.5 and l2 < l1) then
+                    print("STEP ERROR: focus order does not follow the screen (" .. what .. "): "
+                        .. tostring(order[k - 1].optionLabel) .. " / " .. tostring(order[k].optionLabel))
                 end
             end
         end
@@ -3228,63 +3254,96 @@ do
     for _, key in ipairs(keys) do
         if key == "*all" or ns.db.blocks[key] then
             pcall(function() ns:OpenOptionsFor(key) end)
-            for sub = 1, 6 do -- (1.3: parts of one page; 2, 3, 4 and 6 open their section)
+            for sub = 1, 6 do -- (1.5: 1, 5, 6 Content, 2 and 3 Appearance, 4 Behaviour)
                 ns.ShowBlockSub(sub)
                 ns:RefreshOptions()
                 CheckRows(key .. ", sub-tab " .. sub)
             end
         end
     end
+    for page = 1, ns.OPTIONS_PAGE_COUNT do
+        ns.ShowOptionsPage(page)
+        CheckRows("page " .. page)
+    end
     local spacer = ns:AddSpacer()
     ns.db.blocks[spacer].spacerMode = "line"
     ns:OpenOptionsFor(spacer)
     ns:RefreshOptions()
     CheckRows("spacer")
-    ns:RemoveSpacer(spacer)
-    -- a section that folds
-    local page = CreateFrame("Frame")
-    page.scroll = true
-    local P = ns.NewOptionsLayout(page)
-    local sec = P.Place(ns.CreateOptionsSection(page, "Section"), 1)
-    local inside = P.Place(ns.CreateOptionsCheck(page, "inside", function() return true end, function() end, nil, "tip"), 1)
-    local after = P.Place(ns.CreateOptionsCheck(page, "after", function() return true end, function() end, nil, "tip"), 2)
-    ns:RefreshOptions()
-    local _, _, _, topAfter = Rect(after)
-    local open = page:GetHeight()
-    sec:Activate()
-    local _, _, _, topFolded = Rect(after)
-    if inside.__shown or not (topFolded > topAfter) or not (page:GetHeight() < open) then
-        print("STEP ERROR: a folded section must hide its rows and pull the next ones up")
+    -- a spacer has no clicks: the Clicks box disappears
+    for _, box in ipairs(ns.blockTabs.flows[3].boxes) do
+        if box.title == L.SECTION_CLICKS and box.frame.__shown then print("STEP ERROR: an empty box still shows") end
     end
-    sec:Activate()
-    if not inside.__shown then print("STEP ERROR: an unfolded section shows its rows again") end
-    -- (1.5) a block's tooltip settings: under their own folding title, the checkboxes two by two
+    ns:RemoveSpacer(spacer)
+    -- three tabs; the old sub-tabs open the right one
+    if #ns.blockTabs.bar.buttons ~= 3 then print("STEP ERROR: the Blocks tab has " .. #ns.blockTabs.bar.buttons .. " tabs") end
+    for sub, tab in pairs({ [1] = 1, [2] = 2, [3] = 2, [4] = 3, [5] = 1, [6] = 1 }) do
+        ns.ShowBlockSub(sub)
+        if ns.blockTabs.bar.selected ~= tab then print("STEP ERROR: sub-tab " .. sub .. " does not open tab " .. tab) end
+    end
+    -- text twice as big: half rows whose label no longer fits take the whole line, nothing overlaps
+    MOCK_TEXT_SCALE = 2
+    ns:OpenOptionsFor("guild")
+    for sub = 1, 4 do
+        ns.ShowBlockSub(sub)
+        ns:RefreshOptions()
+        CheckRows("guild, text x2, sub-tab " .. sub)
+    end
+    ns.ShowOptionsPage(3)
+    CheckRows("General, text x2")
+    MOCK_TEXT_SCALE = nil
+    ns:OpenOptionsFor("guild")
+    ns:RefreshOptions()
+    local function Find(label)
+        for _, r in ipairs(ns.optionWidgets) do
+            if r.frame.__shown and (r.frame.headerText or r.label) == label then return r.frame, r end
+        end
+    end
+    -- (1.5) a block's tooltip settings: in the Tooltip box of Content, the checkboxes two by two
     do
         ns:OpenOptionsFor("gold")
         ns.ShowBlockSub(1)
         ns:RefreshOptions()
-        local function Find(label)
-            for _, r in ipairs(ns.optionWidgets) do
-                if r.frame.__shown and (r.frame.headerText or r.label) == label then return r.frame end
-            end
-        end
-        local tipSection, a, b, hist = Find(L.SECTION_TOOLTIP), Find(L.GOLD_TIP_SESSION), Find(L.GOLD_TIP_HOUR), Find(L.GOLD_TIP_CHARS)
-        if not (tipSection and tipSection.isSection and a and b and hist) then
-            print("STEP ERROR: gold: tooltip title and checkboxes are shown")
+        local tipTitle = Find(L.SECTION_TOOLTIP)
+        local a, ra = Find(L.GOLD_TIP_SESSION)
+        local b = Find(L.GOLD_TIP_HOUR)
+        if not (tipTitle and a and b and ra.box and ra.box.title == L.SECTION_TOOLTIP) then
+            print("STEP ERROR: gold: the Tooltip box and its checkboxes are shown")
         else
             local al, _, _, at = Rect(a)
             local bl, _, _, bt = Rect(b)
-            if math.abs(at - bt) > 0.5 or math.abs((bl - al) - 320) > 0.5 then
+            if math.abs(at - bt) > 0.5 or math.abs((bl - al) - 325) > 0.5 then
                 print("STEP ERROR: two tooltip checkboxes share a line: " .. al .. "," .. at .. " / " .. bl .. "," .. bt)
             end
-            local _, _, _, top1 = Rect(hist)
-            tipSection:Activate()
-            if a.__shown or b.__shown then print("STEP ERROR: a folded Tooltip title hides its checkboxes") end
-            tipSection:Activate()
-            if not (a.__shown and b.__shown) then print("STEP ERROR: an unfolded Tooltip title shows them again") end
-            local _, _, _, top2 = Rect(hist)
-            if math.abs(top1 - top2) > 0.5 then print("STEP ERROR: unfolding puts the rows back where they were") end
         end
+        -- a setting that depends on another: greyed while that one is off
+        ns.db.blocks.gold.fadeOut = false
+        ns.ShowBlockSub(4)
+        ns:RefreshOptions()
+        local fade = Find(L.FADE_ALPHA)
+        if not (fade and fade.enabledByParent == false and fade.indented) then
+            print("STEP ERROR: \"" .. L.FADE_ALPHA .. "\" is not indented and greyed under \"" .. L.FADE_OUT .. "\"")
+        end
+        ns.db.blocks.gold.fadeOut = true
+        ns:RefreshOptions()
+        if fade and fade.enabledByParent ~= true then print("STEP ERROR: a child setting does not come back") end
+        ns.db.blocks.gold.fadeOut = nil
+        -- Reset of a box: its settings go back to their defaults, Ctrl + Z brings them back
+        local _, rf = Find(L.FONT_SIZE)
+        ns.ShowBlockSub(2)
+        ns:RefreshOptions()
+        _, rf = Find(L.FONT_SIZE)
+        local cfg = ns.db.blocks.gold
+        local before = cfg.fontSize
+        cfg.fontSize = (before or 12) + 7
+        ns:RefreshOptions()
+        if not (rf and ns.CanResetOptionsBox(rf.box)) then print("STEP ERROR: the Text box cannot be reset") end
+        ns.ResetOptionsBox(rf.box)
+        if cfg.fontSize ~= ns:GetBlockDefaults("gold").fontSize then print("STEP ERROR: Reset does not bring the text size back") end
+        if rf and ns.CanResetOptionsBox(rf.box) then print("STEP ERROR: Reset stays usable after a reset") end
+        ns:Undo()
+        if cfg.fontSize ~= before + 7 then print("STEP ERROR: Ctrl + Z does not undo a box reset") end
+        cfg.fontSize = before
     end
     MOCK_GEOMETRY = nil
 end
@@ -3375,18 +3434,20 @@ do
         ns:Undo()
         if ns.db.blocks[key].border ~= before then print("STEP ERROR: Ctrl + Z does not bring the block's look back") end
     end
-    -- sections: folded when the window is built; the search opens the right one
-    for _, sec in ipairs(ns.blockSections) do sec.folded = true end
-    ns:RefreshOptions()
+    -- the search names the tab and the box, and opens the tab
     local found = ns.SearchOptions(L.FADE_OUT)
     local r = found[1]
-    if not (r and r.foldSection) then
-        print("STEP ERROR: a setting in a section does not know its section")
+    if not (r and r.tabName == L.BLOCK_TAB_BEHAVIOUR and r.section == L.SECTION_FADE) then
+        print("STEP ERROR: a setting does not know its tab and its box")
     else
-        if r.frame.__shown then print("STEP ERROR: a folded section shows its rows") end
+        ns.ShowBlockSub(1)
         ns.GoToOption(r, ns.ShowOptionsPage)
-        if r.foldSection.folded or not r.frame.__shown then print("STEP ERROR: the search does not open the section") end
+        if ns.blockTabs.bar.selected ~= 3 then print("STEP ERROR: the search does not open the tab") end
     end
+    local guildNote = ns.SearchOptions(L.GUILD_TIP_NOTE)[1]
+    local where = guildNote and ns.OptionPlaceName(guildNote) or ""
+    local want = table.concat({ L.TAB_BLOCK, ns:GetBlockName("guild"), L.BLOCK_TAB_CONTENT, L.SECTION_TOOLTIP }, " › ")
+    if where ~= want then print("STEP ERROR: search place \"" .. where .. "\" instead of \"" .. want .. "\"") end
     for _, fn in ipairs(__timers) do pcall(fn) end
     -- Accessibility tab: its settings are found, fewer animations runs
     local access = ns.SearchOptions(L.REDUCE_MOTION)

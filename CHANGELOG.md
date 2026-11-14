@@ -20,7 +20,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
-- Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip. Checkboxes sit two by two, and rows and titles are tighter, so you scroll less. The options window opens 15 % larger (115 %) and is a little taller, which leaves room for text at 100 % and less scrolling.
+- Block settings: three tabs, Content (name, value, icon, style, its own settings and its tooltip), Appearance (size, text, background, icon, border, separators, opacity and layer) and Behaviour (when to show the block, hover, clicks, alerts and thresholds). You scroll less.
+- Every tab of the options window sorts its settings into boxes. Each box has a Reset button that puts its settings back to their defaults once you confirm. Two short settings share a line, and a setting that depends on another sits under it and greys out while that one is off.
+- The search shows where each setting sits, for example Blocks › Guild › Content › Tooltip, and opens its tab.
+- The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.
 
 ## 1.4.0 — 2026-11-14
 

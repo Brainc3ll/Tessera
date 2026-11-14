@@ -88,15 +88,26 @@ ns.CHANGELOG = {
             },
             { kind = "improved",
               en = {
-                "Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip."
-                    .. " Checkboxes sit two by two, and rows and titles are tighter, so you scroll less."
-                    .. " The options window opens 15 % larger (115 %) and is a little taller, which leaves room for text at 100 % and less scrolling.",
+                "Block settings: three tabs, Content (name, value, icon, style, its own settings and its tooltip),"
+                    .. " Appearance (size, text, background, icon, border, separators, opacity and layer)"
+                    .. " and Behaviour (when to show the block, hover, clicks, alerts and thresholds). You scroll less.",
+                "Every tab of the options window sorts its settings into boxes. Each box has a Reset button"
+                    .. " that puts its settings back to their defaults once you confirm."
+                    .. " Two short settings share a line, and a setting that depends on another sits under it"
+                    .. " and greys out while that one is off.",
+                "The search shows where each setting sits, for example Blocks › Guild › Content › Tooltip, and opens its tab.",
+                "The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.",
               },
               fr = {
-                "Réglages des blocs : un bloc qui a beaucoup de réglages les range sous deux titres repliables, Affichage et Infobulle."
-                    .. " Les cases se placent deux par deux et les lignes et titres sont resserrés : moins de molette."
-                    .. " La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute,"
-                    .. " ce qui laisse la place à du texte à 100 % et moins de molette.",
+                "Réglages des blocs : trois onglets, Contenu (nom, valeur, icône, style, ses propres réglages et son infobulle),"
+                    .. " Apparence (taille, texte, fond, icône, bordure, séparateurs, opacité et plan)"
+                    .. " et Comportement (quand afficher le bloc, survol, clics, alertes et seuils). Moins de molette.",
+                "Chaque onglet de la fenêtre d'options range ses réglages dans des cadres. Chaque cadre a un bouton Réinitialiser"
+                    .. " qui remet ses réglages par défaut une fois que tu confirmes."
+                    .. " Deux réglages courts partagent une ligne, et un réglage qui dépend d'un autre se place dessous"
+                    .. " et se grise tant que l'autre est désactivé.",
+                "La recherche indique où se trouve chaque réglage, par exemple Blocs › Guilde › Contenu › Infobulle, et ouvre son onglet.",
+                "La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute : le texte à 100 % tient avec moins de molette.",
               },
             },
         },

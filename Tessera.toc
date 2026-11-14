@@ -43,6 +43,7 @@ Spacers.lua
 Broker.lua
 Options.lua
 OptionsWidgets.lua
+OptionsBoxes.lua
 OptionsBlocks.lua
 OptionsPages.lua
 OptionsHelp.lua

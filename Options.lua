@@ -286,8 +286,7 @@ function ns:RefreshOptions()
         end
         if w.Refresh then w:Refresh() end
     end
-    if ns.RelayoutBlockOptions then ns.RelayoutBlockOptions() end
-    if ns.ReflowOptionLayouts then ns.ReflowOptionLayouts() end -- folded sections, column 2
+    if ns.ReflowOptionLayouts then ns.ReflowOptionLayouts() end -- boxes: only the shown rows (OptionsBoxes.lua)
 end
 
 -- Per-block settings, never stored as defaults for other blocks

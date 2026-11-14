@@ -312,11 +312,15 @@ local function PlaceName(r)
     local names = { [PAGE_BLOCKS] = L.TAB_BLOCK, [PAGE_LOOK] = L.TAB_LOOK, [PAGE_GENERAL] = L.TAB_GENERAL,
         [PAGE_LAUNCHERS] = L.LAUNCHERS, [PAGE_BROKER] = L.TAB_BROKER, [PAGE_PROFILES] = L.PROFILES,
         [PAGE_ACCESS] = L.SECTION_ACCESSIBILITY }
-    local where = names[r.page] or ""
-    if r.block then where = where .. " › " .. ns:GetBlockName(r.block)
-    elseif r.section then where = where .. " › " .. r.section end
-    return where
+    -- the page, the block, the tab, the box: "Blocks › Guild › Content › Tooltip"
+    local parts = { names[r.page] or "" }
+    if r.block then table.insert(parts, ns:GetBlockName(r.block)) end
+    if r.tabName then table.insert(parts, r.tabName) end
+    if r.section then table.insert(parts, r.section) end
+    return table.concat(parts, " › ")
 end
+
+ns.OptionPlaceName = PlaceName -- (tools/mock_run.lua)
 
 -- Results: settings first whose name matches, then the others; one per name and place
 function ns.SearchOptions(text)
@@ -327,7 +331,7 @@ function ns.SearchOptions(text)
         for _, r in ipairs(ns.optionRows) do
             local inName = ns.SortKey(r.label or ""):find(needle, 1, true)
                 or ns.SortKey(OldNames(r.label) or ""):find(needle, 1, true)
-            local inRest = ns.SortKey((r.tip or "") .. " " .. (r.section or "")):find(needle, 1, true)
+            local inRest = ns.SortKey((r.tip or "") .. " " .. (r.section or "") .. " " .. (r.tabName or "")):find(needle, 1, true)
             local id = (r.label or "") .. "|" .. tostring(r.page) .. "|" .. tostring(r.sub) .. "|" .. tostring(r.block)
             if not seen[id] and ((pass == 1 and inName) or (pass == 2 and inRest)) then
                 seen[id] = true
@@ -386,10 +390,10 @@ function ns.GoToOption(r, showPage)
         ns:OpenOptionsFor(r.block)
     else
         showPage(r.page)
-        if r.page == PAGE_BROKER and r.sub and ns.ShowBrokerSub then ns.ShowBrokerSub(r.sub) end
     end
-    -- a setting in a folded section: the section opens
-    if r.foldSection and r.foldSection.folded then r.foldSection.folded = false end
+    -- the tab the setting is in (Blocks: Content, Appearance, Behaviour; DataBroker: its parts)
+    if r.page == PAGE_BROKER and r.sub and ns.ShowBrokerSub then ns.ShowBrokerSub(r.sub) end
+    if r.page == PAGE_BLOCKS and r.sub and ns.ShowBlockTab then ns.ShowBlockTab(r.sub) end
     ns:RefreshOptions()
     ns:ShowOptionHelp(r.label, r.tip)
     -- positions are known on the next frame

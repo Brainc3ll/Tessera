@@ -175,5 +175,3 @@ Volume shown
 Wago
 Weapons
 Yellow threshold
-after
-inside

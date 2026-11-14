@@ -18,7 +18,7 @@ Rangé par thème le 25 octobre 2026 (avant : par date). Dans chaque partie, la 
 Pistes notées par Braincell1980 après la 1.3.1 ; aucune n'est choisie ni datée. Chacune renvoie à la partie qui la détaille.
 - **Bouton « Tous les blocs » d'un bloc seul ou d'un groupe** : quand un bloc seul ou un groupe est choisi, le bouton « Tous les blocs » a le même décalage avec l'onglet Apparence que la page « Tous les blocs » (corrigée en 1.3.1 : liste grisée et bouton « Ouvrir l'onglet Apparence »). À revoir si Braincell1980 le veut.
 - **Manette 2.0 : en pause (14/11)**, on laisse Blizzard peaufiner ; voir « Manette en pause », « Manette (2.0…) », « Manette native de WoW Forever » et « Ce que FlareUI 6.0 apprend pour la manette », dans Accessibilité et manette.
-- **Polices d'accessibilité, suite** (1.4 publiée le 14/11 avec six polices) : espacement des lettres seulement (`Tessera_Fonts` abandonné le 14/11) ; voir « Polices pour l'accessibilité ».
+- **Polices d'accessibilité, suite** (1.4 publiée le 14/11 avec six polices) : espacement des lettres seulement si des joueurs le demandent (décision du 14/11) ; `Tessera_Fonts` abandonné ; voir « Polices pour l'accessibilité ».
 - **Vol et bateaux** : écarté pour le moment (14/11) ; voir « Idées de blocs du 7/11 » pour les autres idées vérifiées avec forever-lint.
 
 ## Règles et décisions
@@ -70,7 +70,7 @@ Décision de Braincell1980 : ne pas coder (et déboguer) des blocs spécialisés
 Moins de fonctions en plus, plus de confiance et moins d'effort pour l'adopter.
 - **Bloc « Farm »** : suivre un objet récolté, avec objectif, rythme et temps restant, et un panneau épinglé en direct (à généraliser à tous les blocs). Étude complète : `docs/etudes/PLAN-bloc-farm.md` (1.2).
 - **Importer depuis un autre addon** : « Reprendre ma barre de Titan Panel / ChocolateBar / datatexts d'ElvUI » recrée les mêmes blocs aux mêmes places. Inconnu : leur format de sauvegarde ; l'addon doit être installé pour être lu. À étudier, pas à promettre.
-- **Plus de conditions d'affichage** : aujourd'hui en combat et en instance (et le profil automatique donjon / raid). En plus : en ville ou au repos, en groupe, sur une monture, au niveau maximum (masquer l'XP tout seul).
+- **Plus de conditions d'affichage** (écarté le 14/11 par Braincell1980 : en combat et hors combat suffisent) : aujourd'hui en combat et en instance (et le profil automatique donjon / raid). En plus : en ville ou au repos, en groupe, sur une monture, au niveau maximum (masquer l'XP tout seul).
 - **Galerie de dispositions** : une page (wiki GitHub ou CurseForge) où les joueurs postent leur texte d'export avec une capture. Vérifier si Wago.io accepte les textes de Tessera.
 - La fiabilité (zéro erreur, peu de mémoire) est l'argument principal : c'est la 1.1. Publier ensuite des chiffres mesurés dans la description.
 - À éviter : courir après le nombre de blocs.
@@ -175,7 +175,7 @@ Points à étudier le moment venu :
 
 ### Disposition « Portable » : Steam Deck, ROG Ally et autres consoles portables (24 octobre 2026)
 
-Idée de Braincell1980, à faire **après la refonte « Accessibilité » (1.3) et « Manette » (2.0)**, dont elle reprend les briques.
+Idée de Braincell1980, à faire **après la refonte « Accessibilité » (1.3) et « Manette » (2.0)**, dont elle reprend les briques. Depuis la pause de la manette (14/11), elle ne viendra que si la manette reprend.
 - Sur ces machines (1280×800, ou 720p/800p sur l'Ally), la place à l'écran n'est pas le souci : WoW met son interface à l'échelle (à 800p, elle fait à peu près la taille d'un écran 1366×768). Le souci, c'est la **taille physique** : sur 7 pouces, un texte en 12 devient minuscule.
 - Une disposition toute prête : une seule barre, peu de blocs (or, sacs, durabilité, FPS, latence, heure), texte en 14-16, blocs plus hauts (faciles à viser au tactile ou au pavé), infobulles agrandies.
 - Pas de bloc Batterie : les addons tournent dans un bac à sable sans accès au système, et l'API de Forever n'a aucune fonction de batterie (vérifié le 24/10). L'overlay de Steam l'affiche déjà.

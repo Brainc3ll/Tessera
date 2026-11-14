@@ -2909,6 +2909,41 @@ for _, step in ipairs({
         end
         ns:UpdateBlock(key)
     end,
+    -- after a font change the game can still measure with the previous font for a moment:
+    -- every block is measured again later (14/11, blocks stayed too narrow, so looked empty)
+    function()
+        local ready = false
+        local keys = {}
+        for _, k in ipairs(ns:GetBlockKeys()) do
+            local fr = ns.frames[k]
+            if fr and fr.text and ns.db.blocks[k].enabled and not ns.IsSpacerKey(k) then
+                table.insert(keys, k)
+                local function Width() return ready and 40 or 10 end -- 10: the old font's width
+                fr.text.GetStringWidth, fr.text.GetUnboundedStringWidth = Width, Width
+            end
+        end
+        for _, k in ipairs(keys) do
+            ns.db.blocks[k].font = "arial"
+            ns:ApplyStyle(k)
+        end
+        ready = true
+        for _ = 1, 4 do
+            local queued = __timers; __timers = {}
+            for _, fn in ipairs(queued) do pcall(fn) end
+        end
+        local wrong
+        for _, k in ipairs(keys) do
+            local f = ns.frames[k]
+            if f.lastText and f.lastText ~= "" and not f.lastText:find("|T", 1, true) and f.textW ~= 40 then wrong = wrong or k end
+        end
+        if wrong then print("STEP ERROR: font change: block " .. wrong .. " is not measured again (" .. tostring(ns.frames[wrong].textW) .. ")") end
+        for _, k in ipairs(keys) do
+            local t = ns.frames[k].text
+            t.GetStringWidth, t.GetUnboundedStringWidth = nil, nil
+            ns.db.blocks[k].font = "friz"
+            ns:ApplyStyle(k)
+        end
+    end,
     -- professions are recognized by skill line, not by name: on WoW Forever, GetProfessions
     -- returns prof1, prof2, first aid, fishing, cooking, and the First Aid spell name differs
     function()

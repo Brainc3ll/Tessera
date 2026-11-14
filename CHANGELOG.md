@@ -12,7 +12,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Fixes
 
-- A block no longer loses its text when you change its font and the game has not loaded that font yet. Tessera measures the text again a moment later.
+- A block no longer loses its text when you change its font. Tessera measures every block again a moment after the change.
 
 ## 1.3.2 — 2026-11-14
 

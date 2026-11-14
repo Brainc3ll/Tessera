@@ -1932,6 +1932,13 @@ function ns:SkinBlockFrame(f, cfg)
     if not f.text:SetFont(font.file, size, flags) then
         f.text:SetFont(STANDARD_TEXT_FONT, size, flags)
     end
+    -- right after a change the game can still measure with the previous font (the block comes
+    -- out too narrow and looks empty): every block is measured again a little later
+    local fontSig = tostring(font.file) .. "|" .. size .. "|" .. flags
+    if f.fontSig ~= fontSig then
+        f.fontSig = fontSig
+        self:RemeasureSoon()
+    end
     if cfg.textShadow then
         f.text:SetShadowColor(0, 0, 0, 0.9)
         f.text:SetShadowOffset(1, -1)
@@ -2177,6 +2184,26 @@ end
 local function BlockIcon(mod, cfg)
     if mod.getIcon then return mod.getIcon(cfg) end
     return mod.icon
+end
+
+-- Measures every block again shortly after a font change. Several changes in a row (browsing
+-- the font list) share the timers of the last one.
+function ns:RemeasureSoon()
+    if not C_Timer then return end
+    self.remeasureToken = (self.remeasureToken or 0) + 1
+    local token = self.remeasureToken
+    local function Run()
+        if token ~= self.remeasureToken then return end
+        for _, key in ipairs(self:GetBlockKeys()) do
+            local f = self.frames[key]
+            if f and f.text then
+                f.lastText = nil -- the text is written and measured again
+                self:UpdateBlock(key)
+            end
+        end
+    end
+    C_Timer.After(0.15, Run)
+    C_Timer.After(0.8, Run)
 end
 
 function ns:UpdateBlock(key)

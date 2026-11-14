@@ -8,28 +8,28 @@ Inventaire (14/11, 46 blocs déclarés un par un ; les métiers sont créés aut
 
 Autres idées déjà validées pour étude (14/11) : Amis, infobulle enrichie comme la Guilde ; clic réglable et réglage « nombre seul » (notes Broker_Everything) ; changer en un clic l'ensemble d'équipement, la difficulté, le pistage ou le titre (à vérifier en combat) ; petits ajouts de la sonde (Compréhension par numéro avec sa description, honneur d'hier, durabilité dans les sacs) ; tableau des personnages (Alts, notes SimplePanel).
 
-## Or (validé et codé le 14/11 sur `next`, test130, pas testé en jeu)
+## Or (validé, codé et testé en jeu le 14/11 (test130, sur `next`))
 Aujourd'hui : 4 options (format, icônes, arrondi, séparateur) ; infobulle avec gain de la session, or par heure, historique de 7 jours, or par personnage et total ; clic = sacs, Maj + clic = copie dans le chat ; historique figé à 7 jours (`Core.lua`) ; la session repart à la connexion, sans remise à zéro.
 - **A. Choisir l'infobulle** : quatre cases (session, or par heure, historique, personnages), toutes cochées par défaut.
 - **B. Total du compte** : liste « Montrer : ce personnage / total des personnages ». Décidé le 14/11 : le total ne compte que les personnages de **ta faction et de ton serveur** (l'or ne passe pas d'un serveur à l'autre) ; l'infobulle ne montre que ceux-là. `ns.sv.chars` ne garde que l'or et la classe : on y ajoute la faction (`UnitFactionGroup("player")`) et le royaume (`GetRealmName()`) à la connexion. Un personnage ancien reste exclu de tous les totaux jusqu'à sa prochaine connexion (décidé le 14/11). Sur Forever il n'y a pas de royaume d'après le code (données rangées sous le nom complet, `ns.FullCharName`) : le filtre par serveur n'y change rien (tous les personnages ont la même étiquette) et ne compte que là où des royaumes existent ; à vérifier en jeu. Les autres personnages gardent la dernière valeur vue à leur connexion.
 - **C. Historique de 7, 14 ou 30 jours** : liste ; défaut 7 (ancien comportement). Le nettoyage de `goldHistory` suit le réglage ; les anciens profils gardent 7.
 - **D. Remise à zéro de la session** : Ctrl + clic (ou menu) repart de zéro pour la session et l'or par heure ; une ligne d'aide dans l'infobulle. Action commune avec l'XP (voir XP, idée C).
 
-## Sacs (validé et codé le 14/11, test130)
+## Sacs (validé, codé et testé en jeu le 14/11, test130)
 Aujourd'hui : une option (libres / total, libres, utilisés / total), couleur par seuils, barre de progression ; infobulle avec chaque sac, les sacs de métier à part et la valeur du bric-à-brac gris ; le total ne compte que les sacs qui prennent tout (`GeneralBagSlots`). Écarté : vendre le bric-à-brac d'un clic (le jeu l'offre peut-être déjà chez le marchand, non vérifié ; règle « ne pas recoder ce que le jeu offre »).
 - **A. Choisir l'infobulle** : trois cases (détail de chaque sac, sacs de métier, valeur du bric-à-brac), cochées par défaut.
 - **B. Compter les sacs de métier** : case, décochée par défaut (comportement actuel) ; cochée, ils entrent dans le total et la barre.
 - **C. Valeur du bric-à-brac dans le bloc** : case, décochée par défaut ; ajoute la valeur du gris à côté des places. Le prix n'est connu qu'une fois l'objet en cache : afficher seulement ce qui est connu.
 - **D. Alerte quand c'est plein** : le bloc se met en évidence quand il reste peu de places (seuils existants) ; mécanisme d'alerte du bloc, et respect du réglage « moins d'animations » (pas de clignotement). Case décochée par défaut.
 
-## Durabilité (validé et codé le 14/11, test130)
+## Durabilité (validé, codé et testé en jeu le 14/11, test130)
 Aujourd'hui : une option (pièce la plus abîmée ou moyenne), seuils, barre ; infobulle avec chaque pièce équipée, les objets abîmés des sacs et le coût de réparation (`RepairCost`).
 - **A. Choisir l'infobulle** : trois cases (pièces équipées, objets des sacs, coût de réparation), cochées par défaut.
 - **B. Coût de réparation dans le bloc** : case, décochée par défaut ; ajoute le coût à côté du pourcentage. Mode streamer : montant masqué.
 - **C. Alerte sous un seuil** : le bloc se met en évidence quand une pièce passe sous le seuil ; même alerte commune que les Sacs (voir « Alerte commune »).
 - **D. Seulement les pièces abîmées** : case, décochée par défaut ; l'infobulle cache les pièces à 100 % et trie les plus usées en premier.
 
-## XP (validé et codé le 14/11, test130)
+## XP (validé, codé et testé en jeu le 14/11, test130)
 Aujourd'hui : deux options (format, bonus de repos), barre ; infobulle avec niveau, XP actuelle, reste, repos, XP de la session, XP par heure et temps avant le niveau suivant ; pas de clic.
 - **A. Choisir l'infobulle** : quatre cases (niveau, repos, session, rythme et temps restant), cochées par défaut.
 - **B. Temps restant dans le bloc** : case, décochée par défaut ; calculé sur la session, rien affiché tant que la session est trop courte (comme l'infobulle).

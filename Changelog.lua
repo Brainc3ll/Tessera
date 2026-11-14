@@ -46,6 +46,8 @@ ns.CHANGELOG = {
                     .. " OpenDyslexic (dyslexia) and Luciole (low vision), each in regular and bold."
                     .. " The menu shows in grey which alphabets each one covers."
                     .. " Other addons that use LibSharedMedia can pick them too.",
+                "Accessibility tab: a Font setting for all blocks. It is the same setting as Font under \"All blocks\""
+                    .. " in the Blocks tab, so each follows the other.",
                 "About tab: a new Licenses chapter lists the credits and licenses of these fonts.",
               },
               fr = {
@@ -53,6 +55,8 @@ ns.CHANGELOG = {
                     .. " OpenDyslexic (dyslexie) et Luciole (malvoyance), chacune en normal et en gras."
                     .. " Le menu indique en gris les alphabets couverts par chacune."
                     .. " Les autres addons qui utilisent LibSharedMedia peuvent les choisir aussi.",
+                "Onglet Accessibilité : un réglage Police pour tous les blocs. C'est le même réglage que Police sous « Tous les blocs »"
+                    .. " dans l'onglet Blocs : l'un suit l'autre.",
                 "Onglet À propos : un nouveau chapitre Licences donne les crédits et les licences de ces polices.",
               },
             },

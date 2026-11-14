@@ -2944,6 +2944,23 @@ for _, step in ipairs({
             ns:ApplyStyle(k)
         end
     end,
+    -- the Accessibility tab's font is the one of "All blocks": each follows the other
+    function()
+        local keys = {}
+        for _, k in ipairs(ns:GetBlockKeys()) do
+            if not ns.IsSpacerKey(k) then table.insert(keys, k) end
+        end
+        ns:SetAllBlocksFont("arial")
+        if ns:AllBlocksFont() ~= "arial" then print("STEP ERROR: accessibility font: AllBlocksFont does not follow SetAllBlocksFont") end
+        for _, k in ipairs(keys) do
+            if ns.db.blocks[k].font ~= "arial" then print("STEP ERROR: accessibility font: block " .. k .. " did not change") break end
+        end
+        if ns.db.groupDefaults.font ~= "arial" then print("STEP ERROR: accessibility font: new blocks would not get it") end
+        ns.db.blocks[keys[1]].font = "skurri" -- changed one by one in the Blocks tab
+        if ns:AllBlocksFont() ~= nil then print("STEP ERROR: accessibility font: different fonts must read as mixed") end
+        ns:SetAllBlocksFont("friz")
+        if ns:AllBlocksFont() ~= "friz" then print("STEP ERROR: accessibility font: could not go back to one font") end
+    end,
     -- professions are recognized by skill line, not by name: on WoW Forever, GetProfessions
     -- returns prof1, prof2, first aid, fishing, cooking, and the First Aid spell name differs
     function()

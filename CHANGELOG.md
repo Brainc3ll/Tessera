@@ -8,6 +8,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### New
 
 - Three fonts made for easier reading, in the font choice of every block: Atkinson Hyperlegible (low vision), OpenDyslexic (dyslexia) and Luciole (low vision), each in regular and bold. The menu shows in grey which alphabets each one covers. Other addons that use LibSharedMedia can pick them too.
+- Accessibility tab: a Font setting for all blocks. It is the same setting as Font under "All blocks" in the Blocks tab, so each follows the other.
 - About tab: a new Licenses chapter lists the credits and licenses of these fonts.
 
 ### Fixes

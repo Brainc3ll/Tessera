@@ -309,6 +309,35 @@ function ns:ShareFonts()
     end
 end
 
+-- Font shared by all the blocks (nil when they differ): the Accessibility tab's Font setting
+-- is the same as "Font" under "All blocks" in the Blocks tab, so each follows the other
+function ns:AllBlocksFont()
+    local font
+    for _, key in ipairs(self:GetBlockKeys()) do
+        local cfg = self.db.blocks[key]
+        -- spacers keep their own look: "All blocks" does not change them
+        if cfg and not self.IsSpacerKey(key) then
+            if font and cfg.font ~= font then return nil end
+            font = cfg.font
+        end
+    end
+    return font
+end
+
+-- Sets the font of all the blocks (what "All blocks" does in the Blocks tab), also for blocks
+-- and launchers created later
+function ns:SetAllBlocksFont(value)
+    for _, key in ipairs(self:GetBlockKeys()) do
+        local cfg = self.db.blocks[key]
+        if cfg and not self.IsSpacerKey(key) then
+            cfg.font = value
+            self:ApplyStyle(key)
+        end
+    end
+    self.db.groupDefaults.font = value
+    self.db.launcherDefaults.font = value
+end
+
 -- Menu text of a media entry: its name, then in grey the alphabets it covers (set for
 -- Tessera's own fonts only, measured on the font files: other fonts show no note)
 function ns:MediaLabel(opt)

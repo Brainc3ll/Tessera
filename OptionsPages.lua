@@ -138,6 +138,18 @@ local function BuildAccessPage(page)
             ns.sv.minFontSize = v > 0 and v or nil
             ns:RefreshAllBlocks()
         end, nil, L.TIP_MIN_FONT_SIZE), 1)
+    -- the font of all blocks: the same setting as "Font" under "All blocks" in the Blocks tab
+    Place(CreateDropdown(page, L.FONT, function()
+            local list = {}
+            if not ns:AllBlocksFont() then table.insert(list, { key = "mixed", name = L.FONT_MIXED }) end
+            for _, item in ipairs(ns:GetMediaList("font")) do table.insert(list, item) end
+            list.mayGrow = true
+            return list
+        end,
+        function() return ns:AllBlocksFont() or "mixed" end,
+        function(v)
+            if v ~= "mixed" then ns:SetAllBlocksFont(v) end
+        end, nil, nil, L.TIP_FONT_ACCESS), 1)
 end
 
 ---------------------------------------------------------------------------

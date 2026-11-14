@@ -46,6 +46,18 @@ Une seule alerte réutilisable, pas une par bloc : une case « Alerte » dans le
 - **XP D** : `GetQuestLogRewardXP(questID)` existe sur Forever (forever_api_check) ; sa façon de lire le questID est à vérifier en jeu (si elle ignore l'argument, les chiffres seront faux). Affichée entre crochets dans le bloc, en toutes lettres dans l'infobulle.
 - Nouveaux réglages : Or 6, Sacs 5, Durabilité 5, XP 6 (dont les cases d'infobulle), soit 22, +2 textes d'aide (`HELP_BLOCKS_22` et `HELP_BLOCKS_23`).
 
+## Amis (validé le 14/11, à coder avec la Guilde dans le lot Social, sur `next`)
+Aujourd'hui : le chiffre (en ligne, ou en ligne / total) coloré selon ton statut Battle.net ; infobulle avec ton statut, tes amis WoW, puis tes amis Battle.net (personnage, niveau, zone ; ailleurs, ce qu'ils font) ; 20 lignes au plus ; 3 réglages (format du compte, sans Battle.net, couleur du statut).
+- **A. Choisir l'infobulle** : trois cases (ton statut, amis WoW, amis Battle.net), cochées par défaut.
+- **B. Note de l'ami** : case, décochée par défaut ; la note écrite sur l'ami (liste WoW : `notes` ; Battle.net : `note`) s'affiche dans l'infobulle, avant la zone. Mode streamer : masquée comme les noms. API à vérifier sur Forever.
+- **C. Trier la liste** : liste « comme le jeu (défaut) / nom / niveau / zone » ; le tri s'applique aux amis WoW et Battle.net en jeu.
+- **D. Cacher les amis hors WoW** : case, décochée par défaut ; l'infobulle ne garde que les amis Battle.net qui jouent à WoW.
+
+## Reste du Personnage (choix du 14/11 ; à coder dans le lot Social)
+- **Niveau d'objet** : liste « équipé (défaut) / total / équipé / total » pour le bloc ; infobulle : case « plus faibles d'abord » (décochée par défaut) pour repérer la pièce à remplacer.
+- **Stats** : liste d'une 2e stat à côté de la première (défaut : aucune).
+- **Buffs longs et enchant d'arme** : validé comme « temps restant dans le bloc », mais **ces deux blocs le montrent déjà** (le temps restant le plus court, orange sous 5 minutes). À redéfinir avec Braincell1980 : seuil d'avertissement réglable en minutes, avec un rouge tout proche de la fin pour que « Clignoter pour alerter » se déclenche (il ne réagit qu'au rouge).
+
 ## Guilde (choix validés le 14/11, à coder dans le lot Social)
 Infobulle actuelle : nom de la guilde, puis les membres en ligne (nom, niveau, zone, couleur de classe), 20 lignes au plus. À ajouter, chacun avec sa case à cocher : message du jour, compteur en-tête (en ligne sur total), rang du membre, note publique (souvent le métier). Deux colonnes, celles de l'infobulle du jeu : à gauche niveau, nom et rang, à droite note et zone. Mode streamer : noms masqués comme aujourd'hui.
 

@@ -96,10 +96,12 @@ end
 -- the window opens at 115 % of its design size; a size the player chose is kept as it is
 local ZOOM_DEFAULT = 1.15
 local SIDE_ROOM = 200 -- UI units kept free on each side
+local NAV_MAX_GROW = 120 -- the left list may grow by this much for a long name
+local NAV_TEXT_ROOM = 52 -- px around a name: bar, margins
 local function FitPanelToScreen()
     local w, h = UIParent:GetWidth(), UIParent:GetHeight()
     if not (w and h and w > 0 and h > 0) then return end
-    local scale = math.min(1, (w - 2 * SIDE_ROOM) / PANEL_W, (h - 40) / PANEL_H)
+    local scale = math.min(1, (w - 2 * SIDE_ROOM) / (S.panelW or PANEL_W), (h - 40) / PANEL_H)
     -- the player's own size (Shift + mouse wheel on the window), on top
     local zoom = ns.sv and ns.sv.optionsZoom or ZOOM_DEFAULT
     S.panel:SetScale(math.max(0.5, math.max(0.6, scale) * zoom))
@@ -119,7 +121,7 @@ local function BuildHelpPanel()
     local help = CreateFrame("Frame", nil, S.panel)
     local line = help:CreateTexture(nil, "ARTWORK")
     line:SetColorTexture(1, 0.82, 0, 0.25)
-    help:SetPoint("TOPLEFT", S.panel, "TOPLEFT", PANEL_W - HELP_W, PAGE_TOP)
+    help:SetPoint("TOPLEFT", S.panel, "TOPLEFT", S.panelW - HELP_W, PAGE_TOP)
     help:SetPoint("BOTTOMRIGHT", S.panel, "BOTTOMRIGHT", -16, 16)
     line:SetWidth(1)
     line:SetPoint("TOPLEFT", -10, 0)
@@ -578,8 +580,22 @@ ns.ListenForUndo = ListenForUndo
 local function BuildPanel()
     ValidateSelection()
 
+    -- the left list is as wide as its longest name (a longer translation widens it, up to
+    -- NAV_MAX_GROW px; past that the name is cut with "..."): the page and the help move right
+    local names = { L.TAB_BLOCK, L.TAB_LOOK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.TAB_PROFILES, L.TAB_HELP,
+        L.TAB_ABOUT, L.SECTION_ACCESSIBILITY }
+    local probe = UIParent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    local widest = 0
+    for _, text in ipairs(names) do
+        probe:SetText(text)
+        widest = math.max(widest, probe:GetStringWidth() or 0)
+    end
+    probe:SetText("")
+    S.navW = math.min(NAV_W + NAV_MAX_GROW, math.max(NAV_W, math.ceil(widest) + NAV_TEXT_ROOM))
+    S.panelW = PANEL_W + (S.navW - NAV_W)
+
     S.panel = CreateFrame("Frame", "TesseraOptions", UIParent, "BackdropTemplate")
-    S.panel:SetSize(PANEL_W, PANEL_H)
+    S.panel:SetSize(S.panelW, PANEL_H)
     S.panel:SetPoint("CENTER")
     S.panel:SetFrameStrata("DIALOG")
     S.panel:SetClampedToScreen(true)
@@ -626,7 +642,7 @@ local function BuildPanel()
     S.panel.title:SetText(L.OPTIONS_TITLE)
     -- one plain sentence on what the open page is for, next to the title
     S.panel.hint = S.panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    S.panel.hint:SetPoint("TOPLEFT", S.panel, "TOPLEFT", NAV_W, -20)
+    S.panel.hint:SetPoint("TOPLEFT", S.panel, "TOPLEFT", S.navW, -20)
     S.panel.hint:SetPoint("RIGHT", S.panel, "RIGHT", -(SEARCH_W + 170 + TOPBAR_RIGHT + 16), 0)
     S.panel.hint:SetHeight(30)
     S.panel.hint:SetJustifyH("LEFT")
@@ -661,24 +677,22 @@ local function BuildPanel()
         ns:RefreshOptions()
     end
 
-    local names = { L.TAB_BLOCK, L.TAB_LOOK, L.TAB_GENERAL, L.LAUNCHERS, L.TAB_BROKER, L.TAB_PROFILES, L.TAB_HELP,
-        L.TAB_ABOUT, L.SECTION_ACCESSIBILITY }
     -- the navigation list: a thin frame, one line per page, the open one marked by a gold
     -- bar and white text (also a shape, not only a color: the bar)
     local nav = CreateFrame("Frame", nil, S.panel, "BackdropTemplate")
     nav:SetPoint("TOPLEFT", S.panel, "TOPLEFT", 16, PAGE_TOP)
     nav:SetPoint("BOTTOMLEFT", S.panel, "BOTTOMLEFT", 16, 16)
-    nav:SetWidth(NAV_W - 24)
+    nav:SetWidth(S.navW - 24)
     if nav.SetBackdrop then
         nav:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
         nav:SetBackdropColor(1, 1, 1, 0.03)
         nav:SetBackdropBorderColor(0.55, 0.43, 0.2, 0.6)
     end
     S.panel.nav = nav
-    local NAV_LINE = 30
+    local NAV_LINE = 32
     for i, text in ipairs(names) do
         local tab = CreateFrame("Button", nil, nav)
-        tab:SetSize(NAV_W - 32, NAV_LINE - 4)
+        tab:SetSize(S.navW - 32, NAV_LINE - 4)
         tab.bar = tab:CreateTexture(nil, "BACKGROUND")
         tab.bar:SetAllPoints()
         tab.bar:SetColorTexture(1, 0.82, 0, 0.18)
@@ -690,7 +704,7 @@ local function BuildPanel()
         hover:SetAllPoints()
         hover:SetColorTexture(1, 1, 1, 0.07)
         tab.label = tab:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        tab.label:SetPoint("LEFT", 12, 0)
+        tab.label:SetPoint("LEFT", 14, 0)
         tab.label:SetPoint("RIGHT", -4, 0)
         tab.label:SetJustifyH("LEFT")
         tab.label:SetWordWrap(false)
@@ -705,7 +719,7 @@ local function BuildPanel()
         tabs[i] = tab
 
         local page = CreateFrame("Frame", nil, S.panel)
-        page:SetPoint("TOPLEFT", S.panel, "TOPLEFT", NAV_W, PAGE_TOP)
+        page:SetPoint("TOPLEFT", S.panel, "TOPLEFT", S.navW, PAGE_TOP)
         page:SetPoint("BOTTOMRIGHT", S.panel, "BOTTOMRIGHT", -HELP_W, 0)
         page.pageIndex = i
         pages[i] = page

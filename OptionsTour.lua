@@ -1,12 +1,12 @@
 local ADDON, ns = ...
 local L = ns.L
 
--- Tour part of the options window: welcome, tutorial, news, style offer, text window and the bug report.
+-- Tour part of the options window: welcome, tutorial, style offer, text window and the bug report.
 -- Shared with the other Options*.lua files through ns.OptionsTools (see Options.lua).
 local Tools = ns.OptionsTools
 local S = Tools.S
-local Blink, CHANGELOG_TOPIC, GetMetadata, NEWS_VERSION = Tools.Blink, Tools.CHANGELOG_TOPIC, Tools.GetMetadata, Tools.NEWS_VERSION
-local PAGE_ABOUT, PAGE_ACCESS, PAGE_BLOCKS, PAGE_LOOK = Tools.PAGE_ABOUT, Tools.PAGE_ACCESS, Tools.PAGE_BLOCKS, Tools.PAGE_LOOK
+local Blink, CHANGELOG_TOPIC, GetMetadata = Tools.Blink, Tools.CHANGELOG_TOPIC, Tools.GetMetadata
+local PAGE_ABOUT, PAGE_ACCESS, PAGE_LOOK = Tools.PAGE_ABOUT, Tools.PAGE_ACCESS, Tools.PAGE_LOOK
 
 
 ---------------------------------------------------------------------------
@@ -278,78 +278,6 @@ StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
     end,
 }
 
----------------------------------------------------------------------------
--- "What's new in 1.3": a small window after an update (and from the Help tab). One
--- short line per big change, each with a button that opens the right place.
----------------------------------------------------------------------------
-local NEWS_ROWS = {
-    { text = "NEWS_1", run = ShowHeadWidget(function() return ns.blockSwitch end, L.ENABLED, L.TIP_ENABLED) },
-    { text = "NEWS_2", run = ShowHeadWidget(function() return ns.placeButton end, L.PLACE_BLOCK, L.TIP_PLACE_BLOCK) },
-    { text = "NEWS_3", run = function()
-        ns:OpenOptions(PAGE_BLOCKS)
-        ns:ShowOptionHelp(L.SEARCH, L.TIP_SEARCH)
-        C_Timer.After(0, function()
-            if S.panel and S.panel.search then Blink(S.panel.search, true) end
-        end)
-    end },
-    { text = "NEWS_4", run = ShowRow(PAGE_BLOCKS, L.APPLY_STYLE_TO, true) },
-    { text = "NEWS_5", run = ShowRow(PAGE_ACCESS, L.HIGH_CONTRAST) },
-}
-local news
-local NEWS_W, NEWS_TEXT_W, NEWS_BUTTON_W = 440, 290, 96
-
-function ns:ShowNews()
-    if not news then
-        news = CreateFrame("Frame", "TesseraNews", UIParent, "BackdropTemplate")
-        news:SetWidth(NEWS_W)
-        news:SetPoint("TOP", UIParent, "TOP", 0, -140)
-        news:SetFrameStrata("FULLSCREEN_DIALOG")
-        news:SetClampedToScreen(true)
-        news:SetMovable(true)
-        news:EnableMouse(true)
-        news:RegisterForDrag("LeftButton")
-        news:SetScript("OnDragStart", news.StartMoving)
-        news:SetScript("OnDragStop", news.StopMovingOrSizing)
-        news.title = news:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        news.title:SetPoint("TOPLEFT", 16, -14)
-        news.title:SetText(L.NEWS_TITLE:format(NEWS_VERSION))
-        local close = CreateFrame("Button", nil, news, "UIPanelCloseButton")
-        close:SetPoint("TOPRIGHT", -4, -4)
-        local y = 40
-        for _, row in ipairs(NEWS_ROWS) do
-            local text = news:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-            text:SetPoint("TOPLEFT", 16, -y)
-            text:SetWidth(NEWS_TEXT_W)
-            text:SetJustifyH("LEFT")
-            text:SetSpacing(3)
-            text:SetText(L[row.text])
-            local button = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
-            button:SetSize(NEWS_BUTTON_W, 22)
-            button:SetText(L.TUTORIAL_DO_BLOCK)
-            button:SetPoint("TOPRIGHT", news, "TOPLEFT", NEWS_W - 16, -y)
-            button:SetScript("OnClick", row.run)
-            y = y + math.max(text:GetStringHeight(), 22) + 12
-        end
-        local all = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
-        all:SetSize(190, 22)
-        all:SetText(L.NEWS_ALL)
-        all:SetPoint("BOTTOMLEFT", 16, 14)
-        all:SetScript("OnClick", function()
-            news:Hide()
-            ns:OpenOptions(PAGE_ABOUT)
-            if S.aboutContent then S.aboutContent:ShowTopic(CHANGELOG_TOPIC) end
-        end)
-        local done = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
-        done:SetSize(96, 22)
-        done:SetText(L.TUTORIAL_DONE)
-        done:SetPoint("BOTTOMRIGHT", -16, 14)
-        done:SetScript("OnClick", function() news:Hide() end)
-        news:SetHeight(y + 48)
-    end
-    self:SkinWindow(news, news.title)
-    ns:ShowSideWindow(news)
-end
-
 -- Shows the welcome popup once per saved-variables file (first install), or the
 -- "what's new" popup when the installed version changed since last time
 function ns:ShowWelcomeIfNeeded()
@@ -358,20 +286,10 @@ function ns:ShowWelcomeIfNeeded()
     -- (welcomed but no version saved: installed before this popup existed, i.e. updated)
     if self.sv.welcomed and version and self.sv.lastVersion ~= version then
         self.sv.lastVersion = version
-        -- a version with its own news window (1.3.x): shown once, instead of the popup
-        if version:sub(1, #NEWS_VERSION + 1) == NEWS_VERSION .. "." and self.sv.newsSeen ~= NEWS_VERSION
-            and not self.brokerModeActive then
-            self.sv.newsSeen = NEWS_VERSION
-            self:ShowNews()
-            return
-        end
         StaticPopup_Show("TESSERA_WHATS_NEW", version)
         return
     end
-    -- a new install has nothing to catch up on
-    if not self.sv.welcomed and version and version:sub(1, #NEWS_VERSION + 1) == NEWS_VERSION .. "." then
-        self.sv.newsSeen = NEWS_VERSION
-    end
+    self.sv.newsSeen = nil -- the old "What's new in 1.3" window is gone
     if version then self.sv.lastVersion = version end
     if self.sv.welcomed then return end
     self.sv.welcomed = true

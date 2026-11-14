@@ -6,7 +6,7 @@ local L = ns.L
 local Tools = ns.OptionsTools
 local S = Tools.S
 local AttachTip, COL_X, CreateButton, FULL_W = Tools.AttachTip, Tools.COL_X, Tools.CreateButton, Tools.FULL_W
-local HELP_W, NAV_W, NEWS_VERSION, PANEL_W = Tools.HELP_W, Tools.NAV_W, Tools.NEWS_VERSION, Tools.PANEL_W
+local HELP_W, NAV_W, PANEL_W = Tools.HELP_W, Tools.NAV_W, Tools.PANEL_W
 local Register = Tools.Register
 
 
@@ -331,15 +331,6 @@ local function BuildHelpPage(page)
     AttachTip(demo, L.DEMO_BUTTON, L.TIP_DEMO_BUTTON)
     demo.Refresh = function() end
     Register(demo, function() return not ns.brokerModeActive end)
-    -- what changed in 1.3, with buttons that open the right places
-    local whatsNew = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
-    whatsNew:SetSize(TOPIC_W, 22)
-    whatsNew:SetPoint("BOTTOMLEFT", demo, "TOPLEFT", 0, 4)
-    whatsNew:SetText(L.NEWS_BUTTON:format(NEWS_VERSION))
-    whatsNew:SetScript("OnClick", function() ns:ShowNews() end)
-    AttachTip(whatsNew, L.NEWS_BUTTON:format(NEWS_VERSION), L.TIP_NEWS_BUTTON)
-    whatsNew.Refresh = function() end
-    Register(whatsNew, function() return not ns.brokerModeActive end)
 end
 
 ---------------------------------------------------------------------------

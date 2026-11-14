@@ -51,7 +51,6 @@ local PAGE_BLOCKS, PAGE_LOOK, PAGE_GENERAL, PAGE_LAUNCHERS, PAGE_BROKER, PAGE_PR
 -- (1.3) a page added later gets the next number (its texts, PAGE_HINT_<n>, keep theirs);
 -- NAV_ORDER is where each one sits in the list on the left
 local PAGE_ACCESS = 9
-local NEWS_VERSION = "1.3" -- the version with a "What's new" window (ns:ShowNews)
 local PAGE_COUNT = 9
 local NAV_ORDER = { PAGE_BLOCKS, PAGE_LOOK, PAGE_GENERAL, PAGE_ACCESS, PAGE_LAUNCHERS, PAGE_BROKER,
     PAGE_PROFILES, PAGE_HELP, PAGE_ABOUT }
@@ -379,7 +378,6 @@ ns.OptionsTools = {
     LauncherKeys = LauncherKeys,
     NAV_ORDER = NAV_ORDER,
     NAV_W = NAV_W,
-    NEWS_VERSION = NEWS_VERSION,
     PAGE_ABOUT = PAGE_ABOUT,
     PAGE_ACCESS = PAGE_ACCESS,
     PAGE_BLOCKS = PAGE_BLOCKS,

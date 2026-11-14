@@ -62,7 +62,7 @@ Aujourd'hui : le chiffre (en ligne, ou en ligne / total) coloré selon ton statu
 Infobulle actuelle : nom de la guilde, puis les membres en ligne (nom, niveau, zone, couleur de classe), 20 lignes au plus. À ajouter, chacun avec sa case à cocher : message du jour, compteur en-tête (en ligne sur total), rang du membre, note publique (souvent le métier). Deux colonnes, celles de l'infobulle du jeu : à gauche niveau, nom et rang, à droite note et zone. Mode streamer : noms masqués comme aujourd'hui.
 
 ## Blocs à voir ensuite
-Ordre à choisir avec Braincell1980. Social d'abord (guild, friends, mail, loot, group, whispers), puis Personnage, Progression, Monde, Système, Forever.
+Ordre choisi par Braincell1980 le 14/11 : Social et Personnage faits ; ensuite **Progression, Monde, Système, Forever**, un bloc à la fois (brainstorm, validation, code), zip test après les premiers lots.
 
 **Lot Social + Personnage (test131) :** Guilde 4 cases ; Amis 8 réglages (tri, notes, Battle.net sur WoW seulement, 3 cases d'infobulle) ; Niveau d'objet 2 ; Stats 1 ; Buffs longs et Enchant d'arme : seuils réglables. Reste à voir : Progression, Monde, Système, Forever, puis mise en évidence des réglages propres de chaque bloc.
 

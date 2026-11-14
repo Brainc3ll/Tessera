@@ -99,6 +99,8 @@ ns.CHANGELOG = {
                     .. " and greys out while that one is off.",
                 "The search shows where each setting sits, for example Blocks and groups › Guild › Content › Tooltip, and opens its tab.",
                 "The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.",
+                "The \"What's new in 1.3\" button is gone from the Help tab. The Changelog in the About tab lists every change.",
+                "The list on the left of the options window widens for a long tab name, so no name is cut.",
               },
               fr = {
                 "Les onglets de gauche de la fenêtre d'options disent ce qu'ils contiennent : Blocs et groupes, Style et dispositions,"
@@ -112,6 +114,8 @@ ns.CHANGELOG = {
                     .. " et se grise tant que l'autre est désactivé.",
                 "La recherche indique où se trouve chaque réglage, par exemple Blocs et groupes › Guilde › Contenu › Infobulle, et ouvre son onglet.",
                 "La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute : le texte à 100 % tient avec moins de molette.",
+                "Le bouton « Nouveautés de la 1.3 » disparaît de l'onglet Aide. Le Changelog de l'onglet À propos liste tous les changements.",
+                "La liste à gauche de la fenêtre d'options s'élargit pour un nom d'onglet long : aucun nom n'est coupé.",
               },
             },
             { kind = "fixed",

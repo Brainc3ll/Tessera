@@ -2836,6 +2836,12 @@ for _, step in ipairs({
         assert(ns.FramesOverlap(a, b) and not ns.FramesOverlap(a, c), "overlap test")
         TesseraOptions:Hide()
     end,
+    -- the left list is as wide as its longest name; the window grows by the same amount
+    function()
+        local S = ns.OptionsTools.S
+        if not (S.navW and S.navW >= 176 and S.navW <= 296) then print("STEP ERROR: nav width out of range: " .. tostring(S.navW)) end
+        if TesseraOptions:GetWidth() ~= S.panelW then print("STEP ERROR: window width " .. tostring(TesseraOptions:GetWidth()) .. " is not panelW " .. tostring(S.panelW)) end
+    end,
     -- quick tour
     function()
         ns:StartTutorial()
@@ -2850,14 +2856,11 @@ for _, step in ipairs({
             TesseraTutorial.next:GetScript("OnClick")()
         end -- 11 steps: the last one
         if TesseraTutorial.index ~= 11 then print("STEP ERROR: tour: expected 11 steps, at the last one the index is " .. tostring(TesseraTutorial.index)) end
-        -- "What's new in 1.3": opens, one side window at a time
-        ns:ShowNews()
-        if not (TesseraNews and TesseraNews:IsShown()) then print("STEP ERROR: news window did not open") end
         -- "Show me" finds its settings: they must be registered rows
         for _, label in ipairs({ ns.L.APPLY_STYLE_TO, ns.L.HIGH_CONTRAST }) do
             local found = false
             for _, r in ipairs(ns.optionRows) do if r.label == label then found = true end end
-            if not found then print("STEP ERROR: news: no setting row for \"" .. label .. "\"") end
+            if not found then print("STEP ERROR: tour: no setting row for \"" .. label .. "\"") end
         end
         -- "All blocks" page: the style choice is greyed, one button opens the Look tab
         local function Row(label)
@@ -2889,15 +2892,6 @@ for _, step in ipairs({
             if applyRow.goLook:IsShown() or not applyRow.buttons[1]:IsShown() then print("STEP ERROR: one block: the three buttons did not come back") end
             if applyRow.label:GetText() ~= ns.L.APPLY_STYLE_TO then print("STEP ERROR: one block: the apply row label did not come back") end
         end
-        -- every "Show me" button runs without error
-        for _, child in ipairs({ TesseraNews:GetChildren() }) do
-            if child.GetObjectType and child:GetObjectType() == "Button" and child:GetScript("OnClick") then
-                local ok, err = pcall(child:GetScript("OnClick"), child)
-                if not ok then print("STEP ERROR: news button: " .. tostring(err)) end
-                if TesseraNews then TesseraNews:Show() end
-            end
-        end
-        TesseraNews:Hide()
         -- the layouts step: try some, leave without keeping -> the player's layout comes back
         ns:ResetProfile("left")
         ns.db.blocks.time.width = 123

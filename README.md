@@ -203,8 +203,7 @@ Help tab inside the game explains everything.
 - Tooltips your way: bigger or smaller, or only while holding Alt (Placement and more tab).
 - A quick tour on first launch (again from the Help tab), where the ready-made layouts can be
   tried one after the other right on the screen, a demo mode showing every block by category
-  with sample values and a style switcher, and a "What's new in 1.3" window (after the update,
-  and from the Help tab) with a button for each big change.
+  with sample values and a style switcher.
 - In front of or behind Blizzard's frames: Tessera never moves them. When blocks cover some of them
   (action bars, minimap, buffs), you choose whether the blocks stay in front or behind; placement
   mode (and Blizzard's Edit Mode) can switch every block for a while to see what is underneath.

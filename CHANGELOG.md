@@ -25,6 +25,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Every tab of the options window sorts its settings into boxes. Each box has a Reset button that puts its settings back to their defaults once you confirm. Two short settings share a line, and a setting that depends on another sits under it and greys out while that one is off.
 - The search shows where each setting sits, for example Blocks and groups › Guild › Content › Tooltip, and opens its tab.
 - The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.
+- The "What's new in 1.3" button is gone from the Help tab. The Changelog in the About tab lists every change.
+- The list on the left of the options window widens for a long tab name, so no name is cut.
 
 ### Fixes
 

@@ -268,7 +268,7 @@ Règle de Braincell1980 : le jeu a déjà ses options d'accessibilité (Réglage
 
 ### Polices pour l'accessibilité (24 octobre 2026, pour la 1.4)
 
-**Publié le 14/11 dans la 1.4.0** (premier lot, test125) : Atkinson Hyperlegible Next, OpenDyslexic, Luciole, voir `docs/A-REPRENDRE.md`. Lot 2 fait le même jour (test129) : Lexend, Andika, Inclusive Sans. Reste : espacement des lettres. `Tessera_Fonts` abandonné le 14/11 : pas de bibliothèque embarquée pour l'instant ; Tessera enregistre déjà ses polices dans LibSharedMedia quand un autre addon l'a chargé (`ns:ShareFonts`, dans la 1.4.0). À vérifier un jour en jeu : elles apparaissent-elles dans le choix de police de FlareUI ? Décision : pas de champ de chemin libre.
+**Publié le 14/11 dans la 1.4.0** (premier lot, test125) : Atkinson Hyperlegible Next, OpenDyslexic, Luciole, voir `docs/A-REPRENDRE.md`. Lot 2 fait le même jour (test129) : Lexend, Andika, Inclusive Sans. Reste : espacement des lettres. `Tessera_Fonts` abandonné le 14/11 : pas de bibliothèque embarquée pour l'instant ; Tessera enregistre déjà ses polices dans LibSharedMedia quand un autre addon l'a chargé (`ns:ShareFonts`, dans la 1.4.0). Validé en jeu par Braincell1980 le 14/11 : elles apparaissent dans le choix de police de FlareUI. Décision : pas de champ de chemin libre.
 
 Idée de Braincell1980 : donner le choix de polices pensées pour l'accessibilité, et les rendre disponibles pour les autres addons. Licences vérifiées en ligne le 24/10 ; toutes compatibles avec la licence MIT de Tessera (livrées sans modification, avec leur fichier de licence).
 

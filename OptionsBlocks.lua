@@ -183,11 +183,9 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
                 P.Place(section, col)
             elseif opt.kind == "check" then
                 local check = P.Place(CreateCheck(sub, label, get, setter, shown, tip), col)
-                -- tooltip checkboxes sit two by two (half-width rows, see the relayout below)
-                if opt.section == "tooltip" then
-                    check:SetWidth(COL_W + 20)
-                    check.pairable = true
-                end
+                -- checkboxes sit two by two (half-width rows, see the relayout below)
+                check:SetWidth(COL_W)
+                check.pairable = true
             elseif opt.kind == "dropdown" then
                 -- values: a list, or a function (a list that changes: the player's skills...)
                 local values = function()
@@ -239,7 +237,7 @@ local function BuildModuleOptions(sub, P, col, keys, condition, filter)
                     if w.pairable and left then
                         P.Point(w, col, left.y + shift)
                         local point, rel, relPoint, x, yy = w:GetPoint(1)
-                        w:SetPoint(point, rel, relPoint, x + COL_X[2] - COL_X[1], yy)
+                        w:SetPoint(point, rel, relPoint, x + COL_W + 20, yy)
                         y = left.y - math.max(left.h, w.layoutHeight) - SPACING
                         left = nil
                     else

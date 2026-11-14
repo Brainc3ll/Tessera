@@ -3259,7 +3259,7 @@ do
         else
             local al, _, _, at = Rect(a)
             local bl, _, _, bt = Rect(b)
-            if math.abs(at - bt) > 0.5 or math.abs((bl - al) - 340) > 0.5 then
+            if math.abs(at - bt) > 0.5 or math.abs((bl - al) - 320) > 0.5 then
                 print("STEP ERROR: two tooltip checkboxes share a line: " .. al .. "," .. at .. " / " .. bl .. "," .. bt)
             end
             local _, _, _, top1 = Rect(hist)
@@ -3300,15 +3300,15 @@ do
     if ns.sv.optionsZoom ~= 1.3 then print("STEP ERROR: window size stops at 130 %: " .. tostring(ns.sv.optionsZoom)) end
     for _ = 1, 30 do wheel(TesseraOptions, -1) end
     if ns.sv.optionsZoom ~= 0.7 then print("STEP ERROR: window size stops at 70 %: " .. tostring(ns.sv.optionsZoom)) end
-    for _ = 1, 6 do wheel(TesseraOptions, 1) end
-    if ns.sv.optionsZoom ~= nil then print("STEP ERROR: back to 100 % saves nothing") end
+    for _ = 1, 9 do wheel(TesseraOptions, 1) end
+    if ns.sv.optionsZoom ~= nil then print("STEP ERROR: back to 115 % saves nothing") end
     IsShiftKeyDown = shift
     -- help tooltips of Tessera's windows: 125 % of the game's size, given back on hide
     local set = {}
     GameTooltip.SetScale = function(_, v) set[#set + 1] = v end
     GameTooltip.GetOwner = function() return TesseraOptions end
     GameTooltip.__scripts.OnShow(GameTooltip)
-    if not set[1] or math.abs(set[1] - 1.25) > 0.001 then print("STEP ERROR: window tooltips are 125 % of the game's size: " .. tostring(set[1])) end
+    if not set[1] or math.abs(set[1] - 1.25 * 1.15) > 0.001 then print("STEP ERROR: window tooltips are 125 % of the game's size: " .. tostring(set[1])) end
     GameTooltip.__scripts.OnHide(GameTooltip)
     if not set[2] or math.abs(set[2] - 1) > 0.001 then print("STEP ERROR: the game's tooltip scale is given back") end
     GameTooltip.SetScale, GameTooltip.GetOwner = nil, nil

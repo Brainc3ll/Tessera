@@ -75,7 +75,7 @@ local PANEL_W, PANEL_H = 720 + NAV_W + HELP_W, 780
 local COL_W = 300
 local COL_X = { 40, 380 }
 local FULL_W = COL_X[2] + COL_W - COL_X[1]
-local SPACING = 4 -- vertical space between two rows (each row has its own air, ROW_PAD)
+local SPACING = 2 -- vertical space between two rows (each row has its own air, ROW_PAD)
 
 local ALL = "*all"            -- selection value "All blocks"
 local LAUNCHERS = "*launchers" -- selection value "All launchers"

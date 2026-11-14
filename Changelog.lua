@@ -87,11 +87,13 @@ ns.CHANGELOG = {
             { kind = "improved",
               en = {
                 "Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip."
-                    .. " The tooltip checkboxes sit two by two.",
+                    .. " Checkboxes sit two by two, and rows and titles are tighter, so you scroll less."
+                    .. " The options window opens 15 % larger (115 %), which leaves room for text at 100 %.",
               },
               fr = {
                 "Réglages des blocs : un bloc qui a beaucoup de réglages les range sous deux titres repliables, Affichage et Infobulle."
-                    .. " Les cases de l'infobulle se placent deux par deux.",
+                    .. " Les cases se placent deux par deux et les lignes et titres sont resserrés : moins de molette."
+                    .. " La fenêtre d'options s'ouvre 15 % plus grande (115 %), ce qui laisse la place à du texte à 100 %.",
               },
             },
         },

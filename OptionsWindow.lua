@@ -93,13 +93,15 @@ local function DockSideWindows()
     end
 end
 
+-- the window opens at 115 % of its design size; a size the player chose is kept as it is
+local ZOOM_DEFAULT = 1.15
 local SIDE_ROOM = 200 -- UI units kept free on each side
 local function FitPanelToScreen()
     local w, h = UIParent:GetWidth(), UIParent:GetHeight()
     if not (w and h and w > 0 and h > 0) then return end
     local scale = math.min(1, (w - 2 * SIDE_ROOM) / PANEL_W, (h - 40) / PANEL_H)
     -- the player's own size (Shift + mouse wheel on the window), on top
-    local zoom = ns.sv and ns.sv.optionsZoom or 1
+    local zoom = ns.sv and ns.sv.optionsZoom or ZOOM_DEFAULT
     S.panel:SetScale(math.max(0.5, math.max(0.6, scale) * zoom))
 end
 
@@ -210,14 +212,14 @@ end
 local zoomWindows = {}
 local function ApplyZoom()
     FitPanelToScreen()
-    local zoom = ns.sv and ns.sv.optionsZoom or 1
+    local zoom = ns.sv and ns.sv.optionsZoom or ZOOM_DEFAULT
     for frame in pairs(zoomWindows) do frame:SetScale(zoom) end
     if S.panel and S.panel.zoomText then S.panel.zoomText:Refresh() end
 end
 local function Zoom(delta)
-    local z = (ns.sv.optionsZoom or 1) + (delta > 0 and ZOOM_STEP or -ZOOM_STEP)
+    local z = (ns.sv.optionsZoom or ZOOM_DEFAULT) + (delta > 0 and ZOOM_STEP or -ZOOM_STEP)
     z = math.max(ZOOM_MIN, math.min(ZOOM_MAX, math.floor(z * 100 + 0.5) / 100))
-    ns.sv.optionsZoom = (math.abs(z - 1) > 0.001) and z or nil
+    ns.sv.optionsZoom = (math.abs(z - ZOOM_DEFAULT) > 0.001) and z or nil
     ApplyZoom()
     DockSideWindows()
 end
@@ -239,7 +241,7 @@ function ns:FollowWindowSize(frame)
         zoomWindows[frame] = true
         ZoomOnShiftWheel(frame)
     end
-    frame:SetScale(self.sv and self.sv.optionsZoom or 1)
+    frame:SetScale(self.sv and self.sv.optionsZoom or ZOOM_DEFAULT)
 end
 
 -- Help tooltips of Tessera's windows: bigger than the game's own at 100 % (hard to read
@@ -258,7 +260,7 @@ local windowTipScale
 GameTooltip:HookScript("OnShow", function(self)
     if windowTipScale or not OwnedByTesseraWindow(self) then return end
     windowTipScale = self:GetScale()
-    self:SetScale(windowTipScale * TOOLTIP_BASE * (ns.sv and ns.sv.optionsZoom or 1))
+    self:SetScale(windowTipScale * TOOLTIP_BASE * (ns.sv and ns.sv.optionsZoom or ZOOM_DEFAULT))
 end)
 GameTooltip:HookScript("OnHide", function(self)
     if windowTipScale then self:SetScale(windowTipScale) windowTipScale = nil end
@@ -287,7 +289,7 @@ local function BuildZoomText()
         end
     end
     f.Refresh = function()
-        fs:SetText(math.floor((ns.sv.optionsZoom or 1) * 100 + 0.5) .. " %")
+        fs:SetText(math.floor((ns.sv.optionsZoom or ZOOM_DEFAULT) * 100 + 0.5) .. " %")
     end
     f:EnableMouse(true)
     AttachTip(f, L.WINDOW_ZOOM, L.TIP_WINDOW_ZOOM)

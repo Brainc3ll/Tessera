@@ -20,7 +20,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Improvements
 
-- Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip. The tooltip checkboxes sit two by two.
+- Block settings: a block with many settings groups them under two titles that fold, Display and Tooltip. Checkboxes sit two by two, and rows and titles are tighter, so you scroll less. The options window opens 15 % larger (115 %), which leaves room for text at 100 %.
 
 ## 1.4.0 — 2026-11-14
 

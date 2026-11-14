@@ -95,7 +95,7 @@ end
 local ROW_LABEL_W = 270                       -- label, on the left
 local ROW_CONTROL_X = 290                     -- control, from the row's left edge
 local ROW_CONTROL_W = FULL_W - ROW_CONTROL_X  -- room for the control
-local ROW_PAD = 4                             -- above and below the taller of label and control
+local ROW_PAD = 2                             -- above and below the taller of label and control
 local STEPPER_MAX = 6                         -- lists up to 6 choices get ◄ ► arrows
 
 -- Every setting row of the window, in the order it was placed: label, tooltip,
@@ -214,10 +214,10 @@ end
 local function CreateHeader(parent, text)
     local holder = CreateFrame("Frame", nil, parent)
     local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    fs:SetPoint("BOTTOMLEFT", 0, 5)
+    fs:SetPoint("BOTTOMLEFT", 0, 4)
     fs:SetText(text)
     -- room above the text: sections stand apart (more with bigger text)
-    local h = math.max(30, (fs:GetStringHeight() or 0) + 16)
+    local h = math.max(24, (fs:GetStringHeight() or 0) + 10)
     holder:SetSize(FULL_W, h)
     local line = holder:CreateTexture(nil, "ARTWORK")
     AccentLine(line, fs)
@@ -225,7 +225,7 @@ local function CreateHeader(parent, text)
     line:SetPoint("BOTTOMLEFT")
     line:SetPoint("BOTTOMRIGHT")
     holder.Refresh = function() end
-    holder.layoutHeight = h + 4
+    holder.layoutHeight = h + 2
     holder.isHeader, holder.headerText = true, text
     return Register(holder)
 end
@@ -242,7 +242,7 @@ local function CreateSection(parent, text, folded)
     local fs = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     fs:SetPoint("LEFT", sign, "RIGHT", 6, 0)
     fs:SetText(text)
-    local h = math.max(30, (fs:GetStringHeight() or 0) + 16) -- (bigger text: taller)
+    local h = math.max(24, (fs:GetStringHeight() or 0) + 10) -- (bigger text: taller)
     b:SetSize(FULL_W, h)
     local line = b:CreateTexture(nil, "ARTWORK")
     AccentLine(line, fs)
@@ -270,7 +270,7 @@ local function CreateSection(parent, text, folded)
     end
     b:SetScript("OnClick", function(self) self:Activate() end)
     b:Refresh()
-    b.layoutHeight = h + 4
+    b.layoutHeight = h + 2
     b.isHeader, b.isSection, b.headerText = true, true, text
     return Register(b)
 end
@@ -315,7 +315,7 @@ local function CreateCheck(parent, label, getter, setter, isShown, tip)
     row.check = cb
     row.Activate = function() cb:Click() end
     row.Refresh = function() cb:SetChecked(getter() and true or false) end
-    FitRow(row, 29)
+    FitRow(row, 24)
     return Register(AsSetting(row, label, tip, "check"), isShown)
 end
 
@@ -500,7 +500,7 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
             dd:SetWidth(ROW_CONTROL_W - 10)
             RowHover(holder, dd)
         end
-        FitRow(holder, 30)
+        FitRow(holder, 26)
     end
     SetupChoices(dd, label, options, getter, setter)
     AttachTip(holder, label, tip)
@@ -540,7 +540,7 @@ local function CreateActionDropdown(parent, label, buildEntries, emptyText, tip)
     holder.Activate = function() if dd.OpenMenu then dd:OpenMenu() end end
 
     holder.Refresh = function() dd:GenerateMenu() end
-    FitRow(holder, 30)
+    FitRow(holder, 26)
     return Register(AsSetting(holder, label, tip, "action"))
 end
 

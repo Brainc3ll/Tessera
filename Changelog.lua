@@ -49,7 +49,8 @@ ns.CHANGELOG = {
                     .. " Other addons that use LibSharedMedia can pick them too.",
                 "Accessibility tab: a Font setting for all blocks. It is the same setting as Font under \"All blocks\""
                     .. " in the Blocks tab, so each follows the other.",
-                "About tab: a new Licenses chapter lists the credits and licenses of these fonts.",
+                "About tab: a new Licenses chapter lists the credits and licenses of these fonts."
+                    .. " A Licenses folder in the addon holds a copy of each license, and of Tessera's own.",
               },
               fr = {
                 "Six polices pensées pour lire plus facilement, dans le choix de police de chaque bloc : Atkinson Hyperlegible et Luciole (malvoyance),"
@@ -59,7 +60,20 @@ ns.CHANGELOG = {
                     .. " Les autres addons qui utilisent LibSharedMedia peuvent les choisir aussi.",
                 "Onglet Accessibilité : un réglage Police pour tous les blocs. C'est le même réglage que Police sous « Tous les blocs »"
                     .. " dans l'onglet Blocs : l'un suit l'autre.",
-                "Onglet À propos : un nouveau chapitre Licences donne les crédits et les licences de ces polices.",
+                "Onglet À propos : un nouveau chapitre Licences donne les crédits et les licences de ces polices."
+                    .. " Un dossier Licenses dans l'addon contient une copie de chaque licence, et celle de Tessera.",
+              },
+            },
+            { kind = "improved",
+              en = {
+                "Optimizations under the hood: Tessera does less work in the background."
+                    .. " Blocks that follow only you ignore the events of other units, a block update no longer creates"
+                    .. " new functions each time, and the fade check stops at once when no block fades.",
+              },
+              fr = {
+                "Optimisations sous le capot : Tessera travaille moins en arrière-plan."
+                    .. " Les blocs qui ne suivent que toi ignorent les événements des autres unités, une mise à jour de bloc"
+                    .. " ne crée plus de nouvelles fonctions à chaque fois, et la vérification des fondus s'arrête aussitôt quand aucun bloc ne s'estompe.",
               },
             },
             { kind = "fixed",

@@ -142,7 +142,7 @@ ns.fonts = {
     -- Morpheus draws small letters: shown 2 points larger to read like the others
     { key = "morpheus", name = "Morpheus",      file = "Fonts\\MORPHEUS.TTF", sizeBoost = 2 },
     { key = "skurri",   name = "Skurri",        file = "Fonts\\SKURRI.TTF" },
-    -- Accessibility fonts shipped with Tessera (licences: Media/Fonts and the About tab).
+    -- Accessibility fonts shipped with Tessera (licenses: Licenses folder and the About tab).
     -- share = true: also offered to other addons through LibSharedMedia (ns:ShareFonts)
     { key = "atkinson",     name = "Atkinson Hyperlegible",      share = true, scripts = {"latin"},
       file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\AtkinsonHyperlegibleNext-Regular.ttf" },

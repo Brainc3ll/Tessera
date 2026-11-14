@@ -9,7 +9,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Six fonts made for easier reading, in the font choice of every block: Atkinson Hyperlegible and Luciole (low vision), OpenDyslexic (dyslexia), Lexend (reading flow), Andika (beginning readers) and Inclusive Sans (general legibility), each in regular and bold. The menu shows in grey which alphabets each one covers. Other addons that use LibSharedMedia can pick them too.
 - Accessibility tab: a Font setting for all blocks. It is the same setting as Font under "All blocks" in the Blocks tab, so each follows the other.
-- About tab: a new Licenses chapter lists the credits and licenses of these fonts.
+- About tab: a new Licenses chapter lists the credits and licenses of these fonts. A Licenses folder in the addon holds a copy of each license, and of Tessera's own.
+
+### Improvements
+
+- Optimizations under the hood: Tessera does less work in the background. Blocks that follow only you ignore the events of other units, a block update no longer creates new functions each time, and the fade check stops at once when no block fades.
 
 ### Fixes
 

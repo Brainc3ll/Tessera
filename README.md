@@ -97,7 +97,7 @@ Tessera is a collaboration between me, a player, and an AI.
 
 **Thanks** to Malkkav, author of [FlareUI](https://www.curseforge.com/wow/addons/flareui) (MIT license): the options window takes its look from it.
 
-**Fonts**, shipped unchanged in `Media/Fonts` with their license files: [Atkinson Hyperlegible Next](https://github.com/googlefonts/atkinson-hyperlegible-next) (SIL Open Font License 1.1, copyright The Atkinson Hyperlegible Next Project Authors), [OpenDyslexic](https://github.com/antijingoist/opendyslexic) (SIL Open Font License 1.1, copyright Abbie Gonzalez) [Luciole](https://www.luciole-vision.com/) (CC BY 4.0, copyright Laurent Bourcellier and Jonathan Fabreguettes (Perez)), [Lexend](https://github.com/googlefonts/lexend) (SIL Open Font License 1.1, copyright 2018 The Lexend Project Authors), [Andika](https://software.sil.org/andika/) (SIL Open Font License 1.1, copyright 2004-2022 SIL International) and [Inclusive Sans](https://github.com/LivKing/Inclusive-Sans) (SIL Open Font License 1.1, copyright 2022 The Inclusive Sans Project Authors). The About tab has a Licenses chapter with the same credits.
+**Fonts**, shipped unchanged in `Media/Fonts`, with a copy of each license in the `Licenses` folder (also in the release zip): [Atkinson Hyperlegible Next](https://github.com/googlefonts/atkinson-hyperlegible-next) (SIL Open Font License 1.1, copyright The Atkinson Hyperlegible Next Project Authors), [OpenDyslexic](https://github.com/antijingoist/opendyslexic) (SIL Open Font License 1.1, copyright Abbie Gonzalez) [Luciole](https://www.luciole-vision.com/) (CC BY 4.0, copyright Laurent Bourcellier and Jonathan Fabreguettes (Perez)), [Lexend](https://github.com/googlefonts/lexend) (SIL Open Font License 1.1, copyright 2018 The Lexend Project Authors), [Andika](https://software.sil.org/andika/) (SIL Open Font License 1.1, copyright 2004-2022 SIL International) and [Inclusive Sans](https://github.com/LivKing/Inclusive-Sans) (SIL Open Font License 1.1, copyright 2022 The Inclusive Sans Project Authors). The About tab has a Licenses chapter with the same credits.
 
 **What this means for you.** Automatic tests and my own testing in game check the code, but no human programmer has reviewed it line by line. Bugs can remain: please report them with `/tessera bug`. Developers are welcome to read the code (MIT license, in this repository) and to suggest improvements.
 
@@ -511,4 +511,4 @@ the name tags, tooltip settings, back to the player's profile) and the developme
 
 ## License
 
-MIT — see `LICENSE`.
+MIT — see `LICENSE`. The `Licenses` folder, shipped in the zip, holds a copy of it and the licenses of the six fonts (see its `README.txt`).

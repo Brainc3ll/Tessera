@@ -465,7 +465,7 @@ local function BuildAboutLinks(page)
     AttachTip(box, L.ABOUT_LINKS, L.TIP_ABOUT_COPY)
 end
 
--- Licenses and credits of the fonts shipped in Media/Fonts (decided 14/11)
+-- Licenses and credits of the fonts shipped in Media/Fonts (copies in Licenses/) (decided 14/11)
 local function LicensesText()
     return table.concat({
         L.LICENSES_INTRO, "",

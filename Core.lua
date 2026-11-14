@@ -3205,6 +3205,8 @@ end
 local eventFrame = CreateFrame("Frame")
 -- event name -> list of block keys to update when it fires
 local eventMap = {}
+-- event name -> { block key = true } for blocks that only care about the player's own unit
+local playerOnlyMap = {}
 
 -- Runs once at login (after saved variables are loaded): registers module
 -- events and data requests, starts the update timer, then creates the blocks
@@ -3214,12 +3216,12 @@ local function Build()
     for _, key in ipairs(ns.order) do
         local mod = ns.modules[key]
         for _, event in ipairs(mod.events or {}) do
-            if not eventMap[event] then
-                eventMap[event] = {}
-                -- pcall: an event that does not exist in this client would raise an error
-                pcall(eventFrame.RegisterEvent, eventFrame, event)
-            end
+            eventMap[event] = eventMap[event] or {}
             table.insert(eventMap[event], key)
+            if mod.playerOnly and mod.playerOnly[event] then
+                playerOnlyMap[event] = playerOnlyMap[event] or {}
+                playerOnlyMap[event][key] = true
+            end
         end
         -- Modules whose data must be requested from the server (e.g. guild/friends rosters)
         if mod.request then
@@ -3230,6 +3232,21 @@ local function Build()
             end
             C_Timer.After(5, Request)
             C_Timer.NewTicker(mod.requestInterval or 60, Request)
+        end
+    end
+
+    -- Register each event once. When every block listening to it only wants the player's own
+    -- unit, the game is asked for that unit alone (pcall: an event missing from this client errors)
+    for event, keys in pairs(eventMap) do
+        local only = playerOnlyMap[event]
+        local playerAll = only ~= nil
+        for _, key in ipairs(keys) do
+            if not (only and only[key]) then playerAll = false break end
+        end
+        if playerAll then
+            pcall(eventFrame.RegisterUnitEvent, eventFrame, event, "player")
+        else
+            pcall(eventFrame.RegisterEvent, eventFrame, event)
         end
     end
 
@@ -3310,7 +3327,7 @@ pcall(eventFrame.RegisterUnitEvent, eventFrame, "UNIT_ENTERED_VEHICLE", "player"
 pcall(eventFrame.RegisterUnitEvent, eventFrame, "UNIT_EXITED_VEHICLE", "player")
 eventFrame:RegisterEvent("PLAYER_CONTROL_LOST")   -- start of a flight path
 eventFrame:RegisterEvent("PLAYER_CONTROL_GAINED") -- end of a flight path
-eventFrame:SetScript("OnEvent", function(_, event)
+eventFrame:SetScript("OnEvent", function(_, event, unit)
     if event == "PLAYER_LOGIN" then
         InitDB()
         ns.sessionMoney = GetMoney() or 0
@@ -3364,7 +3381,11 @@ eventFrame:SetScript("OnEvent", function(_, event)
         end)
     end
 
-    for _, key in ipairs(eventMap[event] or {}) do ns:UpdateBlock(key) end
+    -- a block that only follows the player skips the same event sent for other units
+    local only = playerOnlyMap[event]
+    for _, key in ipairs(eventMap[event] or {}) do
+        if not (only and only[key] and unit ~= "player") then ns:UpdateBlock(key) end
+    end
 end)
 
 ---------------------------------------------------------------------------

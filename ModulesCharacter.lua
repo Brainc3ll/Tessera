@@ -768,6 +768,7 @@ ns:RegisterModule("weaponEnchant", {
     label = "WEAPON_ENCHANT",
     icon = "Interface\\Icons\\INV_Stone_SharpeningStone_01",
     events = { "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED" },
+    playerOnly = { UNIT_INVENTORY_CHANGED = true },
     interval = 5,
     defaultEnabled = false,
     defaults = { weaponSlots = "both" },

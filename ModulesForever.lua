@@ -422,6 +422,7 @@ ns:RegisterModule("camping", {
     label = "CAMPING",
     icon = "Interface\\Icons\\Spell_Fire_Fire",
     events = { "UNIT_AURA", "BAG_UPDATE_DELAYED", "BAG_UPDATE_COOLDOWN" },
+    playerOnly = { UNIT_AURA = true }, -- the game sends it for every unit around you
     interval = 1,
     defaultEnabled = false,
     -- hidden when there is no camp buff and no campfire kit

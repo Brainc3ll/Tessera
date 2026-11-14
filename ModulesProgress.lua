@@ -214,6 +214,7 @@ ns:RegisterModule("ammo", {
     icon = "Interface\\Icons\\INV_Ammo_Arrow_02",
     getIcon = function() return Try(GetInventoryItemTexture, "player", AMMO_SLOT) or "Interface\\Icons\\INV_Ammo_Arrow_02" end,
     events = { "BAG_UPDATE_DELAYED", "UNIT_INVENTORY_CHANGED", "PLAYER_EQUIPMENT_CHANGED" },
+    playerOnly = { UNIT_INVENTORY_CHANGED = true },
     isEmpty = function() return AmmoCount() == nil end,
     thresholds = THRESHOLDS.ammo,
     update = function(cfg)

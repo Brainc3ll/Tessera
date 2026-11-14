@@ -9,10 +9,12 @@
 --   2. CHANGELOG.md is exactly what tools/changelog_md.lua makes from Changelog.lua.
 --   3. docs/localization/enUS.lua and frFR.lua (sent to CurseForge) match the Locales files.
 --   4. Every public slash command is documented in the README, the in-game help (English
---      and French), the chat command list and the CurseForge / Wago descriptions; a new
---      command in Core.lua must be added to PUBLIC or HIDDEN below.
---   5. Every block is named in the README and in the English and French parts of the
---      CurseForge / Wago descriptions (its name as shown in the game, or an alias below).
+--      and French) and the chat command list; a new command in Core.lua must be added to
+--      PUBLIC or HIDDEN below. The CurseForge / Wago description stays short (decided
+--      14/11): the README holds the details, so the description is not checked for them.
+--   5. Every block is named in the README (its name as shown in the game, or an alias below).
+--   5b. The English and French parts of the CurseForge / Wago description stay under
+--      MAX_DESCRIPTION characters (short, "at a glance").
 --   6. Every Lua file of Tessera.toc has a line in the README's file table.
 --   7. Every option tab is described in the in-game help (English and French).
 --   8. No text is too long to translate comfortably (MAX_LENGTH characters): long texts are
@@ -132,10 +134,6 @@ local places = {
     { "chat command list (English)", EN.CMD_HELP or "" },
     { "chat command list (French)", FR.CMD_HELP or "" },
 }
-for _, d in ipairs(descriptions) do
-    places[#places + 1] = { d.name .. " (English)", d.en }
-    places[#places + 1] = { d.name .. " (French)", d.fr }
-end
 for _, c in ipairs(PUBLIC) do
     for _, p in ipairs(places) do
         if not has(p[2], "/tessera " .. c) then fail(("command /tessera %s missing from %s"):format(c, p[1])) end
@@ -160,12 +158,15 @@ for key, label in out:gmatch("MODULE (%S+) (%S+)") do
     local alias = ALIASES[label] or {}
     local function found(text, name, other) return (name and has(text, name)) or (other and has(text, other)) end
     if not found(readme, en, alias[1]) then fail(("block %s (%s) is not named in README.md"):format(key, tostring(en))) end
-    for _, d in ipairs(descriptions) do
-        if not found(d.en, en, alias[1]) then fail(("block %s (%s) is not named in %s (English)"):format(key, tostring(en), d.name)) end
-        if not found(d.fr, fr, alias[2]) then fail(("block %s (%s) is not named in %s (French)"):format(key, tostring(fr), d.name)) end
-    end
 end
 if count == 0 then fail("could not get the list of blocks from tools/mock_run.lua") end
+
+-- the store pages stay short: the README holds the details
+local MAX_DESCRIPTION = 4500
+for _, d in ipairs(descriptions) do
+    if #d.en > MAX_DESCRIPTION then fail(("%s (English) is %d characters long (max %d): the README holds the details"):format(d.name, #d.en, MAX_DESCRIPTION)) end
+    if #d.fr > MAX_DESCRIPTION then fail(("%s (French) is %d characters long (max %d): the README holds the details"):format(d.name, #d.fr, MAX_DESCRIPTION)) end
+end
 
 ---------------------------------------------------------------------------
 -- 6. Files of the TOC in the README

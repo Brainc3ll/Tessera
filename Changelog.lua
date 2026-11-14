@@ -114,6 +114,14 @@ ns.CHANGELOG = {
                 "La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute : le texte à 100 % tient avec moins de molette.",
               },
             },
+            { kind = "fixed",
+              en = {
+                "A block you show while the placement banner is up now appears above the banner. The banner no longer hides it.",
+              },
+              fr = {
+                "Un bloc que tu affiches pendant que le bandeau de placement est ouvert apparaît maintenant au-dessus du bandeau. Le bandeau ne le cache plus.",
+              },
+            },
         },
     },
     {

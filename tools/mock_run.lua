@@ -3640,6 +3640,19 @@ do
     if ns.nudge.key ~= key then print("STEP ERROR: placing: picking a block does not start placing it") end
     ns:FinishNudge(true)
     if TesseraOptions:IsShown() then print("STEP ERROR: placing: the options window opened though placing started from the banner") end
+    -- a block shown while the banner is up never lands under it: it appears above it
+    do
+        local nk = "zone"
+        local nc = ns.db.blocks[nk]
+        nc.enabled, nc.point, nc.dock, nc.anchor = false, nil, nil, nil
+        ns:SetBlocksOnScreen({ nk }, true)
+        local bl, bb, br, bt = ns:GetRectUI(ns.banner)
+        local fl, fb, fr, ft = ns:GetRectUI(ns.frames[nk])
+        if not (bl and fl) then print("STEP ERROR: banner: no rectangle to compare")
+        elseif fl < br and fr > bl and fb < bt and ft > bb then
+            print("STEP ERROR: banner: a new block was placed under the placement banner")
+        elseif fb < bt then print("STEP ERROR: banner: a new block is not above the placement banner") end
+    end
     -- the banner's grid: G gives the next size, the arrows too
     ns.db.grid = 0
     b:GetScript("OnKeyDown")(b, "G")

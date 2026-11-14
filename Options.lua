@@ -218,6 +218,16 @@ function ns:PlaceNearOptions(key)
     end
     -- Blizzard's action bars, minimap, chat...: a block placed on them could be hidden
     for _, z in ipairs(ns:GetBlizzardRects()) do table.insert(taken, z) end
+    -- the placement banner sits in front of the blocks: a new block goes above it, never under it
+    local banner = ns.banner
+    local bannerTop
+    if banner and banner:IsShown() then
+        local bl, bb, br, bt = ns:GetRectUI(banner)
+        if bl then
+            table.insert(taken, { bl, bb, br, bt })
+            bannerTop = bt
+        end
+    end
     local function Free(x, y)
         local l, b, r, t = x - 4, y - height - 4, x + width + 4, y + 18
         for _, z in ipairs(taken) do
@@ -236,6 +246,7 @@ function ns:PlaceNearOptions(key)
         left0 = screenW / 2 - 10 - width
         top = UIParent:GetHeight() / 2 + 160
     end
+    if bannerTop and bannerTop + step <= UIParent:GetHeight() then top = bannerTop + step end
     -- highest free slot of a column, above the bottom of the screen (action bars area)
     local BOTTOM = 140
     local function FirstFree(cx)

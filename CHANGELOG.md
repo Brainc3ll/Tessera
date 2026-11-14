@@ -26,6 +26,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - The search shows where each setting sits, for example Blocks and groups › Guild › Content › Tooltip, and opens its tab.
 - The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.
 
+### Fixes
+
+- A block you show while the placement banner is up now appears above the banner. The banner no longer hides it.
+
 ## 1.4.0 — 2026-11-14
 
 ### New

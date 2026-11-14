@@ -164,3 +164,6 @@ Serveur des créateurs d'addons (WowAce, WoWInterface) ; Braincell1980 y est. No
 - Warcraft Tavern, guide manette : activer « Gamepad (Alpha) » dans les options ; certains menus et invites, surtout en bêta, demandent encore la souris. https://www.warcrafttavern.com/forever/guides/controller/
 - Easy Controller Forever (CurseForge) : n'écrit jamais dans le chat et se coupe en combat pour éviter blocages et gels. https://www.curseforge.com/wow/addons/easy-controller-forever
 - Controller Forever (CurseForge) : couche manette qui travaille avec l'interface manette de Forever au lieu de la remplacer ; demande l'alpha activée. https://www.curseforge.com/wow/addons/controllerforever
+
+### FlareUI 6.5.1 (14 novembre 2026)
+- Fenêtre de réglages (`Settings/Panel.lua`, `Settings/Registry.lua`) : onglets par module, chaque section dans son cadre avec Réinitialiser, lignes « half » deux par ligne, lignes enfants indentées. Modèle de la réorganisation des options de Tessera 1.5.0 (`docs/etudes/PLAN-reorganisation-options.md`).

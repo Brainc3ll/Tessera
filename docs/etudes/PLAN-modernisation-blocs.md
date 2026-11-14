@@ -22,6 +22,16 @@ Aujourd'hui : une option (libres / total, libres, utilisés / total), couleur pa
 - **C. Valeur du bric-à-brac dans le bloc** : case, décochée par défaut ; ajoute la valeur du gris à côté des places. Le prix n'est connu qu'une fois l'objet en cache : afficher seulement ce qui est connu.
 - **D. Alerte quand c'est plein** : le bloc se met en évidence quand il reste peu de places (seuils existants) ; mécanisme d'alerte du bloc, et respect du réglage « moins d'animations » (pas de clignotement). Case décochée par défaut.
 
+## Durabilité (validé le 14/11, pas encore codé)
+Aujourd'hui : une option (pièce la plus abîmée ou moyenne), seuils, barre ; infobulle avec chaque pièce équipée, les objets abîmés des sacs et le coût de réparation (`RepairCost`).
+- **A. Choisir l'infobulle** : trois cases (pièces équipées, objets des sacs, coût de réparation), cochées par défaut.
+- **B. Coût de réparation dans le bloc** : case, décochée par défaut ; ajoute le coût à côté du pourcentage. Mode streamer : montant masqué.
+- **C. Alerte sous un seuil** : le bloc se met en évidence quand une pièce passe sous le seuil ; même alerte commune que les Sacs (voir « Alerte commune »).
+- **D. Seulement les pièces abîmées** : case, décochée par défaut ; l'infobulle cache les pièces à 100 % et trie les plus usées en premier.
+
+## Alerte commune (décidé le 14/11, pour Sacs et Durabilité, puis d'autres blocs)
+Une seule alerte réutilisable, pas une par bloc : une case « Alerte » dans le bloc, qui s'appuie sur les seuils déjà en place et sur le mécanisme `alertOnShow`. Elle respecte le réglage « moins d'animations » (la mise en évidence ne clignote pas) et ne repose pas sur la couleur seule. À coder une fois, dans le premier lot qui en a besoin, puis à brancher bloc par bloc.
+
 ## Guilde (choix validés le 14/11, à coder dans le lot Social)
 Infobulle actuelle : nom de la guilde, puis les membres en ligne (nom, niveau, zone, couleur de classe), 20 lignes au plus. À ajouter, chacun avec sa case à cocher : message du jour, compteur en-tête (en ligne sur total), rang du membre, note publique (souvent le métier). Deux colonnes, celles de l'infobulle du jeu : à gauche niveau, nom et rang, à droite note et zone. Mode streamer : noms masqués comme aujourd'hui.
 

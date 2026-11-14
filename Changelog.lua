@@ -53,6 +53,14 @@ ns.CHANGELOG = {
                     .. " and choose which parts of the tooltip show.",
                 "Reset session: a new choice for the Shift + click and middle click actions on Gold and XP."
                     .. " Gains and rates per hour start again from now.",
+                "Guild: the tooltip can show the message of the day, the members online out of the total,"
+                    .. " and each member's rank and public note.",
+                "Friends: choose which parts of the tooltip show, show the note you wrote on a friend,"
+                    .. " sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.",
+                "Item level: show the equipped level, the best available one or both, and list the weakest items first in the tooltip.",
+                "Stats: a second stat next to the first.",
+                "Weapon enchant and Long buffs: the yellow and red thresholds are now settings (in seconds)."
+                    .. " Red now starts under one minute, so \"Flash to alert\" can warn you before the time runs out.",
               },
               fr = {
                 "Or : choisis les parties de l'infobulle à afficher (gain de la session, or par heure, historique, personnages)."
@@ -66,6 +74,14 @@ ns.CHANGELOG = {
                     .. " et choisis les parties de l'infobulle à afficher.",
                 "Remise à zéro de la session : un nouveau choix pour les actions du Maj + clic et du clic milieu sur l'Or et l'XP."
                     .. " Les gains et les rythmes par heure repartent de maintenant.",
+                "Guilde : l'infobulle peut montrer le message du jour, les membres en ligne sur le total,"
+                    .. " et le rang et la note publique de chaque membre.",
+                "Amis : choisis les parties de l'infobulle à afficher, montre la note écrite sur un ami,"
+                    .. " trie la liste par nom, niveau ou zone, et garde seulement les amis Battle.net qui jouent à WoW.",
+                "Niveau d'objet : affiche le niveau équipé, le meilleur disponible ou les deux, et liste d'abord les objets les plus faibles dans l'infobulle.",
+                "Stats : une deuxième statistique à côté de la première.",
+                "Enchant d'arme et Buffs longs : les seuils jaune et rouge deviennent des réglages (en secondes)."
+                    .. " Le rouge commence sous une minute, pour que « Clignoter pour alerter » te prévienne avant la fin.",
               },
             },
         },

@@ -2678,7 +2678,7 @@ for _, step in ipairs({
         local oldFL, oldBN, oldInfo, oldC = C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet
         C_FriendList = { GetNumOnlineFriends = function() return 1 end, GetNumFriends = function() return 2 end,
             GetFriendInfoByIndex = function(i)
-                return i == 1 and { connected = true, name = "Tilda", level = 30, className = "Mage", area = "Orgrimmar", afk = true }
+                return i == 1 and { connected = true, name = "Tilda", level = 30, className = "Mage", area = "Orgrimmar", afk = true, notes = "my cousin" }
                     or { connected = false, name = "Away" }
             end }
         BNGetNumFriends = function() return 2, 2 end
@@ -2686,7 +2686,7 @@ for _, step in ipairs({
         C_BattleNet = { GetFriendAccountInfo = function(i)
             if i == 1 then
                 return { accountName = "Kaz", isAFK = false, isDND = true, gameAccountInfo = { isOnline = true,
-                    clientProgram = "WoW", characterName = "Zug", characterLevel = 42, areaName = "Tanaris" } }
+                    clientProgram = "WoW", characterName = "Zug", characterLevel = 42, areaName = "Tanaris" }, note = "raid lead" }
             end
             return { accountName = "Mo", gameAccountInfo = { isOnline = true, clientProgram = "App", richPresence = "In the app" } }
         end }
@@ -2713,7 +2713,77 @@ for _, step in ipairs({
         lines = {}
         m.tooltip(tt, { noBNetFriends = true })
         assert(not table.concat(lines, "\n"):find("Kaz", 1, true), "no Battle.net friends when left out")
+        -- (1.5) notes, Battle.net friends in WoW only, tooltip parts, sort
+        local function Tip(cfg)
+            lines = {}
+            m.tooltip(tt, cfg)
+            return table.concat(lines, "\n")
+        end
+        all = Tip({})
+        assert(not all:find("my cousin", 1, true) and not all:find("raid lead", 1, true), "notes are off by default")
+        all = Tip({ friendsNotes = true })
+        assert(all:find("my cousin - Orgrimmar", 1, true) and all:find("raid lead - Tanaris", 1, true), "friend notes before the zone")
+        assert(not Tip({ friendsWoWOnly = true }):find("In the app", 1, true), "WoW only hides the other games")
+        assert(not Tip({ friendsTipWoW = false }):find("Tilda", 1, true), "WoW friends part off")
+        assert(not Tip({ friendsTipBNet = false }):find("Kaz", 1, true), "Battle.net part off")
+        assert(not Tip({ friendsTipStatus = false }):find(ns.L.TT_MY_STATUS, 1, true), "status part off")
+        all = Tip({ friendsSort = "level" })
+        assert(all:find("Kaz", 1, true) < all:find("Mo", 1, true), "level sort: highest first")
+        all = Tip({ friendsSort = "zone" })
+        assert(all:find("Mo", 1, true) < all:find("Kaz", 1, true), "zone sort")
         C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet = oldFL, oldBN, oldInfo, oldC
+    end,
+    -- guild tooltip parts, item level and stats choices, time-left thresholds (1.5)
+    function()
+        local oldIn, oldNum, oldRoster, oldMotd, oldInfo = IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, GetGuildRosterMOTD, GetGuildInfo
+        IsInGuild = function() return true end
+        GetNumGuildMembers = function() return 3, 2 end
+        GetGuildInfo = function() return "The Mosaic" end
+        GetGuildRosterMOTD = function() return "Raid on Friday" end
+        GetGuildRosterInfo = function(i)
+            if i == 1 then return "Ana-Realm", "Officer", 1, 60, "Mage", "Orgrimmar", "Alchemist", "", true, 0, "MAGE" end
+            if i == 2 then return "Bob-Realm", "Member", 2, 50, "Priest", "Tanaris", "", "", false, 0, "PRIEST" end
+            return "Cy-Realm", "Member", 2, 40, "Rogue", "Ungoro", "", "", true, 0, "ROGUE"
+        end
+        local lines = {}
+        local tt = setmetatable({ AddLine = function(_, t) table.insert(lines, tostring(t)) end,
+            AddDoubleLine = function(_, a, b) table.insert(lines, tostring(a) .. " | " .. tostring(b)) end },
+            { __index = function() return function() end end })
+        local function Tip(cfg)
+            lines = {}
+            ns.modules.guild.tooltip(tt, cfg)
+            return table.concat(lines, "\n")
+        end
+        local all = Tip({})
+        assert(all:find("The Mosaic | 2/3", 1, true), "guild header counter: " .. all)
+        assert(all:find("Raid on Friday", 1, true), "message of the day")
+        assert(all:find("Ana-Realm (60) - Officer | Alchemist - Orgrimmar", 1, true), "rank, note and zone: " .. all)
+        assert(all:find("Cy-Realm (40) - Member | Ungoro", 1, true), "member without note")
+        all = Tip({ guildTipMotd = false, guildTipCount = false, guildTipRank = false, guildTipNote = false })
+        assert(not all:find("Raid", 1, true) and not all:find("2/3", 1, true) and not all:find("Officer", 1, true)
+            and not all:find("Alchemist", 1, true) and all:find("Ana-Realm (60) | Orgrimmar", 1, true), "every part off: " .. all)
+        IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, GetGuildRosterMOTD, GetGuildInfo = oldIn, oldNum, oldRoster, oldMotd, oldInfo
+        -- item level
+        local il = ns.modules.itemLevel
+        assert(il.update({}) == "50.1" and il.update({ itemLevelShown = "overall" }) == "52.4"
+            and il.update({ itemLevelShown = "both" }) == "50.1 / 52.4", "item level choices")
+        assert(pcall(il.tooltip, tt, { itemLevelWeakFirst = true }), "item level tooltip, weakest first")
+        -- second stat
+        local st = ns.modules.stats
+        local oldD, oldP = GetDodgeChance, GetParryChance
+        GetDodgeChance, GetParryChance = function() return 5.5 end, function() return 6.25 end
+        local one = st.update({ stat = "dodge" })
+        local two = st.update({ stat = "dodge", stat2 = "parry" })
+        assert(one and two and two:find(one, 1, true) and two:find(" | ", 1, true), "second stat: " .. tostring(two))
+        assert(st.update({ stat = "dodge", stat2 = "dodge" }) == one and st.update({ stat = "dodge", stat2 = "none" }) == one,
+            "no second stat, or the same one twice")
+        GetDodgeChance, GetParryChance = oldD, oldP
+        -- time-left thresholds: orange under 5 minutes, red under 1 (settings in seconds)
+        assert(ns.modules.weaponEnchant.thresholds and ns.modules.longBuffs.thresholds, "thresholds are settings")
+        local T = ns.BlockTools
+        assert(T.Threshold({}, 200, ns.modules.longBuffs.thresholds) == T.WARN, "orange under 5 minutes")
+        assert(T.Threshold({}, 30, ns.modules.longBuffs.thresholds) == T.BAD, "red under 1 minute")
+        assert(T.Threshold({}, 900, ns.modules.longBuffs.thresholds) == T.GOOD, "good above")
     end,
     -- launchers: a pool of numbered map pins on the minimap is not offered (QuestieFrame10...)
     function()

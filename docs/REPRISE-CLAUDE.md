@@ -105,3 +105,4 @@ Un fichier ou une fonction de plus de 200 variables locales actives ne se charge
 - 14/11 : 1.4.0 publiée (tag `v1.4.0`, Sonnet 5.5) : polices de lecture, dossier Licenses, optimisations ; `main` = `next`. Description CurseForge/Wago à coller à la main.
 - 14/11 (Sonnet 5.5) : descriptions CurseForge/Wago collées ; manette en pause (Blizzard peaufine) ; pas d'addon `Tessera_Fonts` ; vol et bateaux écarté ; notes de `docs/` revues, refactor rangé dans `docs/archive/HISTORIQUE-1.4.md`.
 - 14/11 (Sonnet 5.5) : modernisation des blocs, lot Personnage codé sur `next` (1.5.0, test130) : Or, Sacs, Durabilité, XP ; remise à zéro de la session = action de clic ; l'alerte existait déjà ; détails et écarts dans `docs/etudes/PLAN-modernisation-blocs.md`.
+- 14/11 (Sonnet 5.5) : lot Social + Personnage codé sur `next` (test131) : Guilde, Amis, Niveau d'objet, Stats, seuils des Buffs longs et de l'Enchant d'arme ; test130 validé en jeu.

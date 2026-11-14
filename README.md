@@ -152,7 +152,7 @@ Help tab inside the game explains everything.
     one you pick); profession, talent and Legacy blocks that open Forever's own windows.
 - More than 50 blocks in all: gold (history of 7, 14 or 30 days, your characters' gold and their total for the same faction and realm; Alt + right-click forgets a deleted character), bags (with junk value and
   profession bags), durability (with the repair cost), XP (with the time to the next level and the quests to hand in; "Reset session" is a click action on gold and XP), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
-  zone and subzone, friends, guild, group, quests, reputation, currencies, professions (one block
+  zone and subzone, friends (notes, sorting, Battle.net friends in WoW only), guild (message of the day, ranks and public notes in the tooltip), group, quests, reputation, currencies, professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
   reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, goal, mana
   regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode,

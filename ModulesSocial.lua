@@ -47,6 +47,25 @@ local function BNetFriendsOnline()
     return list
 end
 
+-- A tooltip part is on unless its checkbox was cleared (a profile from before the checkbox keeps it on)
+local function On(cfg, field)
+    return not cfg or cfg[field] ~= false
+end
+
+-- Friends tooltip order: as the game gives it (default), or by name, level (highest first) or zone
+local FRIENDS_SORT = { name = "name", level = "level", zone = "zone" }
+local function SortFriends(list, mode)
+    if not FRIENDS_SORT[mode] then return end
+    table.sort(list, function(a, b)
+        if mode == "level" then
+            if a.level ~= b.level then return a.level > b.level end
+        elseif mode == "zone" then
+            if a.zone ~= b.zone then return a.zone < b.zone end
+        end
+        return a.name < b.name
+    end)
+end
+
 ns:RegisterModule("friends", {
     label = "FRIENDS",
     icon = "Interface\\Icons\\INV_Misc_GroupNeedMore",
@@ -78,45 +97,82 @@ ns:RegisterModule("friends", {
         end
         return text
     end,
-    defaults = { countFormat = "online", statusColor = true },
+    defaults = { countFormat = "online", statusColor = true, friendsSort = "game", friendsNotes = false, friendsWoWOnly = false,
+                 friendsTipStatus = true, friendsTipWoW = true, friendsTipBNet = true },
     options = { COUNT_OPTION, { kind = "check", field = "noBNetFriends", tab = "text", label = "NO_BNET_FRIENDS",
                                 tip = "TIP_NO_BNET_FRIENDS" },
-                { kind = "check", field = "statusColor", tab = "text", label = "STATUS_COLOR", tip = "TIP_STATUS_COLOR" } },
+                { kind = "check", field = "statusColor", tab = "text", label = "STATUS_COLOR", tip = "TIP_STATUS_COLOR" },
+                { kind = "dropdown", field = "friendsSort", tab = "text", label = "FRIENDS_SORT", tip = "TIP_FRIENDS_SORT",
+                  values = { { key = "game", label = "FRIENDS_SORT_GAME" }, { key = "name", label = "FRIENDS_SORT_NAME" },
+                             { key = "level", label = "FRIENDS_SORT_LEVEL" }, { key = "zone", label = "FRIENDS_SORT_ZONE" } } },
+                { kind = "check", field = "friendsNotes", tab = "text", label = "FRIENDS_NOTES", tip = "TIP_FRIENDS_NOTES" },
+                { kind = "check", field = "friendsWoWOnly", tab = "text", label = "FRIENDS_WOW_ONLY", tip = "TIP_FRIENDS_WOW_ONLY",
+                  shown = function(cfg) return not cfg.noBNetFriends end },
+                { kind = "check", field = "friendsTipStatus", tab = "text", label = "FRIENDS_TIP_STATUS", tip = "TIP_FRIENDS_TIP_STATUS" },
+                { kind = "check", field = "friendsTipWoW", tab = "text", label = "FRIENDS_TIP_WOW", tip = "TIP_FRIENDS_TIP_WOW" },
+                { kind = "check", field = "friendsTipBNet", tab = "text", label = "FRIENDS_TIP_BNET", tip = "TIP_FRIENDS_TIP_BNET",
+                  shown = function(cfg) return not cfg.noBNetFriends end } },
     tooltip = function(tt, cfg)
         -- your status, in words as well as in color
-        local status = MyStatus()
-        local c = STATUS_COLORS[status]
-        tt:AddDoubleLine(L.TT_MY_STATUS, ("|c%s%s|r"):format(c, L[STATUS_TEXT[status]]), 0.8, 0.8, 0.8, 1, 1, 1)
-        local shown = 0
-        local function Line(left, right, r, g, b)
-            shown = shown + 1
-            if shown <= MAX_LINES then tt:AddDoubleLine(left, right, r, g, b, 0.8, 0.8, 0.8) end
+        if On(cfg, "friendsTipStatus") then
+            local status = MyStatus()
+            local c = STATUS_COLORS[status]
+            tt:AddDoubleLine(L.TT_MY_STATUS, ("|c%s%s|r"):format(c, L[STATUS_TEXT[status]]), 0.8, 0.8, 0.8, 1, 1, 1)
         end
-        -- friends of this game (your WoW friends list)
-        local count = C_FriendList.GetNumFriends() or 0
-        for i = 1, count do
-            local info = C_FriendList.GetFriendInfoByIndex(i)
-            if info and info.connected then
-                local r, g, b = ClassColor(info.className and info.className:upper())
-                Line(("%s (%d)%s"):format(Masked(info.name or "?"), info.level or 0, StatusTag(info.afk, info.dnd)),
-                    Masked(info.area or ""), r, g, b)
+        local shown = 0
+        -- right column: the friend's note (if asked), then the zone
+        local function Right(note, zone)
+            zone = Masked(zone or "")
+            if cfg and cfg.friendsNotes and type(note) == "string" and note ~= "" then
+                return Masked(note) .. (zone ~= "" and " - " .. zone or "")
+            end
+            return zone
+        end
+        local function Lines(list, r, g, b)
+            SortFriends(list, cfg and cfg.friendsSort)
+            for _, e in ipairs(list) do
+                shown = shown + 1
+                if shown <= MAX_LINES then
+                    tt:AddDoubleLine(e.left, e.right, e.r or r, e.g or g, e.b or b, 0.8, 0.8, 0.8)
+                end
             end
         end
+        -- friends of this game (your WoW friends list)
+        if On(cfg, "friendsTipWoW") then
+            local list = {}
+            for i = 1, C_FriendList.GetNumFriends() or 0 do
+                local info = C_FriendList.GetFriendInfoByIndex(i)
+                if info and info.connected then
+                    local r, g, b = ClassColor(info.className and info.className:upper())
+                    table.insert(list, { r = r, g = g, b = b, name = info.name or "?", level = info.level or 0, zone = info.area or "",
+                        left = ("%s (%d)%s"):format(Masked(info.name or "?"), info.level or 0, StatusTag(info.afk, info.dnd)),
+                        right = Right(info.notes, info.area) })
+                end
+            end
+            Lines(list, 1, 1, 1)
+        end
         -- Battle.net friends: in WoW, their character, level and zone; elsewhere, where they are
-        if not (cfg and cfg.noBNetFriends) then
-            local bnet = BNetFriendsOnline()
-            if #bnet > 0 then tt:AddLine(L.TT_BNET_ONLINE, 0.3, 0.75, 1) end
-            for _, f in ipairs(bnet) do
+        if not (cfg and cfg.noBNetFriends) and On(cfg, "friendsTipBNet") then
+            local list = {}
+            for _, f in ipairs(BNetFriendsOnline()) do
                 local account, game = f.account, f.game
                 local name = Masked(account.accountName or account.battleTag or "?")
                 local tag = StatusTag(account.isAFK or game.isGameAFK, account.isDND or game.isGameBusy)
-                if game.clientProgram == BNET_CLIENT_WOW and game.characterName then
-                    Line(("%s : %s (%d)%s"):format(name, Masked(game.characterName), game.characterLevel or 0, tag),
-                        Masked(game.areaName or ""), 0.3, 0.75, 1)
-                else
-                    Line(name .. tag, game.richPresence or game.clientProgram or "", 0.3, 0.75, 1)
+                local inWoW = game.clientProgram == BNET_CLIENT_WOW and game.characterName
+                if inWoW then
+                    table.insert(list, { name = account.accountName or account.battleTag or "?", level = game.characterLevel or 0,
+                        zone = game.areaName or "",
+                        left = ("%s : %s (%d)%s"):format(name, Masked(game.characterName), game.characterLevel or 0, tag),
+                        right = Right(account.note, game.areaName) })
+                elseif not (cfg and cfg.friendsWoWOnly) then
+                    table.insert(list, { name = account.accountName or account.battleTag or "?", level = 0,
+                        zone = game.richPresence or game.clientProgram or "",
+                        left = name .. tag,
+                        right = Right(account.note, game.richPresence or game.clientProgram) })
                 end
             end
+            if #list > 0 then tt:AddLine(L.TT_BNET_ONLINE, 0.3, 0.75, 1) end
+            Lines(list, 0.3, 0.75, 1)
         end
         if shown > MAX_LINES then tt:AddLine(L.TT_MORE:format(shown - MAX_LINES), 0.8, 0.8, 0.8) end
         if shown == 0 then tt:AddLine(L.TT_NO_FRIEND, 0.8, 0.8, 0.8) end
@@ -143,22 +199,44 @@ ns:RegisterModule("guild", {
         if cfg and cfg.countFormat == "online" then return tostring(online or 0) end
         return ("%d / %d"):format(online or 0, total or 0)
     end,
-    defaults = { countFormat = "onlineTotal" },
-    options = { COUNT_OPTION },
-    tooltip = function(tt)
+    defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true },
+    options = { COUNT_OPTION,
+                { kind = "check", field = "guildTipMotd", tab = "text", label = "GUILD_TIP_MOTD", tip = "TIP_GUILD_TIP_MOTD" },
+                { kind = "check", field = "guildTipCount", tab = "text", label = "GUILD_TIP_COUNT", tip = "TIP_GUILD_TIP_COUNT" },
+                { kind = "check", field = "guildTipRank", tab = "text", label = "GUILD_TIP_RANK", tip = "TIP_GUILD_TIP_RANK" },
+                { kind = "check", field = "guildTipNote", tab = "text", label = "GUILD_TIP_NOTE", tip = "TIP_GUILD_TIP_NOTE" } },
+    tooltip = function(tt, cfg)
         if not IsInGuild() then return end
         local guildName = GetGuildInfo("player")
-        if guildName then tt:AddLine(Masked(guildName), 0.3, 1, 0.3) end
-        local total = GetNumGuildMembers() or 0
+        local total, onlineCount = GetNumGuildMembers()
+        total = total or 0
+        -- header: the guild's name and, on the right, members online out of the total
+        if guildName then
+            if On(cfg, "guildTipCount") then
+                tt:AddDoubleLine(Masked(guildName), ("%d/%d"):format(onlineCount or 0, total), 0.3, 1, 0.3, 0.8, 0.8, 0.8)
+            else
+                tt:AddLine(Masked(guildName), 0.3, 1, 0.3)
+            end
+        end
+        -- message of the day
+        local motd = On(cfg, "guildTipMotd") and GetGuildRosterMOTD and GetGuildRosterMOTD()
+        if type(motd) == "string" and motd ~= "" then tt:AddLine(Masked(motd), 0.9, 0.9, 0.55, true) end
         local shown = 0
         for i = 1, total do
-            local name, _, _, level, _, zone, _, _, online, _, class = GetGuildRosterInfo(i)
+            -- name, rank, rank index, level, class, zone, public note, officer note, online, status, class file
+            local name, rank, _, level, _, zone, note, _, online, _, class = GetGuildRosterInfo(i)
             if online and name then
                 shown = shown + 1
                 if shown <= MAX_LINES then
                     local r, g, b = ClassColor(class)
                     local shownName = Masked(Ambiguate and Ambiguate(name, "guild") or name)
-                    tt:AddDoubleLine(("%s (%d)"):format(shownName, level or 0), Masked(zone or ""), r, g, b, 0.8, 0.8, 0.8)
+                    local left = ("%s (%d)"):format(shownName, level or 0)
+                    if On(cfg, "guildTipRank") and type(rank) == "string" and rank ~= "" then left = left .. " - " .. Masked(rank) end
+                    local right = Masked(zone or "")
+                    if On(cfg, "guildTipNote") and type(note) == "string" and note ~= "" then
+                        right = Masked(note) .. (right ~= "" and " - " .. right or "")
+                    end
+                    tt:AddDoubleLine(left, right, r, g, b, 0.8, 0.8, 0.8)
                 end
             end
         end

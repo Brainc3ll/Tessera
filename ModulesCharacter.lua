@@ -17,6 +17,10 @@ local function SignedMoney(diff)
     return sign .. ns.FormatMoney(math.abs(diff))
 end
 
+-- Time left of a weapon enchant or a long buff, in seconds: orange under 5 minutes, red under 1
+-- (red is what makes "Flash to alert" react); the player changes both in the block's settings
+local TIME_LEFT = { warn = 300, bad = 60, low = true, min = 0, max = 3600, step = 30 }
+
 -- A tooltip part is on unless its checkbox was cleared (a profile from before the checkbox keeps it on)
 local function On(cfg, field)
     return not cfg or cfg[field] ~= false
@@ -539,23 +543,46 @@ if GetAverageItemLevel then
         icon = "Interface\\Icons\\INV_Chest_Plate06",
         events = { "PLAYER_EQUIPMENT_CHANGED", "PLAYER_AVG_ITEM_LEVEL_UPDATE" },
         defaultEnabled = false,
-        update = function()
-            local _, equipped = Try(GetAverageItemLevel)
+        update = function(cfg)
+            local overall, equipped = Try(GetAverageItemLevel)
             if not equipped then return nil end
+            local mode = cfg and cfg.itemLevelShown
+            if mode == "overall" then return ("%.1f"):format(overall or 0) end
+            if mode == "both" then return ("%.1f / %.1f"):format(equipped, overall or 0) end
             return ("%.1f"):format(equipped)
         end,
-        tooltip = function(tt)
+        defaults = { itemLevelShown = "equipped", itemLevelWeakFirst = false },
+        options = {
+            { kind = "dropdown", field = "itemLevelShown", tab = "text", label = "ITEM_LEVEL_SHOWN", tip = "TIP_ITEM_LEVEL_SHOWN",
+              values = { { key = "equipped", label = "TT_EQUIPPED" }, { key = "overall", label = "TT_OVERALL" },
+                         { key = "both", label = "ITEM_LEVEL_BOTH" } } },
+            { kind = "check", field = "itemLevelWeakFirst", tab = "text", label = "ITEM_LEVEL_WEAK_FIRST",
+              tip = "TIP_ITEM_LEVEL_WEAK_FIRST" },
+        },
+        tooltip = function(tt, cfg)
             local overall, equipped = Try(GetAverageItemLevel)
             WHITE(tt, L.TT_EQUIPPED, ("%.1f"):format(equipped or 0))
             WHITE(tt, L.TT_OVERALL, ("%.1f"):format(overall or 0))
             tt:AddLine(" ")
+            local items = {}
             for slot = 1, 19 do
                 local link = Try(GetInventoryItemLink, "player", slot)
                 if link and slot ~= 4 and slot ~= 19 then
                     local getLevel = C_Item and C_Item.GetDetailedItemLevelInfo
                     local ilvl = getLevel and Try(getLevel, link)
-                    tt:AddDoubleLine(link, ilvl and tostring(ilvl) or "", 1, 1, 1, 1, 1, 1)
+                    table.insert(items, { link = link, ilvl = ilvl, slot = slot })
                 end
+            end
+            -- "weakest first": the item to replace comes on top (items without a level last)
+            if cfg and cfg.itemLevelWeakFirst then
+                table.sort(items, function(a, b)
+                    local x, y = tonumber(a.ilvl) or math.huge, tonumber(b.ilvl) or math.huge
+                    if x ~= y then return x < y end
+                    return a.slot < b.slot
+                end)
+            end
+            for _, item in ipairs(items) do
+                tt:AddDoubleLine(item.link, item.ilvl and tostring(item.ilvl) or "", 1, 1, 1, 1, 1, 1)
             end
         end,
         secureMacro = "/click CharacterMicroButton",
@@ -728,21 +755,32 @@ end
 
 local STAT_VALUES = { { key = "auto", label = "STAT_AUTO" } }
 for _, stat in ipairs(STATS) do table.insert(STAT_VALUES, { key = stat.key, label = stat.name }) end
+-- the second stat: the same list, with "None" first ("Automatic" makes no sense there)
+local STAT_VALUES_2 = { { key = "none", label = "NONE" } }
+for i = 2, #STAT_VALUES do table.insert(STAT_VALUES_2, STAT_VALUES[i]) end
 
 ns:RegisterModule("stats", {
     label = "STATS",
     icon = "Interface\\Icons\\Spell_Holy_GreaterBlessingofKings",
     interval = 2,
     defaultEnabled = false,
-    defaults = { stat = "auto" }, -- (a default also lets an imported profile keep the choice)
+    defaults = { stat = "auto", stat2 = "none" }, -- (a default also lets an imported profile keep the choice)
     options = {
         { kind = "dropdown", field = "stat", tab = "text", label = "STAT_SHOWN", tip = "TIP_STAT_SHOWN", values = STAT_VALUES },
+        { kind = "dropdown", field = "stat2", tab = "text", label = "STAT_SECOND", tip = "TIP_STAT_SECOND", values = STAT_VALUES_2 },
     },
     update = function(cfg)
         local stat = ChosenStat(cfg)
         local value = stat.get()
         if type(value) ~= "number" then return nil end
-        return ("%s %s"):format(L[stat.short], FormatStat(stat, value))
+        local text = ("%s %s"):format(L[stat.short], FormatStat(stat, value))
+        -- a second stat after the first (not the same one twice)
+        local second = cfg and cfg.stat2 and STAT_BY_KEY[cfg.stat2]
+        if second and second ~= stat then
+            local value2 = second.get()
+            if type(value2) == "number" then text = text .. " | " .. ("%s %s"):format(L[second.short], FormatStat(second, value2)) end
+        end
+        return text
     end,
     tooltip = function(tt)
         for _, stat in ipairs(STATS) do
@@ -942,8 +980,9 @@ ns:RegisterModule("weaponEnchant", {
         if #list == 0 then return L.NONE, WARN end
         local shortest = list[1]
         for _, e in ipairs(list) do if e.left < shortest.left then shortest = e end end
-        return ShortTime(shortest.left), shortest.left < 300 and WARN or GOOD
+        return ShortTime(shortest.left), Threshold(cfg, shortest.left, TIME_LEFT)
     end,
+    thresholds = TIME_LEFT,
     tooltip = function(tt, cfg)
         local list = WeaponEnchants(cfg)
         if #list == 0 then tt:AddLine(L.TT_NO_WEAPON_ENCHANT, 0.8, 0.8, 0.8, true) end
@@ -990,14 +1029,15 @@ ns:RegisterModule("longBuffs", {
     interval = 5, -- (not UNIT_AURA: it fires for every unit around you, and these buffs last 10 minutes or more)
     defaultEnabled = false,
     isEmpty = function() return #LongBuffs() == 0 end,
-    update = function()
+    update = function(cfg)
         local list = LongBuffs()
         if #list == 0 then return L.NONE, WARN end
         local first = list[1]
         local text = ShortTime(first.left)
         if #list > 1 then text = L.LONG_BUFFS_FORMAT:format(#list, text) end
-        return text, first.left < 300 and WARN or GOOD
+        return text, Threshold(cfg, first.left, TIME_LEFT)
     end,
+    thresholds = TIME_LEFT,
     tooltip = function(tt)
         local list = LongBuffs()
         if #list == 0 then tt:AddLine(L.TT_NO_LONG_BUFF, 0.8, 0.8, 0.8, true) end

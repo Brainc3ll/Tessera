@@ -2875,6 +2875,40 @@ for _, step in ipairs({
         assert(w >= 42, "three 12 px coin icons with a 2 px offset count 42 px: " .. w)
         assert(ns.modules.bags.defaults.bagsFormat == "usedTotal", "bags: used / total by default")
     end,
+    -- a font the game has not loaded yet can measure 0 wide for a moment (14/11, seen with a
+    -- SharedMedia font): the block must measure again soon, never keep a 0 width (it stayed
+    -- empty until its text changed)
+    function()
+        local key, f
+        for _, k in ipairs(ns:GetBlockKeys()) do
+            local c, fr = ns.db.blocks[k], ns.frames[k]
+            if c and c.enabled and fr and not ns.IsSpacerKey(k) and ns:GetModule(k) then
+                fr.lastText = nil
+                ns:UpdateBlock(k)
+                if fr.lastText and fr.lastText ~= "" and not fr.lastText:find("|T", 1, true) then key, f = k, fr break end
+            end
+        end
+        if not key then print("STEP ERROR: font not loaded: no block with a plain text to test") return end
+        local text, calls = f.text, 0
+        local oldW, oldU = text.GetStringWidth, text.GetUnboundedStringWidth
+        local function Width(self)
+            calls = calls + 1
+            if calls <= 2 then return 0 end -- the first measures, before the font is loaded
+            return 40
+        end
+        text.GetStringWidth, text.GetUnboundedStringWidth = Width, Width
+        f.lastText, f.textW, f.measureTries = nil, nil, nil
+        ns:UpdateBlock(key)
+        for _ = 1, 6 do
+            local queued = __timers; __timers = {}
+            for _, fn in ipairs(queued) do pcall(fn) end
+        end
+        text.GetStringWidth, text.GetUnboundedStringWidth = oldW, oldU
+        if not (f.textW and f.textW > 0) then
+            print("STEP ERROR: font not loaded: block " .. key .. " keeps a 0 width (" .. tostring(f.textW) .. ")")
+        end
+        ns:UpdateBlock(key)
+    end,
     -- professions are recognized by skill line, not by name: on WoW Forever, GetProfessions
     -- returns prof1, prof2, first aid, fishing, cooking, and the First Aid spell name differs
     function()

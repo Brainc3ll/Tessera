@@ -2263,6 +2263,15 @@ function ns:UpdateBlock(key)
         local tw = ns.TextWidth(text_, text)
         local th = text_:GetStringHeight() or 0
         tw, th = math.ceil(tw), math.ceil(th)
+        -- a font the game has not loaded yet can measure 0 wide for a moment: measure again
+        -- soon, or the block keeps that width and stays empty until its text changes
+        if tw == 0 and text ~= "" and (f.measureTries or 0) < 5 and C_Timer then
+            f.measureTries = (f.measureTries or 0) + 1
+            f.lastText = nil
+            C_Timer.After(0.2, function() self:UpdateBlock(key) end)
+        elseif tw > 0 then
+            f.measureTries = 0
+        end
         if f.textW ~= tw or f.textH ~= th then
             f.textW, f.textH = tw, th
             self:RequestLayout()

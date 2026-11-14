@@ -56,6 +56,16 @@ ns.CHANGELOG = {
                 "Onglet À propos : un nouveau chapitre Licences donne les crédits et les licences de ces polices.",
               },
             },
+            { kind = "fixed",
+              en = {
+                "A block no longer loses its text when you change its font and the game has not loaded that font yet."
+                    .. " Tessera measures the text again a moment later.",
+              },
+              fr = {
+                "Un bloc ne perd plus son texte quand tu changes sa police et que le jeu ne l'a pas encore chargée."
+                    .. " Tessera mesure le texte une nouvelle fois un instant après.",
+              },
+            },
         },
     },
     {

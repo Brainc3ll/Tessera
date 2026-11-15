@@ -59,6 +59,8 @@ ns.CHANGELOG = {
                 "The options window no longer redraws its settings while it is closed. Moving and locking blocks"
                     .. " feels lighter and uses less memory.",
                 "Moving and merging blocks makes less temporary memory.",
+                "Closing the options window or locking the blocks cleans memory in small steps, so the game no longer"
+                    .. " pauses for a moment.",
               },
               fr = {
                 "L'annulation (Ctrl + Z) garde ses 30 étapes, et chaque étape ne garde plus que ce qui a changé depuis la précédente."
@@ -66,6 +68,8 @@ ns.CHANGELOG = {
                 "La fenêtre d'options ne redessine plus ses réglages tant qu'elle est fermée. Déplacer et verrouiller"
                     .. " les blocs est plus léger et prend moins de mémoire.",
                 "Déplacer et fusionner des blocs produit moins de mémoire temporaire.",
+                "Fermer la fenêtre d'options ou verrouiller les blocs nettoie la mémoire par petits pas : le jeu ne se"
+                    .. " fige plus un instant.",
               },
             },
           },

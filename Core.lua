@@ -2220,17 +2220,22 @@ function ns:SetLocked(locked, silent)
     if locked then self:CleanMemorySoon() end
 end
 
--- Frees at once what the options window or placing the blocks left in memory, one
--- second later, when the blocks are locked and the player is not in combat
+-- Frees what the options window or placing the blocks left in memory, one second later,
+-- when the blocks are locked and the player is not in combat. The cleaning runs in small
+-- steps, a few times a second, instead of one full pass: a full pass froze the game for a moment
+local CLEAN_STEPS, CLEAN_STEP_SIZE = 60, 400
+local function CleanStep(left)
+    local panel = _G["TesseraOptions"]
+    if left <= 0 or not ns:IsLocked() or InCombatLockdown() or (panel and panel:IsShown()) then return end
+    if collectgarbage("step", CLEAN_STEP_SIZE) then return end -- a whole cycle is done
+    C_Timer.After(0.05, function() CleanStep(left - 1) end)
+end
 function ns:CleanMemorySoon()
     if self.lockCleanPending then return end
     self.lockCleanPending = true
     C_Timer.After(1, function()
         ns.lockCleanPending = nil
-        local panel = _G["TesseraOptions"]
-        if ns:IsLocked() and not InCombatLockdown() and not (panel and panel:IsShown()) then
-            collectgarbage("collect")
-        end
+        CleanStep(CLEAN_STEPS)
     end)
 end
 

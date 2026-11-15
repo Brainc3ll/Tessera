@@ -323,12 +323,26 @@ function ns:RefreshOptions()
     end
     S.optionsStale = nil
     for _, w in ipairs(widgets) do
-        if w.isShown then
-            local shown = w.isShown() and true or false
-            w:SetShown(shown)
-            if w.check then w.check:SetShown(shown) end -- a check box follows its row
+        -- a setting on a page that is not shown is brought up to date when its page opens
+        -- (ShowPage calls RefreshOptions): only the shown page is gone over
+        local page = w.optPage
+        if page == nil then
+            page = false
+            local parent = w.GetParent and w:GetParent()
+            while parent and parent ~= S.panel do
+                if parent.pageIndex then page = parent break end
+                parent = parent.GetParent and parent:GetParent()
+            end
+            w.optPage = page
         end
-        if w.Refresh then w:Refresh() end
+        if not page or page:IsShown() then
+            if w.isShown then
+                local shown = w.isShown() and true or false
+                w:SetShown(shown)
+                if w.check then w.check:SetShown(shown) end -- a check box follows its row
+            end
+            if w.Refresh then w:Refresh() end
+        end
     end
     if ns.ReflowOptionLayouts then ns.ReflowOptionLayouts() end -- boxes: only the shown rows (OptionsBoxes.lua)
 end

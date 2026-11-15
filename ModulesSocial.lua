@@ -438,16 +438,46 @@ ns:RegisterModule("group", {
         local units, raid = GroupUnits()
         return ("%d / %d"):format(#units, raid and 40 or 5)
     end,
-    tooltip = function(tt)
+    defaults = { groupTipRole = true, groupTipState = true, groupTipLevel = true },
+    options = {
+        { kind = "check", field = "groupTipRole", section = "tooltip", tab = "text", label = "GROUP_TIP_ROLE", tip = "TIP_GROUP_TIP_ROLE" },
+        { kind = "check", field = "groupTipState", section = "tooltip", tab = "text", label = "GROUP_TIP_STATE", tip = "TIP_GROUP_TIP_STATE" },
+        { kind = "check", field = "groupTipLevel", section = "tooltip", tab = "text", label = "GROUP_TIP_LEVEL", tip = "TIP_GROUP_TIP_LEVEL" },
+    },
+    tooltip = function(tt, cfg)
         local units = GroupUnits()
+        local _, _, master = LootInfo()
+        local showRole, showState = cfg == nil or cfg.groupTipRole ~= false, cfg == nil or cfg.groupTipState ~= false
+        local showLevel = cfg == nil or cfg.groupTipLevel ~= false
         for i = 1, math.min(#units, MAX_LINES) do
             local unit = units[i]
             local name = Try(UnitName, unit)
             if name then
                 local _, class = Try(UnitClass, unit)
                 local r, g, b = ClassColor(class)
-                local leader = UnitIsGroupLeader and Try(UnitIsGroupLeader, unit) and " |cffffd100(" .. L.TT_LEADER .. ")|r" or ""
-                tt:AddDoubleLine(Masked(name) .. leader, tostring(Try(UnitLevel, unit) or ""), r, g, b, 0.8, 0.8, 0.8)
+                local tags = ""
+                if showRole then
+                    -- only what the game says: leader, assistant (raid), master looter
+                    if UnitIsGroupLeader and Try(UnitIsGroupLeader, unit) then tags = tags .. " |cffffd100(" .. L.TT_LEADER .. ")|r" end
+                    if UnitIsGroupAssistant and Try(UnitIsGroupAssistant, unit) then
+                        tags = tags .. " |cffffd100(" .. L.TT_ASSISTANT .. ")|r"
+                    end
+                    if master and master == name then tags = tags .. " |cffffd100(" .. L.TT_LOOTER .. ")|r" end
+                end
+                -- state in words and color: offline, away, dead
+                local state
+                if showState then
+                    if UnitIsConnected and Try(UnitIsConnected, unit) == false then
+                        state = _G.PLAYER_OFFLINE
+                    elseif UnitIsDeadOrGhost and Try(UnitIsDeadOrGhost, unit) then
+                        state = _G.DEAD
+                    elseif UnitIsAFK and Try(UnitIsAFK, unit) then
+                        state = _G.CHAT_FLAG_AFK
+                    end
+                end
+                local right = showLevel and tostring(Try(UnitLevel, unit) or "") or ""
+                if state then right = "|cffff6060" .. state .. "|r" .. (right ~= "" and "  " .. right or "") end
+                tt:AddDoubleLine(Masked(name) .. tags, right, r, g, b, 0.8, 0.8, 0.8)
             end
         end
         if #units > MAX_LINES then tt:AddLine(L.TT_MORE:format(#units - MAX_LINES), 0.8, 0.8, 0.8) end

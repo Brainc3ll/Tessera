@@ -17,6 +17,12 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Quests: sort the tooltip by level or finished first, list 10, 20 or all quests, show each zone or only the quests to hand in, and set the alert on the free slots left in the quest log.
 - Reputation: show the points left before the next standing and the reputation gained this session, and choose which parts of the tooltip show. "Reset session" also restarts the reputation gain.
 - Currencies: show any currency you own in the block, not only the three on your backpack. The tooltip can list your other currencies by category, the cap and the weekly limit, and what each gained this session. The block turns orange near a currency's cap, then red with the word "max" at the cap, and "Reset session" starts the gains again.
+- Goal: count a currency, see "Reached" in words with one flash when you get there, and read the estimated time left in the tooltip (gold and level goals, at your session pace).
+- XP per hour: it shares the session of Gold, XP and Reputation ("Reset session" restarts it). Show the rate and the time together, and choose the tooltip parts, with the last 15 minutes.
+- Reagents: choose which reagents show, show the ones you ran out of in gray, and set the yellow and red stock levels (red makes "Flash to alert" react).
+- Group: the tooltip shows roles (leader, assistant, master looter), the state (offline, dead, away) and the level, each with its checkbox.
+- Memory: list 5, 10, 20 or 30 addons, with each one's share of the total and a total line.
+- Instances: sort the saves by nearest reset, choose which parts of the tooltip show, and let the block turn yellow then red as a reset gets near (thresholds in hours).
 - Item level: show the equipped level, the best available one or both, and list the weakest items first in the tooltip.
 - Stats: a second stat next to the first.
 - Weapon enchant and Long buffs: the yellow and red thresholds are now settings (in seconds). Red now starts under one minute, so "Flash to alert" can warn you before the time runs out.
@@ -35,7 +41,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Fixes
 
-- A block you show while the placement banner is up now appears above the banner. The banner no longer hides it.
+- A block you show while the placement banner is up now appears right above the banner, even with the options window open.
 
 ## 1.4.0 — 2026-11-14
 

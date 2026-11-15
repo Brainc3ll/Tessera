@@ -105,7 +105,7 @@ local function ResetSession()
     if ns.RepSnapshot then ns.RepSnapshot() end
     if ns.CurrencySnapshot then ns.CurrencySnapshot() end
     ns.sessionMoney = GetMoney() or 0
-    for _, key in ipairs({ "gold", "xp", "goldSession", "reputation", "currency" }) do
+    for _, key in ipairs({ "gold", "xp", "goldSession", "reputation", "currency", "xpRate", "goal" }) do
         if ns.frames[key] then ns:UpdateBlock(key) end
     end
     ns.Print(L.SESSION_RESET)
@@ -157,6 +157,8 @@ local THRESHOLDS = {
     latency    = { warn = 100, bad = 250, low = false, min = 20, max = 1000, step = 10 },
     ammo       = { warn = 200, bad = 50, low = true, min = 0, max = 1000, step = 10 },
     quests     = { warn = 2, bad = 0, low = true, min = 0, max = 10, step = 1 }, -- free slots in the quest log
+    instances  = { warn = 6, bad = 1, low = true, min = 1, max = 48, step = 1 }, -- hours before the nearest reset
+    reagents   = { warn = 5, bad = 1, low = true, min = 0, max = 100, step = 1 }, -- stock of one reagent
     currency   = { warn = 80, bad = 100, low = false, min = 10, max = 100, step = 5 }, -- percent of a currency's cap
 }
 

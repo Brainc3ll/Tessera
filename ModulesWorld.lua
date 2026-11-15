@@ -5,6 +5,7 @@ local L = ns.L
 -- Shared tools come from Modules.lua (ns.BlockTools); see its header for how to add a block.
 local Tools = ns.BlockTools
 local FormatDuration, GOOD, ShortDuration, ShortTime = Tools.FormatDuration, Tools.GOOD, Tools.ShortDuration, Tools.ShortTime
+local BAD, THRESHOLDS, Threshold = Tools.BAD, Tools.THRESHOLDS, Tools.Threshold
 local Try, WARN = Tools.Try, Tools.WARN
 local WHITE, session = Tools.WHITE, Tools.session
 
@@ -365,36 +366,69 @@ local function CurrentInstance()
     return name, difficultyName
 end
 
+-- Level (GOOD / WARN / BAD) of the nearest reset among the saves, in hours against the block's thresholds
+local function ResetLevel(cfg, list)
+    local nearest
+    for _, s in ipairs(list) do
+        if s.reset and (not nearest or s.reset < nearest) then nearest = s.reset end
+    end
+    if not nearest then return GOOD end
+    return Threshold(cfg, nearest / 3600, THRESHOLDS.instances)
+end
+
 ns:RegisterModule("instances", {
     label = "INSTANCES",
     icon = "Interface\\Icons\\INV_Misc_Key_03",
     events = { "UPDATE_INSTANCE_INFO", "PLAYER_ENTERING_WORLD", "ZONE_CHANGED_NEW_AREA" },
     request = function() if RequestRaidInfo then RequestRaidInfo() end end,
     requestInterval = 60,
+    defaults = { instancesSortReset = false, instancesTipCurrent = true, instancesTipSaved = true },
+    options = {
+        { kind = "check", field = "instancesSortReset", section = "tooltip", tab = "text", label = "INSTANCES_SORT_RESET",
+          tip = "TIP_INSTANCES_SORT_RESET" },
+        { kind = "check", field = "instancesTipCurrent", section = "tooltip", tab = "text", label = "INSTANCES_TIP_CURRENT",
+          tip = "TIP_INSTANCES_TIP_CURRENT" },
+        { kind = "check", field = "instancesTipSaved", section = "tooltip", tab = "text", label = "INSTANCES_TIP_SAVED",
+          tip = "TIP_INSTANCES_TIP_SAVED" },
+    },
+    thresholds = THRESHOLDS.instances,
     isEmpty = function() return CurrentInstance() == nil and #SavedInstances() == 0 end,
-    update = function()
+    update = function(cfg)
         local name, difficulty = CurrentInstance()
+        local level = ResetLevel(cfg, SavedInstances())
+        if level == GOOD then level = nil end -- (the text stays plain until a reset gets near)
         if name then
-            return (difficulty and difficulty ~= "") and ("%s (%s)"):format(name, difficulty) or name
+            return (difficulty and difficulty ~= "") and ("%s (%s)"):format(name, difficulty) or name, level
         end
         local count = #SavedInstances()
         if count == 0 then return L.NONE end
-        return L.INSTANCES_SAVED:format(count)
+        return L.INSTANCES_SAVED:format(count), level
     end,
-    tooltip = function(tt)
+    tooltip = function(tt, cfg)
         local name, difficulty = CurrentInstance()
-        if name then
+        local showCurrent, showSaved = cfg == nil or cfg.instancesTipCurrent ~= false, cfg == nil or cfg.instancesTipSaved ~= false
+        if name and showCurrent then
             tt:AddLine(name, 1, 1, 1)
             if difficulty and difficulty ~= "" then tt:AddLine(difficulty, 0.8, 0.8, 0.8) end
-            ns.TooltipGap(tt)
+            if showSaved then ns.TooltipGap(tt) end
         end
+        if not showSaved then return end
         local list = SavedInstances()
+        if cfg and cfg.instancesSortReset then
+            -- the nearest reset first (a save with no time left goes last)
+            table.sort(list, function(x, y) return (x.reset or math.huge) < (y.reset or math.huge) end)
+        end
         if #list == 0 then tt:AddLine(L.TT_NO_SAVES, 0.8, 0.8, 0.8) end
         for _, s in ipairs(list) do
             local left = s.difficulty and ("%s (%s)"):format(s.name, s.difficulty) or s.name
             local right = (s.total and s.total > 0) and ("%d / %d"):format(s.done or 0, s.total) or ""
             WHITE(tt, left, right)
-            if s.reset then tt:AddLine(L.TT_RESET:format(FormatDuration(s.reset)), 0.6, 0.6, 0.6) end
+            if s.reset then
+                local level = Threshold(cfg, s.reset / 3600, THRESHOLDS.instances)
+                local r, g, b = 0.6, 0.6, 0.6
+                if level == BAD then r, g, b = 1, 0.3, 0.3 elseif level == WARN then r, g, b = 1, 0.6, 0.2 end
+                tt:AddLine(L.TT_RESET:format(FormatDuration(s.reset)), r, g, b)
+            end
         end
     end,
 })

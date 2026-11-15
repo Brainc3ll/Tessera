@@ -256,12 +256,18 @@ ns:RegisterModule("memory", {
         end
         return FormatMemory(memoryCache.total)
     end,
-    defaults = { memoryShown = "total" },
+    defaults = { memoryShown = "total", memoryCount = "10", memoryShare = false, memoryTotal = false },
     options = {
         { kind = "dropdown", field = "memoryShown", tab = "text", label = "MEMORY_SHOWN", tip = "TIP_MEMORY_SHOWN",
           values = { { key = "total", label = "MEMORY_ALL_ADDONS" }, { key = "tessera", label = "MEMORY_TESSERA" } } },
+        { kind = "dropdown", field = "memoryCount", section = "tooltip", tab = "text", label = "MEMORY_COUNT",
+          tip = "TIP_MEMORY_COUNT",
+          values = { { key = "5", label = "5" }, { key = "10", label = "10" }, { key = "20", label = "20" },
+                     { key = "30", label = "30" } } },
+        { kind = "check", field = "memoryShare", section = "tooltip", tab = "text", label = "MEMORY_SHARE", tip = "TIP_MEMORY_SHARE" },
+        { kind = "check", field = "memoryTotal", section = "tooltip", tab = "text", label = "MEMORY_TOTAL", tip = "TIP_MEMORY_TOTAL" },
     },
-    tooltip = function(tt)
+    tooltip = function(tt, cfg)
         -- Tessera's own footprint first, then the heaviest addons
         local own = 0
         for _, e in ipairs(memoryCache.list) do
@@ -270,9 +276,18 @@ ns:RegisterModule("memory", {
         tt:AddDoubleLine(L.TT_TESSERA_MEMORY, FormatMemory(own), 0.4, 0.75, 1, 1, 1, 1)
         ns.TooltipGap(tt)
         tt:AddLine(L.TT_TOP_ADDONS, 1, 0.82, 0)
-        for i = 1, math.min(10, #memoryCache.list) do
+        local count = tonumber(cfg and cfg.memoryCount) or 10
+        local total = memoryCache.total or 0
+        for i = 1, math.min(count, #memoryCache.list) do
             local e = memoryCache.list[i]
-            tt:AddDoubleLine(e.name, FormatMemory(e.kb), 1, 1, 1, 1, 1, 1)
+            local size = FormatMemory(e.kb)
+            -- the share of every addon's memory, next to the size
+            if cfg and cfg.memoryShare and total > 0 then size = size .. ("  |cffcccccc%d%%|r"):format(math.floor(e.kb / total * 100 + 0.5)) end
+            tt:AddDoubleLine(e.name, size, 1, 1, 1, 1, 1, 1)
+        end
+        if cfg and cfg.memoryTotal then
+            ns.TooltipGap(tt)
+            tt:AddDoubleLine(L.TT_MEMORY_TOTAL, FormatMemory(total), 1, 0.82, 0, 1, 1, 1)
         end
     end,
 })

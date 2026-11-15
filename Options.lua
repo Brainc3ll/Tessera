@@ -219,12 +219,13 @@ function ns:PlaceNearOptions(key)
     for _, z in ipairs(ns:GetBlizzardRects()) do table.insert(taken, z) end
     -- the placement banner sits in front of the blocks: a new block goes above it, never under it
     local banner = ns.banner
-    local bannerTop
-    if banner and banner:IsShown() then
+    local bannerTop, bannerCenter
+    -- (the banner steps aside while the options window is open: its spot counts all the same while placing)
+    if banner and (banner:IsShown() or ns.placementActive) then
         local bl, bb, br, bt = ns:GetRectUI(banner)
         if bl then
             table.insert(taken, { bl, bb, br, bt })
-            bannerTop = bt
+            bannerTop, bannerCenter = bt, (bl + br) / 2
         end
     end
     local function Free(x, y)
@@ -246,6 +247,12 @@ function ns:PlaceNearOptions(key)
         top = UIParent:GetHeight() / 2 + 160
     end
     if bannerTop and bannerTop + step <= UIParent:GetHeight() then top = bannerTop + step end
+    -- the banner is up: the columns start over the banner (centered on it, then right and left of it),
+    -- whether or not the options window is open beside it
+    if bannerCenter then
+        right0 = bannerCenter - width / 2
+        left0 = right0 - (width + 16)
+    end
     -- highest free slot of a column, above the bottom of the screen (action bars area)
     local BOTTOM = 140
     local function FirstFree(cx)
@@ -258,7 +265,20 @@ function ns:PlaceNearOptions(key)
     -- columns go in pairs (right n, left n): the side with the higher free slot wins, so
     -- both sides of the window fill up evenly instead of one long column on the right
     local x, y
+    -- the banner is up: the row just above it first, along its width, before any lower slot
+    if bannerCenter then
+        for i = 0, 12 do
+            local rx, lx = right0 + i * (width + 16), left0 - i * (width + 16)
+            if rx + width <= screenW and Free(rx, top) then
+                x, y = rx, top
+            elseif lx >= 0 and Free(lx, top) then
+                x, y = lx, top
+            end
+            if x then break end
+        end
+    end
     for i = 0, 12 do
+        if x then break end
         local rx, lx = right0 + i * (width + 16), left0 - i * (width + 16)
         local ry = (rx + width <= screenW) and FirstFree(rx) or nil
         local ly = (lx >= 0) and FirstFree(lx) or nil

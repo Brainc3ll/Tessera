@@ -136,6 +136,7 @@ local function BuildModuleOptions(keys, route, condition)
             end
             local get, set = Field(opt.field)
             local label, tip = L[opt.label] or opt.label, L[opt.tip]
+            if type(opt.label) == "function" then label = opt.label() end -- (a name the game gives: reagents)
             local setter = function(v)
                 set(v)
                 if opt.after then opt.after() end

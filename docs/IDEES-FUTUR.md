@@ -434,3 +434,5 @@ Addon de Dinoblankie (33 plugins, ~24 000 lignes), **sans licence** : on reprend
 - WorldBuffs : seulement si ces buffs existent sur Forever (à vérifier).
 Écartés : le message d'addon « SuiteVersions » (envoie la version et la liste des addons au groupe ou à la guilde chaque heure : bruit et vie privée) ; ses fenêtres maison (personnage, métiers, social, guilde : trop lourdes, contraires à « ne pas recoder ce que le jeu offre ») ; le carré de minimap qui retire tout ce que le jeu dessine autour.
 Garde-fou : chaque idée ajoutée coûte des textes à traduire en 4 langues et à maintenir ; Tessera a déjà plus de 50 blocs.
+
+- 15/11 : lot Progression (Objectif, XP/h, Composants) et Groupe, Mémoire, Instances codés pour test141. Blocs Forever : à revamper plus tard (Braincell1980). Reste : Munitions, Or de la session, Monde, Système.

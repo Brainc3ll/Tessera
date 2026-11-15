@@ -1,2 +1,3 @@
 Show	On screen
 Place	Place by pixel
+Target (gold or level)	Target (gold, level or amount)

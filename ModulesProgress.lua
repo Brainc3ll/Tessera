@@ -643,9 +643,21 @@ local function ItemCount(id)
     return tonumber((Try(C_Item and C_Item.GetItemCount, id))) or 0
 end
 
--- Returns progress (0..1), current value text, target text (gold and level goals)
+-- A currency of the player's list: count, name and icon (nil when the game gives nothing)
+local function CurrencyData(id)
+    local d = id and C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo and Try(C_CurrencyInfo.GetCurrencyInfo, id)
+    if type(d) ~= "table" then return nil end
+    return d.quantity or 0, d.name, d.iconFileID
+end
+
+-- Returns progress (0..1), current value text, target text (gold, level and currency goals)
 local function GoalProgress(cfg)
     local target = cfg.goalValue or 1000
+    if cfg.goalType == "currency" then
+        local quantity = CurrencyData(cfg.goalCurrency) or 0
+        local fmt = BreakUpLargeNumbers or tostring
+        return math.min(1, target > 0 and quantity / target or 1), fmt(quantity), fmt(target)
+    end
     if cfg.goalType == "item" then
         -- the whole list: the share of items that reached their target
         local items, sum = GoalItems(cfg), 0
@@ -662,6 +674,40 @@ local function GoalProgress(cfg)
     local gold = (GetMoney() or 0) / 10000
     return math.min(1, target > 0 and gold / target or 1), Masked(FormatGold(GetMoney() or 0, { goldFormat = "gold" })),
         FormatGold(target * 10000, { goldFormat = "gold" })
+end
+
+-- Time left to the goal at this session's pace (gold per hour, XP per hour), and whether it is a rough figure.
+-- nil for items and currencies, or while the pace is unknown.
+local function GoalEta(cfg)
+    local hours = (GetTime() - session.gainStart) / 3600
+    if hours < 1 / 60 then return nil end
+    local target = cfg.goalValue or 1000
+    if cfg.goalType == "level" then
+        local level, max = UnitLevel("player") or 1, UnitXPMax("player") or 0
+        if level >= target or max <= 0 or session.xpGained <= 0 then return nil end
+        -- the levels after this one are counted as long as this one: a rough figure
+        local left = (max - UnitXP("player")) + (target - level - 1) * max
+        return left / (session.xpGained / hours) * 3600, target - level > 1
+    end
+    if cfg.goalType == "gold" then
+        if ns:IsStreamer() then return nil end
+        local money = GetMoney() or 0
+        local gain, left = money - (ns.sessionMoney or money), target * 10000 - money
+        if gain <= 0 or left <= 0 then return nil end
+        return left / (gain / hours) * 3600, false
+    end
+    return nil
+end
+
+-- Reached goal: the block flashes once, when it turns from short of the goal to reached (not at login)
+local goalWasReached
+local function GoalReached(cfg, progress)
+    local done = progress >= 1
+    if goalWasReached == false and done and cfg.alert and ns.alertsReady and ns:IsLocked() and ns.frames.goal then
+        ns:Flash(ns.frames.goal)
+    end
+    goalWasReached = done
+    return done
 end
 
 local function ItemText(it, withIcon)
@@ -782,34 +828,51 @@ ns:RegisterModule("goal", {
     options = {
         { kind = "dropdown", field = "goalType", label = "GOAL_TYPE", tip = "TIP_GOAL_TYPE",
           values = { { key = "gold", label = "GOAL_GOLD" }, { key = "level", label = "GOAL_LEVEL" },
-                     { key = "item", label = "GOAL_ITEM" } } },
+                     { key = "item", label = "GOAL_ITEM" }, { key = "currency", label = "GOAL_CURRENCY" } } },
+        { kind = "dropdown", field = "goalCurrency", label = "GOAL_CURRENCY_CHOICE", tip = "TIP_GOAL_CURRENCY_CHOICE",
+          values = function()
+              local values = {}
+              for _, c in ipairs(AllCurrencies()) do
+                  if c.id then table.insert(values, { key = c.id, label = c.name }) end
+              end
+              return values
+          end,
+          shown = function(cfg) return cfg.goalType == "currency" end },
         { kind = "number", field = "goalValue", label = "GOAL_VALUE", tip = "TIP_GOAL_VALUE", min = 1,
           shown = function(cfg) return cfg.goalType ~= "item" end },
         { kind = "dropdown", field = "goalItemsShown", label = "GOAL_ITEMS_SHOWN", tip = "TIP_GOAL_ITEMS_SHOWN",
           values = { { key = "last", label = "GOAL_SHOWN_LAST" }, { key = "all", label = "GOAL_SHOWN_ALL" } },
           shown = function(cfg) return cfg.goalType == "item" end },
     },
-    -- an item goal shows the newest item's icon
+    extraAction = { key = "resetSession", label = "ACTION_RESET_SESSION", run = Tools.ResetSession },
+    -- an item goal shows the newest item's icon, a currency goal the currency's
     getIcon = function(cfg)
+        if cfg and cfg.goalType == "currency" then
+            local _, _, icon = CurrencyData(cfg.goalCurrency)
+            return icon or GOAL_ICON
+        end
         if not (cfg and cfg.goalType == "item") then return GOAL_ICON end
         local items = GoalItems(cfg)
         return items[#items] and ItemIcon(items[#items].id) or GOAL_ICON
     end,
-    events = { "PLAYER_MONEY", "PLAYER_XP_UPDATE", "PLAYER_LEVEL_UP", "BAG_UPDATE_DELAYED" },
+    events = { "PLAYER_MONEY", "PLAYER_XP_UPDATE", "PLAYER_LEVEL_UP", "BAG_UPDATE_DELAYED", "CURRENCY_DISPLAY_UPDATE" },
     progress = function(cfg) return (GoalProgress(cfg)) end,
     update = function(cfg)
         local progress = GoalProgress(cfg)
+        -- "Reached" in words too, not the color alone
+        local done = GoalReached(cfg, progress)
+        local suffix = done and (" " .. L.GOAL_REACHED) or ""
         if cfg.goalType == "item" then
             local items = GoalItems(cfg)
             if #items == 0 then return L.GOAL_NO_ITEM end
             if cfg.goalItemsShown == "all" then
                 local parts = {}
                 for _, it in ipairs(items) do table.insert(parts, ItemText(it, true)) end
-                return table.concat(parts, "  "), progress >= 1 and GOOD or nil
+                return table.concat(parts, "  ") .. suffix, done and GOOD or nil
             end
-            return ItemText(items[#items], false), progress >= 1 and GOOD or nil
+            return ItemText(items[#items], false) .. suffix, done and GOOD or nil
         end
-        return ("%d%%"):format(math.floor(progress * 100)), progress >= 1 and GOOD or nil
+        return ("%d%%"):format(math.floor(progress * 100)) .. suffix, done and GOOD or nil
     end,
     tooltip = function(tt, cfg)
         if cfg.goalType == "item" then
@@ -821,12 +884,23 @@ ns:RegisterModule("goal", {
                 tt:AddDoubleLine(("|T%s:0|t %s"):format(ItemIcon(it.id), ItemName(it.id)), ItemText(it, false),
                     1, 1, 1, done and 0.3 or 1, done and 1 or 1, done and 0.3 or 1)
             end
+            if GoalProgress(cfg) >= 1 then tt:AddLine(L.GOAL_REACHED, 0.3, 1, 0.3) end
             return
         end
         local progress, current, target = GoalProgress(cfg)
+        if cfg.goalType == "currency" then
+            local _, name = CurrencyData(cfg.goalCurrency)
+            if name then tt:AddLine(name, 1, 1, 1) end
+        end
         WHITE(tt, L.TT_GOAL_CURRENT, current)
         WHITE(tt, L.TT_GOAL_TARGET, target)
         WHITE(tt, L.TT_GOAL_PROGRESS, ("%d%%"):format(math.floor(progress * 100)))
+        if progress >= 1 then
+            tt:AddLine(L.GOAL_REACHED, 0.3, 1, 0.3)
+            return
+        end
+        local eta, rough = GoalEta(cfg)
+        if eta then WHITE(tt, L.TT_GOAL_ETA, (rough and "~" or "") .. FormatDuration(eta)) end
     end,
     -- click: the item menu (add from the bags, change, remove)
     onClick = function(self)
@@ -854,45 +928,94 @@ local REAGENTS = {
     PALADIN = { 17033, 21177 },                           -- Symbol of Divinity, Symbol of Kings
     DRUID   = { 17034, 17035, 17036, 17037, 17038, 17021, 17026 }, -- seeds, Wild Berries, Wild Thornroot
 }
-local REAGENT_LOW = 5
 local GetItemIconFn = (C_Item and C_Item.GetItemIconByID) or function() end
 
--- Reagents of the player's class that are in the bags: { id, count, icon }
-local function CarriedReagents()
+-- Every reagent of every class once, for the "which reagents" check boxes (a box shows for its own class only)
+local REAGENT_CLASS, REAGENT_IDS = {}, {}
+for class, ids in pairs(REAGENTS) do
+    for _, id in ipairs(ids) do
+        if not REAGENT_CLASS[id] then
+            REAGENT_CLASS[id] = {}
+            table.insert(REAGENT_IDS, id)
+        end
+        REAGENT_CLASS[id][class] = true
+    end
+end
+table.sort(REAGENT_IDS)
+
+-- A reagent's name for its check box: the game's item name, asked for at login so it is known when the options open
+local function ReagentName(id)
+    return GetItemInfoFn(id) or ("#" .. id)
+end
+local reagentLoader = CreateFrame("Frame")
+reagentLoader:RegisterEvent("PLAYER_LOGIN")
+reagentLoader:SetScript("OnEvent", function()
+    local _, class = UnitClass("player")
+    for _, id in ipairs(REAGENTS[class] or {}) do
+        if C_Item and C_Item.RequestLoadItemDataByID then Try(C_Item.RequestLoadItemDataByID, id) end
+    end
+end)
+
+-- Reagents of the player's class to show: { id, count, icon }. The ones at zero only when asked for, a reagent
+-- the player turned off never.
+local function CarriedReagents(cfg)
     local _, class = UnitClass("player")
     local list = {}
     for _, id in ipairs(REAGENTS[class] or {}) do
         local count = GetItemCountFn and Try(GetItemCountFn, id) or 0
-        if count and count > 0 then
+        if cfg and cfg["reagent" .. id] == false then
+            count = nil
+        elseif (count and count > 0) or (cfg and cfg.reagentsZero) then
+            count = count or 0
+        else
+            count = nil
+        end
+        if count then
             table.insert(list, { id = id, count = count, icon = GetItemIconFn and Try(GetItemIconFn, id) })
         end
     end
     return list
 end
 
+local reagentDefaults, reagentOptions = { reagentsZero = false }, {
+    { kind = "check", field = "reagentsZero", tab = "text", label = "REAGENTS_ZERO", tip = "TIP_REAGENTS_ZERO" },
+}
+for _, id in ipairs(REAGENT_IDS) do
+    reagentDefaults["reagent" .. id] = true
+    table.insert(reagentOptions, { kind = "check", field = "reagent" .. id, tab = "text", label = function() return ReagentName(id) end,
+        tip = "TIP_REAGENT_ONE",
+        shown = function() local _, class = UnitClass("player"); return REAGENT_CLASS[id][class] or false end })
+end
+
 ns:RegisterModule("reagents", {
     label = "REAGENTS",
     icon = "Interface\\Icons\\INV_Misc_Gem_Amethyst_02",
     events = { "BAG_UPDATE_DELAYED" },
-    isEmpty = function() return #CarriedReagents() == 0 end,
+    isEmpty = function(cfg) return #CarriedReagents(cfg) == 0 end,
+    defaults = reagentDefaults,
+    options = reagentOptions,
+    thresholds = THRESHOLDS.reagents,
     update = function(cfg)
-        local list = CarriedReagents()
+        local list = CarriedReagents(cfg)
         if #list == 0 then return L.NONE end
         local size, parts, level = cfg.fontSize or 12, {}, GOOD
         for _, r in ipairs(list) do
             local icon = r.icon and ("|T%s:%d:%d:0:0:64:64:5:59:5:59|t"):format(r.icon, size, size) or ""
-            table.insert(parts, r.count .. icon)
-            if r.count <= REAGENT_LOW then level = WARN end
+            local text = r.count .. icon
+            -- a reagent at zero is grayed out
+            if r.count == 0 then text = "|cff808080" .. text .. "|r" end
+            table.insert(parts, text)
+            level = math.max(level, Threshold(cfg, r.count, THRESHOLDS.reagents))
         end
         return table.concat(parts, "  "), level
     end,
-    tooltip = function(tt)
-        local list = CarriedReagents()
+    tooltip = function(tt, cfg)
+        local list = CarriedReagents(cfg)
         if #list == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
         for _, r in ipairs(list) do
-            local name = GetItemInfoFn(r.id) or ("#" .. r.id)
-            tt:AddDoubleLine(name, tostring(r.count), 1, 1, 1, r.count <= REAGENT_LOW and 1 or 1,
-                r.count <= REAGENT_LOW and 0.6 or 1, r.count <= REAGENT_LOW and 0.2 or 1)
+            local level = Threshold(cfg, r.count, THRESHOLDS.reagents)
+            tt:AddDoubleLine(ReagentName(r.id), tostring(r.count), 1, 1, 1, level == GOOD and 1 or 1,
+                level == GOOD and 1 or 0.6, level == GOOD and 1 or 0.2)
         end
     end,
 })
@@ -901,24 +1024,36 @@ ns:RegisterModule("reagents", {
 ---------------------------------------------------------------------------
 -- Session: XP per hour and time to the next level; gold earned since you logged in
 ---------------------------------------------------------------------------
-local xpSession = { start = GetTime(), gained = 0, lastXP = nil, lastMax = nil, lastLevel = nil }
-local function TrackXP()
-    local xp, max, level = UnitXP("player"), UnitXPMax("player"), UnitLevel("player")
-    local s = xpSession
-    if s.lastXP then
-        if level > s.lastLevel then
-            s.gained = s.gained + (s.lastMax - s.lastXP) + xp
-        elseif xp > s.lastXP then
-            s.gained = s.gained + (xp - s.lastXP)
-        end
+-- (the gains and the start of the count are the shared session: "Reset session" starts XP per hour again)
+local recent, recentStart = {}, nil -- XP of the last 15 minutes: { time, session.xpGained } every 15 seconds
+local RECENT_SECONDS = 900
+local function RecentCheck()
+    if recentStart ~= session.gainStart then
+        for i = #recent, 1, -1 do recent[i] = nil end
+        recentStart = session.gainStart
     end
-    s.lastXP, s.lastMax, s.lastLevel = xp, max, level
+end
+C_Timer.NewTicker(15, function()
+    RecentCheck()
+    local now = GetTime()
+    table.insert(recent, { now, session.xpGained })
+    while #recent > 1 and now - recent[2][1] >= RECENT_SECONDS do table.remove(recent, 1) end
+end)
+
+local function XPElapsed()
+    return GetTime() - session.gainStart
 end
 local function XPRate()
-    TrackXP()
-    local hours = (GetTime() - xpSession.start) / 3600
-    if hours < 1 / 60 or xpSession.gained <= 0 then return 0 end
-    return xpSession.gained / hours
+    local hours = XPElapsed() / 3600
+    if hours < 1 / 60 or session.xpGained <= 0 then return 0 end
+    return session.xpGained / hours
+end
+-- XP per hour over the last 15 minutes at most; nil until a minute of samples
+local function XPRecentRate()
+    RecentCheck()
+    local first = recent[1]
+    if not first or GetTime() - first[1] < 60 then return nil end
+    return (session.xpGained - first[2]) / ((GetTime() - first[1]) / 3600)
 end
 
 ns:RegisterModule("xpRate", {
@@ -932,24 +1067,38 @@ ns:RegisterModule("xpRate", {
         if AtMaxLevel() then return L.NA end
         local rate = XPRate()
         local fmt = BreakUpLargeNumbers or tostring
-        if rate <= 0 then return L.XP_RATE_FORMAT:format("0") end
-        if cfg and cfg.xpRateShown == "time" then
-            return ShortDuration((UnitXPMax("player") - UnitXP("player")) / rate * 3600)
-        end
-        return L.XP_RATE_FORMAT:format(fmt(math.floor(rate)))
+        local rateText = L.XP_RATE_FORMAT:format(rate > 0 and fmt(math.floor(rate)) or "0")
+        if rate <= 0 then return rateText end
+        local shown = cfg and cfg.xpRateShown
+        local left = ShortDuration((UnitXPMax("player") - UnitXP("player")) / rate * 3600)
+        if shown == "time" then return left end
+        if shown == "both" then return rateText .. "  " .. left end
+        return rateText
     end,
-    defaults = { xpRateShown = "rate" },
+    defaults = { xpRateShown = "rate", xpTipTime = true, xpTipGained = true, xpTipRate = true, xpTipRecent = true,
+                 xpTipLeft = true },
     options = {
         { kind = "dropdown", field = "xpRateShown", tab = "text", label = "XP_RATE_SHOWN", tip = "TIP_XP_RATE_SHOWN",
-          values = { { key = "rate", label = "XP_RATE_PER_HOUR" }, { key = "time", label = "XP_RATE_TIME" } } },
+          values = { { key = "rate", label = "XP_RATE_PER_HOUR" }, { key = "time", label = "XP_RATE_TIME" },
+                     { key = "both", label = "XP_RATE_BOTH" } } },
+        { kind = "check", field = "xpTipTime", section = "tooltip", tab = "text", label = "XP_TIP_TIME", tip = "TIP_XP_TIP_TIME" },
+        { kind = "check", field = "xpTipGained", section = "tooltip", tab = "text", label = "XP_TIP_GAINED", tip = "TIP_XP_TIP_GAINED" },
+        { kind = "check", field = "xpTipRate", section = "tooltip", tab = "text", label = "XP_TIP_PACE", tip = "TIP_XP_TIP_PACE" },
+        { kind = "check", field = "xpTipRecent", section = "tooltip", tab = "text", label = "XP_TIP_RECENT", tip = "TIP_XP_TIP_RECENT" },
+        { kind = "check", field = "xpTipLeft", section = "tooltip", tab = "text", label = "XP_TIP_LEFT", tip = "TIP_XP_TIP_LEFT" },
     },
-    tooltip = function(tt)
+    extraAction = { key = "resetSession", label = "ACTION_RESET_SESSION", run = Tools.ResetSession },
+    tooltip = function(tt, cfg)
         local rate = XPRate()
         local fmt = BreakUpLargeNumbers or tostring
-        WHITE(tt, L.TT_SESSION_TIME, FormatDuration(GetTime() - xpSession.start))
-        WHITE(tt, L.TT_XP_GAINED, fmt(xpSession.gained))
-        WHITE(tt, L.XP_RATE_PER_HOUR, fmt(math.floor(rate)))
-        if rate > 0 and not AtMaxLevel() then
+        if On(cfg, "xpTipTime") then WHITE(tt, L.TT_SESSION_TIME, FormatDuration(XPElapsed())) end
+        if On(cfg, "xpTipGained") then WHITE(tt, L.TT_XP_GAINED, fmt(session.xpGained)) end
+        if On(cfg, "xpTipRate") then WHITE(tt, L.XP_RATE_PER_HOUR, fmt(math.floor(rate))) end
+        if On(cfg, "xpTipRecent") then
+            local r = XPRecentRate()
+            if r then WHITE(tt, L.TT_XP_RECENT, fmt(math.floor(r))) end
+        end
+        if On(cfg, "xpTipLeft") and rate > 0 and not AtMaxLevel() then
             WHITE(tt, L.TT_XP_LEVEL_IN, FormatDuration((UnitXPMax("player") - UnitXP("player")) / rate * 3600))
         end
     end,
@@ -975,13 +1124,13 @@ ns:RegisterModule("goldSession", {
     end,
     tooltip = function(tt)
         local change = MoneyChange()
-        WHITE(tt, L.TT_SESSION_TIME, FormatDuration(GetTime() - xpSession.start))
+        WHITE(tt, L.TT_SESSION_TIME, FormatDuration(XPElapsed()))
         if ns:IsStreamer() then
             WHITE(tt, L.GOLD_SESSION, ns.HIDDEN)
             return
         end
         WHITE(tt, change < 0 and L.TT_GOLD_LOST or L.TT_GOLD_EARNED, ns.FormatMoney(math.abs(change)))
-        local hours = (GetTime() - xpSession.start) / 3600
+        local hours = XPElapsed() / 3600
         if hours >= 1 / 60 and change > 0 then WHITE(tt, L.TT_GOLD_PER_HOUR, ns.FormatMoney(math.floor(change / hours))) end
     end,
 })

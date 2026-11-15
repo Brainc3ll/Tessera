@@ -2245,15 +2245,112 @@ for _, step in ipairs({
         assert(m.goldSession.update(ns.db.blocks.goldSession) == ns.HIDDEN, "gold hidden in streamer mode")
         ns:SetStreamerMode(false)
         GetMoney = oldMoney
-        -- XP per hour: 1000 XP (500 -> 1500) in half an hour = 2000 XP/h
+        -- XP per hour comes from the shared session: 1000 XP gained in half an hour = 2000 XP/h
         local oldXP, oldTime = UnitXP, GetTime
-        m.xpRate.update(ns.db.blocks.xpRate)
+        local shared = ns.BlockTools.session
+        local savedGained, savedStart = shared.xpGained, shared.gainStart
+        shared.xpGained, shared.gainStart = 1000, oldTime() - 1800
         UnitXP = function() return 2000 - 500 end
-        GetTime = function() return oldTime() + 1800 end
         local rate = m.xpRate.update({ xpRateShown = "rate" })
         assert(rate:find("2[ ,.\194\160]?000"), "xp rate: " .. rate)
         assert(m.xpRate.update({ xpRateShown = "time" }) == "15m", "500 XP left at 2000/h: 15 minutes")
+        local both = m.xpRate.update({ xpRateShown = "both" })
+        assert(both:find("15m") and both:find("XP/h"), "rate and time together: " .. both)
+        -- the tooltip parts follow their checkboxes
+        local count = 0
+        local counter = setmetatable({ AddLine = function() count = count + 1 end,
+            AddDoubleLine = function() count = count + 1 end }, { __index = function() return function() end end })
+        m.xpRate.tooltip(counter, { xpTipTime = false, xpTipGained = false, xpTipRate = false, xpTipRecent = false })
+        local fewer = count
+        count = 0
+        m.xpRate.tooltip(counter, {})
+        assert(count >= fewer + 3, "the checkboxes drop lines")
+        -- "Reset session" starts the rate again
+        shared.xpGained, shared.gainStart = 0, oldTime()
+        assert(m.xpRate.update({ xpRateShown = "rate" }):find("^0 "), "rate after a reset")
+        shared.xpGained, shared.gainStart = savedGained, savedStart
         UnitXP, GetTime = oldXP, oldTime
+    end,
+    -- 1.5.0 (test141): Goal (currency, reached, estimate), Reagents, Group, Memory, Instances
+    function()
+        local m = ns.modules
+        local function FakeTip()
+            local lines = {}
+            local tt = setmetatable({ AddLine = function(_, t) table.insert(lines, tostring(t)) end,
+                AddDoubleLine = function(_, a, b) table.insert(lines, tostring(a) .. " | " .. tostring(b)) end },
+                { __index = function() return function() end end })
+            return tt, function() return table.concat(lines, "\n") end
+        end
+        local L = ns.L
+        -- Goal: reached shows the word, the estimate needs a pace, a currency goal counts the currency
+        local oldMoney, shared = GetMoney, ns.BlockTools.session
+        local savedStart, savedMoney = shared.gainStart, ns.sessionMoney
+        GetMoney = function() return 20000000 end
+        local text = m.goal.update({ goalType = "gold", goalValue = 1000 })
+        assert(text:find(L.GOAL_REACHED, 1, true), "goal reached in words: " .. text)
+        GetMoney = function() return 9000000 end -- 900 gold of 1000
+        shared.gainStart, ns.sessionMoney = GetTime() - 3600, 8000000 -- 100 gold in an hour
+        local tt, got = FakeTip()
+        m.goal.tooltip(tt, { goalType = "gold", goalValue = 1000 })
+        assert(got():find(L.TT_GOAL_ETA, 1, true) and got():find("1h", 1, true), "estimated time: " .. got())
+        GetMoney, shared.gainStart, ns.sessionMoney = oldMoney, savedStart, savedMoney
+        local oldCI = C_CurrencyInfo.GetCurrencyInfo
+        C_CurrencyInfo.GetCurrencyInfo = function() return { quantity = 50, name = "Honor", iconFileID = 1 } end
+        assert(m.goal.update({ goalType = "currency", goalCurrency = 1901, goalValue = 100 }) == "50%", "currency goal")
+        assert(m.goal.getIcon({ goalType = "currency", goalCurrency = 1901 }) == 1, "currency goal icon")
+        C_CurrencyInfo.GetCurrencyInfo = oldCI
+        -- Reagents: nothing at zero unless asked, gray when shown, a turned-off reagent never
+        local oldClass = UnitClass
+        UnitClass = function() return "Mage", "MAGE" end
+        assert(m.reagents.update({}) == L.NONE, "no reagent carried")
+        assert(m.reagents.update({ reagentsZero = true }):find("|cff808080", 1, true), "zero grayed out")
+        local all = m.reagents.update({ reagentsZero = true })
+        local fewer = m.reagents.update({ reagentsZero = true, reagent17031 = false })
+        assert(#fewer < #all, "a reagent turned off is dropped")
+        UnitClass = oldClass
+        -- Group: roles, state and level follow their checkboxes
+        local saved = { IsInGroup = IsInGroup, IsInRaid = IsInRaid, GetNumGroupMembers = GetNumGroupMembers,
+            UnitName = UnitName, UnitIsGroupLeader = UnitIsGroupLeader, UnitIsConnected = UnitIsConnected,
+            UnitLevel = UnitLevel }
+        IsInGroup, IsInRaid, GetNumGroupMembers = function() return true end, function() return false end, function() return 2 end
+        UnitName = function(unit) return unit == "player" and "Me" or "Pal" end
+        UnitIsGroupLeader = function(unit) return unit == "player" end
+        UnitIsConnected = function(unit) return unit == "player" end
+        UnitLevel = function() return 42 end
+        tt, got = FakeTip()
+        m.group.tooltip(tt, {})
+        assert(got():find("(" .. L.TT_LEADER .. ")", 1, true), "leader tag: " .. got())
+        assert(got():find(PLAYER_OFFLINE or "Offline", 1, true) or not PLAYER_OFFLINE, "offline in words: " .. got())
+        assert(got():find("42", 1, true), "level shown")
+        tt, got = FakeTip()
+        m.group.tooltip(tt, { groupTipRole = false, groupTipState = false, groupTipLevel = false })
+        assert(not got():find(L.TT_LEADER, 1, true) and not got():find("42", 1, true), "parts off: " .. got())
+        for name, fn in pairs(saved) do _G[name] = fn end
+        -- Memory: the total line and the shares come with their checkboxes
+        pcall(m.memory.update, {})
+        tt, got = FakeTip()
+        m.memory.tooltip(tt, {})
+        assert(not got():find(L.TT_MEMORY_TOTAL, 1, true), "no total line by default")
+        tt, got = FakeTip()
+        m.memory.tooltip(tt, { memoryTotal = true, memoryShare = true, memoryCount = "5" })
+        assert(got():find(L.TT_MEMORY_TOTAL, 1, true), "total line: " .. got())
+        -- Instances: nearest reset first, red when a reset is under the threshold
+        local oldN, oldInfo = GetNumSavedInstances, GetSavedInstanceInfo
+        GetNumSavedInstances = function() return 2 end
+        GetSavedInstanceInfo = function(i)
+            if i == 1 then return "Far Keep", 1, 400000, 0, true, false, false, false, 10, "Normal", 3, 1 end
+            return "Near Keep", 2, 3000, 0, true, false, false, false, 10, "Normal", 3, 1
+        end
+        tt, got = FakeTip()
+        m.instances.tooltip(tt, { instancesSortReset = true })
+        local first, second = got():find("Near Keep", 1, true), got():find("Far Keep", 1, true)
+        assert(first and second and first < second, "nearest reset first")
+        tt, got = FakeTip()
+        m.instances.tooltip(tt, { instancesTipSaved = false })
+        assert(not got():find("Keep", 1, true), "saves hidden")
+        local _, level = m.instances.update({})
+        assert(level == 3, "red when a reset is under an hour: " .. tostring(level))
+        GetNumSavedInstances, GetSavedInstanceInfo = oldN, oldInfo
     end,
     -- 1.1.0: pinned tooltips, custom names, item goal, DPS, corpse, game mode, weather,
     -- worn items in the bags, profession bags apart in the bags tooltip
@@ -3765,6 +3862,21 @@ do
         elseif fl < br and fr > bl and fb < bt and ft > bb then
             print("STEP ERROR: banner: a new block was placed under the placement banner")
         elseif fb < bt then print("STEP ERROR: banner: a new block is not above the placement banner") end
+    end
+    -- the same with the options window open: the new block still lands above the banner, over its width (test139)
+    do
+        ns:OpenOptions()
+        for _, nk in ipairs({ "speed", "regen" }) do
+            local nc = ns.db.blocks[nk]
+            nc.enabled, nc.point, nc.dock, nc.anchor = false, nil, nil, nil
+            ns:SetBlocksOnScreen({ nk }, true)
+            local bl, bb, br, bt = ns:GetRectUI(ns.banner)
+            local fl, fb, fr = ns:GetRectUI(ns.frames[nk])
+            if not (bl and fl) then print("STEP ERROR: banner: no rectangle to compare (options open)")
+            elseif fb < bt then print("STEP ERROR: banner: with the options window open, " .. nk .. " is not above the banner")
+            elseif fr < bl or fl > br then print("STEP ERROR: banner: with the options window open, " .. nk .. " lands beside the banner, not over it") end
+        end
+        TesseraOptions:Hide()
     end
     -- the banner's grid: G gives the next size, the arrows too
     ns.db.grid = 0

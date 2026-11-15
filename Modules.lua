@@ -101,9 +101,11 @@ local function ResetSession()
     session.gainStart = GetTime()
     session.xpGained = 0
     session.repBase = {}
+    session.curBase = {}
     if ns.RepSnapshot then ns.RepSnapshot() end
+    if ns.CurrencySnapshot then ns.CurrencySnapshot() end
     ns.sessionMoney = GetMoney() or 0
-    for _, key in ipairs({ "gold", "xp", "goldSession", "reputation" }) do
+    for _, key in ipairs({ "gold", "xp", "goldSession", "reputation", "currency" }) do
         if ns.frames[key] then ns:UpdateBlock(key) end
     end
     ns.Print(L.SESSION_RESET)
@@ -155,6 +157,7 @@ local THRESHOLDS = {
     latency    = { warn = 100, bad = 250, low = false, min = 20, max = 1000, step = 10 },
     ammo       = { warn = 200, bad = 50, low = true, min = 0, max = 1000, step = 10 },
     quests     = { warn = 2, bad = 0, low = true, min = 0, max = 10, step = 1 }, -- free slots in the quest log
+    currency   = { warn = 80, bad = 100, low = false, min = 10, max = 100, step = 5 }, -- percent of a currency's cap
 }
 
 local function LevelColor(level)

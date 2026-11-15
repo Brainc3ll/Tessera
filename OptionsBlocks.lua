@@ -407,6 +407,12 @@ local function BuildBlockPage(page)
         { key = "top", name = L.TOOLTIP_TOP },
         { key = "bottom", name = L.TOOLTIP_BOTTOM },
     }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR, notSpacer), { parent = IsOn("tooltip") })
+    tipBox.Add(Dropdown(c, L.TOOLTIP_ALIGN, {
+        { key = "auto", name = L.TOOLTIP_AUTO },
+        { key = "left", name = L.TOOLTIP_ALIGN_LEFT },
+        { key = "center", name = L.TOOLTIP_ALIGN_CENTER },
+        { key = "right", name = L.TOOLTIP_ALIGN_RIGHT },
+    }, "tooltipAlign", L.TIP_TOOLTIP_ALIGN, notSpacer), { parent = IsOn("tooltip") })
     ns.blockTooltipCheck = showTip -- (tools/mock_run.lua)
 
     -- 2. Appearance: size, text, background, icon, border, separators, opacity and layer,

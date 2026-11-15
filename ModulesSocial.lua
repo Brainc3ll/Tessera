@@ -68,7 +68,7 @@ end
 
 -- Guild tooltip order: "leaders" top ranks (0 = off, 1 = guild master, 2 = two ranks...) come first,
 -- by rank; then the chosen order. "game" keeps the roster's own order.
-local GUILD_LIMITS = { [5] = true, [10] = true, [20] = true, [30] = true } -- "Members shown"
+local GUILD_LIMITS = { [5] = true, [10] = true, [20] = true, [30] = true, [50] = true, [100] = true } -- "Members shown"
 local GUILD_SORT = { game = true, name = true, level = true, zone = true, rank = true }
 local function SortGuild(list, mode, leaders)
     if not GUILD_SORT[mode] then mode = "game" end
@@ -238,7 +238,7 @@ ns:RegisterModule("guild", {
                              { key = "4", label = "GUILD_LEADERS_4" } } },
                 { kind = "dropdown", field = "guildMax", section = "tooltip", tab = "text", label = "GUILD_MAX", tip = "TIP_GUILD_MAX",
                   values = { { key = "5", label = "5" }, { key = "10", label = "10" }, { key = "20", label = "20" },
-                             { key = "30", label = "30" } } },
+                             { key = "30", label = "30" }, { key = "50", label = "50" }, { key = "100", label = "100" } } },
                 { kind = "check", field = "guildTipMotd", section = "tooltip", tab = "text", label = "GUILD_TIP_MOTD", tip = "TIP_GUILD_TIP_MOTD" },
                 { kind = "check", field = "guildTipCount", section = "tooltip", tab = "text", label = "GUILD_TIP_COUNT", tip = "TIP_GUILD_TIP_COUNT" },
                 { kind = "check", field = "guildTipRank", section = "tooltip", tab = "text", label = "GUILD_TIP_RANK", tip = "TIP_GUILD_TIP_RANK" },

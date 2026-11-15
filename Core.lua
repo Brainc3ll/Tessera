@@ -931,9 +931,13 @@ function ns.MoveTooltip(owner, tooltip)
     local l, b, r, t = ns:GetRectUI(owner)
     if not l then return end
     local x, y = (l + r) / 2, (b + t) / 2
-    local h = x > UIParent:GetWidth() / 2 and "RIGHT" or "LEFT"
-    -- the block's "tooltip position" option can force above or below
     local cfg = owner.key and ns.db and ns.db.blocks[owner.key]
+    -- the block's "tooltip alignment" option: left edge, centered or right edge of the block;
+    -- automatic keeps the edge on the side of the screen's middle where the block is
+    local align = cfg and cfg.tooltipAlign
+    local h = x > UIParent:GetWidth() / 2 and "RIGHT" or "LEFT"
+    if align == "left" then h = "LEFT" elseif align == "right" then h = "RIGHT" elseif align == "center" then h = "" end
+    -- the block's "tooltip position" option can force above or below
     local below = y > UIParent:GetHeight() / 2
     if cfg and cfg.tooltipAnchor == "top" then below = false end
     if cfg and cfg.tooltipAnchor == "bottom" then below = true end
@@ -972,6 +976,7 @@ local BLOCK_DEFAULTS = {
     fadeShowCombat = true,  -- faded blocks are fully shown in combat
     alert = true,           -- flash when the block turns red, or when it appears (mail...)
     tooltipAnchor = "auto", -- tooltip: auto, top, bottom
+    tooltipAlign = "auto",  -- tooltip: auto, left, center, right (against the block's edges)
     hideInVehicle = false,
     hideWhenResting = false, -- in an inn or a capital city
     classColorText = false,

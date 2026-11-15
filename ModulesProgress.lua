@@ -244,51 +244,192 @@ ns:RegisterModule("reputation", {
 ---------------------------------------------------------------------------
 -- Tracked currencies (the ones shown on the backpack)
 ---------------------------------------------------------------------------
--- Up to 3 backpack currencies as { name, count, icon }.
+-- Up to 3 backpack currencies as { id, name, count, icon }.
 -- (C_CurrencyInfo API)
 local function TrackedCurrencies()
     local list = {}
     for i = 1, 3 do
-        local name, count, icon
+        local name, count, icon, id
         if C_CurrencyInfo and C_CurrencyInfo.GetBackpackCurrencyInfo then
             local info = Try(C_CurrencyInfo.GetBackpackCurrencyInfo, i)
-            if info then name, count, icon = info.name, info.quantity, info.iconFileID end
+            if info then name, count, icon, id = info.name, info.quantity, info.iconFileID, info.currencyTypesID end
         end
-        if name then table.insert(list, { name = name, count = count or 0, icon = icon }) end
+        if name then table.insert(list, { id = id, name = name, count = count or 0, icon = icon }) end
     end
     return list
+end
+
+-- Every currency of the game's list (headers give the category), as the game lists them: the ones under
+-- a closed header are not listed. { id, name, count, icon, category }
+local function AllCurrencies()
+    local list, category = {}, nil
+    local CI = C_CurrencyInfo
+    if not (CI and CI.GetCurrencyListSize and CI.GetCurrencyListInfo) then return list end
+    for i = 1, Try(CI.GetCurrencyListSize) or 0 do
+        local d = Try(CI.GetCurrencyListInfo, i)
+        if d and d.isHeader then
+            category = d.name
+        elseif d and d.name and not d.isTypeUnused then
+            local link = CI.GetCurrencyListLink and Try(CI.GetCurrencyListLink, i)
+            local id = link and CI.GetCurrencyIDFromLink and Try(CI.GetCurrencyIDFromLink, link)
+            table.insert(list, { id = id, name = d.name, count = d.quantity or 0, icon = d.iconFileID, category = category })
+        end
+    end
+    return list
+end
+
+-- Cap and weekly figures of one currency: max (0 or nil: none), weekly gain and weekly maximum. The fields come
+-- from the game; a missing one gives nil and nothing is shown for it.
+local function CurrencyLimits(id)
+    local d = id and C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo and Try(C_CurrencyInfo.GetCurrencyInfo, id)
+    if type(d) ~= "table" then return nil end
+    local max = d.maxQuantity
+    if type(max) ~= "number" or max <= 0 then max = nil end
+    local weeklyMax = d.maxWeeklyQuantity
+    if type(weeklyMax) ~= "number" or weeklyMax <= 0 then weeklyMax = nil end
+    return max, weeklyMax and d.quantityEarnedThisWeek or nil, weeklyMax
+end
+
+-- Gain of the session per currency: the count of each currency when first seen (session.curBase, by currency id).
+-- A gain that arrives with the event is taken off the first count, so the first gain is not lost.
+-- Reset session (Modules.lua) empties the table and calls ns.CurrencySnapshot.
+local function CurrencySnapshot()
+    session.curBase = session.curBase or {}
+    for _, c in ipairs(TrackedCurrencies()) do
+        if c.id and session.curBase[c.id] == nil then session.curBase[c.id] = c.count end
+    end
+    for _, c in ipairs(AllCurrencies()) do
+        if c.id and session.curBase[c.id] == nil then session.curBase[c.id] = c.count end
+    end
+end
+ns.CurrencySnapshot = CurrencySnapshot
+
+local currencyTracker = CreateFrame("Frame")
+currencyTracker:RegisterEvent("PLAYER_ENTERING_WORLD")
+currencyTracker:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+currencyTracker:SetScript("OnEvent", function(_, event, id, quantity, change)
+    session.curBase = session.curBase or {}
+    if event == "CURRENCY_DISPLAY_UPDATE" and type(id) == "number" and type(quantity) == "number"
+        and session.curBase[id] == nil then
+        session.curBase[id] = quantity - (type(change) == "number" and change or 0)
+    end
+    if event == "PLAYER_ENTERING_WORLD" then CurrencySnapshot() end
+end)
+
+-- Gain of this session for a currency id, or nil
+local function CurrencyGain(id, count)
+    local base = id and session.curBase and session.curBase[id]
+    return base and (count - base) or nil
+end
+
+-- The currencies the block shows: "all" tracked, the 1st / 2nd / 3rd tracked, or one chosen currency ("c<id>")
+local function ShownCurrencies(cfg)
+    local shown = cfg and cfg.currencyShown
+    local id = type(shown) == "string" and tonumber(shown:match("^c(%d+)$"))
+    if id then
+        local info = C_CurrencyInfo and C_CurrencyInfo.GetCurrencyInfo and Try(C_CurrencyInfo.GetCurrencyInfo, id)
+        if type(info) == "table" and info.name then
+            return { { id = id, name = info.name, count = info.quantity or 0, icon = info.iconFileID } }
+        end
+        return {}
+    end
+    local list = TrackedCurrencies()
+    local which = tonumber(shown)
+    if which then list = { list[which] } end
+    return list
+end
+
+local function FormatCount(n)
+    return BreakUpLargeNumbers and BreakUpLargeNumbers(n) or tostring(n)
 end
 
 ns:RegisterModule("currency", {
     label = "CURRENCY",
     icon = "Interface\\Icons\\INV_Misc_Coin_01",
     events = { "CURRENCY_DISPLAY_UPDATE" },
-    isEmpty = function() return #TrackedCurrencies() == 0 end,
+    isEmpty = function(cfg) return #ShownCurrencies(cfg) == 0 end,
     update = function(cfg)
-        local list = TrackedCurrencies()
-        local which = tonumber(cfg.currencyShown)
-        if which then list = { list[which] } end
+        local list = ShownCurrencies(cfg)
         if #list == 0 then return L.NONE end
         local size = cfg.fontSize or 12
-        local parts = {}
+        local parts, worst, capped = {}, nil, false
         for _, c in ipairs(list) do
             local icon = c.icon and ("|T%s:%d:%d:0:0:64:64:5:59:5:59|t"):format(c.icon, size, size) or ""
-            table.insert(parts, (BreakUpLargeNumbers and BreakUpLargeNumbers(c.count) or c.count) .. icon)
+            table.insert(parts, FormatCount(c.count) .. icon)
+            -- the closest to its cap decides the color (percent of the cap)
+            local max = CurrencyLimits(c.id)
+            if max then
+                local pct = Percent(c.count, max)
+                if not worst or pct > worst then worst = pct end
+                if c.count >= max then capped = true end
+            end
         end
-        return table.concat(parts, "  ")
+        local text = table.concat(parts, "  ")
+        if capped then text = text .. " " .. L.CURRENCY_CAPPED end -- the word too, not only the color
+        if worst then return text, Threshold(cfg, worst, THRESHOLDS.currency) end
+        return text
     end,
-    tooltip = function(tt)
-        local list = TrackedCurrencies()
-        if #list == 0 then tt:AddLine(L.TT_NO_CURRENCY, 0.8, 0.8, 0.8, true) end
-        for _, c in ipairs(list) do
-            WHITE(tt, c.name, BreakUpLargeNumbers and BreakUpLargeNumbers(c.count) or tostring(c.count))
+    thresholds = THRESHOLDS.currency,
+    -- extra click action (Shift / middle click list): gains start again from now
+    extraAction = { key = "resetSession", label = "ACTION_RESET_SESSION", run = Tools.ResetSession },
+    tooltip = function(tt, cfg)
+        local tracked = TrackedCurrencies()
+        local cap, showGain = cfg and cfg.currencyTipCap, cfg and cfg.currencyTipSession
+        local function Line(c)
+            local right = FormatCount(c.count)
+            local max, weekly, weeklyMax = CurrencyLimits(c.id)
+            if cap and max then right = right .. " / " .. FormatCount(max) end
+            WHITE(tt, c.name, right)
+            if cap and weeklyMax then
+                tt:AddDoubleLine("   " .. L.TT_CURRENCY_WEEK, ("%s / %s"):format(FormatCount(weekly or 0), FormatCount(weeklyMax)),
+                    0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+            end
+            local gain = showGain and CurrencyGain(c.id, c.count)
+            if gain and gain ~= 0 then
+                tt:AddDoubleLine("   " .. L.TT_XP_SESSION, (gain > 0 and "+" or "-") .. FormatCount(math.abs(gain)),
+                    0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+            end
+        end
+        local started = false
+        if On(cfg, "currencyTipTracked") then
+            if #tracked == 0 then tt:AddLine(L.TT_NO_CURRENCY, 0.8, 0.8, 0.8, true) end
+            for _, c in ipairs(tracked) do Line(c) end
+            started = true
+        end
+        -- the other currencies you own, under the game's category names
+        if cfg and cfg.currencyTipOthers then
+            local seen = {}
+            for _, c in ipairs(tracked) do if c.id then seen[c.id] = true end end
+            local category
+            for _, c in ipairs(AllCurrencies()) do
+                if c.count > 0 and not (c.id and seen[c.id]) then
+                    if c.category ~= category then
+                        category = c.category
+                        if started then ns.TooltipGap(tt) end
+                        if category then tt:AddLine(category, 1, 0.82, 0) end
+                        started = true
+                    end
+                    Line(c)
+                end
+            end
         end
     end,
-    defaults = { currencyShown = "all" },
+    defaults = { currencyShown = "all", currencyTipTracked = true, currencyTipOthers = false, currencyTipCap = false,
+                 currencyTipSession = false },
     options = {
         { kind = "dropdown", field = "currencyShown", tab = "text", label = "CURRENCY_SHOWN", tip = "TIP_CURRENCY_SHOWN",
-          values = { { key = "all", label = "CURRENCY_ALL" }, { key = "1", label = "CURRENCY_1" },
-                     { key = "2", label = "CURRENCY_2" }, { key = "3", label = "CURRENCY_3" } } },
+          values = function()
+              local values = { { key = "all", label = "CURRENCY_ALL" }, { key = "1", label = "CURRENCY_1" },
+                               { key = "2", label = "CURRENCY_2" }, { key = "3", label = "CURRENCY_3" } }
+              for _, c in ipairs(AllCurrencies()) do
+                  if c.id then table.insert(values, { key = "c" .. c.id, label = c.name }) end
+              end
+              return values
+          end },
+        { kind = "check", field = "currencyTipTracked", section = "tooltip", tab = "text", label = "CURRENCY_TIP_TRACKED", tip = "TIP_CURRENCY_TIP_TRACKED" },
+        { kind = "check", field = "currencyTipOthers", section = "tooltip", tab = "text", label = "CURRENCY_TIP_OTHERS", tip = "TIP_CURRENCY_TIP_OTHERS" },
+        { kind = "check", field = "currencyTipCap", section = "tooltip", tab = "text", label = "CURRENCY_TIP_CAP", tip = "TIP_CURRENCY_TIP_CAP" },
+        { kind = "check", field = "currencyTipSession", section = "tooltip", tab = "text", label = "CURRENCY_TIP_SESSION", tip = "TIP_CURRENCY_TIP_SESSION" },
     },
     secureMacro = "/run if ToggleCharacter then ToggleCharacter('TokenFrame') end",
     clickHint = L.HINT_CURRENCY,

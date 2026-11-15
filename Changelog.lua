@@ -57,13 +57,17 @@ ns.CHANGELOG = {
                     .. " and each member's rank and public note. Each line starts with the level, the rank is in gold"
                     .. " and the zone stays on the right. Sort the members (name, level, zone, rank),"
                     .. " put the top ranks, guild master and officers, above everyone else (they are not counted)"
-                    .. " and choose how many members show: 5, 10, 20 or 30.",
+                    .. " and choose how many members show: 5, 10, 20, 30, 50 or 100.",
                 "Friends: choose which parts of the tooltip show, show the note you wrote on a friend,"
                     .. " sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.",
                 "Quests: sort the tooltip by level or finished first, list 10, 20 or all quests, show each zone or only the quests to hand in,"
                     .. " and set the alert on the free slots left in the quest log.",
                 "Reputation: show the points left before the next standing and the reputation gained this session,"
                     .. " and choose which parts of the tooltip show. \"Reset session\" also restarts the reputation gain.",
+                "Currencies: show any currency you own in the block, not only the three on your backpack."
+                    .. " The tooltip can list your other currencies by category, the cap and the weekly limit, and what each gained this session."
+                    .. " The block turns orange near a currency's cap, then red with the word \"max\" at the cap, and"
+                    .. " \"Reset session\" starts the gains again.",
                 "Item level: show the equipped level, the best available one or both, and list the weakest items first in the tooltip.",
                 "Stats: a second stat next to the first.",
                 "Weapon enchant and Long buffs: the yellow and red thresholds are now settings (in seconds)."
@@ -85,14 +89,20 @@ ns.CHANGELOG = {
                     .. " et le rang et la note publique de chaque membre. Chaque ligne commence par le niveau, le rang est en doré"
                     .. " et la zone reste à droite. Trie les membres (nom, niveau, zone, rang),"
                     .. " place les rangs les plus hauts, maître de guilde et officiers, au-dessus des autres (ils ne sont pas comptés)"
-                    .. " et choisis combien de membres s'affichent : 5, 10, 20 ou 30.",
+                    .. " et choisis combien de membres s'affichent : 5, 10, 20, 30, 50 ou 100.",
                 "Amis : choisis les parties de l'infobulle à afficher, montre la note écrite sur un ami,"
                     .. " trie la liste par nom, niveau ou zone, et garde seulement les amis Battle.net qui jouent à WoW.",
                 "Quêtes : trie l'infobulle par niveau ou les terminées d'abord, liste 10, 20 ou toutes les quêtes,"
                     .. " montre chaque zone ou seulement les quêtes à rendre, et règle l'alerte sur les places libres du journal.",
                 "Réputation : affiche les points restants avant le rang suivant et la réputation gagnée pendant la session,"
                     .. " et choisis les parties de l'infobulle à afficher. « Remettre la session à zéro » relance aussi le gain de réputation.",
-                "Niveau d'objet : affiche le niveau équipé, le meilleur disponible ou les deux, et liste d'abord les objets les plus faibles dans l'infobulle.",
+                "Monnaies : affiche n'importe quelle monnaie que tu possèdes dans le bloc, pas seulement les trois du sac à dos."
+                    .. " L'infobulle peut lister tes autres monnaies par catégorie, le plafond et la limite hebdomadaire, et"
+                    .. " le gain de chacune pendant la session."
+                    .. " Le bloc passe à l'orange près du plafond d'une monnaie, puis au rouge avec le mot « max » au"
+                    .. " plafond, et « Remettre la session à zéro » relance les gains.",
+                "Niveau d'objet : affiche le niveau équipé, le meilleur disponible ou les deux, et liste d'abord les objets"
+                    .. " les plus faibles dans l'infobulle.",
                 "Stats : une deuxième statistique à côté de la première.",
                 "Enchant d'arme et Buffs longs : les seuils jaune et rouge deviennent des réglages (en secondes)."
                     .. " Le rouge commence sous une minute, pour que « Clignoter pour alerter » te prévienne avant la fin.",
@@ -113,6 +123,7 @@ ns.CHANGELOG = {
                 "The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.",
                 "The \"What's new in 1.3\" button is gone from the Help tab. The Changelog in the About tab lists every change.",
                 "The list on the left of the options window widens for a long tab name, so no name is cut.",
+                "Block settings: choose how a block's tooltip lines up with it (left edge, centered, right edge). Automatic keeps the old behaviour.",
                 "Tooltips: a blank line now separates the title, the information and the click help."
                     .. " \"Space between tooltip parts\" in Placement and more turns it off.",
               },
@@ -130,6 +141,8 @@ ns.CHANGELOG = {
                 "La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute : le texte à 100 % tient avec moins de molette.",
                 "Le bouton « Nouveautés de la 1.3 » disparaît de l'onglet Aide. Le Changelog de l'onglet À propos liste tous les changements.",
                 "La liste à gauche de la fenêtre d'options s'élargit pour un nom d'onglet long : aucun nom n'est coupé.",
+                "Réglages des blocs : choisis comment l'infobulle d'un bloc s'aligne sur lui (bord gauche, centrée, bord"
+                    .. " droit). Automatique garde l'ancien comportement.",
                 "Infobulles : une ligne vide sépare maintenant le titre, les informations et l'aide des clics."
                     .. " « Espaces dans les infobulles » dans Placement et général la retire.",
               },
@@ -139,7 +152,8 @@ ns.CHANGELOG = {
                 "A block you show while the placement banner is up now appears above the banner. The banner no longer hides it.",
               },
               fr = {
-                "Un bloc que tu affiches pendant que le bandeau de placement est ouvert apparaît maintenant au-dessus du bandeau. Le bandeau ne le cache plus.",
+                "Un bloc que tu affiches pendant que le bandeau de placement est ouvert apparaît maintenant au-dessus du"
+                    .. " bandeau. Le bandeau ne le cache plus.",
               },
             },
         },
@@ -372,14 +386,16 @@ ns.CHANGELOG = {
                 "Les listes de quelques choix ont une flèche de chaque côté, comme les réglages du jeu."
                     .. " Les cases à cocher sont celles du jeu : cliquez n'importe où sur la ligne pour cocher.",
                 "Les pages plus hautes que la fenêtre défilent à la molette.",
-                "Cherchez un réglage en haut de la fenêtre d'options : Entrée ou un clic ouvre sa page et le fait clignoter. Les anciens noms marchent aussi.",
+                "Cherchez un réglage en haut de la fenêtre d'options : Entrée ou un clic ouvre sa page et le fait clignoter."
+                    .. " Les anciens noms marchent aussi.",
                 "Un panneau d'aide, à droite de la fenêtre d'options, explique le réglage sous la souris, à la place de son infobulle.",
                 "La flèche à côté de la croix réduit la fenêtre d'options à sa barre du haut."
                     .. " Maj + molette change sa taille (de 70 à 130 %), affichée en haut ; les autres fenêtres de Tessera suivent."
                     .. " Leurs bulles d'aide sont plus grandes et suivent aussi.",
                 "Onglet À propos : les liens sont dans des cases, prêts à copier (le jeu n'ouvre pas de navigateur).",
                 "Onglet Blocs : une seule page au lieu de cinq sous-onglets. L'interrupteur « Sur l'écran » se trouve à gauche du nom du bloc.",
-                "L'essentiel et les réglages propres au bloc viennent d'abord ; son apparence, quand l'afficher, son nom et ses clics se replient en sections.",
+                "L'essentiel et les réglages propres au bloc viennent d'abord ; son apparence, quand l'afficher, son nom et"
+                    .. " ses clics se replient en sections.",
                 "La liste des blocs montre d'abord ceux sur votre écran, puis ceux disponibles.",
                 "Ctrl + Z annule aussi quand la fenêtre d'options est ouverte (blocs retirés, un style...).",
               },

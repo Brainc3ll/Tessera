@@ -12,10 +12,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Durability: show the repair cost in the block, list only the worn items (the most worn first), and choose which parts of the tooltip show.
 - XP: show the time to the next level and the XP of the quests you can hand in, and choose which parts of the tooltip show.
 - Reset session: a new choice for the Shift + click and middle click actions on Gold and XP. Gains and rates per hour start again from now.
-- Guild: the tooltip can show the message of the day, the members online out of the total, and each member's rank and public note. Each line starts with the level, the rank is in gold and the zone stays on the right. Sort the members (name, level, zone, rank), put the top ranks, guild master and officers, above everyone else (they are not counted) and choose how many members show: 5, 10, 20 or 30.
+- Guild: the tooltip can show the message of the day, the members online out of the total, and each member's rank and public note. Each line starts with the level, the rank is in gold and the zone stays on the right. Sort the members (name, level, zone, rank), put the top ranks, guild master and officers, above everyone else (they are not counted) and choose how many members show: 5, 10, 20, 30, 50 or 100.
 - Friends: choose which parts of the tooltip show, show the note you wrote on a friend, sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.
 - Quests: sort the tooltip by level or finished first, list 10, 20 or all quests, show each zone or only the quests to hand in, and set the alert on the free slots left in the quest log.
 - Reputation: show the points left before the next standing and the reputation gained this session, and choose which parts of the tooltip show. "Reset session" also restarts the reputation gain.
+- Currencies: show any currency you own in the block, not only the three on your backpack. The tooltip can list your other currencies by category, the cap and the weekly limit, and what each gained this session. The block turns orange near a currency's cap, then red with the word "max" at the cap, and "Reset session" starts the gains again.
 - Item level: show the equipped level, the best available one or both, and list the weakest items first in the tooltip.
 - Stats: a second stat next to the first.
 - Weapon enchant and Long buffs: the yellow and red thresholds are now settings (in seconds). Red now starts under one minute, so "Flash to alert" can warn you before the time runs out.
@@ -29,6 +30,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.
 - The "What's new in 1.3" button is gone from the Help tab. The Changelog in the About tab lists every change.
 - The list on the left of the options window widens for a long tab name, so no name is cut.
+- Block settings: choose how a block's tooltip lines up with it (left edge, centered, right edge). Automatic keeps the old behaviour.
 - Tooltips: a blank line now separates the title, the information and the click help. "Space between tooltip parts" in Placement and more turns it off.
 
 ### Fixes

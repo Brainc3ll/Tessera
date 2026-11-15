@@ -2802,6 +2802,25 @@ for _, step in ipairs({
         ns.db.tooltipSpacing = false
         assert(select(2, Tip({ guildLeaders = "2" }):gsub("\n \n", "")) == 0, "no blank line when spacing is off")
         ns.db.tooltipSpacing = true
+        all = Tip({ guildMax = "100" })
+        assert(all:find("M8%-Realm"), "100 is an allowed number of members")
+        -- tooltip alignment: left edge, centered, right edge; automatic follows the screen's middle
+        local oldRect = ns.GetRectUI
+        local points
+        local fakeTip = { ClearAllPoints = function() end, SetPoint = function(_, ...) points = { ... } end }
+        ns.GetRectUI = function() return 10, 700, 110, 724 end
+        local gcfg = ns.db.blocks.gold
+        local function Place(align)
+            gcfg.tooltipAlign = align
+            ns.MoveTooltip({ key = "gold" }, fakeTip)
+            return points[1] .. "/" .. points[3]
+        end
+        assert(Place("auto") == "TOPLEFT/BOTTOMLEFT", "automatic, block on the left half: " .. Place("auto"))
+        assert(Place("right") == "TOPRIGHT/BOTTOMRIGHT", "right edge: " .. Place("right"))
+        assert(Place("center") == "TOP/BOTTOM", "centered: " .. Place("center"))
+        assert(Place("left") == "TOPLEFT/BOTTOMLEFT", "left edge: " .. Place("left"))
+        gcfg.tooltipAlign = "auto"
+        ns.GetRectUI = oldRect
         IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, C_GuildInfo, GetGuildInfo = oldIn, oldNum, oldRoster, oldGI, oldInfo
         -- item level
         local il = ns.modules.itemLevel
@@ -2824,6 +2843,82 @@ for _, step in ipairs({
         assert(T.Threshold({}, 200, ns.modules.longBuffs.thresholds) == T.WARN, "orange under 5 minutes")
         assert(T.Threshold({}, 30, ns.modules.longBuffs.thresholds) == T.BAD, "red under 1 minute")
         assert(T.Threshold({}, 900, ns.modules.longBuffs.thresholds) == T.GOOD, "good above")
+    end,
+    -- currencies (1.5): chosen currency, cap, weekly limit, session gain, alert, tooltip parts
+    function()
+        local CI = C_CurrencyInfo
+        local old = { CI.GetBackpackCurrencyInfo, CI.GetCurrencyListSize, CI.GetCurrencyListInfo, CI.GetCurrencyListLink,
+            CI.GetCurrencyIDFromLink, CI.GetCurrencyInfo }
+        local counts = { [111] = 90, [222] = 5 }
+        CI.GetBackpackCurrencyInfo = function(i)
+            if i == 1 then return { name = "Badge", quantity = counts[111], iconFileID = 1, currencyTypesID = 111 } end
+            if i == 2 then return { name = "Mark", quantity = counts[222], iconFileID = 2, currencyTypesID = 222 } end
+        end
+        CI.GetCurrencyListSize = function() return 4 end
+        CI.GetCurrencyListInfo = function(i)
+            if i == 1 then return { name = "Dungeon", isHeader = true } end
+            if i == 2 then return { name = "Badge", quantity = counts[111] } end
+            if i == 3 then return { name = "Mark", quantity = counts[222] } end
+            return { name = "Dust", quantity = 40 }
+        end
+        CI.GetCurrencyListLink = function(i) return "link" .. i end
+        CI.GetCurrencyIDFromLink = function(link) return ({ link2 = 111, link3 = 222, link4 = 333 })[link] end
+        CI.GetCurrencyInfo = function(id)
+            if id == 111 then return { name = "Badge", quantity = counts[111], maxQuantity = 100, maxWeeklyQuantity = 50,
+                quantityEarnedThisWeek = 20, iconFileID = 1 } end
+            if id == 222 then return { name = "Mark", quantity = counts[222], maxQuantity = 0, iconFileID = 2 } end
+            if id == 333 then return { name = "Dust", quantity = 40, iconFileID = 3 } end
+        end
+        local mod = ns.modules.currency
+        local lines = {}
+        local tt = setmetatable({ AddLine = function(_, t) table.insert(lines, tostring(t)) end,
+            AddDoubleLine = function(_, a, b) table.insert(lines, tostring(a) .. " | " .. tostring(b)) end },
+            { __index = function() return function() end end })
+        local function Tip(cfg)
+            lines = {}
+            mod.tooltip(tt, cfg)
+            return table.concat(lines, "\n")
+        end
+        local T = ns.BlockTools
+        T.session.curBase = {}
+        ns.CurrencySnapshot()
+        -- the old choices keep their meaning; the cap colors the block and adds a word at the cap
+        local text, level = mod.update({ currencyShown = "all", fontSize = 12 })
+        assert(text:find("90", 1, true) and text:find("5", 1, true) and level == T.WARN, "90 % of the cap is orange: " .. tostring(level))
+        text = mod.update({ currencyShown = "2", fontSize = 12 })
+        assert(text:find("5", 1, true) and not text:find("90", 1, true), "2nd tracked")
+        counts[111] = 100
+        text, level = mod.update({ currencyShown = "1", fontSize = 12 })
+        assert(level == T.BAD and text:find(ns.L.CURRENCY_CAPPED, 1, true), "at the cap: red and the word: " .. text)
+        assert(select(2, mod.update({ currencyShown = "2", fontSize = 12 })) == nil, "no cap, no color")
+        -- one chosen currency, even one that is not tracked
+        text = mod.update({ currencyShown = "c333", fontSize = 12 })
+        assert(text:find("40", 1, true) and not text:find("90", 1, true), "a chosen currency: " .. text)
+        assert(mod.update({ currencyShown = "c999", fontSize = 12 }) == ns.L.NONE, "an unknown currency shows nothing")
+        local found = false
+        for _, v in ipairs(mod.options[1].values()) do if v.key == "c333" and v.label == "Dust" then found = true end end
+        assert(found, "the choice list holds every currency you own")
+        -- tooltip parts
+        local all = Tip({})
+        assert(all:find("Badge | 100", 1, true) and all:find("Mark | 5", 1, true) and not all:find("Dust", 1, true), "tracked only by default: " .. all)
+        assert(not all:find(" / ", 1, true), "no cap line by default")
+        assert(Tip({ currencyTipTracked = false }) == "", "tracked part off")
+        all = Tip({ currencyTipCap = true })
+        assert(all:find("Badge | 100 / 100", 1, true) and all:find(ns.L.TT_CURRENCY_WEEK .. " | 20 / 50", 1, true), "cap and week: " .. all)
+        assert(not all:find("Mark | 5 /", 1, true), "no cap for a currency without one")
+        all = Tip({ currencyTipOthers = true })
+        assert(all:find("Dungeon", 1, true) and all:find("Dust | 40", 1, true), "other currencies under their category: " .. all)
+        -- gain of the session
+        all = Tip({ currencyTipSession = true })
+        assert(all:find(ns.L.TT_XP_SESSION .. " | +10", 1, true), "gain since the first count: " .. all)
+        T.ResetSession()
+        all = Tip({ currencyTipSession = true })
+        assert(not all:find("+10", 1, true), "Reset session starts the gain again")
+        counts[222] = 9
+        assert(Tip({ currencyTipSession = true }):find(ns.L.TT_XP_SESSION .. " | +4", 1, true), "gain after the reset")
+        assert(mod.extraAction and mod.extraAction.key == "resetSession", "reset action offered")
+        CI.GetBackpackCurrencyInfo, CI.GetCurrencyListSize, CI.GetCurrencyListInfo, CI.GetCurrencyListLink,
+            CI.GetCurrencyIDFromLink, CI.GetCurrencyInfo = unpack(old, 1, 6)
     end,
     -- launchers: a pool of numbered map pins on the minimap is not offered (QuestieFrame10...)
     function()

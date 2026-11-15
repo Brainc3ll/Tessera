@@ -148,6 +148,11 @@ end
 
 function ns:GetEffectiveDock(key)
     local target, side = self:GetDockTarget(key)
+    -- (the usual case: the target is shown or keeps its place, so it is the answer. No table is built for
+    -- it: this runs for every block at every layout, and only a hidden target needs the walk below)
+    if not target then return target, side end
+    local first = self.frames[target]
+    if not first or first:IsShown() or self:HasPlace(target) then return target, side end
     local seen = { [key] = true }
     while target and not seen[target] do
         local t = self.frames[target]

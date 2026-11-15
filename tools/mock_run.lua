@@ -501,6 +501,44 @@ end
 for _, step in ipairs({
     function() ns:SetLocked(false) end,
     function() ns:PushUndo(); ns:Undo() end,
+    -- GetEffectiveDock keeps its answers (1.5.1: no table in the usual case)
+    function()
+        local function Reference(key) -- the version before 1.5.1
+            local target, side = ns:GetDockTarget(key)
+            local seen = { [key] = true }
+            while target and not seen[target] do
+                local t = ns.frames[target]
+                if not t or t:IsShown() or ns:HasPlace(target) then break end
+                seen[target] = true
+                local nextTarget, nextSide = ns:GetDockTarget(target)
+                if not nextTarget or nextSide ~= side then break end
+                target = nextTarget
+            end
+            return target, side
+        end
+        local docked, hiddenCase = 0, 0
+        for _, key in ipairs(ns:GetBlockKeys()) do
+            local t1, s1 = ns:GetEffectiveDock(key)
+            local t2, s2 = Reference(key)
+            assert(t1 == t2 and s1 == s2, "GetEffectiveDock differs from the old answer for " .. key)
+            if ns:GetDockTarget(key) then docked = docked + 1 end
+        end
+        -- a hidden target that no longer keeps its place: the walk goes on to the block before it
+        for _, key in ipairs(ns:GetBlockKeys()) do
+            local target = ns:GetDockTarget(key)
+            local f = target and ns.frames[target]
+            if f and ns.db.blocks[target] then
+                local wasShown, wasEnabled = f:IsShown(), ns.db.blocks[target].enabled
+                f:Hide(); ns.db.blocks[target].enabled = false
+                local t1, s1 = ns:GetEffectiveDock(key)
+                local t2, s2 = Reference(key)
+                assert(t1 == t2 and s1 == s2, "GetEffectiveDock differs for a hidden target of " .. key)
+                hiddenCase = hiddenCase + 1
+                f:SetShown(wasShown); ns.db.blocks[target].enabled = wasEnabled
+            end
+        end
+        assert(docked == 0 or hiddenCase > 0, "the hidden-target case was not exercised")
+    end,
     -- undo steps share what did not change (1.5.1): same behaviour, far less memory
     function()
         local keys = ns:GetBlockKeys()

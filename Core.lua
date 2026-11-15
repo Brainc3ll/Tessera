@@ -2223,7 +2223,7 @@ end
 -- Frees what the options window or placing the blocks left in memory, one second later,
 -- when the blocks are locked and the player is not in combat. The cleaning runs in small
 -- steps, a few times a second, instead of one full pass: a full pass froze the game for a moment
-local CLEAN_STEPS, CLEAN_STEP_SIZE = 60, 400
+local CLEAN_STEPS, CLEAN_STEP_SIZE = 200, 1500
 local function CleanStep(left)
     local panel = _G["TesseraOptions"]
     if left <= 0 or not ns:IsLocked() or InCombatLockdown() or (panel and panel:IsShown()) then return end

@@ -3,6 +3,14 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.5.1 — 2026-11-15
+
+- Thank you to Ahlen and Malkkav on the FlareUI Discord. Ahlen's idea of a data panel under the minimap started the talk where players tried Tessera, and Malkkav showed me how to measure performance. Players there also reported Tessera's memory use, which led to this version's change.
+
+### Improvements
+
+- Undo (Ctrl + Z) keeps its 30 steps, and each step now keeps only what changed since the step before. With many blocks it takes far less memory.
+
 ## 1.5.0 — 2026-11-15
 
 ### New

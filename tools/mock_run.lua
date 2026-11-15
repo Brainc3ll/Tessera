@@ -501,6 +501,50 @@ end
 for _, step in ipairs({
     function() ns:SetLocked(false) end,
     function() ns:PushUndo(); ns:Undo() end,
+    -- undo steps share what did not change (1.5.1): same behaviour, far less memory
+    function()
+        local keys = ns:GetBlockKeys()
+        local k1, k2 = keys[1], keys[2]
+        local c1, c2 = ns.db.blocks[k1], ns.db.blocks[k2]
+        c1.point = { "TOPLEFT", "TOPLEFT", 10, -10 }
+        ns.undoStack = {}
+        ns:PushUndo(true)
+        ns:PushUndo(true)
+        local a, b = ns.undoStack[1], ns.undoStack[2]
+        assert(a ~= b, "undo steps are distinct tables")
+        assert(rawequal(a[k1], b[k1]), "unchanged block: the step shares its entry")
+        local oldSize, oldPoint = c1.fontSize, c1.point
+        c1.fontSize = (oldSize or 12) + 3
+        c1.point = { "TOPLEFT", "TOPLEFT", 99, -99 }
+        ns:PushUndo(true)
+        local c = ns.undoStack[3]
+        assert(not rawequal(b[k1], c[k1]), "changed block: a new entry")
+        assert(rawequal(b[k2], c[k2]), "other block still shared")
+        assert(c[k1].style.fontSize == oldSize + 3 or c[k1].style.fontSize == (oldSize or 12) + 3, "new style value kept")
+        assert(b[k1].style.fontSize == oldSize, "the older step still has the old value")
+        assert(rawequal(b[k1].point, a[k1].point), "unchanged position table shared")
+        -- Undo puts the values of the step back (and copies them: the steps are never changed)
+        c1.fontSize = 40
+        ns:Undo()
+        assert(c1.fontSize == oldSize + 3 and c1.point[3] == 99, "undo restores the state of the last step")
+        ns:Undo()
+        assert(c1.fontSize == oldSize, "undo restores the old style value")
+        assert(c1.point[3] == 10, "undo restores the old position")
+        assert(not rawequal(c1.point, b[k1].point), "the live settings are a copy, not the step's table")
+        c1.point[3] = 777
+        assert(b[k1].point[3] == 10, "changing live settings leaves the kept step alone")
+        -- 30 full steps stay small
+        ns.undoStack = {}
+        collectgarbage("collect"); local before = collectgarbage("count")
+        for i = 1, 30 do ns:PushUndo(true) end
+        collectgarbage("collect")
+        local kb = collectgarbage("count") - before
+        assert(kb < 400, ("30 undo steps of an unchanged profile take %d KB (expected under 400)"):format(kb))
+        ns.undoStack = {}
+        ns:PushUndo()
+        ns:Undo()
+        c1.point, c1.fontSize = oldPoint, oldSize
+    end,
     function() local k = ns:AddSpacer(); ns:PlaceNearOptions(k); ns:RemoveSpacer(k) end,
     function() ns:SetGlobalScale(1.5); ns:SetGlobalScale(1) end,
     function() ns:SetLocked(true) end,

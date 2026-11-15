@@ -37,6 +37,34 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.5.1",
+        date = "2026-11-15",
+        sections = {
+            { kind = "intro",
+              en = {
+                "Thank you to Ahlen and Malkkav on the FlareUI Discord. Ahlen's idea of a data panel under the minimap started"
+                    .. " the talk where players tried Tessera, and Malkkav showed me how to measure performance."
+                    .. " Players there also reported Tessera's memory use, which led to this version's change.",
+              },
+              fr = {
+                "Merci à Ahlen et à Malkkav, du Discord de FlareUI. L'idée d'Ahlen d'un panneau de données sous la minimap a lancé"
+                    .. " la discussion où des joueurs ont essayé Tessera, et Malkkav m'a montré comment mesurer les performances."
+                    .. " Des joueurs y ont aussi signalé la mémoire utilisée par Tessera, ce qui a mené au changement de cette version.",
+              },
+            },
+            { kind = "improved",
+              en = {
+                "Undo (Ctrl + Z) keeps its 30 steps, and each step now keeps only what changed since the step before."
+                    .. " With many blocks it takes far less memory.",
+              },
+              fr = {
+                "L'annulation (Ctrl + Z) garde ses 30 étapes, et chaque étape ne garde plus que ce qui a changé depuis la précédente."
+                    .. " Avec beaucoup de blocs, elle prend bien moins de mémoire.",
+              },
+            },
+          },
+    },
+    {
         version = "1.5.0",
         date = "2026-11-15",
         sections = {

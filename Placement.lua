@@ -165,21 +165,62 @@ local UNDO_LIMIT = 30
 -- (scale and frozen live on a group's head block: merging, detaching or replacing it moves them)
 local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look", "scale", "frozen" }
 
+-- Same value, table contents included (the copies in undo steps are compared with the live settings)
+local function SameValue(a, b)
+    if a == b then return true end
+    if type(a) ~= "table" or type(b) ~= "table" then return false end
+    for k, v in pairs(a) do
+        if not SameValue(v, b[k]) then return false end
+    end
+    for k in pairs(b) do
+        if a[k] == nil then return false end
+    end
+    return true
+end
+
+-- A step keeps the copy made by the step before when the value did not change since: 30 steps then
+-- cost what changed, not 30 full copies of every block. Steps are never modified once made (Undo copies
+-- them again when it puts a value back), so sharing a copy between steps is safe.
+local function KeepOrCopy(previous, value)
+    if value == nil then return nil end
+    if previous ~= nil and SameValue(previous, value) then return previous end
+    return ns.DeepCopy(value)
+end
+
 -- Remembers the position of every block, before a move / merge / detach / hide
 -- withStyle: also the look of every block (STYLE_KEYS), before "Copy style"
 function ns:PushUndo(withStyle)
     self.undoStack = self.undoStack or {}
+    local last = self.undoStack[#self.undoStack]
     local snap = {}
     for key, cfg in pairs(self.db.blocks) do
+        local before = last and last[key]
         local s = {}
-        for _, field in ipairs(POSITION_FIELDS) do s[field] = self.DeepCopy(cfg[field]) end
+        local shared = before ~= nil -- every part of the block is the one the step before kept
+        for _, field in ipairs(POSITION_FIELDS) do
+            s[field] = KeepOrCopy(before and before[field], cfg[field])
+            if before and s[field] ~= before[field] then shared = false end
+        end
         if withStyle then
+            local styleBefore = before and before.style
             s.style = {}
-            for _, field in ipairs(ns.STYLE_KEYS) do s.style[field] = self.DeepCopy(cfg[field]) end
+            local sameStyle = styleBefore ~= nil
+            for _, field in ipairs(ns.STYLE_KEYS) do
+                s.style[field] = KeepOrCopy(styleBefore and styleBefore[field], cfg[field])
+                if styleBefore and s.style[field] ~= styleBefore[field] then sameStyle = false end
+            end
+            if sameStyle then s.style = styleBefore else shared = false end
+        elseif before and before.style then
+            shared = false
         end
         -- a spacer may be deleted (replaced by a block): keep all of it
-        if ns.IsSpacerKey(key) then s.spacer = self.DeepCopy(cfg) end
-        snap[key] = s
+        if ns.IsSpacerKey(key) then
+            s.spacer = KeepOrCopy(before and before.spacer, cfg)
+            if not before or s.spacer ~= before.spacer then shared = false end
+        elseif before and before.spacer then
+            shared = false
+        end
+        snap[key] = shared and before or s
     end
     table.insert(self.undoStack, snap)
     if #self.undoStack > UNDO_LIMIT then table.remove(self.undoStack, 1) end

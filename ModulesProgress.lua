@@ -1014,8 +1014,10 @@ ns:RegisterModule("reagents", {
         if #list == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
         for _, r in ipairs(list) do
             local level = Threshold(cfg, r.count, THRESHOLDS.reagents)
-            tt:AddDoubleLine(ReagentName(r.id), tostring(r.count), 1, 1, 1, level == GOOD and 1 or 1,
-                level == GOOD and 1 or 0.6, level == GOOD and 1 or 0.2)
+            -- white, orange when low, red at the red level (the number keeps the same place: no color alone)
+            local g, b = 1, 1
+            if level == WARN then g, b = 0.6, 0.2 elseif level >= 3 then g, b = 0.3, 0.3 end
+            tt:AddDoubleLine(ReagentName(r.id), tostring(r.count), 1, 1, 1, 1, g, b)
         end
     end,
 })

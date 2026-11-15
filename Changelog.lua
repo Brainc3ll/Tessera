@@ -56,10 +56,16 @@ ns.CHANGELOG = {
               en = {
                 "Undo (Ctrl + Z) keeps its 30 steps, and each step now keeps only what changed since the step before."
                     .. " With many blocks it takes far less memory.",
+                "The options window no longer redraws its settings while it is closed. Moving and locking blocks"
+                    .. " feels lighter and uses less memory.",
+                "Moving and merging blocks makes less temporary memory.",
               },
               fr = {
                 "L'annulation (Ctrl + Z) garde ses 30 étapes, et chaque étape ne garde plus que ce qui a changé depuis la précédente."
                     .. " Avec beaucoup de blocs, elle prend bien moins de mémoire.",
+                "La fenêtre d'options ne redessine plus ses réglages tant qu'elle est fermée. Déplacer et verrouiller"
+                    .. " les blocs est plus léger et prend moins de mémoire.",
+                "Déplacer et fusionner des blocs produit moins de mémoire temporaire.",
               },
             },
           },

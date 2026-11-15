@@ -10,6 +10,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Improvements
 
 - Undo (Ctrl + Z) keeps its 30 steps, and each step now keeps only what changed since the step before. With many blocks it takes far less memory.
+- The options window no longer redraws its settings while it is closed. Moving and locking blocks feels lighter and uses less memory.
+- Moving and merging blocks makes less temporary memory.
 
 ## 1.5.0 — 2026-11-15
 

@@ -436,3 +436,5 @@ Addon de Dinoblankie (33 plugins, ~24 000 lignes), **sans licence** : on reprend
 Garde-fou : chaque idée ajoutée coûte des textes à traduire en 4 langues et à maintenir ; Tessera a déjà plus de 50 blocs.
 
 - 15/11 : lot Progression (Objectif, XP/h, Composants) et Groupe, Mémoire, Instances codés pour test141. Blocs Forever : à revamper plus tard (Braincell1980). Reste : Munitions, Or de la session, Monde, Système.
+
+- **Fréquence de rafraîchissement (idée de Braincell1980, 15/11, pour une 1.5.2 ou plus tard)** : un réglage global de la fréquence de mise à jour des blocs, peut-être aussi par bloc, et une mention de la mémoire que la première ouverture de la fenêtre d'options peut prendre. Mesures du 15/11 : au repos Tessera ne produit que ~2,8 Ko/s, donc ce réglage serait du confort (petits PC, beaucoup de blocs), pas un correctif de mémoire ; les gros pics venaient de la fenêtre d'options, de la mise en page au déplacement et du nettoyage forcé.

@@ -620,6 +620,7 @@ local function BuildPanel()
             S.panel:SetPoint("CENTER")
         end
         FitPanelToScreen()
+        if S.optionsStale then ns:RefreshOptions() end -- settings changed while it was closed
         ns:UpdatePlacementBanner()
         DockSideWindows()
         if ns.HideMicroMenuList then ns:HideMicroMenuList() end

@@ -501,6 +501,30 @@ end
 for _, step in ipairs({
     function() ns:SetLocked(false) end,
     function() ns:PushUndo(); ns:Undo() end,
+    -- a closed options window is not refreshed (1.5.1): it brings itself up to date when it opens
+    function()
+        ns:OpenOptions()
+        local panel = _G["TesseraOptions"]
+        local widgets = ns.OptionsTools.widgets
+        assert(#widgets > 0, "the options window has widgets")
+        local refreshed = 0
+        local probe = { Refresh = function() refreshed = refreshed + 1 end }
+        widgets[#widgets + 1] = probe
+        ns:RefreshOptions()
+        assert(refreshed == 1, "an open window is refreshed")
+        panel:Hide()
+        refreshed = 0
+        ns:RefreshOptions()
+        ns:RefreshOptions()
+        assert(refreshed == 0, "a closed window is not refreshed")
+        ns:OpenOptions()
+        assert(refreshed >= 1, "the window is brought up to date when it opens")
+        local after = refreshed
+        panel:Hide(); panel:Show()
+        assert(refreshed == after, "nothing changed while it was closed: no extra refresh")
+        table.remove(widgets)
+        panel:Hide()
+    end,
     -- GetEffectiveDock keeps its answers (1.5.1: no table in the usual case)
     function()
         local function Reference(key) -- the version before 1.5.1

@@ -314,6 +314,14 @@ end
 function ns:RefreshOptions()
     if not S.panel then return end
     ValidateSelection()
+    -- a closed window is not drawn: going over every setting (some 75 ms in the game, and as much
+    -- memory) for nothing is skipped, and the window brings itself up to date when it opens
+    -- (OptionsWindow.lua, OnShow)
+    if not S.panel:IsShown() then
+        S.optionsStale = true
+        return
+    end
+    S.optionsStale = nil
     for _, w in ipairs(widgets) do
         if w.isShown then
             local shown = w.isShown() and true or false

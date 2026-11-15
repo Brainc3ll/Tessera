@@ -175,15 +175,6 @@ ns.CHANGELOG = {
                     .. " Claude (une IA) les a traduits et personne ne les a encore relus : les corrections sont les bienvenues sur GitHub.",
               },
             },
-            { kind = "fixed",
-              en = {
-                "A block you show while the placement banner is up now appears right above the banner, even with the options window open.",
-              },
-              fr = {
-                "Un bloc que tu affiches pendant que le bandeau de placement est ouvert apparaît maintenant juste au-dessus du"
-                    .. " bandeau, même avec la fenêtre d'options ouverte.",
-              },
-            },
         },
     },
     {

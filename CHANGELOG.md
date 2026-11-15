@@ -40,10 +40,6 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Tooltips: a blank line now separates the title, the information and the click help. "Space between tooltip parts" in Placement and more turns it off.
 - German, Spanish (Spain and Mexico) and Brazilian Portuguese: every new or changed text is translated. Claude (an AI) translated them and nobody has reviewed them yet: corrections are welcome on GitHub.
 
-### Fixes
-
-- A block you show while the placement banner is up now appears right above the banner, even with the options window open.
-
 ## 1.4.0 — 2026-11-14
 
 ### New

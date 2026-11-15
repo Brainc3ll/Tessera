@@ -54,8 +54,10 @@ ns.CHANGELOG = {
                 "Reset session: a new choice for the Shift + click and middle click actions on Gold and XP."
                     .. " Gains and rates per hour start again from now.",
                 "Guild: the tooltip can show the message of the day, the members online out of the total,"
-                    .. " and each member's rank and public note. Sort the members (name, level, zone, rank)"
-                    .. " and put the top ranks, guild master and officers, above everyone else.",
+                    .. " and each member's rank and public note. Each line starts with the level, the rank is in gold"
+                    .. " and the zone stays on the right. Sort the members (name, level, zone, rank),"
+                    .. " put the top ranks, guild master and officers, above everyone else (they are not counted)"
+                    .. " and choose how many members show: 5, 10, 20 or 30.",
                 "Friends: choose which parts of the tooltip show, show the note you wrote on a friend,"
                     .. " sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.",
                 "Quests: sort the tooltip by level or finished first, list 10, 20 or all quests, show each zone or only the quests to hand in,"
@@ -80,8 +82,10 @@ ns.CHANGELOG = {
                 "Remise à zéro de la session : un nouveau choix pour les actions du Maj + clic et du clic milieu sur l'Or et l'XP."
                     .. " Les gains et les rythmes par heure repartent de maintenant.",
                 "Guilde : l'infobulle peut montrer le message du jour, les membres en ligne sur le total,"
-                    .. " et le rang et la note publique de chaque membre. Trie les membres (nom, niveau, zone, rang)"
-                    .. " et place les rangs les plus hauts, maître de guilde et officiers, au-dessus des autres.",
+                    .. " et le rang et la note publique de chaque membre. Chaque ligne commence par le niveau, le rang est en doré"
+                    .. " et la zone reste à droite. Trie les membres (nom, niveau, zone, rang),"
+                    .. " place les rangs les plus hauts, maître de guilde et officiers, au-dessus des autres (ils ne sont pas comptés)"
+                    .. " et choisis combien de membres s'affichent : 5, 10, 20 ou 30.",
                 "Amis : choisis les parties de l'infobulle à afficher, montre la note écrite sur un ami,"
                     .. " trie la liste par nom, niveau ou zone, et garde seulement les amis Battle.net qui jouent à WoW.",
                 "Quêtes : trie l'infobulle par niveau ou les terminées d'abord, liste 10, 20 ou toutes les quêtes,"
@@ -109,6 +113,8 @@ ns.CHANGELOG = {
                 "The options window opens 15 % larger (115 %) and a little taller, so text at 100 % fits with less scrolling.",
                 "The \"What's new in 1.3\" button is gone from the Help tab. The Changelog in the About tab lists every change.",
                 "The list on the left of the options window widens for a long tab name, so no name is cut.",
+                "Tooltips: a blank line now separates the title, the information and the click help."
+                    .. " \"Space between tooltip parts\" in Placement and more turns it off.",
               },
               fr = {
                 "Les onglets de gauche de la fenêtre d'options disent ce qu'ils contiennent : Blocs et groupes, Style et dispositions,"
@@ -124,6 +130,8 @@ ns.CHANGELOG = {
                 "La fenêtre d'options s'ouvre 15 % plus grande (115 %) et un peu plus haute : le texte à 100 % tient avec moins de molette.",
                 "Le bouton « Nouveautés de la 1.3 » disparaît de l'onglet Aide. Le Changelog de l'onglet À propos liste tous les changements.",
                 "La liste à gauche de la fenêtre d'options s'élargit pour un nom d'onglet long : aucun nom n'est coupé.",
+                "Infobulles : une ligne vide sépare maintenant le titre, les informations et l'aide des clics."
+                    .. " « Espaces dans les infobulles » dans Placement et général la retire.",
               },
             },
             { kind = "fixed",

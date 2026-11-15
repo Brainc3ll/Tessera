@@ -226,7 +226,7 @@ ns:RegisterModule("legacy", {
         else
             tt:AddLine(L.TT_LEGACY_ALL, 0.3, 1, 0.3)
         end
-        tt:AddLine(" ")
+        ns.TooltipGap(tt)
         for _, r in ipairs(LegacyRewards(data.renownLevel)) do
             local color = r.reached and "|cff4dff4d" or "|cff999999"
             tt:AddDoubleLine(color .. r.name .. "|r", color .. r.level .. "|r")
@@ -234,7 +234,7 @@ ns:RegisterModule("legacy", {
         -- Legacy challenges are achievements: completed / total per main category
         local categories = LegacyChallenges()
         if #categories > 0 then
-            tt:AddLine(" ")
+            ns.TooltipGap(tt)
             tt:AddLine(L.TT_LEGACY_CHALLENGES, 1, 0.82, 0)
             for _, c in ipairs(categories) do
                 local color = c.done >= c.total and "|cff4dff4d" or "|cffffffff"
@@ -398,7 +398,7 @@ ns:RegisterModule("comprehension", {
         end
         WHITE(tt, s.name, ("%d / %d"):format(s.rank, s.max))
         if type(s.description) == "string" and s.description ~= "" then tt:AddLine(s.description, 0.8, 0.8, 0.8, true) end
-        tt:AddLine(" ")
+        ns.TooltipGap(tt)
         local scrolls = ScrollsInBags()
         if #scrolls == 0 then
             tt:AddLine(L.TT_NO_SCROLLS, 0.6, 0.6, 0.6)
@@ -459,7 +459,7 @@ ns:RegisterModule("camping", {
             end
         end
         if not any then tt:AddLine(L.TT_CAMP_NONE, 0.8, 0.8, 0.8, true) end
-        tt:AddLine(" ")
+        ns.TooltipGap(tt)
         local count = KitCount()
         WHITE(tt, L.TT_CAMP_KITS, tostring(count))
         if count > 0 then
@@ -523,7 +523,7 @@ ns:RegisterModule("honor", {
         if type(yKills) == "number" then
             WHITE(tt, L.TT_HONOR_YESTERDAY, L.TT_HONOR_YESTERDAY_FORMAT:format(fmt(yKills), fmt(yHonor or 0)))
         end
-        tt:AddLine(" ")
+        ns.TooltipGap(tt)
         tt:AddLine(L.TT_HONOR_RANKS_LATER, 0.6, 0.6, 0.6, true)
     end,
     chatText = function()

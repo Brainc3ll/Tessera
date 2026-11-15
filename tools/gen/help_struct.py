@@ -139,7 +139,7 @@ HELP = [
     ]),
     ('GENERAL', 'Placement and more tab', 'Onglet Placement et général', [
         ('HELP_GENERAL_1', '- Placement: lock, snapping to blocks and to Blizzard frames, grid, "Unlock with Edit Mode", "Bring blocks back on screen".', "- Placement : verrouillage, aimantation aux blocs et aux cadres de Blizzard, grille, « Déverrouiller avec le mode Édition », « Ramener les blocs à l'écran »."),
-        ('HELP_GENERAL_2', '- Tooltips: click help, tooltips in combat, only while holding Alt, tooltip size.', '- Infobulles : aide des clics, infobulles en combat, seulement en tenant Alt, taille des infobulles.'),
+        ('HELP_GENERAL_2', '- Tooltips: click help, space between parts, tooltips in combat, only while holding Alt, tooltip size.', '- Infobulles : aide des clics, espaces, infobulles en combat, seulement en tenant Alt, taille des infobulles.'),
         ('HELP_GENERAL_3', '- Combat: blocks frozen in combat.', '- Combat : blocs figés en combat.'),
         ('HELP_GENERAL_4', '- Chat and minimap: quiet chat, minimap button.', '- Discussion et minicarte : discussion silencieuse, bouton de la minicarte.'),
         ('HELP_GENERAL_6', '- Streamer mode: for streams and videos, hides as *** the names of other players, your other characters, your guild\'s name and your gold. Also a key binding and a Streamer mode block (hidden by default).', '- Mode streamer : pour les streams et les vidéos, remplace par *** les noms des autres joueurs, tes autres personnages, le nom de ta guilde et ton or. Aussi un raccourci clavier et un bloc Mode streamer (masqué au départ).'),

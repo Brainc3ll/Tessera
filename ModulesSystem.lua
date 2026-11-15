@@ -154,7 +154,7 @@ ns:RegisterModule("fps", {
             tt:AddDoubleLine(L.TT_FPS_MIN, L.FPS_FORMAT:format(f.min), 1, 1, 1, 1, 0.3, 0.3)
             tt:AddDoubleLine(L.TT_FPS_MAX, L.FPS_FORMAT:format(f.max), 1, 1, 1, 0.3, 1, 0.3)
         end
-        tt:AddLine(" ")
+        ns.TooltipGap(tt)
         tt:AddDoubleLine(L.TT_FPS_CAP, FPSCap("useMaxFPS", "maxFPS"), 1, 1, 1, 1, 1, 1)
         tt:AddDoubleLine(L.TT_FPS_CAP_BG, FPSCap("useMaxFPSBk", "maxFPSBk"), 1, 1, 1, 1, 1, 1)
         if GetPhysicalScreenSize then
@@ -268,7 +268,7 @@ ns:RegisterModule("memory", {
             if e.name == "Tessera" or e.folder == "Tessera" then own = e.kb end
         end
         tt:AddDoubleLine(L.TT_TESSERA_MEMORY, FormatMemory(own), 0.4, 0.75, 1, 1, 1, 1)
-        tt:AddLine(" ")
+        ns.TooltipGap(tt)
         tt:AddLine(L.TT_TOP_ADDONS, 1, 0.82, 0)
         for i = 1, math.min(10, #memoryCache.list) do
             local e = memoryCache.list[i]

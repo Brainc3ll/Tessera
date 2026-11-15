@@ -386,7 +386,7 @@ ns:RegisterModule("instances", {
         if name then
             tt:AddLine(name, 1, 1, 1)
             if difficulty and difficulty ~= "" then tt:AddLine(difficulty, 0.8, 0.8, 0.8) end
-            tt:AddLine(" ")
+            ns.TooltipGap(tt)
         end
         local list = SavedInstances()
         if #list == 0 then tt:AddLine(L.TT_NO_SAVES, 0.8, 0.8, 0.8) end

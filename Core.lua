@@ -909,6 +909,14 @@ local function ScaleTooltip(owner, tooltip)
     tooltip:SetScale(tooltipBaseScale[tooltip] * scale)
 end
 
+-- A blank line between two parts of a tooltip (title / info / help), unless the player turned
+-- the spacing off. Returns true when it added the line. Used by every block's tooltip.
+function ns.TooltipGap(tt)
+    if ns.db and ns.db.tooltipSpacing == false then return false end
+    tt:AddLine(" ")
+    return true
+end
+
 function ns.AnchorTooltip(owner, tooltip)
     tooltip = tooltip or GameTooltip
     tooltip:SetOwner(owner, "ANCHOR_NONE")
@@ -1029,6 +1037,7 @@ local PROFILE_DEFAULTS = {
     lockInCombat = true,     -- blocks frozen in combat
     tooltipInCombat = true,  -- tooltips shown in combat
     tooltipHints = true,     -- blue help lines about clicks at the bottom of tooltips
+    tooltipSpacing = true,   -- a blank line between a tooltip's title, its sections and its help lines
     tooltipAltOnly = false,  -- tooltips only while Alt is held
     tooltipScale = 1,        -- size of block tooltips (1 = the game's size)
     snap = true,
@@ -1695,10 +1704,16 @@ local function OnEnter(self)
     if not mod.tooltip and not mod.clickHint then return end
     ns.AnchorTooltip(self)
     GameTooltip:AddLine(ns:GetBlockName(key), 1, 0.82, 0)
-    if mod.tooltip then pcall(mod.tooltip, GameTooltip, cfg) end
-    -- blue help lines about clicks (can be turned off in the General tab)
+    local bodyEmpty = false
+    if mod.tooltip then
+        local gap = ns.TooltipGap(GameTooltip)
+        pcall(mod.tooltip, GameTooltip, cfg)
+        bodyEmpty = gap and GameTooltip:NumLines() <= 2
+    end
+    -- blue help lines about clicks (can be turned off in the General tab); the blank line
+    -- before them is already there when the title is followed by an empty body
     if ns.db.tooltipHints ~= false then
-        GameTooltip:AddLine(" ")
+        if not bodyEmpty then GameTooltip:AddLine(" ") end
         if mod.clickHint then GameTooltip:AddLine(mod.clickHint, 0.5, 0.8, 1) end
         if not ns.IsForwardingKey(key) then
             local shift = ns:GetActionName(key, cfg.shiftClick)

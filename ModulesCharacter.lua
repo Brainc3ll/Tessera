@@ -106,7 +106,7 @@ ns:RegisterModule("gold", {
             for day, net in pairs(days) do table.insert(list, { day = day, net = net }) end
             table.sort(list, function(a, b) return a.day > b.day end)
             if #list > 0 then
-                tt:AddLine(" ")
+                ns.TooltipGap(tt)
                 tt:AddLine(L.TT_GOLD_HISTORY, 1, 0.82, 0)
                 for i = 1, math.min(tonumber(cfg and cfg.goldHistoryDays) or 7, #list) do
                     local m, d = list[i].day:match("%d+-(%d+)-(%d+)")
@@ -128,7 +128,7 @@ ns:RegisterModule("gold", {
         end
         if #chars > 1 then
             table.sort(chars, function(a, b) return a.money > b.money end)
-            tt:AddLine(" ")
+            ns.TooltipGap(tt)
             tt:AddLine(L.TT_CHARACTERS, 1, 0.82, 0)
             for _, c in ipairs(chars) do
                 local r, g, b = ClassColor(c.class)
@@ -244,13 +244,13 @@ ns:RegisterModule("bags", {
             end
         end
         if #special > 0 and On(cfg, "bagsTipProfession") then
-            tt:AddLine(" ")
+            ns.TooltipGap(tt)
             tt:AddLine(L.TT_PROFESSION_BAGS, 0.4, 0.8, 1)
             for _, b in ipairs(special) do tt:AddDoubleLine(b.name, b.text, 0.4, 0.8, 1, 0.4, 0.8, 1) end
         end
         local junk = On(cfg, "bagsTipJunk") and JunkValue() or 0
         if junk > 0 then
-            tt:AddLine(" ")
+            ns.TooltipGap(tt)
             tt:AddDoubleLine(L.TT_JUNK, ns.FormatMoney(junk), 0.62, 0.62, 0.62, 1, 1, 1)
         end
     end,
@@ -404,7 +404,7 @@ ns:RegisterModule("durability", {
             end
             items = Prepare(items)
             if #items > 0 then
-                tt:AddLine(" ")
+                ns.TooltipGap(tt)
                 tt:AddLine(L.TT_IN_BAGS, 1, 0.82, 0)
                 AddItems(items)
             end
@@ -412,7 +412,7 @@ ns:RegisterModule("durability", {
         if On(cfg, "durabilityTipCost") then
             local cost = RepairCost()
             if cost and cost > 0 then
-                tt:AddLine(" ")
+                ns.TooltipGap(tt)
                 tt:AddDoubleLine(L.TT_REPAIR_COST, ns.FormatMoney(cost), 1, 1, 1, 1, 1, 1)
             end
         end
@@ -521,12 +521,12 @@ ns:RegisterModule("xp", {
         if session.xpGained > 0 then
             local first = true
             if On(cfg, "xpTipSession") then
-                tt:AddLine(" ")
+                ns.TooltipGap(tt)
                 first = false
                 tt:AddDoubleLine(L.TT_XP_SESSION, fmt(session.xpGained), 1, 1, 1, 1, 1, 1)
             end
             if On(cfg, "xpTipRate") and elapsed >= 60 then
-                if first then tt:AddLine(" ") end
+                if first then ns.TooltipGap(tt) end
                 local perSecond = session.xpGained / elapsed
                 tt:AddDoubleLine(L.TT_XP_HOUR, fmt(math.floor(perSecond * 3600)), 1, 1, 1, 1, 1, 1)
                 tt:AddDoubleLine(L.TT_XP_TO_LEVEL, FormatDuration((max - cur) / perSecond), 1, 1, 1, 1, 0.82, 0)
@@ -564,7 +564,7 @@ if GetAverageItemLevel then
             local overall, equipped = Try(GetAverageItemLevel)
             WHITE(tt, L.TT_EQUIPPED, ("%.1f"):format(equipped or 0))
             WHITE(tt, L.TT_OVERALL, ("%.1f"):format(overall or 0))
-            tt:AddLine(" ")
+            ns.TooltipGap(tt)
             local items = {}
             for slot = 1, 19 do
                 local link = Try(GetInventoryItemLink, "player", slot)
@@ -675,7 +675,7 @@ ns:RegisterModule("regen", {
         WHITE(tt, L.TT_REGEN_CASTING, L.REGEN_FORMAT:format(math.floor(casting * 5 + 0.5)))
         local mana, maxMana = Try(UnitPower, "player", 0), Try(UnitPowerMax, "player", 0)
         if mana and maxMana then WHITE(tt, L.TT_MANA, ("%d / %d"):format(mana, maxMana)) end
-        tt:AddLine(" ")
+        ns.TooltipGap(tt)
         tt:AddLine(L.TT_REGEN_NOTE, 0.8, 0.8, 0.8, true)
     end,
     secureMacro = "/click CharacterMicroButton",

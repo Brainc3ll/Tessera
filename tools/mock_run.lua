@@ -2140,7 +2140,7 @@ for _, step in ipairs({
                     -- (a list made at the time, like the player's skills: its labels are game names)
                     local listed = type(o.values) == "function"
                     for _, v in ipairs(listed and o.values() or o.values) do
-                        assert(listed or ns.L[v.label], key .. ": no text for " .. tostring(v.label))
+                        assert(listed or ns.L[v.label] or tostring(v.label):match("^%d+$"), key .. ": no text for " .. tostring(v.label))
                         cfg[o.field] = v.key
                         local ok, err = pcall(mod.update, cfg)
                         assert(ok, key .. " " .. o.field .. "=" .. tostring(v.key) .. ": " .. tostring(err))
@@ -2758,11 +2758,12 @@ for _, step in ipairs({
         local all = Tip({})
         assert(all:find("The Mosaic | 2/3", 1, true), "guild header counter: " .. all)
         assert(all:find("Raid on Friday", 1, true), "message of the day")
-        assert(all:find("Ana-Realm (60) - Officer | Alchemist - Orgrimmar", 1, true), "rank, note and zone: " .. all)
-        assert(all:find("Cy-Realm (40) - Member | Ungoro", 1, true), "member without note")
+        assert(all:find("Ana-Realm|r |cffffd100Officer|r |cffffffffAlchemist|r | Orgrimmar", 1, true), "level, name, rank, note, then the zone: " .. all)
+        assert(all:find("|cffcccccc60|r ", 1, true), "the level comes first")
+        assert(all:find("Cy-Realm|r |cffffd100Member|r | Ungoro", 1, true), "member without note")
         all = Tip({ guildTipMotd = false, guildTipCount = false, guildTipRank = false, guildTipNote = false })
         assert(not all:find("Raid", 1, true) and not all:find("2/3", 1, true) and not all:find("Officer", 1, true)
-            and not all:find("Alchemist", 1, true) and all:find("Ana-Realm (60) | Orgrimmar", 1, true), "every part off: " .. all)
+            and not all:find("Alchemist", 1, true) and all:find("Ana-Realm|r | Orgrimmar", 1, true), "every part off: " .. all)
         all = Tip({ guildSort = "level" })
         assert(all:find("Ana%-Realm.*Cy%-Realm"), "guild sort by level: " .. all)
         all = Tip({ guildSort = "name", guildLeaders = "2" })
@@ -2778,6 +2779,29 @@ for _, step in ipairs({
         assert(all:find("Ana%-Realm.*Cy%-Realm.*Zed%-Realm"), "top rank only: " .. all)
         all = Tip({ guildSort = "rank" })
         assert(all:find("Ana%-Realm.*Cy%-Realm.*Zed%-Realm"), "by rank: " .. all)
+        -- "Members shown": the leaders on top do not count; the rest is cut and counted
+        GetNumGuildMembers = function() return 8, 8 end
+        GetGuildRosterInfo = function(i)
+            if i == 1 then return "Gm-Realm", "Guild Master", 0, 60, "Mage", "A", "", "", true, 0, "MAGE" end
+            if i == 2 then return "Off-Realm", "Officer", 1, 60, "Mage", "A", "", "", true, 0, "MAGE" end
+            return "M" .. i .. "-Realm", "Member", 2, 10 + i, "Rogue", "B", "", "", true, 0, "ROGUE"
+        end
+        all = Tip({ guildLeaders = "2", guildMax = "5" })
+        assert(all:find("Gm%-Realm") and all:find("Off%-Realm") and all:find("M3%-Realm") and all:find("M7%-Realm")
+            and not all:find("M8%-Realm"), "5 members shown, both leaders on top and not counted: " .. all)
+        assert(all:find(ns.L.TT_MORE:format(1), 1, true), "the rest is counted: " .. all)
+        all = Tip({ guildMax = "5" })
+        assert(all:find("M5%-Realm") and not all:find("M6%-Realm") and all:find(ns.L.TT_MORE:format(3), 1, true),
+            "without leaders on top, 5 lines in all: " .. all)
+        all = Tip({ guildMax = "999" })
+        assert(all:find("M8%-Realm"), "an unknown value falls back to the default of 20")
+        -- blank lines between the parts (the general setting turns them off)
+        ns.db.tooltipSpacing = true
+        local blanks = select(2, Tip({ guildLeaders = "2" }):gsub("\n \n", ""))
+        assert(blanks == 3, "blank lines: message of the day, leaders, members (" .. blanks .. ")")
+        ns.db.tooltipSpacing = false
+        assert(select(2, Tip({ guildLeaders = "2" }):gsub("\n \n", "")) == 0, "no blank line when spacing is off")
+        ns.db.tooltipSpacing = true
         IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, C_GuildInfo, GetGuildInfo = oldIn, oldNum, oldRoster, oldGI, oldInfo
         -- item level
         local il = ns.modules.itemLevel

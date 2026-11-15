@@ -51,6 +51,9 @@ local function BuildGeneralPage(page)
     tooltips.Add(CreateCheck(page, L.TOOLTIP_HINTS,
         function() return ns.db.tooltipHints ~= false end,
         function(v) ns.db.tooltipHints = v end, nil, L.TIP_TOOLTIP_HINTS), { half = true, default = D.tooltipHints })
+    tooltips.Add(CreateCheck(page, L.TOOLTIP_SPACING,
+        function() return ns.db.tooltipSpacing ~= false end,
+        function(v) ns.db.tooltipSpacing = v end, nil, L.TIP_TOOLTIP_SPACING), { half = true, default = D.tooltipSpacing })
     tooltips.Add(CreateCheck(page, L.TOOLTIP_IN_COMBAT,
         function() return ns.db.tooltipInCombat end,
         function(v) ns.db.tooltipInCombat = v end, nil, L.TOOLTIP_IN_COMBAT_TIP),

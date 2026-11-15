@@ -152,7 +152,7 @@ Help tab inside the game explains everything.
     one you pick); profession, talent and Legacy blocks that open Forever's own windows.
 - More than 50 blocks in all: gold (history of 7, 14 or 30 days, your characters' gold and their total for the same faction and realm; Alt + right-click forgets a deleted character), bags (with junk value and
   profession bags), durability (with the repair cost), XP (with the time to the next level and the quests to hand in; "Reset session" is a click action on gold, XP and reputation), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
-  zone and subzone, friends (notes, sorting, Battle.net friends in WoW only), guild (message of the day, ranks and public notes in the tooltip), group, quests (sorted by level or finished first, with zone and a free-slot alert), reputation (points left and session gain), currencies, professions (one block
+  zone and subzone, friends (notes, sorting, Battle.net friends in WoW only), guild (message of the day, ranks and public notes in the tooltip, 5 to 30 members shown, top ranks on top), group, quests (sorted by level or finished first, with zone and a free-slot alert), reputation (points left and session gain), currencies, professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
   reagents, ammo, item level, speed, volume, addon memory, instances, daily and weekly reset, played time, goal, mana
   regeneration, character stats (the stat of your choice), group loot (click: /roll), streamer mode,
@@ -200,7 +200,7 @@ Help tab inside the game explains everything.
   use LibSharedMedia can pick them too.
 - Share only a style or only a layout as text; the import lists what is missing on your computer
   (other addons' blocks, media, WoW Forever blocks) before applying anything.
-- Tooltips your way: bigger or smaller, or only while holding Alt (Placement and more tab).
+- Tooltips your way: bigger or smaller, with or without blank lines between their parts, or only while holding Alt (Placement and more tab).
 - A quick tour on first launch (again from the Help tab), where the ready-made layouts can be
   tried one after the other right on the screen, a demo mode showing every block by category
   with sample values and a style switcher.

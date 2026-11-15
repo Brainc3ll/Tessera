@@ -68,6 +68,7 @@ end
 
 -- Guild tooltip order: "leaders" top ranks (0 = off, 1 = guild master, 2 = two ranks...) come first,
 -- by rank; then the chosen order. "game" keeps the roster's own order.
+local GUILD_LIMITS = { [5] = true, [10] = true, [20] = true, [30] = true } -- "Members shown"
 local GUILD_SORT = { game = true, name = true, level = true, zone = true, rank = true }
 local function SortGuild(list, mode, leaders)
     if not GUILD_SORT[mode] then mode = "game" end
@@ -139,6 +140,7 @@ ns:RegisterModule("friends", {
             tt:AddDoubleLine(L.TT_MY_STATUS, ("|c%s%s|r"):format(c, L[STATUS_TEXT[status]]), 0.8, 0.8, 0.8, 1, 1, 1)
         end
         local shown = 0
+        local started = On(cfg, "friendsTipStatus") -- something is already in the tooltip: a blank line goes before the next part
         -- right column: the friend's note (if asked), then the zone
         local function Right(note, zone)
             zone = Masked(zone or "")
@@ -168,6 +170,8 @@ ns:RegisterModule("friends", {
                         right = Right(info.notes, info.area) })
                 end
             end
+            if #list > 0 and started then ns.TooltipGap(tt) end
+            if #list > 0 then started = true end
             Lines(list, 1, 1, 1)
         end
         -- Battle.net friends: in WoW, their character, level and zone; elsewhere, where they are
@@ -190,7 +194,10 @@ ns:RegisterModule("friends", {
                         right = Right(account.note, game.richPresence or game.clientProgram) })
                 end
             end
-            if #list > 0 then tt:AddLine(L.TT_BNET_ONLINE, 0.3, 0.75, 1) end
+            if #list > 0 then
+                if started then ns.TooltipGap(tt) end
+                tt:AddLine(L.TT_BNET_ONLINE, 0.3, 0.75, 1)
+            end
             Lines(list, 0.3, 0.75, 1)
         end
         if shown > MAX_LINES then tt:AddLine(L.TT_MORE:format(shown - MAX_LINES), 0.8, 0.8, 0.8) end
@@ -219,7 +226,7 @@ ns:RegisterModule("guild", {
         return ("%d / %d"):format(online or 0, total or 0)
     end,
     defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
-                 guildSort = "game", guildLeaders = "0" },
+                 guildSort = "game", guildLeaders = "0", guildMax = "20" },
     options = { COUNT_OPTION,
                 { kind = "dropdown", field = "guildSort", section = "tooltip", tab = "text", label = "GUILD_SORT", tip = "TIP_GUILD_SORT",
                   values = { { key = "game", label = "FRIENDS_SORT_GAME" }, { key = "name", label = "FRIENDS_SORT_NAME" },
@@ -229,6 +236,9 @@ ns:RegisterModule("guild", {
                   values = { { key = "0", label = "GUILD_LEADERS_0" }, { key = "1", label = "GUILD_LEADERS_1" },
                              { key = "2", label = "GUILD_LEADERS_2" }, { key = "3", label = "GUILD_LEADERS_3" },
                              { key = "4", label = "GUILD_LEADERS_4" } } },
+                { kind = "dropdown", field = "guildMax", section = "tooltip", tab = "text", label = "GUILD_MAX", tip = "TIP_GUILD_MAX",
+                  values = { { key = "5", label = "5" }, { key = "10", label = "10" }, { key = "20", label = "20" },
+                             { key = "30", label = "30" } } },
                 { kind = "check", field = "guildTipMotd", section = "tooltip", tab = "text", label = "GUILD_TIP_MOTD", tip = "TIP_GUILD_TIP_MOTD" },
                 { kind = "check", field = "guildTipCount", section = "tooltip", tab = "text", label = "GUILD_TIP_COUNT", tip = "TIP_GUILD_TIP_COUNT" },
                 { kind = "check", field = "guildTipRank", section = "tooltip", tab = "text", label = "GUILD_TIP_RANK", tip = "TIP_GUILD_TIP_RANK" },
@@ -248,7 +258,10 @@ ns:RegisterModule("guild", {
         end
         -- message of the day
         local motd = On(cfg, "guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and Try(C_GuildInfo.GetMOTD)
-        if type(motd) == "string" and motd ~= "" then tt:AddLine(Masked(motd), 0.9, 0.9, 0.55, true) end
+        if type(motd) == "string" and motd ~= "" then
+            ns.TooltipGap(tt)
+            tt:AddLine(Masked(motd), 0.9, 0.9, 0.55, true)
+        end
         -- online members first, then the order the player chose
         local members = {}
         for i = 1, total do
@@ -259,23 +272,35 @@ ns:RegisterModule("guild", {
                     zone = zone or "", note = note, class = class, order = i }
             end
         end
-        SortGuild(members, cfg and cfg.guildSort, tonumber(cfg and cfg.guildLeaders) or 0)
-        local shown = 0
-        for _, m in ipairs(members) do
-            shown = shown + 1
-            if shown <= MAX_LINES then
-                local r, g, b = ClassColor(m.class)
-                local shownName = Masked(Ambiguate and Ambiguate(m.name, "guild") or m.name)
-                local left = ("%s (%d)"):format(shownName, m.level)
-                if On(cfg, "guildTipRank") and type(m.rank) == "string" and m.rank ~= "" then left = left .. " - " .. Masked(m.rank) end
-                local right = Masked(m.zone)
-                if On(cfg, "guildTipNote") and type(m.note) == "string" and m.note ~= "" then
-                    right = Masked(m.note) .. (right ~= "" and " - " .. right or "")
-                end
-                tt:AddDoubleLine(left, right, r, g, b, 0.8, 0.8, 0.8)
+        local leaders = tonumber(cfg and cfg.guildLeaders) or 0
+        SortGuild(members, cfg and cfg.guildSort, leaders)
+        -- the leaders ("Leaders on top") come first and do not count in the number of members shown
+        local nLeaders = 0
+        while leaders > 0 and members[nLeaders + 1] and members[nLeaders + 1].rankIndex < leaders do nLeaders = nLeaders + 1 end
+        -- one line: level (grey), name (class color), rank (gold), note (white); the zone on the right
+        local function Line(m)
+            local r, g, b = ClassColor(m.class)
+            local text = ("|cffcccccc%d|r |cff%02x%02x%02x%s|r"):format(m.level, r * 255 + 0.5, g * 255 + 0.5, b * 255 + 0.5,
+                Masked(Ambiguate and Ambiguate(m.name, "guild") or m.name))
+            if On(cfg, "guildTipRank") and type(m.rank) == "string" and m.rank ~= "" then
+                text = text .. " |cffffd100" .. Masked(m.rank) .. "|r"
             end
+            if On(cfg, "guildTipNote") and type(m.note) == "string" and m.note ~= "" then
+                text = text .. " |cffffffff" .. Masked(m.note) .. "|r"
+            end
+            tt:AddDoubleLine(text, Masked(m.zone), 1, 1, 1, 0.8, 0.8, 0.8)
         end
-        if shown > MAX_LINES then tt:AddLine(L.TT_MORE:format(shown - MAX_LINES), 0.8, 0.8, 0.8) end
+        if nLeaders > 0 then
+            ns.TooltipGap(tt)
+            for i = 1, nLeaders do Line(members[i]) end
+        end
+        local limit = GUILD_LIMITS[tonumber(cfg and cfg.guildMax)] and tonumber(cfg.guildMax) or MAX_LINES
+        local others = #members - nLeaders
+        if others > 0 then
+            ns.TooltipGap(tt)
+            for i = nLeaders + 1, math.min(#members, nLeaders + limit) do Line(members[i]) end
+            if others > limit then tt:AddLine(L.TT_MORE:format(others - limit), 0.8, 0.8, 0.8) end
+        end
     end,
     secureMacro = "/click GuildMicroButton",
     clickHint = L.HINT_GUILD,

@@ -327,9 +327,14 @@ end
 local function PublishedTooltip(key, tt)
     local mod, cfg = ns.modules[key], ns.db.blocks[key]
     tt:AddLine(ns:GetBlockName(key), 1, 0.82, 0)
-    if mod.tooltip then pcall(mod.tooltip, tt, cfg) end
+    local bodyEmpty = false
+    if mod.tooltip then
+        local gap = ns.TooltipGap(tt)
+        pcall(mod.tooltip, tt, cfg)
+        bodyEmpty = gap and tt:NumLines() <= 2
+    end
     if ns.db.tooltipHints ~= false then
-        tt:AddLine(" ")
+        if not bodyEmpty then tt:AddLine(" ") end
         if mod.onClick and mod.clickHint then
             tt:AddLine(mod.clickHint, 0.5, 0.8, 1)
         elseif mod.secureMacro then

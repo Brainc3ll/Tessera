@@ -2255,7 +2255,7 @@ for _, step in ipairs({
         assert(rate:find("2[ ,.\194\160]?000"), "xp rate: " .. rate)
         assert(m.xpRate.update({ xpRateShown = "time" }) == "15m", "500 XP left at 2000/h: 15 minutes")
         local both = m.xpRate.update({ xpRateShown = "both" })
-        assert(both:find("15m") and both:find("XP/h"), "rate and time together: " .. both)
+        assert(both:find("15m") and both:find("2[ ,.\194\160]?000"), "rate and time together: " .. both)
         -- the tooltip parts follow their checkboxes
         local count = 0
         local counter = setmetatable({ AddLine = function() count = count + 1 end,

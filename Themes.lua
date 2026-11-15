@@ -50,11 +50,13 @@ local function LSMFont(name)
     if name and LSM and LSM:Fetch("font", name, true) then return "lsm:" .. name end
 end
 
--- Font of FlareUI's XP bar: FlareUI writes it with its action bar key bind font (Arial Narrow
--- with an outline by default, in 1.x and 2.x). Read from FlareUI's saved settings (AceDB:
--- only the values the player changed are saved), so a font picked in FlareUI is followed.
--- Returns a Tessera font key, an outline and the text shadow (FlareUI 4.0: enableShadow, on
--- by default).
+-- Font of FlareUI's XP bar, read from FlareUI's saved settings (AceDB: only the values the player
+-- changed are saved), so a font picked in FlareUI is followed. Since FlareUI 6.x the XP bar has its own
+-- font, actionbars.xpFont (it starts as a copy of the keybind font, actionbars.hotkeyFont, then the two
+-- live apart: xpFontSeeded says the copy was made). An older FlareUI, or one not loaded yet since the
+-- update, only has hotkeyFont: that one is followed until xpFont exists. Arial Narrow with an outline
+-- and a text shadow (FlareUI 4.0: enableShadow, on by default) are FlareUI's defaults.
+-- Returns a Tessera font key, an outline and the text shadow.
 local OUTLINES = { OUTLINE = true, THICKOUTLINE = true, NONE = true }
 local function FlareFont()
     local face, flags, shadow = "Arial Narrow", "OUTLINE", true
@@ -68,13 +70,19 @@ local function FlareFont()
             local profileName = (full and keys[full])
                 or keys[(UnitName("player") or "") .. " - " .. (GetRealmName() or "")] or "Default"
             local profile = db.profiles[profileName]
-            local font = type(profile) == "table" and type(profile.actionbars) == "table"
-                and profile.actionbars.hotkeyFont
-            if type(font) == "table" then
-                if type(font.face) == "string" then face = font.face end
-                if OUTLINES[font.flags] then flags = font.flags end
-                if type(font.enableShadow) == "boolean" then shadow = font.enableShadow end
+            local bars = type(profile) == "table" and type(profile.actionbars) == "table" and profile.actionbars
+            local xp, hotkey = bars and bars.xpFont, bars and bars.hotkeyFont
+            local seeded = bars and bars.xpFontSeeded == true
+            -- a field of the XP bar's font; before the copy was made, the keybind font's
+            local function Field(field)
+                local value
+                if type(xp) == "table" then value = xp[field] end
+                if value == nil and not seeded and type(hotkey) == "table" then value = hotkey[field] end
+                return value
             end
+            if type(Field("face")) == "string" then face = Field("face") end
+            if OUTLINES[Field("flags")] then flags = Field("flags") end
+            if type(Field("enableShadow")) == "boolean" then shadow = Field("enableShadow") end
             break
         end
     end

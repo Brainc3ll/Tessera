@@ -38,6 +38,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - The list on the left of the options window widens for a long tab name, so no name is cut.
 - Block settings: choose how a block's tooltip lines up with it (left edge, centered, right edge). Automatic keeps the old behaviour.
 - Tooltips: a blank line now separates the title, the information and the click help. "Space between tooltip parts" in Placement and more turns it off.
+- FlareUI styles follow the font of FlareUI's XP bar. FlareUI 6 gave that bar its own font, apart from the action bar keybinds.
 - German, Spanish (Spain and Mexico) and Brazilian Portuguese: every new or changed text is translated. Claude (an AI) translated them and nobody has reviewed them yet: corrections are welcome on GitHub.
 
 ## 1.4.0 — 2026-11-14

@@ -1607,6 +1607,17 @@ for _, step in ipairs({
             assert(ns.db.blocks.gold.outline == "THICKOUTLINE", "a second load changes nothing")
             if themeBefore then ns:ApplyTheme(themeBefore) end
         end
+        -- FlareUI 6.x: the XP bar has its own font (xpFont); once FlareUI made its copy, the keybind font no longer counts
+        local bars = _G.FlareUI2_DB.profiles.Perso.actionbars
+        bars.hotkeyFont = { face = "Friz Quadrata TT", flags = "THICKOUTLINE", enableShadow = false }
+        bars.xpFont = { flags = "NONE" }
+        bars.xpFontSeeded = true
+        local xpCfg = {}
+        ns:ApplyThemeToCfg(xpCfg, "flareui2")
+        assert(xpCfg.outline == "NONE" and xpCfg.textShadow == true, "FlareUI 6: follows the XP bar font, not the keybind font")
+        bars.xpFontSeeded, bars.xpFont = nil, nil
+        ns:ApplyThemeToCfg(xpCfg, "flareui2")
+        assert(xpCfg.outline == "THICKOUTLINE" and xpCfg.textShadow == false, "before FlareUI's copy: the keybind font")
         _G.FlareUI2_DB = nil
         ns.sv.charProfiles[key], ns.sv.chars[key], ns.sv.goldHistory[key] = nil, nil, nil
         ns.sv.chars["Ellen Kempton"], ns.sv.chars["Bob-Classic Beta PvE"], ns.sv.goldHistory["Tobin Harrow"] = nil, nil, nil

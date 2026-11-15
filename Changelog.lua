@@ -150,6 +150,7 @@ ns.CHANGELOG = {
                 "Block settings: choose how a block's tooltip lines up with it (left edge, centered, right edge). Automatic keeps the old behaviour.",
                 "Tooltips: a blank line now separates the title, the information and the click help."
                     .. " \"Space between tooltip parts\" in Placement and more turns it off.",
+                "FlareUI styles follow the font of FlareUI's XP bar. FlareUI 6 gave that bar its own font, apart from the action bar keybinds.",
                 "German, Spanish (Spain and Mexico) and Brazilian Portuguese: every new or changed text is translated."
                     .. " Claude (an AI) translated them and nobody has reviewed them yet: corrections are welcome on GitHub.",
               },
@@ -171,6 +172,8 @@ ns.CHANGELOG = {
                     .. " droit). Automatique garde l'ancien comportement.",
                 "Infobulles : une ligne vide sépare maintenant le titre, les informations et l'aide des clics."
                     .. " « Espaces dans les infobulles » dans Placement et général la retire.",
+                "Les styles FlareUI suivent la police de la barre d'XP de FlareUI. FlareUI 6 a donné à cette barre sa propre police,"
+                    .. " séparée de celle des raccourcis de la barre d'action.",
                 "Allemand, espagnol (Espagne et Mexique) et portugais du Brésil : chaque texte nouveau ou changé est traduit."
                     .. " Claude (une IA) les a traduits et personne ne les a encore relus : les corrections sont les bienvenues sur GitHub.",
               },

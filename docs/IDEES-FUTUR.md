@@ -47,7 +47,7 @@ Fait avec Braincell1980 après la review du code (22/10), les sondes de l'API de
 - Modules par catégorie : environ 2 à 3 % de mémoire en moins ; vrais atouts : listes plus courtes, code rangé. À décider (plan prêt).
 - LibSerialize + LibDeflate (exports compressés, environ 1,5-2 Ko au lieu de 5-7) : seulement si les joueurs partagent beaucoup de profils sur Discord.
 - LibDBIcon : petit gain, Tessera a déjà son bouton.
-- `collectgarbage` au verrouillage : baisse le chiffre affiché mais nettoie la mémoire de tous les addons (petit à-coup possible) ; décision à reprendre.
+- [Fait, 1.5.1] `collectgarbage` au verrouillage : le nettoyage se fait maintenant par petits pas (`CleanMemorySoon`), le micro-arrêt a disparu (validé en jeu le 15/11).
 - Retirer le code des anciennes versions de test (copies du mode Édition, assistant de captures) : propre, presque personne concerné.
 - Version Retail : écartée le 21/10.
 

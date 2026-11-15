@@ -3876,6 +3876,21 @@ do
             elseif fb < bt then print("STEP ERROR: banner: with the options window open, " .. nk .. " is not above the banner")
             elseif fr < bl or fl > br then print("STEP ERROR: banner: with the options window open, " .. nk .. " lands beside the banner, not over it") end
         end
+        -- the options window over the row above the banner (test141, in game): the block still goes right
+        -- above the banner, not to the far side of the screen
+        local bl, bb, br, bt = ns:GetRectUI(ns.banner)
+        TesseraOptions:ClearAllPoints()
+        TesseraOptions:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", bl - 40, bb - 50)
+        TesseraOptions:SetSize(br - bl + 80, bt - bb + 250)
+        local nk = "subzone"
+        local nc = ns.db.blocks[nk]
+        nc.enabled, nc.point, nc.dock, nc.anchor = false, nil, nil, nil
+        ns:SetBlocksOnScreen({ nk }, true)
+        local fl, fb, fr = ns:GetRectUI(ns.frames[nk])
+        if not fl then print("STEP ERROR: banner: no rectangle (options over the banner)")
+        elseif fb < bt or fr < bl or fl > br then
+            print(("STEP ERROR: banner: options over the banner, %s lands at %d,%d instead of over the banner (%d-%d)"):format(nk, fl, fb, bl, br))
+        end
         TesseraOptions:Hide()
     end
     -- the banner's grid: G gives the next size, the arrows too

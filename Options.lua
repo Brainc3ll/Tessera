@@ -213,7 +213,10 @@ function ns:PlaceNearOptions(key)
     local pl, pb, pr, pt
     if S.panel and S.panel:IsShown() then
         pl, pb, pr, pt = ns:GetRectUI(S.panel)
-        if pl then table.insert(taken, { pl, pb, pr, pt }) end
+        if pl then
+            table.insert(taken, { pl, pb, pr, pt })
+            taken.panel = taken[#taken]
+        end
     end
     -- Blizzard's action bars, minimap, chat...: a block placed on them could be hidden
     for _, z in ipairs(ns:GetBlizzardRects()) do table.insert(taken, z) end
@@ -228,10 +231,13 @@ function ns:PlaceNearOptions(key)
             bannerTop, bannerCenter = bt, (bl + br) / 2
         end
     end
-    local function Free(x, y)
+    -- (skipPanel: the options window closes soon, the banner stays: the row above the banner ignores it)
+    local function Free(x, y, skipPanel)
         local l, b, r, t = x - 4, y - height - 4, x + width + 4, y + 18
         for _, z in ipairs(taken) do
-            if l < z[3] and r > z[1] and b < z[4] and t > z[2] then return false end
+            if not (skipPanel and z == taken.panel) and l < z[3] and r > z[1] and b < z[4] and t > z[2] then
+                return false
+            end
         end
         return true
     end
@@ -269,9 +275,9 @@ function ns:PlaceNearOptions(key)
     if bannerCenter then
         for i = 0, 12 do
             local rx, lx = right0 + i * (width + 16), left0 - i * (width + 16)
-            if rx + width <= screenW and Free(rx, top) then
+            if rx + width <= screenW and Free(rx, top, true) then
                 x, y = rx, top
-            elseif lx >= 0 and Free(lx, top) then
+            elseif lx >= 0 and Free(lx, top, true) then
                 x, y = lx, top
             end
             if x then break end

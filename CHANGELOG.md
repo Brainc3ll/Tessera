@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.5.0 — 2026-11-14
+## 1.5.0 — 2026-11-15
 
 ### New
 
@@ -11,7 +11,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Bags: count the profession bags, show the value of your junk in the block, and choose which parts of the tooltip show (each bag, profession bags, junk value).
 - Durability: show the repair cost in the block, list only the worn items (the most worn first), and choose which parts of the tooltip show.
 - XP: show the time to the next level and the XP of the quests you can hand in, and choose which parts of the tooltip show.
-- Reset session: a new choice for the Shift + click and middle click actions on Gold and XP. Gains and rates per hour start again from now.
+- Reset session: a new choice for the Shift + click and middle click actions on Gold, XP, Reputation, Currencies, XP per hour and Goal. Gains and rates per hour start again from now.
 - Guild: the tooltip can show the message of the day, the members online out of the total, and each member's rank and public note. Each line starts with the level, the rank is in gold and the zone stays on the right. Sort the members (name, level, zone, rank), put the top ranks, guild master and officers, above everyone else (they are not counted) and choose how many members show: 5, 10, 20, 30, 50 or 100.
 - Friends: choose which parts of the tooltip show, show the note you wrote on a friend, sort the list by name, level or zone, and keep only the Battle.net friends who play WoW.
 - Quests: sort the tooltip by level or finished first, list 10, 20 or all quests, show each zone or only the quests to hand in, and set the alert on the free slots left in the quest log.
@@ -38,6 +38,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - The list on the left of the options window widens for a long tab name, so no name is cut.
 - Block settings: choose how a block's tooltip lines up with it (left edge, centered, right edge). Automatic keeps the old behaviour.
 - Tooltips: a blank line now separates the title, the information and the click help. "Space between tooltip parts" in Placement and more turns it off.
+- German, Spanish (Spain and Mexico) and Brazilian Portuguese: every new or changed text is translated. Claude (an AI) translated them and nobody has reviewed them yet: corrections are welcome on GitHub.
 
 ### Fixes
 

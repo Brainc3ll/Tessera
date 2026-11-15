@@ -6,7 +6,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 
 ## At a glance
 
-- Over 50 blocks: gold, bags, durability, FPS and latency, time, XP, quests, reputation, professions and more. Most let you choose what they show.
+- Over 50 blocks: gold, bags, durability, FPS and latency, time, XP, quests, reputation, professions and more. Most let you choose what they show, in the block and in its tooltip.
 - Made for WoW Forever, with blocks for its own systems: Legacy points, Comprehension, camping, honor, weapon skills.
 - 27 styles to match your UI: Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, or fantasy looks made from the game's own frames.
 - Place a bar to the exact pixel with the arrow keys. Style a whole bar at once.
@@ -34,7 +34,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 
 ## En un coup d'œil
 
-- Plus de 50 blocs : or, sacs, durabilité, FPS et latence, heure, XP, quêtes, réputation, métiers et plus encore. La plupart te laissent choisir ce qu'ils affichent.
+- Plus de 50 blocs : or, sacs, durabilité, FPS et latence, heure, XP, quêtes, réputation, métiers et plus encore. La plupart te laissent choisir ce qu'ils affichent, dans le bloc et dans leur infobulle.
 - Fait pour WoW Forever, avec des blocs pour ses systèmes à lui : points d'Héritage, Compréhension, Camping, honneur, compétences d'armes.
 - 27 styles pour coller à ton interface : Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, ou des looks fantasy faits avec les cadres du jeu.
 - Place une barre au pixel près avec les flèches du clavier. Donne un style à toute une barre d'un coup.

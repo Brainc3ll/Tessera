@@ -38,7 +38,7 @@ end
 ns.CHANGELOG = {
     {
         version = "1.5.0",
-        date = "2026-11-14",
+        date = "2026-11-15",
         sections = {
             { kind = "new",
               en = {
@@ -51,7 +51,8 @@ ns.CHANGELOG = {
                     .. " and choose which parts of the tooltip show.",
                 "XP: show the time to the next level and the XP of the quests you can hand in,"
                     .. " and choose which parts of the tooltip show.",
-                "Reset session: a new choice for the Shift + click and middle click actions on Gold and XP."
+                "Reset session: a new choice for the Shift + click and middle click actions on Gold, XP, Reputation, Currencies,"
+                    .. " XP per hour and Goal."
                     .. " Gains and rates per hour start again from now.",
                 "Guild: the tooltip can show the message of the day, the members online out of the total,"
                     .. " and each member's rank and public note. Each line starts with the level, the rank is in gold"
@@ -94,7 +95,8 @@ ns.CHANGELOG = {
                     .. " et choisis les parties de l'infobulle à afficher.",
                 "XP : affiche le temps avant le niveau suivant et l'XP des quêtes à rendre,"
                     .. " et choisis les parties de l'infobulle à afficher.",
-                "Remise à zéro de la session : un nouveau choix pour les actions du Maj + clic et du clic milieu sur l'Or et l'XP."
+                "Remise à zéro de la session : un nouveau choix pour les actions du Maj + clic et du clic milieu sur l'Or, l'XP,"
+                    .. " la Réputation, les Monnaies, l'XP par heure et l'Objectif."
                     .. " Les gains et les rythmes par heure repartent de maintenant.",
                 "Guilde : l'infobulle peut montrer le message du jour, les membres en ligne sur le total,"
                     .. " et le rang et la note publique de chaque membre. Chaque ligne commence par le niveau, le rang est en doré"
@@ -148,6 +150,8 @@ ns.CHANGELOG = {
                 "Block settings: choose how a block's tooltip lines up with it (left edge, centered, right edge). Automatic keeps the old behaviour.",
                 "Tooltips: a blank line now separates the title, the information and the click help."
                     .. " \"Space between tooltip parts\" in Placement and more turns it off.",
+                "German, Spanish (Spain and Mexico) and Brazilian Portuguese: every new or changed text is translated."
+                    .. " Claude (an AI) translated them and nobody has reviewed them yet: corrections are welcome on GitHub.",
               },
               fr = {
                 "Les onglets de gauche de la fenêtre d'options disent ce qu'ils contiennent : Blocs et groupes, Style et dispositions,"
@@ -167,6 +171,8 @@ ns.CHANGELOG = {
                     .. " droit). Automatique garde l'ancien comportement.",
                 "Infobulles : une ligne vide sépare maintenant le titre, les informations et l'aide des clics."
                     .. " « Espaces dans les infobulles » dans Placement et général la retire.",
+                "Allemand, espagnol (Espagne et Mexique) et portugais du Brésil : chaque texte nouveau ou changé est traduit."
+                    .. " Claude (une IA) les a traduits et personne ne les a encore relus : les corrections sont les bienvenues sur GitHub.",
               },
             },
             { kind = "fixed",

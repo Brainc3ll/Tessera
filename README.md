@@ -236,6 +236,33 @@ block's settings, **Alt + right-click** for the quick menu.
 into a new issue (a template is provided), or in the comments of the
 [CurseForge page](https://www.curseforge.com/wow/addons/tessera).
 
+### Memory, FPS and refresh rates
+
+An addon manager counts live data plus garbage that Lua has not collected yet. Tessera makes garbage when it
+rebuilds blocks (a style change, a move, a merge) or draws the options window; the collector clears it in the
+background, so the figure rises and falls. The game never frees a frame an addon has created, so the options
+window and every block you have shown stay allocated until you reload. The figure depends on your blocks, your
+DataBroker sources and your other addons. Memory use does not lower the frame rate by itself: what you feel are
+pauses when a lot of garbage is collected at once. With the blocks locked, Tessera does little work; to lighten
+it further, hide the blocks that update often (coordinates, speed).
+
+One timer wakes each shown block at its own pace:
+
+| Rate | Blocks |
+|---|---|
+| 4 times a second | Coordinates |
+| 2 times a second | Corpse, Speed |
+| Every second | Camping, FPS, Hearthstone, Server time, Time |
+| Every 2 s | Regeneration, Stats |
+| Every 5 s | Latency, Long buffs, Volume, Weapon enchant |
+| Every 10 s | Pet |
+| Every 15 s | XP rate |
+| Every 30 s | Date, Mail, Memory, Played, Reset |
+| Every minute | Honor, Legacy |
+| On a game event only | the 27 other blocks |
+
+Blocks that forward another addon (DataBroker, launchers) update every 2 s. Hidden blocks do not update.
+
 ## For developers
 
 The code is plain Lua with no build step and no embedded libraries. Every file starts with a

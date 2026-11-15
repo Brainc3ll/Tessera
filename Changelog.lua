@@ -45,11 +45,40 @@ ns.CHANGELOG = {
                 "Thank you to Ahlen and Malkkav on the FlareUI Discord. Ahlen's idea of a data panel under the minimap started"
                     .. " the talk where players tried Tessera, and Malkkav showed me how to measure performance."
                     .. " Players there also reported Tessera's memory use, which led to this version's change.",
+                "Memory, in short. An addon manager counts live data plus garbage that Lua has not collected yet."
+                    .. " Tessera makes garbage when it rebuilds blocks (a style change, a move, a merge) or draws the"
+                    .. " options window. Lua's collector clears it in the background, so the figure rises and falls like a saw tooth.",
+                "Some memory stays. The game never frees a frame an addon has created, so the options window and every block"
+                    .. " you have shown stay allocated until you reload. Opening the options window once costs memory for the session.",
+                "The figure depends on your blocks, the DataBroker sources you add, your other addons and what you did a moment ago.",
+                "FPS. Memory use does not lower your frame rate by itself. You feel the pauses when Lua collects a lot of garbage"
+                    .. " at once, and this version removes the main ones: the full cleaning after closing the options and the"
+                    .. " redraw of a closed options window. With the blocks locked, Tessera does little work. To make it lighter,"
+                    .. " hide the blocks that update often (coordinates, speed).",
+                "Refresh rates. One timer wakes each block at its own pace, from four times a second (coordinates) to once a"
+                    .. " minute (honor, Legacy). Blocks without a timer update only when the game sends an event. Hidden blocks"
+                    .. " do not update. The README lists every block.",
               },
               fr = {
                 "Merci à Ahlen et à Malkkav, du Discord de FlareUI. L'idée d'Ahlen d'un panneau de données sous la minimap a lancé"
                     .. " la discussion où des joueurs ont essayé Tessera, et Malkkav m'a montré comment mesurer les performances."
                     .. " Des joueurs y ont aussi signalé la mémoire utilisée par Tessera, ce qui a mené au changement de cette version.",
+                "La mémoire, en bref. Un gestionnaire d'addons compte les données vivantes et les déchets que Lua n'a pas"
+                    .. " encore ramassés. Tessera fabrique des déchets quand elle reconstruit des blocs (changement de style,"
+                    .. " déplacement, fusion) ou dessine la fenêtre d'options. Le ramasse-miettes de Lua les vide en arrière-plan,"
+                    .. " donc le chiffre monte et descend en dents de scie.",
+                "Une partie reste. Le jeu ne libère jamais un cadre créé par un addon : la fenêtre d'options et chaque bloc"
+                    .. " affiché restent alloués jusqu'au rechargement. Ouvrir la fenêtre d'options une fois coûte de la mémoire"
+                    .. " pour la session.",
+                "Le chiffre dépend de tes blocs, des sources DataBroker ajoutées, de tes autres addons et de ce que tu viens de faire.",
+                "FPS. La mémoire utilisée ne fait pas baisser les FPS à elle seule. Tu sens les pauses quand Lua ramasse beaucoup"
+                    .. " de déchets d'un coup, et cette version supprime les principales : le grand nettoyage après la fermeture des"
+                    .. " options et le redessin d'une fenêtre d'options fermée. Blocs verrouillés, Tessera travaille peu. Pour"
+                    .. " l'alléger, masque les blocs qui se mettent à jour souvent (coordonnées, vitesse).",
+                "Rythmes de mise à jour. Un seul minuteur réveille chaque bloc à son rythme, de quatre fois par seconde"
+                    .. " (coordonnées) à une fois par minute (honneur, Legacy). Les blocs sans minuteur se mettent à jour"
+                    .. " seulement quand le jeu envoie un événement. Les blocs masqués ne se mettent pas à jour. Le README liste"
+                    .. " chaque bloc.",
               },
             },
             { kind = "improved",

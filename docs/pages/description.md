@@ -18,6 +18,10 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 
 Type **/tessera** for the options, or **/tessera demo** to see every block at once. The [README on GitHub](https://github.com/Brainc3ll/Tessera#readme) lists every block, command and setting.
 
+## Memory, FPS and refresh rates
+
+An addon manager counts live data plus garbage that Lua has not collected yet, so the figure for Tessera rises and falls. The game never frees a window an addon has built, so the options window stays in memory once you open it. Memory use does not lower your frame rate by itself; you feel the pauses when a lot of garbage is collected at once, and 1.5.1 removes the main ones. Each block updates at its own pace, from four times a second (coordinates) to once a minute (honor, Legacy), or only on a game event. Hidden blocks do not update. The README lists every block.
+
 ## Made by a player and an AI
 
 I don't write code. Claude (an AI by Anthropic) writes all of it, from my instructions, along with the tests and most texts. I decide what Tessera does, I test it in game and I review the French. No human programmer reads the code line by line ([AI Code Rating](https://aicoderating.com): E4d), so bugs can remain. Claude translated the German, Spanish and Brazilian Portuguese texts and nobody has reviewed them yet: you can [correct them or add your language](https://github.com/Brainc3ll/Tessera/blob/main/docs/TRANSLATING.md).
@@ -45,6 +49,10 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - Tes dispositions et tes profils passent d'une version à l'autre.
 
 Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup. Le [README sur GitHub](https://github.com/Brainc3ll/Tessera#readme) liste chaque bloc, commande et réglage.
+
+## Mémoire, FPS et rythmes de mise à jour
+
+Un gestionnaire d'addons compte les données vivantes et les déchets que Lua n'a pas encore ramassés : le chiffre de Tessera monte et descend. Le jeu ne libère jamais une fenêtre construite par un addon, donc la fenêtre d'options reste en mémoire une fois ouverte. La mémoire utilisée ne fait pas baisser les FPS à elle seule ; tu sens les pauses quand beaucoup de déchets sont ramassés d'un coup, et la 1.5.1 supprime les principales. Chaque bloc se met à jour à son rythme, de quatre fois par seconde (coordonnées) à une fois par minute (honneur, Legacy), ou seulement sur un événement du jeu. Les blocs masqués ne se mettent pas à jour. Le README liste chaque bloc.
 
 ## Fait par un joueur et une IA
 

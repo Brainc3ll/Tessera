@@ -6,6 +6,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ## 1.5.1 — 2026-11-15
 
 - Thank you to Ahlen and Malkkav on the FlareUI Discord. Ahlen's idea of a data panel under the minimap started the talk where players tried Tessera, and Malkkav showed me how to measure performance. Players there also reported Tessera's memory use, which led to this version's change.
+- Memory, in short. An addon manager counts live data plus garbage that Lua has not collected yet. Tessera makes garbage when it rebuilds blocks (a style change, a move, a merge) or draws the options window. Lua's collector clears it in the background, so the figure rises and falls like a saw tooth.
+- Some memory stays. The game never frees a frame an addon has created, so the options window and every block you have shown stay allocated until you reload. Opening the options window once costs memory for the session.
+- The figure depends on your blocks, the DataBroker sources you add, your other addons and what you did a moment ago.
+- FPS. Memory use does not lower your frame rate by itself. You feel the pauses when Lua collects a lot of garbage at once, and this version removes the main ones: the full cleaning after closing the options and the redraw of a closed options window. With the blocks locked, Tessera does little work. To make it lighter, hide the blocks that update often (coordinates, speed).
+- Refresh rates. One timer wakes each block at its own pace, from four times a second (coordinates) to once a minute (honor, Legacy). Blocks without a timer update only when the game sends an event. Hidden blocks do not update. The README lists every block.
 
 ### Improvements
 

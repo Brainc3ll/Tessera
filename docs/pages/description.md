@@ -12,7 +12,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 - Place a bar to the exact pixel with the arrow keys. Style a whole bar at once.
 - DataBroker both ways: your Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 - Guild member list: hover the Guild block to see who is online, in a list that looks like a tooltip. Click a name to whisper, right-click to invite. Search field and scroll bar for big guilds.
-- Whispers history: the last 5, 10 or 20 players who whispered you, with the start of their message, in a list you can click to reply.
+- Whispers history: the last 5, 10 or 20 whispers with the start of each message, in a list you can click to reply. Right-click pins a whisper so you do not forget a request.
 - Streamer mode hides other players' names, your other characters, your guild and your gold.
 - Accessibility: high contrast, fewer animations, a minimum text size and six reading fonts.
 - An options window with a search and a help panel for each setting. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
@@ -46,7 +46,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - Place une barre au pixel près avec les flèches du clavier. Donne un style à toute une barre d'un coup.
 - DataBroker dans les deux sens : les plugins Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (ex-ChocolateBar).
 - Liste des membres de la guilde : survole le bloc Guilde pour voir qui est en ligne, dans une liste qui ressemble à une infobulle. Clique sur un nom pour chuchoter, clic droit pour inviter. Recherche et barre de défilement pour les grosses guildes.
-- Historique des chuchotements : les 5, 10 ou 20 derniers joueurs qui t'ont chuchoté, avec le début de leur message, dans une liste sur laquelle cliquer pour répondre.
+- Historique des chuchotements : les 5, 10 ou 20 derniers chuchotements avec le début de chaque message, dans une liste sur laquelle cliquer pour répondre. Un clic droit épingle un chuchotement pour ne pas oublier une demande.
 - Le mode streamer cache les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
 - Accessibilité : contraste élevé, moins d'animations, taille de texte minimale et six polices de lecture.
 - Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.

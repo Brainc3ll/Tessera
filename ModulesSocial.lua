@@ -514,8 +514,8 @@ ns:RegisterModule("group", {
 -- sender; a click replies to the most recent one. Names are read through
 -- pcall/tostring because chat data can be protected on Midnight-era clients.
 ---------------------------------------------------------------------------
-local whispers = {} -- the last 20 people who whispered you, oldest first: { name, count (unread), at, when, bnet, text }
-local HISTORY_MAX = 20
+local whispers = {} -- the last 20 whispers (and the pinned ones), oldest first: { name, text, when, at, bnet, read, pinned }
+local HISTORY_MAX = 20 -- whispers kept besides the pinned ones
 local whispersLoaded = false
 
 -- The history survives a reload and a relog: kept for each character in the saved variables
@@ -530,10 +530,11 @@ local function LoadWhispers()
     if type(saved) ~= "table" then return end
     local now, clock = GetTime(), time()
     for _, e in ipairs(saved) do
-        if type(e) == "table" and type(e.name) == "string" and type(e.when) == "number" and #whispers < HISTORY_MAX then
+        if type(e) == "table" and type(e.name) == "string" and type(e.when) == "number" and #whispers < HISTORY_MAX * 2 then
             -- "at" counts seconds since the game started: rebuilt from the saved clock time
-            whispers[#whispers + 1] = { name = e.name, count = tonumber(e.count) or 0, bnet = e.bnet and true or false,
-                when = e.when, at = now - math.max(0, clock - e.when), text = type(e.text) == "string" and e.text or nil }
+            whispers[#whispers + 1] = { name = e.name, bnet = e.bnet and true or false, when = e.when,
+                at = now - math.max(0, clock - e.when), text = type(e.text) == "string" and e.text or nil,
+                read = e.read and true or false, pinned = e.pinned and true or false }
         end
     end
 end
@@ -541,15 +542,10 @@ local function SaveWhispers()
     if not ns.sv then return end
     ns.sv.whisperHistory = ns.sv.whisperHistory or {}
     local out = {}
-    for i, w in ipairs(whispers) do out[i] = { name = w.name, count = w.count, bnet = w.bnet, when = w.when, text = w.text } end
-    ns.sv.whisperHistory[CharKey()] = out
-end
-
-local function FindWhisper(name)
-    LoadWhispers()
     for i, w in ipairs(whispers) do
-        if w.name == name then return i, w end
+        out[i] = { name = w.name, bnet = w.bnet, when = w.when, text = w.text, read = w.read, pinned = w.pinned }
     end
+    ns.sv.whisperHistory[CharKey()] = out
 end
 
 -- the start of a message, for the history (protected chat text is left out)
@@ -561,24 +557,45 @@ local function ShortText(text)
     return t:sub(1, 120)
 end
 
+-- Every whisper is one entry; the oldest ones that are not pinned go when there are more than 20
+local function Trim()
+    local loose = 0
+    for _, w in ipairs(whispers) do if not w.pinned then loose = loose + 1 end end
+    local i = 1
+    while loose > HISTORY_MAX and whispers[i] do
+        if whispers[i].pinned then
+            i = i + 1
+        else
+            table.remove(whispers, i)
+            loose = loose - 1
+        end
+    end
+end
+
 local function OnWhisper(name, bnet, text)
+    LoadWhispers()
     if issecretvalue and issecretvalue(name) then return end -- protected chat data: ignore
     local ok, shown = pcall(tostring, name)
     if not ok or not shown or shown == "" then return end
-    local i, w = FindWhisper(shown)
-    if w then table.remove(whispers, i) else w = { name = shown, count = 0, bnet = bnet } end
-    w.count, w.at, w.when, w.text = w.count + 1, GetTime(), time(), ShortText(text)
-    table.insert(whispers, w)
-    while #whispers > HISTORY_MAX do table.remove(whispers, 1) end
+    whispers[#whispers + 1] = { name = shown, bnet = bnet, at = GetTime(), when = time(), text = ShortText(text), read = false }
+    Trim()
     SaveWhispers()
 end
 
--- You answered: the conversation is read, and stays in the history
+-- You answered: that player's whispers are read, and stay in the history
+local function MarkRead(name)
+    LoadWhispers()
+    local changed = false
+    for _, w in ipairs(whispers) do
+        if w.name == name and not w.read then w.read, changed = true, true end
+    end
+    if changed then SaveWhispers() end
+end
+
 local function ClearWhisper(name)
     if issecretvalue and issecretvalue(name) then return end
     local ok, shown = pcall(tostring, name)
-    local _, w = FindWhisper(ok and shown or "")
-    if w then w.count = 0 SaveWhispers() end
+    if ok and shown then MarkRead(shown) end
 end
 
 local whisperFrame = CreateFrame("Frame")
@@ -601,29 +618,42 @@ end)
 local function UnreadCount()
     LoadWhispers()
     local n = 0
-    for _, w in ipairs(whispers) do n = n + w.count end
+    for _, w in ipairs(whispers) do if not w.read then n = n + 1 end end
+    return n
+end
+
+local function PinnedCount()
+    LoadWhispers()
+    local n = 0
+    for _, w in ipairs(whispers) do if w.pinned then n = n + 1 end end
     return n
 end
 
 local function LastUnread()
     LoadWhispers()
     for i = #whispers, 1, -1 do
-        if whispers[i].count > 0 then return whispers[i] end
+        if not whispers[i].read then return whispers[i] end
     end
 end
 
--- The history, newest first, at most the number the block's "History" setting gives
+-- What the list and the tooltip show, newest first: the pinned whispers, then the last ones
+-- (as many as the block's "History" setting says)
 function ns.WhisperHistory(cfg)
     LoadWhispers()
-    local out, max = {}, tonumber(cfg and cfg.whispersHistory) or HISTORY_MAX
+    local out, max, loose = {}, tonumber(cfg and cfg.whispersHistory) or 10, 0
     for i = #whispers, 1, -1 do
-        if #out >= max then break end
-        out[#out + 1] = whispers[i]
+        if whispers[i].pinned then out[#out + 1] = whispers[i] end
+    end
+    for i = #whispers, 1, -1 do
+        if not whispers[i].pinned and loose < max then
+            loose = loose + 1
+            out[#out + 1] = whispers[i]
+        end
     end
     return out
 end
 
--- Opens the reply to one of them and marks it read
+-- Opens the reply to the sender of a whisper and marks that player's whispers read
 function ns.WhisperReply(w)
     if not w then return end
     -- ChatFrameUtil first: the ChatFrame_* names are Blizzard's old fallbacks, due to go
@@ -631,23 +661,33 @@ function ns.WhisperReply(w)
     local tell = w.bnet and ((util and util.SendBNetTell) or ChatFrame_SendBNetTell)
         or ((util and util.SendTell) or ChatFrame_SendTell)
     if tell then pcall(tell, w.name) end
-    w.count = 0
+    MarkRead(w.name)
+    ns:UpdateBlock("whispers")
+end
+
+-- Pins a whisper (it stays until you unpin it) or unpins it
+function ns.WhisperTogglePin(w)
+    if not w then return end
+    w.pinned = not w.pinned or nil
+    Trim()
     SaveWhispers()
     ns:UpdateBlock("whispers")
+    if ns.RefreshWhisperList then ns:RefreshWhisperList() end
 end
 
 ns:RegisterModule("whispers", {
     label = "WHISPERS",
     icon = "Interface\\Icons\\INV_Letter_02",
     alertOnShow = true,
-    isEmpty = function() return UnreadCount() == 0 end,
+    -- hidden when empty: no unread whisper and nothing pinned
+    isEmpty = function() return UnreadCount() == 0 and PinnedCount() == 0 end,
     update = function(cfg)
-        local n = UnreadCount()
+        local n, pinned = UnreadCount(), PinnedCount()
         local last = LastUnread()
-        if cfg and cfg.whispersShown == "name" and last then
-            return ("%s (%d)"):format(Masked(last.name), n), n > 0 and WARN or GOOD
-        end
-        return tostring(n), n > 0 and WARN or GOOD
+        local text = tostring(n)
+        if cfg and cfg.whispersShown == "name" and last then text = ("%s (%d)"):format(Masked(last.name), n) end
+        if pinned > 0 then text = text .. " " .. L.WHISPERS_PINNED_COUNT:format(pinned) end
+        return text, n > 0 and WARN or GOOD
     end,
     defaults = { whispersShown = "count", whispersHover = "list", whispersHistory = "10" },
     options = {
@@ -658,21 +698,23 @@ ns:RegisterModule("whispers", {
         { kind = "dropdown", field = "whispersHistory", tab = "text", label = "WHISPERS_HISTORY", tip = "TIP_WHISPERS_HISTORY",
           values = { { key = "5", label = "5" }, { key = "10", label = "10" }, { key = "20", label = "20" } } },
     },
-    -- "Clickable list": the history under the mouse, a click on a name replies (WhisperList.lua)
+    -- "Clickable list": the history under the mouse, a click replies, a right click pins (WhisperList.lua)
     hoverList = function(frame, cfg)
         if cfg and cfg.whispersHover ~= "tooltip" and ns.ShowWhisperList then
             ns:ShowWhisperList(frame, cfg)
             return true
         end
     end,
-    -- the last players who whispered you, even after you answered; the unread ones show their number
+    -- the last whispers, even after you answered; the unread ones and the pinned ones are tagged
     tooltip = function(tt, cfg)
         local history = ns.WhisperHistory(cfg)
         if #history == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
         for _, w in ipairs(history) do
-            local name = w.count > 0 and ("%s (%d)"):format(Masked(w.name), w.count) or Masked(w.name)
+            local name = Masked(w.name)
+            if w.pinned then name = name .. " (" .. L.WHISPER_TAG_PINNED .. ")" end
+            if not w.read then name = name .. " (" .. L.WHISPER_TAG_NEW .. ")" end
             local r, g, b = 0.75, 0.75, 0.75
-            if w.count > 0 then r, g, b = 1, 0.82, 0 end
+            if not w.read then r, g, b = 1, 0.82, 0 end
             tt:AddDoubleLine(name, ("%s (%s)"):format(date("%H:%M", w.when or 0), L.TT_AGO:format(ShortDuration(GetTime() - w.at))),
                 r, g, b, 0.7, 0.7, 0.7)
             if w.text and w.text ~= "" then
@@ -683,9 +725,10 @@ ns:RegisterModule("whispers", {
         end
     end,
     clickHint = L.HINT_WHISPER,
-    -- left click: reply to the most recent sender (the last unread one first)
+    -- left click: reply to the most recent unread whisper (else the last one)
     onClick = function(_, button)
         if button ~= "LeftButton" then return end
+        LoadWhispers()
         ns.WhisperReply(LastUnread() or whispers[#whispers])
     end,
 })

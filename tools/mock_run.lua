@@ -2948,7 +2948,7 @@ for _, step in ipairs({
         assert(all:find("Mo", 1, true) < all:find("Kaz", 1, true), "zone sort")
         C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet = oldFL, oldBN, oldInfo, oldC
     end,
-    -- whispers history: the last players stay after you answered, a clickable list replies
+    -- whispers history: the last whispers stay after you answered, a clickable list replies and pins
     function()
         local mod = ns.modules.whispers
         local savedUtil = ChatFrameUtil
@@ -2957,30 +2957,40 @@ for _, step in ipairs({
         Fire("CHAT_MSG_WHISPER", "hello there, how are you doing today, I wanted to ask you something quite long", "Anna-Realm")
         Fire("CHAT_MSG_WHISPER_INFORM", "hi", "Anna-Realm")
         local history = ns.WhisperHistory({ whispersHistory = "10" })
-        assert(#history == 1 and history[1].name == "Anna-Realm" and history[1].count == 0, "answered, but still in the history")
+        assert(#history == 1 and history[1].name == "Anna-Realm" and history[1].read, "answered, but still in the history")
         assert(history[1].text and history[1].text:find("hello"), "the start of the message is kept")
+        Fire("CHAT_MSG_WHISPER", "one more", "Anna-Realm")
+        Fire("CHAT_MSG_WHISPER", "and another", "Anna-Realm")
+        assert(#ns.WhisperHistory({ whispersHistory = "10" }) == 3, "three whispers from one player are three entries")
         for i = 1, 25 do Fire("CHAT_MSG_WHISPER", "msg " .. i, "Player" .. i .. "-Realm") end
-        assert(#ns.WhisperHistory({ whispersHistory = "20" }) == 20, "20 players at most")
+        assert(#ns.WhisperHistory({ whispersHistory = "20" }) == 20, "20 whispers at most")
         assert(#ns.WhisperHistory({ whispersHistory = "10" }) == 10, "the History setting gives 10")
-        local saved = ns.sv.whisperHistory and next(ns.sv.whisperHistory) and ns.sv.whisperHistory[next(ns.sv.whisperHistory)]
-        assert(saved and #saved == 20 and saved[#saved].name == "Player25-Realm", "the history is saved for a reload")
         assert(#ns.WhisperHistory({ whispersHistory = "5" }) == 5, "the History setting gives 5")
         assert(ns.WhisperHistory({})[1].name == "Player25-Realm", "newest first")
+        local saved = ns.sv.whisperHistory and next(ns.sv.whisperHistory) and ns.sv.whisperHistory[next(ns.sv.whisperHistory)]
+        assert(saved and #saved == 20 and saved[#saved].name == "Player25-Realm", "the history is saved for a reload")
         assert(mod.isEmpty() == false, "unread whispers: the block is not empty")
+        -- pin the oldest one shown: it stays, whatever comes after
+        local oldest = ns.WhisperHistory({ whispersHistory = "20" })[20]
+        ns.WhisperTogglePin(oldest)
+        for i = 1, 25 do Fire("CHAT_MSG_WHISPER", "later " .. i, "Late" .. i .. "-Realm") end
+        local pinnedFirst = ns.WhisperHistory({ whispersHistory = "5" })
+        assert(#pinnedFirst == 6 and pinnedFirst[1] == oldest and oldest.pinned, "a pinned whisper stays, listed first")
         local block = CreateFrame("Frame", nil, UIParent)
         assert(not mod.hoverList(block, { whispersHover = "tooltip" }), "tooltip setting: the normal tooltip")
         assert(mod.hoverList(block, { whispersHover = "list", whispersHistory = "5" }), "list setting: the list takes its place")
         local list = _G["TesseraWhisperList"]
-        assert(list and list:IsShown() and list.rows[5]:IsShown() and not list.rows[6]:IsShown(), "5 rows")
-        list.rows[1]:GetScript("OnClick")(list.rows[1], "LeftButton")
-        assert(told == "Player25-Realm" and not list:IsShown(), "a click replies and closes the list")
-        assert(ns.WhisperHistory({})[1].count == 0, "replied: read")
+        assert(list and list:IsShown() and list.rows[6]:IsShown() and not list.rows[7]:IsShown(), "5 whispers and the pinned one")
+        list.rows[2]:GetScript("OnClick")(list.rows[2], "LeftButton")
+        assert(told == "Late25-Realm" and not list:IsShown(), "a click replies and closes the list")
+        mod.hoverList(block, { whispersHover = "list", whispersHistory = "5" })
+        list.rows[1]:GetScript("OnClick")(list.rows[1], "RightButton")
+        assert(not oldest.pinned and list:IsShown(), "a right click unpins, the list stays open")
         local tt = { lines = 0 }
         tt.AddLine = function() tt.lines = tt.lines + 1 end
         tt.AddDoubleLine = tt.AddLine
         mod.tooltip(tt, { whispersHistory = "5" })
         assert(tt.lines >= 5, "the tooltip lists the history")
-        mod.hoverList(block, { whispersHover = "list" })
         list:GetScript("OnUpdate")(list, 0.2)
         list:GetScript("OnUpdate")(list, 0.2)
         assert(not list:IsShown(), "the list closes once the mouse stayed away")

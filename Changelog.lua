@@ -49,8 +49,9 @@ ns.CHANGELOG = {
                     "The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds."
                         .. " It follows the tooltip settings (sort, leaders, members shown, message, count, rank, note, size)."
                         .. " A click on the block still opens the game's guild window.",
-                    "Whispers block: it now keeps the last 5, 10 or 20 players who whispered you, even after you answered and after a reload, with the time"
-                        .. " and the start of their message. A new setting, On hover, shows them as a clickable list (a click replies) or as a tooltip.",
+                    "Whispers block: it now keeps the last 5, 10 or 20 whispers, even after you answered and after a reload, with the time"
+                        .. " and the start of each message. A new setting, On hover, shows them as a clickable list or as a tooltip."
+                        .. " In the list, a click replies and a right click pins a whisper so you do not forget it.",
                     "Three settings shape the list: List rows (5 to 100), List size (80 to 150 percent) and List look (tooltip or window).",
                     "New setting in General, Movement: Merge blocks dropped together."
                         .. " Unchecked, a block dropped against another one does not merge with it.",
@@ -65,9 +66,9 @@ ns.CHANGELOG = {
                     "La liste a un champ de recherche (nom, zone, rang ou note), la molette et une barre de défilement pour les"
                         .. " grosses guildes. Elle suit les réglages de l'infobulle (tri, chefs, membres affichés, message, compte,"
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
-                    "Bloc Chuchotements : il garde maintenant les 5, 10 ou 20 derniers joueurs qui t'ont chuchoté, même après ta réponse et un rechargement,"
-                        .. " avec l'heure et le début de leur message. Un nouveau réglage, Au survol, les montre en liste cliquable"
-                        .. " (un clic répond) ou en infobulle.",
+                    "Bloc Chuchotements : il garde maintenant les 5, 10 ou 20 derniers chuchotements, même après ta réponse et un"
+                        .. " rechargement, avec l'heure et le début de chaque message. Un nouveau réglage, Au survol, les montre en liste"
+                        .. " cliquable ou en infobulle. Dans la liste, un clic répond et un clic droit épingle un chuchotement pour ne pas l'oublier.",
                     "Trois réglages donnent sa forme à la liste : Lignes de la liste (de 5 à 100), Taille de la liste (de 80 à 150 %)"
                         .. " et Aspect de la liste (infobulle ou fenêtre).",
                     "Nouveau réglage dans Général, Déplacement : Fusionner les blocs posés ensemble."

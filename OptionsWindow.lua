@@ -625,6 +625,7 @@ local function BuildPanel()
         DockSideWindows()
         if ns.HideMicroMenuList then ns:HideMicroMenuList() end
         if ns.HideGuildList then ns:HideGuildList() end
+        if ns.HideWhisperList then ns:HideWhisperList() end
         if ns.RefreshPins then ns:RefreshPins() end -- a pinned tooltip under the window steps aside
     end)
     S.panel:HookScript("OnHide", function()

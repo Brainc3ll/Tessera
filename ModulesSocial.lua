@@ -514,29 +514,71 @@ ns:RegisterModule("group", {
 -- sender; a click replies to the most recent one. Names are read through
 -- pcall/tostring because chat data can be protected on Midnight-era clients.
 ---------------------------------------------------------------------------
-local whispers = {} -- ordered list of { name, count, at, bnet }
+local whispers = {} -- the last 20 people who whispered you, oldest first: { name, count (unread), at, when, bnet, text }
+local HISTORY_MAX = 20
+local whispersLoaded = false
+
+-- The history survives a reload and a relog: kept for each character in the saved variables
+-- (ns.sv.whisperHistory), read the first time it is needed (the saved variables load after this file)
+local function CharKey()
+    return (UnitName("player") or "?") .. "-" .. (GetRealmName and GetRealmName() or "")
+end
+local function LoadWhispers()
+    if whispersLoaded or not ns.sv then return end
+    whispersLoaded = true
+    local saved = ns.sv.whisperHistory and ns.sv.whisperHistory[CharKey()]
+    if type(saved) ~= "table" then return end
+    local now, clock = GetTime(), time()
+    for _, e in ipairs(saved) do
+        if type(e) == "table" and type(e.name) == "string" and type(e.when) == "number" and #whispers < HISTORY_MAX then
+            -- "at" counts seconds since the game started: rebuilt from the saved clock time
+            whispers[#whispers + 1] = { name = e.name, count = tonumber(e.count) or 0, bnet = e.bnet and true or false,
+                when = e.when, at = now - math.max(0, clock - e.when), text = type(e.text) == "string" and e.text or nil }
+        end
+    end
+end
+local function SaveWhispers()
+    if not ns.sv then return end
+    ns.sv.whisperHistory = ns.sv.whisperHistory or {}
+    local out = {}
+    for i, w in ipairs(whispers) do out[i] = { name = w.name, count = w.count, bnet = w.bnet, when = w.when, text = w.text } end
+    ns.sv.whisperHistory[CharKey()] = out
+end
 
 local function FindWhisper(name)
+    LoadWhispers()
     for i, w in ipairs(whispers) do
         if w.name == name then return i, w end
     end
 end
 
-local function OnWhisper(name, bnet)
-    if issecretvalue and issecretvalue(name) then return end -- protected chat data: ignore
-    local ok, text = pcall(tostring, name)
-    if not ok or not text or text == "" then return end
-    local i, w = FindWhisper(text)
-    if w then table.remove(whispers, i) else w = { name = text, count = 0, bnet = bnet } end
-    w.count, w.at = w.count + 1, GetTime()
-    table.insert(whispers, w)
+-- the start of a message, for the history (protected chat text is left out)
+local function ShortText(text)
+    if issecretvalue and issecretvalue(text) then return nil end
+    local ok, t = pcall(tostring, text)
+    if not ok or not t then return nil end
+    t = t:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("[\r\n]+", " ")
+    return t:sub(1, 120)
 end
 
+local function OnWhisper(name, bnet, text)
+    if issecretvalue and issecretvalue(name) then return end -- protected chat data: ignore
+    local ok, shown = pcall(tostring, name)
+    if not ok or not shown or shown == "" then return end
+    local i, w = FindWhisper(shown)
+    if w then table.remove(whispers, i) else w = { name = shown, count = 0, bnet = bnet } end
+    w.count, w.at, w.when, w.text = w.count + 1, GetTime(), time(), ShortText(text)
+    table.insert(whispers, w)
+    while #whispers > HISTORY_MAX do table.remove(whispers, 1) end
+    SaveWhispers()
+end
+
+-- You answered: the conversation is read, and stays in the history
 local function ClearWhisper(name)
     if issecretvalue and issecretvalue(name) then return end
-    local ok, text = pcall(tostring, name)
-    local i = ok and FindWhisper(text)
-    if i then table.remove(whispers, i) end
+    local ok, shown = pcall(tostring, name)
+    local _, w = FindWhisper(ok and shown or "")
+    if w then w.count = 0 SaveWhispers() end
 end
 
 local whisperFrame = CreateFrame("Frame")
@@ -544,61 +586,107 @@ for _, event in ipairs({ "CHAT_MSG_WHISPER", "CHAT_MSG_BN_WHISPER",
                          "CHAT_MSG_WHISPER_INFORM", "CHAT_MSG_BN_WHISPER_INFORM" }) do
     pcall(whisperFrame.RegisterEvent, whisperFrame, event)
 end
-whisperFrame:SetScript("OnEvent", function(_, event, _, sender)
+whisperFrame:SetScript("OnEvent", function(_, event, text, sender)
     if event == "CHAT_MSG_WHISPER" then
-        OnWhisper(sender, false)
+        OnWhisper(sender, false, text)
     elseif event == "CHAT_MSG_BN_WHISPER" then
-        OnWhisper(sender, true)
+        OnWhisper(sender, true, text)
     else
-        ClearWhisper(sender) -- you answered: that conversation is read
+        ClearWhisper(sender)
     end
     ns:UpdateBlock("whispers")
+    if ns.RefreshWhisperList then ns:RefreshWhisperList() end
 end)
 
 local function UnreadCount()
+    LoadWhispers()
     local n = 0
     for _, w in ipairs(whispers) do n = n + w.count end
     return n
+end
+
+local function LastUnread()
+    LoadWhispers()
+    for i = #whispers, 1, -1 do
+        if whispers[i].count > 0 then return whispers[i] end
+    end
+end
+
+-- The history, newest first, at most the number the block's "History" setting gives
+function ns.WhisperHistory(cfg)
+    LoadWhispers()
+    local out, max = {}, tonumber(cfg and cfg.whispersHistory) or HISTORY_MAX
+    for i = #whispers, 1, -1 do
+        if #out >= max then break end
+        out[#out + 1] = whispers[i]
+    end
+    return out
+end
+
+-- Opens the reply to one of them and marks it read
+function ns.WhisperReply(w)
+    if not w then return end
+    -- ChatFrameUtil first: the ChatFrame_* names are Blizzard's old fallbacks, due to go
+    local util = ChatFrameUtil
+    local tell = w.bnet and ((util and util.SendBNetTell) or ChatFrame_SendBNetTell)
+        or ((util and util.SendTell) or ChatFrame_SendTell)
+    if tell then pcall(tell, w.name) end
+    w.count = 0
+    SaveWhispers()
+    ns:UpdateBlock("whispers")
 end
 
 ns:RegisterModule("whispers", {
     label = "WHISPERS",
     icon = "Interface\\Icons\\INV_Letter_02",
     alertOnShow = true,
-    isEmpty = function() return #whispers == 0 end,
+    isEmpty = function() return UnreadCount() == 0 end,
     update = function(cfg)
         local n = UnreadCount()
-        local last = whispers[#whispers]
+        local last = LastUnread()
         if cfg and cfg.whispersShown == "name" and last then
             return ("%s (%d)"):format(Masked(last.name), n), n > 0 and WARN or GOOD
         end
         return tostring(n), n > 0 and WARN or GOOD
     end,
-    defaults = { whispersShown = "count" },
+    defaults = { whispersShown = "count", whispersHover = "list", whispersHistory = "10" },
     options = {
         { kind = "dropdown", field = "whispersShown", tab = "text", label = "WHISPERS_SHOWN", tip = "TIP_WHISPERS_SHOWN",
           values = { { key = "count", label = "WHISPERS_COUNT" }, { key = "name", label = "WHISPERS_NAME" } } },
+        { kind = "dropdown", field = "whispersHover", tab = "text", label = "WHISPERS_HOVER", tip = "TIP_WHISPERS_HOVER",
+          values = { { key = "list", label = "WHISPERS_HOVER_LIST" }, { key = "tooltip", label = "WHISPERS_HOVER_TOOLTIP" } } },
+        { kind = "dropdown", field = "whispersHistory", tab = "text", label = "WHISPERS_HISTORY", tip = "TIP_WHISPERS_HISTORY",
+          values = { { key = "5", label = "5" }, { key = "10", label = "10" }, { key = "20", label = "20" } } },
     },
-    tooltip = function(tt)
-        if #whispers == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
-        for i = #whispers, 1, -1 do
-            local w = whispers[i]
-            tt:AddDoubleLine(("%s (%d)"):format(Masked(w.name), w.count),
-                L.TT_AGO:format(ShortDuration(GetTime() - w.at)), 1, 1, 1, 0.7, 0.7, 0.7)
+    -- "Clickable list": the history under the mouse, a click on a name replies (WhisperList.lua)
+    hoverList = function(frame, cfg)
+        if cfg and cfg.whispersHover ~= "tooltip" and ns.ShowWhisperList then
+            ns:ShowWhisperList(frame, cfg)
+            return true
+        end
+    end,
+    -- the last players who whispered you, even after you answered; the unread ones show their number
+    tooltip = function(tt, cfg)
+        local history = ns.WhisperHistory(cfg)
+        if #history == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
+        for _, w in ipairs(history) do
+            local name = w.count > 0 and ("%s (%d)"):format(Masked(w.name), w.count) or Masked(w.name)
+            local r, g, b = 0.75, 0.75, 0.75
+            if w.count > 0 then r, g, b = 1, 0.82, 0 end
+            tt:AddDoubleLine(name, ("%s (%s)"):format(date("%H:%M", w.when or 0), L.TT_AGO:format(ShortDuration(GetTime() - w.at))),
+                r, g, b, 0.7, 0.7, 0.7)
+            if w.text and w.text ~= "" then
+                local text = Masked(w.text)
+                if #text > 60 then text = text:sub(1, 57) .. "..." end
+                tt:AddLine(text, 0.6, 0.6, 0.6)
+            end
         end
     end,
     clickHint = L.HINT_WHISPER,
-    -- left click: reply to the most recent sender, and mark it as read
+    -- left click: reply to the most recent sender (the last unread one first)
     onClick = function(_, button)
         if button ~= "LeftButton" then return end
-        local w = whispers[#whispers]
-        if not w then return end
-        -- ChatFrameUtil first: the ChatFrame_* names are Blizzard's old fallbacks, due to go
-        local util = ChatFrameUtil
-        local tell = w.bnet and ((util and util.SendBNetTell) or ChatFrame_SendBNetTell)
-            or ((util and util.SendTell) or ChatFrame_SendTell)
-        if tell then pcall(tell, w.name) end
-        table.remove(whispers)
+        ns.WhisperReply(LastUnread() or whispers[#whispers])
     end,
 })
 

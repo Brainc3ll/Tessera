@@ -1051,6 +1051,7 @@ local PROFILE_DEFAULTS = {
     edgeSnap = "ask",        -- a group dropped against a screen edge: "ask", "always" or "never" stick it
     scale = 1,               -- global scale of all blocks
     merge = true,
+    dropMerge = true,        -- a block dropped against another one merges with it (and aligns with it)
     grid = 0,
     groupDefaults = {},      -- settings made on "All blocks", inherited by new blocks
     launcherDefaults = { tooltip = true, showLabel = true, showIcon = true },
@@ -1482,7 +1483,8 @@ function ns:SnapAndSave(f)
     -- Snapping: the whole group counts as one rectangle (its outer edges), against
     -- other blocks (and Blizzard frames if that option is on); never an inner block
     local dx, dy, snappedX, snappedY = 0, 0, false, false
-    if self.db.snap or self.db.merge then
+    local dropMerge = self.db.merge and self.db.dropMerge ~= false
+    if self.db.snap or dropMerge then
         local bestX, bestY = SNAP_DISTANCE + 1, SNAP_DISTANCE + 1
         local box
         for _, m in pairs(members) do
@@ -1520,7 +1522,7 @@ function ns:SnapAndSave(f)
 
     -- Merging: the group's block closest to another block becomes the group head
     local headKey, dock = f.key, nil
-    if self.db.merge then
+    if dropMerge then
         local bestDist
         -- a single block may be slipped between two merged blocks (FindDock)
         local alone = next(group) ~= nil and next(group, next(group)) == nil

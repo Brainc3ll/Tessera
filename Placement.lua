@@ -511,7 +511,7 @@ end
 -- Called by BeginDrag: remembers the moved group's blocks relative to the moved
 -- frame, and the rectangles it could align with
 function ns:StartGuides(mover)
-    if not (self.db.snap or self.db.merge) then return end
+    if not (self.db.snap or (self.db.merge and self.db.dropMerge ~= false)) then return end
     if not guide then
         guide = CreateFrame("Frame", nil, UIParent)
         guide:SetAllPoints()

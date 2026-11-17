@@ -575,6 +575,15 @@ local function BuildBlockPage(page)
         function(v) setFA(v / 100) end, nil, L.TIP_FADE_ALPHA), { field = "fadeAlpha", parent = IsOn("fadeOut") })
     fadeBox.Add(Check(b, L.FADE_COMBAT, "fadeShowCombat", L.TIP_FADE_COMBAT), { parent = IsOn("fadeOut") })
 
+    -- the group of the selected block: frozen, it keeps its place and takes no new block
+    local placeBox = B.Box(L.SECTION_PLACEMENT)
+    placeBox.Add(CreateCheck(b, L.FREEZE_GROUP,
+        function() return ns:IsFrozen(S.selected) end,
+        function(v)
+            ns:SetFrozen(S.selected, v)
+            ns:RefreshOptions()
+        end, single, L.TIP_FREEZE_GROUP))
+
     local clicksBox = B.Box(L.SECTION_CLICKS, { reset = true })
     local clickShown = function() return not ns.IsForwardingKey(S.selected) and notSpacer() end
     local function Actions(withOpen)

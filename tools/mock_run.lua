@@ -3361,6 +3361,15 @@ for _, step in ipairs({
         assert(ns.db.blocks[root].scale == 1.4, "undo: group scale back")
         ns:ResetProfile("top")
     end,
+    -- keeping a block alone: the "Merge blocks dropped together" setting and "Freeze this group"
+    function()
+        assert(ns.PROFILE_DEFAULTS.dropMerge == true, "blocks merge when dropped together by default")
+        local key = ns:GetBlockKeys()[1]
+        ns:SetFrozen(key, true)
+        assert(ns:IsFrozen(key), "the group is frozen")
+        ns:SetFrozen(key, false)
+        assert(not ns:IsFrozen(key), "and free again")
+    end,
     -- group looks: fused, tiles (joint between blocks), separate; old profiles keep their choice
     function()
         ns.db.groupLook = nil

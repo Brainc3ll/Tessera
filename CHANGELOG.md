@@ -14,6 +14,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Freeze this block / group is now also a setting of the block (Behaviour tab), not only in the quick menu.
 - The placement banner has the checkboxes Snap blocks to each other and Merge blocks dropped together.
 
+### Improvements
+
+- Block settings: the Content tab starts with a box named Only for this block (the block's own settings and what its tooltip lists), then the standard settings every block has.
+
 ## 1.5.1 — 2026-11-15
 
 - Thank you to Ahlen and Malkkav on the FlareUI Discord. Ahlen's idea of a data panel under the minimap started the talk where players tried Tessera, and Malkkav showed me how to measure performance. Players there also reported Tessera's memory use, which led to this version's change.

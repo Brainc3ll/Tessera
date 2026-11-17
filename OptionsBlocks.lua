@@ -370,6 +370,11 @@ local function BuildBlockPage(page)
 
     -- 1. Content: what the block shows (its name, value, icon, style and its own settings),
     -- then what its tooltip shows
+    -- first what only this block has (its own settings and what its tooltip lists), then the
+    -- settings every block has (name, label, value, icon, style, tooltip)
+    local ownBox = C.Box(L.BOX_OWN, { reset = true })
+    local standardNote = C.Box(nil)
+    standardNote.Add(CreateNote(c, L.NOTE_STANDARD))
     local valueBox = C.Box(L.BOX_VALUE, { reset = true })
     local named = function() return not IsGroup() and notSpacer() end
     local getN = Field("customName")
@@ -620,11 +625,10 @@ local function BuildBlockPage(page)
     BuildModuleOptions(keys, function(opt)
         if opt.where == "when" then return whenBox end
         if opt.where == "alerts" then return alertBox end
-        if opt.section == "tooltip" then return tipBox end
-        return valueBox
+        return ownBox
     end)
     -- a group selection: its own settings belong to one block
-    local pick = valueBox.Add(CreateNote(c, L.THIS_BLOCK_PICK))
+    local pick = ownBox.Add(CreateNote(c, L.THIS_BLOCK_PICK))
     pick.isShown = IsGroup
     -- a pinned tooltip stays on the screen (last in the Tooltip box)
     local pin = tipBox.Add(CreateButton(c, L.MENU_PIN, function()

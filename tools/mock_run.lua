@@ -3720,7 +3720,7 @@ do
             if r.frame.__shown and (r.frame.headerText or r.label) == label then return r.frame, r end
         end
     end
-    -- (1.5) a block's tooltip settings: in the Tooltip box of Content, the checkboxes two by two
+    -- (1.5) a block's tooltip settings: in the "Only for this block" box of Content, the checkboxes two by two
     do
         ns:OpenOptionsFor("gold")
         ns.ShowBlockSub(1)
@@ -3728,7 +3728,7 @@ do
         local tipTitle = Find(L.SECTION_TOOLTIP)
         local a, ra = Find(L.GOLD_TIP_SESSION)
         local b = Find(L.GOLD_TIP_HOUR)
-        if not (tipTitle and a and b and ra.box and ra.box.title == L.SECTION_TOOLTIP) then
+        if not (tipTitle and a and b and ra.box and ra.box.title == L.BOX_OWN) then
             print("STEP ERROR: gold: the Tooltip box and its checkboxes are shown")
         else
             local al, _, _, at = Rect(a)
@@ -3867,7 +3867,7 @@ do
     end
     local guildNote = ns.SearchOptions(L.GUILD_TIP_NOTE)[1]
     local where = guildNote and ns.OptionPlaceName(guildNote) or ""
-    local want = table.concat({ L.TAB_BLOCK, ns:GetBlockName("guild"), L.BLOCK_TAB_CONTENT, L.SECTION_TOOLTIP }, " › ")
+    local want = table.concat({ L.TAB_BLOCK, ns:GetBlockName("guild"), L.BLOCK_TAB_CONTENT, L.BOX_OWN }, " › ")
     if where ~= want then print("STEP ERROR: search place \"" .. where .. "\" instead of \"" .. want .. "\"") end
     for _, fn in ipairs(__timers) do pcall(fn) end
     -- Accessibility tab: its settings are found, fewer animations runs

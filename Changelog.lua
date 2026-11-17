@@ -70,6 +70,17 @@ ns.CHANGELOG = {
                     "Le bandeau de placement a les cases Aimanter les blocs entre eux et Fusionner les blocs posés ensemble.",
                 },
             },
+            {
+                kind = "improved",
+                en = {
+                    "Block settings: the Content tab starts with a box named Only for this block (the block's own settings and what"
+                        .. " its tooltip lists), then the standard settings every block has.",
+                },
+                fr = {
+                    "Réglages d'un bloc : l'onglet Contenu commence par un cadre Propre à ce bloc (ses réglages à lui et ce que"
+                        .. " liste son infobulle), puis les réglages standards que chaque bloc a.",
+                },
+            },
         },
     },
     {

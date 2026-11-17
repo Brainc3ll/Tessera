@@ -8,7 +8,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### New
 
 - Guild block: a new setting, On hover, shows the members online in a list under the mouse in place of the tooltip (Tooltip brings back the old one). A click on a name whispers, a right click invites and Shift + click opens a menu.
-- The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds. It follows the tooltip settings (sort, leaders, members shown, message, count, rank, note, size). A click on the block still opens the game's guild window.
+- The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds. It follows the tooltip settings (sort, leaders, message, count, rank, note, size). A click on the block still opens the game's guild window.
 - Block settings: a "Hide when empty" switch sits next to the block's "Enabled" switch (the "On screen" switch, renamed), for blocks that can have nothing to show.
 - What's new, in the About tab: one short line for each new thing, version by version, with a Show me button that opens the setting and a button to come back. After an update, the window that announces it lists the new version's lines.
 - Guild, friends, group and whispers lists: the Shift + click menu also copies the name into the chat, adds the player as a friend, shows the player's info (/who) and ignores the player. In the whispers list it also pins and deletes.

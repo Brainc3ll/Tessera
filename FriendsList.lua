@@ -167,6 +167,9 @@ local function Draw()
     if not list then return end
     local total = #shownList
     local maxOffset = math.max(0, total - visible)
+    -- fewer names than rows: the list gets shorter (3 rows at least, for the search and its message)
+    local sz = list.sizes
+    if sz then list:SetHeight(sz.top + math.max(3, math.min(visible, total)) * sz.row + 8 + sz.hint) end
     offset = math.min(math.max(0, offset), maxOffset)
     for i, row in ipairs(list.rows) do FillRow(row, i <= visible and shownList[offset + i] or nil) end
     list.title:SetText(("%s  |cffcccccc%s|r"):format(ns:GetBlockName("friends"),
@@ -260,6 +263,7 @@ local function Layout(rows, scale)
     list.hint:SetText(hintText)
     local hintH = hintText ~= "" and ((list.hint:GetStringHeight() or 0) + 8) or 0
     list:SetSize(width, top + rows * m.row + 8 + hintH)
+    list.sizes = { top = top, row = m.row, hint = hintH } -- Draw() shortens the list to its rows
     list.hint:ClearAllPoints()
     list.hint:SetPoint("BOTTOMLEFT", 10, 6)
     list.box:ClearAllPoints()

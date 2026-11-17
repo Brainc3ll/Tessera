@@ -422,7 +422,9 @@ ns:RegisterModule("guild", {
                   values = { { key = "0", label = "GUILD_LEADERS_0" }, { key = "1", label = "GUILD_LEADERS_1" },
                              { key = "2", label = "GUILD_LEADERS_2" }, { key = "3", label = "GUILD_LEADERS_3" },
                              { key = "4", label = "GUILD_LEADERS_4" } } },
+                -- the list scrolls through every member: "Members shown" is for the tooltip only
                 { kind = "dropdown", field = "guildMax", section = "tooltip", tab = "text", label = "GUILD_MAX", tip = "TIP_GUILD_MAX",
+                  shown = function(cfg) return cfg.guildShow == "tooltip" end,
                   values = { { key = "5", label = "5" }, { key = "10", label = "10" }, { key = "20", label = "20" },
                              { key = "30", label = "30" }, { key = "50", label = "50" }, { key = "100", label = "100" },
                              { key = "200", label = "200" }, { key = "500", label = "500" } } },

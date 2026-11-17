@@ -79,7 +79,7 @@ ns.CHANGELOG = {
                         .. " tooltip (Tooltip brings back the old one)."
                         .. " A click on a name whispers, a right click invites and Shift + click opens a menu.",
                     "The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds."
-                        .. " It follows the tooltip settings (sort, leaders, members shown, message, count, rank, note, size)."
+                        .. " It follows the tooltip settings (sort, leaders, message, count, rank, note, size)."
                         .. " A click on the block still opens the game's guild window.",
                     "Block settings: a \"Hide when empty\" switch sits next to the block's \"Enabled\" switch (the \"On screen\" switch, renamed),"
                         .. " for blocks that can have nothing to show.",
@@ -117,7 +117,7 @@ ns.CHANGELOG = {
                         .. " à la place de l'infobulle (Infobulle remet l'ancienne)."
                         .. " Un clic sur un nom chuchote, un clic droit invite et Maj + clic ouvre un menu.",
                     "La liste a un champ de recherche (nom, zone, rang ou note), la molette et une barre de défilement pour les"
-                        .. " grosses guildes. Elle suit les réglages de l'infobulle (tri, chefs, membres affichés, message, compte,"
+                        .. " grosses guildes. Elle suit les réglages de l'infobulle (tri, chefs, message, compte,"
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
                     "Réglages du bloc : un interrupteur « Masquer si vide » se place à côté de l'interrupteur « Activé » du bloc"
                         .. " (l'ancien « Sur l'écran », renommé), pour les blocs qui peuvent n'avoir rien à montrer.",

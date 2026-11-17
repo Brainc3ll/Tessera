@@ -3228,10 +3228,13 @@ for _, step in ipairs({
         list:Hide()
         -- the tooltip's settings also drive the list: members shown, rank, count
         mod.hoverList(block, { guildShow = "list", guildMax = "5", guildTipRank = false, guildTipCount = false })
-        assert(list.rows[5]:IsShown() and not list.rows[6]:IsShown(), "Members shown caps the list")
+        assert(list.rows[14]:IsShown(), "the list ignores Members shown: it scrolls through everyone")
+        local opt
+        for _, o in ipairs(ns.modules.guild.options) do if o.field == "guildMax" then opt = o end end
+        assert(opt.shown({ guildShow = "list" }) == false and opt.shown({ guildShow = "tooltip" }), "Members shown only in tooltip mode")
         list.box:SetText("Member2")
         list.box:GetScript("OnTextChanged")(list.box)
-        assert(list.rows[1]:IsShown() and list.rows[1].member.name:find("Member2"), "a search reaches members beyond Members shown")
+        assert(list.rows[1]:IsShown() and list.rows[1].member.name:find("Member2"), "a search finds a member")
         list.box:SetText("")
         list.box:GetScript("OnTextChanged")(list.box)
         assert(not list.rows[1].rank:IsShown(), "no rank column when the tooltip hides ranks")

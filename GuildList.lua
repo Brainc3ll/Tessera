@@ -15,7 +15,6 @@ local Tools = ns.BlockTools
 local ROWS_DEFAULT, ROWS_MIN, ROWS_MAX = 14, 5, 100 -- rows on screen: the block's "List rows" setting
 local visible = ROWS_DEFAULT
 local cfgNow -- the Guild block's settings, read when the list opens
-local memberCap -- "Members shown": the most the list shows without a search
 
 -- the tooltip's own checkboxes (count, message, rank, note) also drive the list
 local function On(field)
@@ -82,9 +81,6 @@ local function Filter()
             local hay = ((m.name or "") .. "\n" .. (m.zone or "") .. "\n" .. (m.rank or "") .. "\n" .. (m.note or "")):lower()
             if hay:find(needle, 1, true) then shownList[#shownList + 1] = m end
         end
-    end
-    if needle == "" and memberCap then
-        for i = #shownList, memberCap + 1, -1 do shownList[i] = nil end
     end
 end
 
@@ -168,6 +164,9 @@ local function Draw()
     if not list then return end
     local total = #shownList
     local maxOffset = math.max(0, total - visible)
+    -- fewer names than rows: the list gets shorter (3 rows at least, for the search and its message)
+    local sz = list.sizes
+    if sz then list:SetHeight(sz.top + math.max(3, math.min(visible, total)) * sz.row + 8 + sz.hint) end
     offset = math.min(math.max(0, offset), maxOffset)
     for i, row in ipairs(list.rows) do FillRow(row, i <= visible and shownList[offset + i] or nil) end
     local guild = GetGuildInfo("player")
@@ -191,8 +190,6 @@ end
 local function Reload()
     local cfg = cfgNow or (ns.db and ns.db.blocks and ns.db.blocks.guild)
     members = ns.GuildMembers(cfg)
-    -- "Members shown" of the tooltip is also the most the list holds; a search looks at everyone online
-    memberCap = tonumber(cfg and cfg.guildMax)
     Filter()
     Draw()
 end
@@ -292,6 +289,7 @@ local function Layout(rows, scale)
     list.hint:SetText(hintText)
     local hintH = hintText ~= "" and ((list.hint:GetStringHeight() or 0) + 8) or 0
     list:SetSize(width, top + rows * m.row + 8 + hintH)
+    list.sizes = { top = top, row = m.row, hint = hintH } -- Draw() shortens the list to its rows
     list.hint:ClearAllPoints()
     list.hint:SetPoint("BOTTOMLEFT", 10, 6)
     list.motd:SetShown(hasMotd)

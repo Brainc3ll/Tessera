@@ -105,7 +105,8 @@ ns.CHANGELOG = {
                     "Whispers block: it now keeps the last 5, 10 or 20 whispers, even after you answered and after a reload, with the time"
                         .. " and the start of each message. A new setting, On hover, shows them as a clickable list or as a tooltip."
                         .. " In the list, a click replies and a right click pins a whisper so you do not forget it.",
-                    "Three settings shape the list: List rows (5 to 100), List size (80 to 150 percent) and List look (tooltip or window).",
+                    "Four settings shape the list: Class icons, List rows (5 to 100), List size (80 to 150 percent)"
+                        .. " and List look (tooltip or window).",
                     "New setting in General, Movement: Merge blocks dropped together."
                         .. " Unchecked, a block dropped against another one does not merge with it.",
                     "Freeze this block / group is now also a setting of the block (Behaviour tab), not only in the quick menu.",
@@ -144,7 +145,7 @@ ns.CHANGELOG = {
                     "Bloc Chuchotements : il garde maintenant les 5, 10 ou 20 derniers chuchotements, même après ta réponse et un"
                         .. " rechargement, avec l'heure et le début de chaque message. Un nouveau réglage, Au survol, les montre en liste"
                         .. " cliquable ou en infobulle. Dans la liste, un clic répond et un clic droit épingle un chuchotement pour ne pas l'oublier.",
-                    "Trois réglages donnent sa forme à la liste : Lignes de la liste (de 5 à 100), Taille de la liste (de 80 à 150 %)"
+                    "Quatre réglages donnent sa forme à la liste : Icônes de classe, Lignes de la liste (de 5 à 100), Taille de la liste (de 80 à 150 %)"
                         .. " et Aspect de la liste (infobulle ou fenêtre).",
                     "Nouveau réglage dans Général, Déplacement : Fusionner les blocs posés ensemble."
                         .. " Décoché, un bloc posé contre un autre ne fusionne pas avec lui.",

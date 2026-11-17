@@ -276,7 +276,7 @@ ns:RegisterModule("friends", {
         return text
     end,
     defaults = { countFormat = "online", statusColor = true, friendsSort = "game", friendsNotes = false, friendsWoWOnly = false,
-                 friendsTipStatus = true, friendsTipWoW = true, friendsTipBNet = true, friendsShow = "list", friendsListRows = 14,
+                 friendsTipStatus = true, friendsTipWoW = true, friendsTipBNet = true, friendsShow = "list", friendsListRows = 14, friendsListIcons = true,
                  friendsListScale = 100, friendsListLook = "tooltip" },
     options = { COUNT_OPTION,
                 { kind = "dropdown", field = "friendsShow", tab = "text", label = "GUILD_SHOW", tip = "TIP_FRIENDS_SHOW",
@@ -285,6 +285,8 @@ ns:RegisterModule("friends", {
                   min = 5, max = 100, step = 1, default = 14, shown = function(cfg) return cfg.friendsShow ~= "tooltip" end },
                 { kind = "slider", field = "friendsListScale", tab = "text", label = "GUILD_LIST_SCALE", tip = "TIP_GUILD_LIST_SCALE",
                   min = 80, max = 150, step = 5, default = 100, shown = function(cfg) return cfg.friendsShow ~= "tooltip" end },
+                { kind = "check", field = "friendsListIcons", tab = "text", label = "LIST_CLASS_ICONS", tip = "TIP_LIST_CLASS_ICONS",
+                  shown = function(cfg) return cfg.friendsShow ~= "tooltip" end },
                 { kind = "dropdown", field = "friendsListLook", tab = "text", label = "GUILD_LIST_LOOK", tip = "TIP_GUILD_LIST_LOOK",
                   shown = function(cfg) return cfg.friendsShow ~= "tooltip" end,
                   values = { { key = "tooltip", label = "GUILD_LOOK_TOOLTIP" }, { key = "window", label = "GUILD_LOOK_WINDOW" } } },
@@ -402,7 +404,7 @@ ns:RegisterModule("guild", {
         return ("%d / %d"):format(online or 0, total or 0)
     end,
     defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
-                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildShow = "list", guildListRows = 14,
+                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildShow = "list", guildListRows = 14, guildListIcons = true,
                  guildListScale = 100, guildListLook = "tooltip" },
     options = { COUNT_OPTION,
                 { kind = "dropdown", field = "guildShow", tab = "text", label = "GUILD_SHOW", tip = "TIP_GUILD_SHOW",
@@ -411,6 +413,8 @@ ns:RegisterModule("guild", {
                   min = 5, max = 100, step = 1, default = 14, shown = function(cfg) return cfg.guildShow == "list" end },
                 { kind = "slider", field = "guildListScale", tab = "text", label = "GUILD_LIST_SCALE", tip = "TIP_GUILD_LIST_SCALE",
                   min = 80, max = 150, step = 5, default = 100, shown = function(cfg) return cfg.guildShow == "list" end },
+                { kind = "check", field = "guildListIcons", tab = "text", label = "LIST_CLASS_ICONS", tip = "TIP_LIST_CLASS_ICONS",
+                  shown = function(cfg) return cfg.guildShow == "list" end },
                 { kind = "dropdown", field = "guildListLook", tab = "text", label = "GUILD_LIST_LOOK", tip = "TIP_GUILD_LIST_LOOK",
                   shown = function(cfg) return cfg.guildShow == "list" end,
                   values = { { key = "tooltip", label = "GUILD_LOOK_TOOLTIP" }, { key = "window", label = "GUILD_LOOK_WINDOW" } } },
@@ -694,7 +698,7 @@ ns:RegisterModule("group", {
         local units, raid = GroupUnits()
         return ("%d / %d"):format(#units, raid and 40 or 5)
     end,
-    defaults = { groupTipRole = true, groupTipState = true, groupTipLevel = true, groupShow = "list", groupListRows = 14,
+    defaults = { groupTipRole = true, groupTipState = true, groupTipLevel = true, groupShow = "list", groupListRows = 14, groupListIcons = true,
                  groupListScale = 100, groupListLook = "tooltip" },
     options = {
         { kind = "dropdown", field = "groupShow", tab = "text", label = "GUILD_SHOW", tip = "TIP_GROUP_SHOW",
@@ -703,7 +707,9 @@ ns:RegisterModule("group", {
           min = 5, max = 100, step = 1, default = 14, shown = function(cfg) return cfg.groupShow ~= "tooltip" end },
         { kind = "slider", field = "groupListScale", tab = "text", label = "GUILD_LIST_SCALE", tip = "TIP_GUILD_LIST_SCALE",
           min = 80, max = 150, step = 5, default = 100, shown = function(cfg) return cfg.groupShow ~= "tooltip" end },
-        { kind = "dropdown", field = "groupListLook", tab = "text", label = "GUILD_LIST_LOOK", tip = "TIP_GUILD_LIST_LOOK",
+        { kind = "check", field = "groupListIcons", tab = "text", label = "LIST_CLASS_ICONS", tip = "TIP_LIST_CLASS_ICONS",
+                  shown = function(cfg) return cfg.groupShow ~= "tooltip" end },
+                { kind = "dropdown", field = "groupListLook", tab = "text", label = "GUILD_LIST_LOOK", tip = "TIP_GUILD_LIST_LOOK",
           shown = function(cfg) return cfg.groupShow ~= "tooltip" end,
           values = { { key = "tooltip", label = "GUILD_LOOK_TOOLTIP" }, { key = "window", label = "GUILD_LOOK_WINDOW" } } },
         { kind = "check", field = "groupTipRole", section = "tooltip", tab = "text", label = "GROUP_TIP_ROLE", tip = "TIP_GROUP_TIP_ROLE" },

@@ -33,6 +33,11 @@ local AWAY = 0.3 -- seconds the mouse may stay off the block and the list before
 local away = 0
 
 -- Sizes follow the font height, so a bigger text makes bigger rows
+-- the block's "Class icons" setting (on unless unchecked)
+local function ShowIcons()
+    return not cfgNow or cfgNow.guildListIcons ~= false
+end
+
 local function Metrics()
     local font = _G["GameTooltipText"] or _G["GameFontHighlight"]
     local _, height
@@ -269,7 +274,8 @@ local function Layout(rows, scale)
     local motd = On("guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and C_GuildInfo.GetMOTD()
     if ns.previewMode and On("guildTipMotd") then motd = ns.PREVIEW_GUILD.motd end
     local hasMotd = type(motd) == "string" and motd ~= ""
-    local width = 16 + m.icon + m.level + m.name + (showRank and m.rank or 0) + (showNote and m.note or 0) + m.zone + 16 + 10
+    local iconW = ShowIcons() and m.icon or 0
+    local width = 16 + iconW + m.level + m.name + (showRank and m.rank or 0) + (showNote and m.note or 0) + m.zone + 16 + 10
     -- the message of the day wraps onto as many lines as it needs (4 at most)
     local motdHeight = 0
     if hasMotd then
@@ -306,6 +312,8 @@ local function Layout(rows, scale)
         row:SetSize(width - 32, m.row)
         row:ClearAllPoints()
         row:SetPoint("TOPLEFT", 8, -(top + (i - 1) * m.row))
+        row.icon:SetSize(math.max(1, iconW), m.icon)
+        row.icon:SetShown(iconW > 0)
         row.rank:SetShown(showRank)
         row.rank:SetWidth(showRank and m.rank or 1)
         row.note:SetShown(showNote)

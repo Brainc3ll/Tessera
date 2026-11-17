@@ -3229,6 +3229,12 @@ for _, step in ipairs({
         -- the tooltip's settings also drive the list: members shown, rank, count
         mod.hoverList(block, { guildShow = "list", guildMax = "5", guildTipRank = false, guildTipCount = false })
         assert(list.rows[14]:IsShown(), "the list ignores Members shown: it scrolls through everyone")
+        assert(list.rows[1].icon:IsShown(), "class icons on by default")
+        list:Hide()
+        mod.hoverList(block, { guildShow = "list", guildListIcons = false })
+        assert(not list.rows[1].icon:IsShown(), "Class icons unchecked: no icon")
+        list:Hide()
+        mod.hoverList(block, { guildShow = "list", guildMax = "5", guildTipRank = false, guildTipCount = false })
         local opt
         for _, o in ipairs(ns.modules.guild.options) do if o.field == "guildMax" then opt = o end end
         assert(opt.shown({ guildShow = "list" }) == false and opt.shown({ guildShow = "tooltip" }), "Members shown only in tooltip mode")

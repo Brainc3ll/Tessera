@@ -30,6 +30,11 @@ local AWAY = 0.3 -- seconds the mouse may stay off the block and the list before
 local away = 0
 
 -- Sizes follow the font height, so a bigger text makes bigger rows
+-- the block's "Class icons" setting (on unless unchecked)
+local function ShowIcons()
+    return not cfgNow or cfgNow.groupListIcons ~= false
+end
+
 local function Metrics()
     local font = _G["GameTooltipText"] or _G["GameFontHighlight"]
     local _, height
@@ -226,7 +231,8 @@ end
 -- Sizes the list for `rows` visible rows at `scale` percent; makes the rows it lacks
 local function Layout(rows, scale)
     local m = Metrics()
-    local width = 16 + m.icon + m.level + m.name + m.zone + 16 + 10
+    local iconW = ShowIcons() and m.icon or 0
+    local width = 16 + iconW + m.level + m.name + m.zone + 16 + 10
     local head = 8 + m.row + 4 -- title
     local top = head + m.row + 4 -- and the search field
     rows = math.min(ROWS_MAX, math.max(ROWS_MIN, tonumber(rows) or ROWS_DEFAULT))
@@ -255,6 +261,8 @@ local function Layout(rows, scale)
         row:SetSize(width - 32, m.row)
         row:ClearAllPoints()
         row:SetPoint("TOPLEFT", 8, -(top + (i - 1) * m.row))
+        row.icon:SetSize(math.max(1, iconW), m.icon)
+        row.icon:SetShown(iconW > 0)
     end
     for i = rows + 1, #list.rows do list.rows[i]:Hide() end
 end

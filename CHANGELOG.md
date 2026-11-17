@@ -18,7 +18,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Group block: the same On hover setting. The list of your party or raid members shows under the mouse in place of the tooltip, with their role and state and a search field (a raid is sorted by group). A click on a name whispers and Shift + click opens a menu.
 - Friends block: the same On hover setting as the Guild block. The friends list (your WoW and Battle.net friends online) shows under the mouse in place of the tooltip, with a search field. A click on a name whispers, a right click invites and Shift + click opens a menu. It follows the block's sort, notes and parts settings.
 - Whispers block: it now keeps the last 5, 10 or 20 whispers, even after you answered and after a reload, with the time and the start of each message. A new setting, On hover, shows them as a clickable list or as a tooltip. In the list, a click replies and a right click pins a whisper so you do not forget it.
-- Three settings shape the list: List rows (5 to 100), List size (80 to 150 percent) and List look (tooltip or window).
+- Four settings shape the list: Class icons, List rows (5 to 100), List size (80 to 150 percent) and List look (tooltip or window).
 - New setting in General, Movement: Merge blocks dropped together. Unchecked, a block dropped against another one does not merge with it.
 - Freeze this block / group is now also a setting of the block (Behaviour tab), not only in the quick menu.
 - New setting in General, Movement: Snap to the grid. Off, the grid stays shown and blocks do not snap to it.

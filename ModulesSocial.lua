@@ -122,7 +122,7 @@ local GUILD_EMBLEMS = {
 local emblemProbe
 ns.GUILD_EMBLEM_SIZE = 64 -- pixels, in the tooltip and at the top of the list
 function ns.GuildEmblem()
-    if not IsInGuild() then return nil end
+    if not IsInGuild() or ns:IsStreamer("guild") then return nil end -- streamer mode: it would show the guild
     local emblem = GUILD_EMBLEMS[GetGuildInfo("player") or ""]
     if not emblem then return nil end
     local loaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or _G["IsAddOnLoaded"]
@@ -467,16 +467,16 @@ ns:RegisterModule("guild", {
         -- header: the guild's name and, on the right, members online out of the total
         if guildName then
             if On(cfg, "guildTipCount") then
-                tt:AddDoubleLine(Masked(guildName), ("%d/%d"):format(onlineCount or 0, total), 0.3, 1, 0.3, 0.8, 0.8, 0.8)
+                tt:AddDoubleLine(Masked(guildName, "guild"), ("%d/%d"):format(onlineCount or 0, total), 0.3, 1, 0.3, 0.8, 0.8, 0.8)
             else
-                tt:AddLine(Masked(guildName), 0.3, 1, 0.3)
+                tt:AddLine(Masked(guildName, "guild"), 0.3, 1, 0.3)
             end
         end
         -- message of the day
         local motd = On(cfg, "guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and Try(C_GuildInfo.GetMOTD)
         if type(motd) == "string" and motd ~= "" then
             ns.TooltipGap(tt)
-            tt:AddLine(Masked(motd), 0.9, 0.9, 0.55, true)
+            tt:AddLine(Masked(motd, "guild"), 0.9, 0.9, 0.55, true)
         end
         -- online members first, then the order the player chose
         local members, nLeaders = ns.GuildMembers(cfg)

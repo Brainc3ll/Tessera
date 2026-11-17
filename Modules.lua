@@ -77,8 +77,9 @@ local L = ns.L
 local GOOD, WARN, BAD = 1, 2, 3
 
 -- Streamer mode: a name, realm or amount that must not show on a stream
-local function Masked(text)
-    if ns:IsStreamer() then return ns.HIDDEN end
+-- kind: what the text is (see ns:IsStreamer); other players' names by default
+local function Masked(text, kind)
+    if ns:IsStreamer(kind or "players") then return ns.HIDDEN end
     return text
 end
 

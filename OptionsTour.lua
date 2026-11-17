@@ -179,10 +179,11 @@ local function ShowTutorialStep(index)
         tutorial.action:SetWidth(math.min(348, math.max(150, w)))
     end
     tutorial.layouts:SetShown(step.layouts == true)
+    tutorial.examples:SetShown(step.layouts == true)
     local extra = 0
     if step.layouts then
         UpdateLayoutRow()
-        extra = tutorial.layouts:GetHeight() + 8
+        extra = tutorial.layouts:GetHeight() + 8 + tutorial.examples:GetStringHeight() + 10
     end
     tutorial:SetHeight(tutorial.text:GetStringHeight() + 96 + (step.action and 30 or 0) + extra)
 end
@@ -226,9 +227,15 @@ function ns:StartTutorial()
         tutorial.action = Button("", function() TUTORIAL_STEPS[tutorial.index].run() end)
         tutorial.action:SetPoint("BOTTOMLEFT", 16, 44) -- above the Back / Next row
 
+        -- the layouts are examples: said in big letters, so nobody thinks this is all Tessera has
+        tutorial.examples = tutorial:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        tutorial.examples:SetPoint("TOPLEFT", tutorial.text, "BOTTOMLEFT", 0, -10)
+        tutorial.examples:SetWidth(348)
+        tutorial.examples:SetJustifyH("LEFT")
+        tutorial.examples:SetText(L.TUTORIAL_EXAMPLES)
         -- ready-made layouts: < name > and the layout's description, under the text
         local row = CreateFrame("Frame", nil, tutorial)
-        row:SetPoint("TOPLEFT", tutorial.text, "BOTTOMLEFT", 0, -10)
+        row:SetPoint("TOPLEFT", tutorial.examples, "BOTTOMLEFT", 0, -10)
         row:SetWidth(348)
         local prev = Button("<", function() TryTourLayout(-1) end)
         prev:SetParent(row)
@@ -317,12 +324,24 @@ function ns:ShowWhatsNewTarget(spec)
 end
 
 -- The update popup: the version and its "What's new" lines (all of them, they are short)
-local function WhatsNewPopupText(version)
+-- The lines of every version since the one the player had (`since`), newest first, 8 at most; a
+-- version with fixes only has none: then the lines of the latest version that has some.
+local POPUP_LINES = 8
+local function WhatsNewPopupText(version, since)
     local lang = GetLocale() == "frFR" and "fr" or "en"
     local lines = { L.WHATS_NEW_TEXT:format(version) }
+    local function Add(entry)
+        for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do
+            if #lines <= POPUP_LINES then lines[#lines + 1] = "- " .. line.text end
+        end
+    end
     for _, entry in ipairs(ns.CHANGELOG or {}) do
-        if entry.version == version then
-            for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do lines[#lines + 1] = "- " .. line.text end
+        if since and entry.version == since then break end
+        Add(entry)
+    end
+    if #lines == 1 then
+        for _, entry in ipairs(ns.CHANGELOG or {}) do
+            if entry.highlights then Add(entry) break end
         end
     end
     return table.concat(lines, "\n")
@@ -350,8 +369,9 @@ function ns:ShowWelcomeIfNeeded()
     local version = GetMetadata and GetMetadata(ADDON, "Version") or nil
     -- (welcomed but no version saved: installed before this popup existed, i.e. updated)
     if self.sv.welcomed and version and self.sv.lastVersion ~= version then
+        local since = self.sv.lastVersion
         self.sv.lastVersion = version
-        StaticPopup_Show("TESSERA_WHATS_NEW", WhatsNewPopupText(version))
+        StaticPopup_Show("TESSERA_WHATS_NEW", WhatsNewPopupText(version, since))
         return
     end
     self.sv.newsSeen = nil -- the old "What's new in 1.3" window is gone

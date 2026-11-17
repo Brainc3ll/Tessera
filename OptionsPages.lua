@@ -76,6 +76,20 @@ local function BuildGeneralPage(page)
     streamer.Add(CreateCheck(page, L.STREAMER_MODE,
         function() return ns:IsStreamer() end,
         function(v) ns:SetStreamerMode(v) end, nil, L.TIP_STREAMER_MODE))
+    -- what streamer mode hides: four checkboxes, all on by default (false = shown)
+    local hideTexts = {
+        players = { L.STREAMER_HIDE_PLAYERS, L.TIP_STREAMER_HIDE_PLAYERS }, alts = { L.STREAMER_HIDE_ALTS, L.TIP_STREAMER_HIDE_ALTS },
+        guild = { L.STREAMER_HIDE_GUILD, L.TIP_STREAMER_HIDE_GUILD }, gold = { L.STREAMER_HIDE_GOLD, L.TIP_STREAMER_HIDE_GOLD },
+    }
+    for _, kind in ipairs(ns.STREAMER_KINDS) do
+        streamer.Add(CreateCheck(page, hideTexts[kind][1],
+            function() return not (type(ns.sv.streamerHide) == "table" and ns.sv.streamerHide[kind] == false) end,
+            function(v)
+                ns.sv.streamerHide = type(ns.sv.streamerHide) == "table" and ns.sv.streamerHide or {}
+                ns.sv.streamerHide[kind] = (not v) and false or nil
+                if ns.built then ns:UpdateAll() end
+            end, nil, hideTexts[kind][2]))
+    end
     streamer.Add(CreateNote(page, L.STREAMER_NOTE))
 
     local combat = F.Box(L.SECTION_COMBAT, { reset = true })

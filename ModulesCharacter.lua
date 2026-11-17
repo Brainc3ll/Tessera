@@ -53,12 +53,12 @@ ns:RegisterModule("gold", {
     icon = COIN_ICONS.gold,
     events = { "PLAYER_MONEY" },
     update = function(cfg)
-        if ns:IsStreamer() then return ns.HIDDEN end
+        if ns:IsStreamer("gold") then return ns.HIDDEN end
         return FormatGold(ShownMoney(cfg), cfg)
     end,
     -- Shift + click "copy to chat": plain text, without coin textures
     chatText = function(cfg)
-        if ns:IsStreamer() then return ns.HIDDEN end
+        if ns:IsStreamer("gold") then return ns.HIDDEN end
         local money = ShownMoney(cfg)
         return L.CHAT_MONEY:format(math.floor(money / 10000), math.floor(money % 10000 / 100), money % 100)
     end,
@@ -85,7 +85,7 @@ ns:RegisterModule("gold", {
         { kind = "check", field = "goldTipChars", section = "tooltip", tab = "text", label = "GOLD_TIP_CHARS", tip = "TIP_GOLD_TIP_CHARS" },
     },
     tooltip = function(tt, cfg)
-        if ns:IsStreamer() then
+        if ns:IsStreamer("gold") then
             tt:AddLine(L.STREAMER_TOOLTIP, 0.8, 0.8, 0.8, true)
             return
         end
@@ -132,7 +132,7 @@ ns:RegisterModule("gold", {
             tt:AddLine(L.TT_CHARACTERS, 1, 0.82, 0)
             for _, c in ipairs(chars) do
                 local r, g, b = ClassColor(c.class)
-                tt:AddDoubleLine(ns.ShortCharName(c.name), ns.FormatMoney(c.money), r, g, b, 1, 1, 1)
+                tt:AddDoubleLine(Tools.Masked(ns.ShortCharName(c.name), "alts"), ns.FormatMoney(c.money), r, g, b, 1, 1, 1)
             end
             tt:AddDoubleLine(L.TT_TOTAL, ns.FormatMoney(total), 1, 0.82, 0, 1, 1, 1)
             tt:AddLine(L.GOLD_FORGET_HINT, 0.6, 0.6, 0.6)
@@ -203,7 +203,7 @@ ns:RegisterModule("bags", {
             text = L.BAGS_FORMAT:format(free, total)
         end
         -- junk value next to the places (streamer mode hides amounts); nothing while no price is known
-        if cfg and cfg.bagsJunk and not ns:IsStreamer() then
+        if cfg and cfg.bagsJunk and not ns:IsStreamer("gold") then
             local junk = JunkValue()
             if junk > 0 then text = text .. " |cff9d9d9d" .. ns.FormatMoney(junk) .. "|r" end
         end
@@ -334,7 +334,7 @@ ns:RegisterModule("durability", {
         if not pct then return nil end
         local text = ("%d%%"):format(math.floor(pct + 0.5))
         -- repair cost next to the percentage (streamer mode hides amounts; nothing when this client gives none)
-        if cfg and cfg.durabilityCost and not ns:IsStreamer() then
+        if cfg and cfg.durabilityCost and not ns:IsStreamer("gold") then
             local cost = RepairCost()
             if cost and cost > 0 then text = text .. " " .. ns.FormatMoney(cost) end
         end

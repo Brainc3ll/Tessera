@@ -3060,6 +3060,31 @@ for _, step in ipairs({
         ns.AddPlayerMenuEntries(root, "Me", "Me", true)
         assert(#entries == 1, "yourself: copy only")
         C_FriendList, ChatFrameUtil = oldFL2, oldUtil2
+        -- (1.6.1) a list keeps the tooltip's neutral colors, not the tint of the last unit shown
+        local oldTip = GameTooltip
+        local function Piece(r, g, b) local p = { c = { r, g, b, 1 } }
+            function p.GetVertexColor(self) return unpack(self.c) end
+            function p.SetVertexColor(self, ...) self.c = { ... } end
+            return p end
+        local nine = {}
+        for _, n in ipairs({ "TopLeftCorner", "TopRightCorner", "BottomLeftCorner", "BottomRightCorner", "TopEdge",
+                             "BottomEdge", "LeftEdge", "RightEdge", "Center" }) do nine[n] = Piece(1, 0.96, 0.41) end
+        local unit
+        GameTooltip = setmetatable({ NineSlice = nine, GetUnit = function() return unit end }, { __index = oldTip })
+        ns.CaptureTooltipLook()
+        unit = "npc"
+        for _, p in pairs(nine) do p.c = { 0, 1, 0, 1 } end -- the game tints it green for a friendly unit
+        ns.CaptureTooltipLook()
+        assert(nine.TopEdge.c[2] == 1, "the tooltip itself is green now")
+        local list = { tesseraTipNine = true }
+        for n in pairs(nine) do list[n] = Piece(0, 0, 0) end
+        local oldNSU = NineSliceUtil
+        NineSliceUtil = { ApplyLayoutByName = function() return true end }
+        ns.ApplyTooltipLook(list)
+        NineSliceUtil = oldNSU
+        GameTooltip = oldTip
+        local r, g = unpack(list.TopEdge.c)
+        assert(r == 1 and g == 0.96, "the list keeps the neutral gold border, not the green tint: " .. tostring(r) .. "," .. tostring(g))
         -- (1.6) the blue click hints of the tooltip go under the lists too (unless the player turned them off)
         local hints = ns:BlockHints("friends", ns.db.blocks.friends)
         assert(hints[1] == ns.L.HINT_FRIENDS and hints[#hints] == ns.L.HINT_QUICK_MENU, "block hints: its click, then the quick menu")
@@ -3236,6 +3261,25 @@ for _, step in ipairs({
         assert(ns.GuildEmblem() and ns.GuildEmblem():find("GuildSelfForeverIcon", 1, true), "emblem with the guild and its addon")
         C_AddOns = setmetatable({ IsAddOnLoaded = function() return false end }, { __index = oldAddOns })
         assert(not ns.GuildEmblem(), "no emblem without the guild's addon")
+        C_AddOns = setmetatable({ IsAddOnLoaded = function(name) return name == "GuildSelfForever" end }, { __index = oldAddOns })
+        ns.sv.streamerMode = true
+        assert(not ns.GuildEmblem(), "streamer mode: no emblem (it would show the guild)")
+        -- (1.6.1) the four kinds: the guild name unchecked shows the guild and its emblem, players stay hidden
+        ns.sv.streamerHide = { guild = false }
+        assert(ns.GuildEmblem(), "guild name not hidden: the emblem shows")
+        assert(ns.BlockTools.Masked("The Mosaic", "guild") == "The Mosaic", "guild name shown")
+        assert(ns.BlockTools.Masked("Ana") == ns.HIDDEN, "other players still hidden")
+        assert(ns:IsStreamer("gold") and ns:IsStreamer("alts"), "gold and characters still hidden")
+        ns.sv.streamerHide = nil
+        ns.sv.streamerMode = nil
+        assert(ns.BlockTools.Masked("Ana") == "Ana", "streamer mode off: nothing hidden")
+        -- (1.6.1) a first install starts with Essentials: one bar, every block always shown
+        assert(ns.PRESETS[1] == "essentials", "Essentials is the first layout")
+        ns:ResetProfile("essentials")
+        local w, gl = ns.db.blocks.whispers, ns.db.blocks.guild
+        assert(w.enabled and w.hideEmpty == false and gl.enabled and gl.hideEmpty == false, "Essentials: whispers and guild always shown")
+        assert(not ns.db.blocks.mail.enabled, "Essentials: no second row")
+        ns:ResetProfile("top")
         GetGuildInfo = function() return "The Mosaic" end
         assert(not ns.GuildEmblem(), "no emblem for another guild")
         GetGuildInfo, C_AddOns = oldGI2, oldAddOns
@@ -4128,10 +4172,14 @@ do
         ns.WhatsNewGoBack()
         if back:IsShown() then print("STEP ERROR: the back button stays after use") end
     end
-    local popup = ns.WhatsNewPopupText(ns.CHANGELOG[1].version)
-    if not popup:find(ns.ChangelogHighlights(ns.CHANGELOG[1], "en")[1].text, 1, true)
-        and not popup:find(ns.ChangelogHighlights(ns.CHANGELOG[1], "fr")[1].text, 1, true) then
-        print("STEP ERROR: the update popup does not list the version's lines")
+    -- the popup lists the news since the version the player had; a fixes-only version shows the latest news
+    local withNews
+    for _, e in ipairs(ns.CHANGELOG) do if e.highlights then withNews = e break end end
+    local first = ns.ChangelogHighlights(withNews, "en")[1].text
+    local firstFr = ns.ChangelogHighlights(withNews, "fr")[1].text
+    local popup = ns.WhatsNewPopupText(ns.CHANGELOG[1].version, ns.CHANGELOG[1].version)
+    if not (popup:find(first, 1, true) or popup:find(firstFr, 1, true)) then
+        print("STEP ERROR: the update popup lists no news")
     end
     ns:OpenOptionsFor(key)
     -- (1.6) "Hide when empty" beside it: the same setting as the Behaviour tab's check

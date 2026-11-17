@@ -93,8 +93,15 @@ ns.Print = Print
 -- Streamer mode (account-wide): blocks and tooltips hide other players' names, your
 -- other characters, your realm, your guild's name and your gold, for streams and videos
 ns.HIDDEN = "***"
-function ns:IsStreamer()
-    return self.sv ~= nil and self.sv.streamerMode == true
+-- Streamer mode on; with a kind, whether that kind of information is hidden (each has its checkbox,
+-- all on by default): "players" (other players' names, notes, zones), "alts" (your other characters),
+-- "guild" (its name, message of the day and emblem), "gold" (your gold and money amounts)
+ns.STREAMER_KINDS = { "players", "alts", "guild", "gold" }
+function ns:IsStreamer(kind)
+    if not (self.sv ~= nil and self.sv.streamerMode == true) then return false end
+    if kind == nil then return true end
+    local hide = self.sv.streamerHide
+    return not (type(hide) == "table" and hide[kind] == false)
 end
 
 function ns:SetStreamerMode(on)
@@ -1724,6 +1731,31 @@ end
 -- Gives a list the look of the game's tooltip: the same backdrop and colors as GameTooltip when it
 -- has them (other interface addons restyle it), else the game's own nine-slice tooltip layout, else
 -- the classic tooltip texture.
+-- The colors of the game's tooltip pieces, read while it shows something neutral (no unit, no item):
+-- the game tints its border for a unit (green for a friendly one), and a list opened just after must
+-- not take that tint.
+local TIP_PIECES = { "TopLeftCorner", "TopRightCorner", "BottomLeftCorner", "BottomRightCorner", "TopEdge",
+                     "BottomEdge", "LeftEdge", "RightEdge", "Center" }
+local tipColors
+function ns.CaptureTooltipLook()
+    local tip = GameTooltip
+    local src = tip and (tip.NineSlice or tip)
+    if not (src and src.TopLeftCorner) then return end
+    if tip.GetUnit and tip:GetUnit() then return end
+    if tip.GetItem and tip:GetItem() then return end
+    tipColors = {}
+    for _, name in ipairs(TIP_PIECES) do
+        local piece = src[name]
+        if piece and piece.GetVertexColor then tipColors[name] = { piece:GetVertexColor() } end
+    end
+end
+if GameTooltip and GameTooltip.HookScript then
+    GameTooltip:HookScript("OnShow", function(self)
+        -- a moment later: the game and interface addons have set its look by then
+        C_Timer.After(0, function() if self:IsShown() then ns.CaptureTooltipLook() end end)
+    end)
+end
+
 function ns.ApplyTooltipLook(frame)
     local tip = GameTooltip
     if tip and tip.GetBackdrop and frame.SetBackdrop then
@@ -1749,8 +1781,7 @@ function ns.ApplyTooltipLook(frame)
             end
         end
         if frame.tesseraTipNine then
-            for _, name in ipairs({ "TopLeftCorner", "TopRightCorner", "BottomLeftCorner", "BottomRightCorner", "TopEdge",
-                                    "BottomEdge", "LeftEdge", "RightEdge", "Center" }) do
+            for _, name in ipairs(TIP_PIECES) do
                 local from, to = src[name], frame[name]
                 if from and to then
                     local atlas = from.GetAtlas and from:GetAtlas()
@@ -1760,7 +1791,12 @@ function ns.ApplyTooltipLook(frame)
                         to:SetTexture(from:GetTexture())
                         if from.GetTexCoord then to:SetTexCoord(from:GetTexCoord()) end
                     end
-                    if from.GetVertexColor then to:SetVertexColor(from:GetVertexColor()) end
+                    local kept = tipColors and tipColors[name]
+                    if kept then
+                        to:SetVertexColor(unpack(kept))
+                    elseif from.GetVertexColor then
+                        to:SetVertexColor(from:GetVertexColor())
+                    end
                     if name:find("Corner") and from.GetSize then to:SetSize(from:GetSize()) end
                 end
             end
@@ -2905,6 +2941,19 @@ local BASE_ROW = {
     { key = "friends",    width = 52 },
     { key = "time",       width = 60 },
 }
+-- "Essentials" (the layout of a first install, 1.6.1): one bar of blocks that are always shown, so
+-- a new player sees every block placed for them; the others wait in the options
+local ESSENTIAL_ROW = {
+    { key = "talents",    width = 52 },
+    { key = "gold",       width = 120 },
+    { key = "bags",       width = 64 },
+    { key = "durability", width = 64 },
+    { key = "guild",      width = 64 },
+    { key = "friends",    width = 52 },
+    { key = "fps",        width = 72 },
+    { key = "played",     width = 60 },
+    { key = "whispers",   width = 52 },
+}
 -- Second row, under the base bar: blocks that hide themselves when they have
 -- nothing to show. The row only appears when one of them has something to show,
 -- and its visible blocks share the base bar's width.
@@ -3042,7 +3091,8 @@ function ns:GetCenterOffset(cfg, groupWidth, headX, f)
 end
 
 -- Builds the default layout (BASE_ROW) into profile p: one row of merged blocks
--- Ready-made layouts (Profiles tab). "top" is the default one.
+-- Ready-made layouts (Profiles tab). "essentials" is the default one (a first install).
+--   essentials one bar at the top, every block always shown (nothing hidden when empty)
 --   top      bar at the top of the screen (under FlareUI's XP bar if present)
 --   forever  the same bar, and a second bar always shown with WoW Forever's own blocks
 --   bottom   bar at the bottom of the screen, its second row above it
@@ -3050,7 +3100,7 @@ end
 --   compact  top bar with small blocks, sized to their content
 --   gryphons two groups in the bottom corners of the screen, WoW Forever blocks included
 --   rampart  a bar stuck to the top edge, stretched over the whole width (see EDGE_LAYOUTS)
-ns.PRESETS = { "top", "forever", "bottom", "left", "compact", "gryphons", "rampart" }
+ns.PRESETS = { "essentials", "top", "forever", "bottom", "left", "compact", "gryphons", "rampart" }
 
 -- Last step of every ready-made layout: icon without label on all data blocks
 -- (even hidden ones), the theme's look, remembered for future blocks
@@ -3195,7 +3245,7 @@ function ns:ApplyEdgeLayout(p, preset)
 end
 
 function ns:ApplyBaseLayout(p, preset)
-    preset = preset or "top"
+    preset = preset or "essentials"
     -- layouts showing off the WoW Forever blocks: lines between merged blocks, in
     -- the color of the style's border
     local function WithSeparators()
@@ -3222,12 +3272,13 @@ function ns:ApplyBaseLayout(p, preset)
     local vertical = preset == "left"
     local compact = preset == "compact"
     local height = compact and 20 or BASE_HEIGHT
+    local mainRow = preset == "essentials" and ESSENTIAL_ROW or BASE_ROW
     local total = 0
-    for _, item in ipairs(BASE_ROW) do total = total + item.width end
+    for _, item in ipairs(mainRow) do total = total + item.width end
 
     -- First block placed, the following ones merged to it (right, or below in a column)
     local x, previous = -total / 2, nil
-    for _, item in ipairs(BASE_ROW) do
+    for _, item in ipairs(mainRow) do
         local cfg = p.blocks[item.key]
         if cfg then
             cfg.enabled = true
@@ -3256,6 +3307,20 @@ function ns:ApplyBaseLayout(p, preset)
             previous = item.key
         end
         x = x + item.width
+    end
+
+    -- "Essentials": the bar alone, no row of blocks that hide when empty; the other info blocks wait
+    -- in the options (launchers, DataBroker blocks and spacers keep their own state)
+    if preset == "essentials" then
+        local inRow = {}
+        for _, item in ipairs(ESSENTIAL_ROW) do inRow[item.key] = true end
+        for key, cfg in pairs(p.blocks) do
+            if not inRow[key] and not (ns.IsLauncherKey(key) or ns.IsBrokerKey(key) or ns.IsSpacerKey(key)) then
+                cfg.enabled = false
+            end
+        end
+        FinishBaseLayout(self, p)
+        return
     end
 
     -- Second row (blocks that hide when empty): below the bar, above it for a
@@ -3380,7 +3445,7 @@ function ns:AttachNewBlock(p, key)
 end
 
 -- Resets the active profile to the default layout (launchers included)
--- (preset: one of ns.PRESETS, "top" by default)
+-- (preset: one of ns.PRESETS, "essentials" by default)
 -- Resets EVERYTHING: the saved variables are emptied (every profile, block, launcher,
 -- setting, gold history, offers already shown...) and the interface reloads, so
 -- Tessera starts again exactly as on a first install. Used by every "reset" button
@@ -3409,7 +3474,7 @@ end
 -- Replaces the current profile with a ready-made layout (preset: one of ns.PRESETS)
 function ns:ResetProfile(preset)
     self:TryPreset(preset)
-    local name = L["PRESET_" .. (preset or "top"):upper()] or preset
+    local name = L["PRESET_" .. (preset or "essentials"):upper()] or preset
     Print(L.PRESET_APPLIED:format(name))
     -- blocks over Blizzard frames: in front or behind them? (Layers.lua)
     C_Timer.After(1.5, function() if ns.AskLayer then ns:AskLayer() end end)

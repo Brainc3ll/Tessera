@@ -156,6 +156,7 @@ HELP = [
         ('HELP_GENERAL_3', '- Combat: blocks frozen in combat.', '- Combat : blocs figés en combat.'),
         ('HELP_GENERAL_4', '- Chat and minimap: quiet chat, minimap button.', '- Discussion et minicarte : discussion silencieuse, bouton de la minicarte.'),
         ('HELP_GENERAL_6', '- Streamer mode: for streams and videos, hides as *** the names of other players, your other characters, your guild\'s name and your gold. Also a key binding and a Streamer mode block (hidden by default).', '- Mode streamer : pour les streams et les vidéos, remplace par *** les noms des autres joueurs, tes autres personnages, le nom de ta guilde et ton or. Aussi un raccourci clavier et un bloc Mode streamer (masqué au départ).'),
+        ('HELP_GENERAL_7', '- Under the streamer mode, four checkboxes choose what it hides: other players\' names, your other characters, the guild name, your gold. All four are on at first.', '- Sous le mode streamer, quatre cases choisissent ce qu\'il cache : les noms des autres joueurs, tes autres personnages, le nom de guilde, ton or. Les quatre sont cochées au départ.'),
     ]),
     ('ACCESS', 'Accessibility tab', 'Onglet Accessibilité', [
         ('HELP_ACCESS_1', 'The game has its own accessibility settings; Tessera adds what its blocks and windows need.', "Le jeu a ses propres réglages d'accessibilité ; Tessera ajoute ce dont ses blocs et ses fenêtres ont besoin."),

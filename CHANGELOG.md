@@ -3,6 +3,22 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.6.1 — 2026-11-17
+
+### New
+
+- Streamer mode: four checkboxes under it choose what it hides: other players' names, your other characters, the guild name and your gold. All four are on, as before; uncheck the guild name if your guild is part of your stream.
+- New layout, Essentials: one bar at the top with talents, gold, bags, durability, guild, friends, FPS, played time and whispers, every block shown even at zero. A first install starts with it; your layout does not change.
+
+### Improvements
+
+- Quick tour: the layouts step says in big letters that the layouts are examples and that Tessera has more than 50 blocks.
+- After an update, the window lists the news of every version since yours.
+
+### Fixes
+
+- Lists on hover: they no longer take the border color of the last tooltip the game showed (green after hovering a friendly character, for one).
+
 ## 1.6.0 — 2026-11-17
 
 ### New

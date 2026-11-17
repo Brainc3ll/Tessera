@@ -47,6 +47,54 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.6.1",
+        date = "2026-11-17",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Streamer mode: choose what it hides (other players, your characters, guild name, gold).",
+              fr = "Mode streamer : choisis ce qu'il cache (autres joueurs, tes personnages, nom de guilde, or).",
+              show = { page = "PAGE_GENERAL", label = "STREAMER_HIDE_PLAYERS" } },
+            { en = "New Essentials layout: one bar where every block stays shown, the start of a first install.",
+              fr = "Nouvelle disposition L'essentiel : une barre où chaque bloc reste affiché, le départ d'une première installation." },
+        },
+        sections = {
+            { kind = "new",
+              en = {
+                "Streamer mode: four checkboxes under it choose what it hides: other players' names, your other characters, the"
+                    .. " guild name and your gold. All four are on, as before; uncheck the guild name if your guild is part of your stream.",
+                "New layout, Essentials: one bar at the top with talents, gold, bags, durability, guild, friends, FPS, played time"
+                    .. " and whispers, every block shown even at zero. A first install starts with it; your layout does not change.",
+              },
+              fr = {
+                "Mode streamer : quatre cases sous lui choisissent ce qu'il cache : les noms des autres joueurs, tes autres personnages,"
+                    .. " le nom de guilde et ton or. Les quatre sont cochées, comme avant ; décoche le nom de guilde si ta guilde fait partie de ton stream.",
+                "Nouvelle disposition, L'essentiel : une barre en haut avec talents, or, sacs, durabilité, guilde, amis, FPS, temps de jeu"
+                    .. " et chuchotements, chaque bloc affiché même à zéro. Une première installation part de celle-ci ; ta disposition ne change pas.",
+              },
+            },
+            { kind = "improved",
+              en = {
+                "Quick tour: the layouts step says in big letters that the layouts are examples and that Tessera has more than 50 blocks.",
+                "After an update, the window lists the news of every version since yours.",
+              },
+              fr = {
+                "Visite guidée : l'étape des dispositions dit en gros qu'elles ne sont que des exemples et que Tessera a plus de 50 blocs.",
+                "Après une mise à jour, la fenêtre liste les nouveautés de chaque version depuis la tienne.",
+              },
+            },
+            { kind = "fixed",
+              en = {
+                "Lists on hover: they no longer take the border color of the last tooltip the game showed (green after hovering a"
+                    .. " friendly character, for one).",
+              },
+              fr = {
+                "Listes au survol : elles ne prennent plus la couleur de bordure de la dernière infobulle du jeu (verte après avoir"
+                    .. " survolé un personnage amical, par exemple).",
+              },
+            },
+        },
+    },
+    {
         version = "1.6.0",
         date = "2026-11-17",
         -- "What's new": one short line per new thing (About tab, update popup), with where to see it

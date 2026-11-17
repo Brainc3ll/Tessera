@@ -178,10 +178,10 @@ local function Draw()
     local count, online = GetNumGuildMembers()
     if ns.previewMode then guild, count, online = ns.PREVIEW_GUILD.name, ns.PREVIEW_GUILD.total, ns.PREVIEW_GUILD.online end
     if On("guildTipCount") then
-        list.title:SetText(("%s  |cffcccccc%s|r"):format(Tools.Masked(guild or ""),
+        list.title:SetText(("%s  |cffcccccc%s|r"):format(Tools.Masked(guild or "", "guild"),
             L.GUILDLIST_ONLINE:format(online or #members, count or 0)))
     else
-        list.title:SetText(Tools.Masked(guild or ""))
+        list.title:SetText(Tools.Masked(guild or "", "guild"))
     end
     list.empty:SetShown(total == 0)
     if total == 0 then list.empty:SetText(#members == 0 and L.GUILDLIST_EMPTY or L.GUILDLIST_NO_MATCH) end
@@ -280,7 +280,7 @@ local function Layout(rows, scale)
     local motdHeight = 0
     if hasMotd then
         list.motd:SetWidth(width - 20)
-        list.motd:SetText(Tools.Masked(motd))
+        list.motd:SetText(Tools.Masked(motd, "guild"))
         motdHeight = math.max(m.row, (list.motd:GetStringHeight() or 0) + 4)
     end
     -- the guild's emblem above the title, like a heading (GuildEmblem in ModulesSocial.lua)

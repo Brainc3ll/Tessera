@@ -690,7 +690,7 @@ local function GoalEta(cfg)
         return left / (session.xpGained / hours) * 3600, target - level > 1
     end
     if cfg.goalType == "gold" then
-        if ns:IsStreamer() then return nil end
+        if ns:IsStreamer("gold") then return nil end
         local money = GetMoney() or 0
         local gain, left = money - (ns.sessionMoney or money), target * 10000 - money
         if gain <= 0 or left <= 0 then return nil end
@@ -1119,7 +1119,7 @@ ns:RegisterModule("goldSession", {
     defaultEnabled = false,
     update = function(cfg)
         local change = MoneyChange()
-        if ns:IsStreamer() then return ns.HIDDEN end
+        if ns:IsStreamer("gold") then return ns.HIDDEN end
         local text = ns.FormatMoney(math.abs(change), cfg and cfg.fontSize)
         if change < 0 then return "-" .. text, WARN end
         return (change > 0 and "+" or "") .. text, change > 0 and GOOD or nil
@@ -1127,7 +1127,7 @@ ns:RegisterModule("goldSession", {
     tooltip = function(tt)
         local change = MoneyChange()
         WHITE(tt, L.TT_SESSION_TIME, FormatDuration(XPElapsed()))
-        if ns:IsStreamer() then
+        if ns:IsStreamer("gold") then
             WHITE(tt, L.GOLD_SESSION, ns.HIDDEN)
             return
         end

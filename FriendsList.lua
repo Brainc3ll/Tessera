@@ -24,6 +24,7 @@ local list -- the window, built on the first opening
 local friends = {} -- the friends online, sorted
 local shownList = {} -- the ones that match the search
 local onlineCount, totalCount = 0, 0
+local myStatus -- your own status, as the tooltip shows it (nil when that part is off)
 local offset = 0 -- index of the first row on screen, minus one
 local filter = ""
 local owner -- the block the list belongs to
@@ -152,10 +153,10 @@ local function FillRow(row, f)
     if f.class then r, g, b = Tools.ClassColor(f.class) end
     local tag = ""
     -- a text marker too, not only a color
-    if f.dnd then tag = " " .. (_G.CHAT_FLAG_DND or "DND")
-    elseif f.afk then tag = " " .. (_G.CHAT_FLAG_AFK or "AFK") end
+    if f.dnd then tag = " " .. L.TT_DND_TAG
+    elseif f.afk then tag = " " .. L.TT_AFK_TAG end
     row.name:SetText(("|cff%02x%02x%02x%s|r%s"):format(r * 255 + 0.5, g * 255 + 0.5, b * 255 + 0.5, Plain(f), tag))
-    row.zone:SetText(Tools.Masked(f.zone or ""))
+    row.zone:SetText(Tools.Masked(f.right or f.zone or ""))
     row:Show()
 end
 
@@ -168,6 +169,7 @@ local function Draw()
     for i, row in ipairs(list.rows) do FillRow(row, i <= visible and shownList[offset + i] or nil) end
     list.title:SetText(("%s  |cffcccccc%s|r"):format(ns:GetBlockName("friends"),
         L.GUILDLIST_ONLINE:format(onlineCount, totalCount)))
+    list.status:SetText(myStatus or "")
     list.empty:SetShown(total == 0)
     if total == 0 then list.empty:SetText(#friends == 0 and L.FRIENDSLIST_EMPTY or L.GUILDLIST_NO_MATCH) end
     list.bar:SetShown(maxOffset > 0)
@@ -179,7 +181,7 @@ end
 
 local function Reload()
     local cfg = cfgNow or (ns.db and ns.db.blocks and ns.db.blocks.friends)
-    friends, onlineCount, totalCount = ns.FriendsOnline(cfg)
+    friends, onlineCount, totalCount, myStatus = ns.FriendsOnline(cfg)
     Filter()
     Draw()
 end
@@ -235,6 +237,12 @@ local function MakeRow(i, m)
     return row
 end
 
+-- The blue click hints of the block's tooltip, kept under the list (they go with the tooltip it replaces)
+local function HintText()
+    local lines = owner and owner.key and ns:BlockHints(owner.key, cfgNow or {}) or {}
+    return table.concat(lines, "\n")
+end
+
 -- Sizes the list for `rows` visible rows at `scale` percent; makes the rows it lacks
 local function Layout(rows, scale)
     local m = Metrics()
@@ -246,7 +254,13 @@ local function Layout(rows, scale)
     -- the tooltip size setting (General tab) also sizes the list when it looks like a tooltip
     local k = (cfgNow and cfgNow.friendsListLook == "window") and 1 or ((ns.db and ns.db.tooltipScale) or 1)
     list:SetScale(math.min(150, math.max(80, tonumber(scale) or 100)) / 100 * k)
-    list:SetSize(width, top + rows * m.row + 8)
+    local hintText = HintText()
+    list.hint:SetWidth(width - 20)
+    list.hint:SetText(hintText)
+    local hintH = hintText ~= "" and ((list.hint:GetStringHeight() or 0) + 8) or 0
+    list:SetSize(width, top + rows * m.row + 8 + hintH)
+    list.hint:ClearAllPoints()
+    list.hint:SetPoint("BOTTOMLEFT", 10, 6)
     list.box:ClearAllPoints()
     list.box:SetPoint("TOPLEFT", 14, -head)
     list.box:SetSize(width - 36, m.row)
@@ -277,6 +291,10 @@ local function Build()
     list.title:SetPoint("TOPLEFT", 10, -8 - 2)
     list.title:SetPoint("RIGHT", -10, 0)
     list.title:SetJustifyH("LEFT")
+    -- your own status, on the title line, right side (the tooltip's first line)
+    list.status = list:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    list.status:SetPoint("TOPRIGHT", -26, -8 - 2)
+    list.status:SetJustifyH("RIGHT")
 
     local box = CreateFrame("EditBox", nil, list, "InputBoxTemplate")
     box:SetAutoFocus(false)
@@ -300,6 +318,9 @@ local function Build()
     box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
     list.box = box
 
+    list.hint = list:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    list.hint:SetJustifyH("LEFT")
+    list.hint:SetTextColor(0.5, 0.8, 1)
     list.rows = {}
     list.empty = list:CreateFontString(nil, "OVERLAY", "GameFontDisable")
 
@@ -378,6 +399,7 @@ function ns:ShowFriendsList(block, cfg)
     end
     offset = 0
     list.box:SetText("")
+    filter = "" -- (the search field empties itself; the filter follows even if no event comes)
     -- the friends are read again, and refreshed when the game answers
     if C_FriendList and C_FriendList.ShowFriends then pcall(C_FriendList.ShowFriends) end
     Reload()

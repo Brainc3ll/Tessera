@@ -170,6 +170,7 @@ local function Draw()
     for i, row in ipairs(list.rows) do FillRow(row, i <= visible and shownList[offset + i] or nil) end
     local guild = GetGuildInfo("player")
     local count, online = GetNumGuildMembers()
+    if ns.previewMode then guild, count, online = ns.PREVIEW_GUILD.name, ns.PREVIEW_GUILD.total, ns.PREVIEW_GUILD.online end
     if On("guildTipCount") then
         list.title:SetText(("%s  |cffcccccc%s|r"):format(Tools.Masked(guild or ""),
             L.GUILDLIST_ONLINE:format(online or #members, count or 0)))
@@ -248,11 +249,18 @@ local function MakeRow(i, m)
     return row
 end
 
+-- The blue click hints of the block's tooltip, kept under the list (they go with the tooltip it replaces)
+local function HintText()
+    local lines = owner and owner.key and ns:BlockHints(owner.key, cfgNow or {}) or {}
+    return table.concat(lines, "\n")
+end
+
 -- Sizes the list for `rows` visible rows at `scale` percent; makes the rows it lacks
 local function Layout(rows, scale)
     local m = Metrics()
     local showRank = On("guildTipRank")
     local motd = On("guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and C_GuildInfo.GetMOTD()
+    if ns.previewMode and On("guildTipMotd") then motd = ns.PREVIEW_GUILD.motd end
     local hasMotd = type(motd) == "string" and motd ~= ""
     local width = 16 + m.icon + m.level + m.name + (showRank and m.rank or 0) + m.zone + 16 + 10
     -- the message of the day wraps onto as many lines as it needs (4 at most)
@@ -269,7 +277,13 @@ local function Layout(rows, scale)
     -- the tooltip size setting (General tab) also sizes the list when it looks like a tooltip
     local k = (cfgNow and cfgNow.guildListLook == "window") and 1 or ((ns.db and ns.db.tooltipScale) or 1)
     list:SetScale(math.min(150, math.max(80, tonumber(scale) or 100)) / 100 * k)
-    list:SetSize(width, top + rows * m.row + 8)
+    local hintText = HintText()
+    list.hint:SetWidth(width - 20)
+    list.hint:SetText(hintText)
+    local hintH = hintText ~= "" and ((list.hint:GetStringHeight() or 0) + 8) or 0
+    list:SetSize(width, top + rows * m.row + 8 + hintH)
+    list.hint:ClearAllPoints()
+    list.hint:SetPoint("BOTTOMLEFT", 10, 6)
     list.motd:SetShown(hasMotd)
     list.box:ClearAllPoints()
     list.box:SetPoint("TOPLEFT", 14, -head)
@@ -332,6 +346,9 @@ local function Build()
     box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
     list.box = box
 
+    list.hint = list:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    list.hint:SetJustifyH("LEFT")
+    list.hint:SetTextColor(0.5, 0.8, 1)
     list.rows = {}
 
     list.empty = list:CreateFontString(nil, "OVERLAY", "GameFontDisable")
@@ -381,7 +398,7 @@ local function Build()
 end
 
 function ns:ShowGuildList(block, cfg)
-    if not IsInGuild() then return end
+    if not IsInGuild() and not ns.previewMode then return end
     Build()
     owner = block or UIParent
     if list:IsShown() then away = 0 return end
@@ -410,6 +427,7 @@ function ns:ShowGuildList(block, cfg)
     end
     offset = 0
     list.box:SetText("")
+    filter = "" -- (the search field empties itself; the filter follows even if no event comes)
     -- the roster is read again, and refreshed when the server answers
     if C_GuildInfo and C_GuildInfo.GuildRoster then C_GuildInfo.GuildRoster() end
     Reload()

@@ -51,6 +51,10 @@ ns.CHANGELOG = {
                         .. " A click on the block still opens the game's guild window.",
                     "Block settings: a \"Hide when empty\" switch sits next to the block's \"Enabled\" switch (the \"On screen\" switch, renamed),"
                         .. " for blocks that can have nothing to show.",
+                    "Lists on hover: the blue click hints of the tooltip (click, Shift click, right click, quick menu) show under the list too."
+                        .. " The Friends list also shows your status, the friends' notes and the same away and busy tags as the tooltip.",
+                    "Preview mode and the demo fill the Guild, Friends and Group lists with made-up players, so you can see every list"
+                        .. " without a guild, a group or friends.",
                     "Group block: the same On hover setting. The list of your party or raid members shows under the mouse in place of the"
                         .. " tooltip, with their role and state and a search field. A click on a name whispers and Shift + click opens a menu.",
                     "Friends block: the same On hover setting as the Guild block. The friends list (your WoW and Battle.net friends online)"
@@ -75,6 +79,10 @@ ns.CHANGELOG = {
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
                     "Réglages du bloc : un interrupteur « Masquer si vide » se place à côté de l'interrupteur « Activé » du bloc"
                         .. " (l'ancien « Sur l'écran », renommé), pour les blocs qui peuvent n'avoir rien à montrer.",
+                    "Listes au survol : les lignes d'aide bleues de l'infobulle (clic, Maj + clic, clic droit, menu rapide) s'affichent aussi sous la liste."
+                        .. " La liste des amis montre aussi ton statut, les notes des amis et les mêmes marques absent et occupé que l'infobulle.",
+                    "Le mode aperçu et la démo remplissent les listes Guilde, Amis et Groupe de joueurs inventés, pour voir chaque liste"
+                        .. " sans guilde, sans groupe et sans amis.",
                     "Bloc Groupe : le même réglage Au survol. La liste des membres de ton groupe ou raid s'affiche sous la souris à la place de"
                         .. " l'infobulle, avec leur rôle, leur état et un champ de recherche. Un clic sur un nom chuchote et Maj + clic ouvre un menu.",
                     "Bloc Amis : le même réglage Au survol que le bloc Guilde. La liste des amis (tes amis du jeu et Battle.net en ligne)"

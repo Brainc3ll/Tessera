@@ -88,9 +88,31 @@ end
 
 -- The online guild members, in the order the player chose (leaders first, then the sort), with the
 -- number of leaders on top: shared by the tooltip and the clickable list (GuildList.lua)
+-- Preview mode (/tessera preview, the demo): the lists show made-up players, so every list can be
+-- seen without a guild, a group or friends. Names, classes, levels and zones are invented.
+local PREVIEW_PEOPLE = {
+    { "Aldric", "WARRIOR", 80, "Stormwind City" }, { "Brisa", "MAGE", 78, "Dalaran" }, { "Corvin", "PRIEST", 80, "Orgrimmar" },
+    { "Dahlia", "HUNTER", 71, "Tanaris" }, { "Elric", "ROGUE", 80, "Icecrown" }, { "Fenna", "DRUID", 64, "Moonglade" },
+    { "Garrick", "SHAMAN", 80, "Nagrand" }, { "Hilde", "WARLOCK", 55, "Duskwood" }, { "Ivar", "PALADIN", 80, "Undercity" },
+    { "Jora", "DEATHKNIGHT", 80, "Ebon Hold" }, { "Kael", "MAGE", 42, "Westfall" }, { "Lyra", "PRIEST", 80, "Ironforge" },
+    { "Marek", "WARRIOR", 80, "Blackrock Depths" }, { "Nessa", "HUNTER", 73, "Zangarmarsh" }, { "Orin", "DRUID", 80, "Darnassus" },
+    { "Petra", "ROGUE", 61, "Stranglethorn Vale" }, { "Quinn", "SHAMAN", 80, "Thunder Bluff" }, { "Rowan", "PALADIN", 36, "Elwynn Forest" },
+    { "Sable", "WARLOCK", 80, "Shattrath City" }, { "Torin", "DEATHKNIGHT", 80, "Naxxramas" }, { "Ulla", "PRIEST", 25, "Teldrassil" },
+    { "Varn", "WARRIOR", 80, "Orgrimmar" }, { "Wren", "MAGE", 80, "Silvermoon City" }, { "Xan", "HUNTER", 48, "Feralas" },
+}
+local PREVIEW_RANKS = { "Guild Master", "Officer", "Veteran", "Member", "Initiate" }
+ns.PREVIEW_GUILD = { name = "The Tesserae", motd = "Raid on Thursday, 20:00. Bring flasks and good humor.", total = 61, online = #PREVIEW_PEOPLE }
+
 function ns.GuildMembers(cfg)
     local members = {}
-    local total = GetNumGuildMembers() or 0
+    if ns.previewMode then
+        for i, p in ipairs(PREVIEW_PEOPLE) do
+            local rankIndex = i == 1 and 0 or (i <= 3 and 1 or (i <= 12 and 2 or (i <= 20 and 3 or 4)))
+            members[#members + 1] = { name = p[1], rank = PREVIEW_RANKS[rankIndex + 1], rankIndex = rankIndex, level = p[3],
+                zone = p[4], note = i % 4 == 0 and "alt of Aldric" or "", class = p[2], status = i == 5 and 1 or 0, order = i }
+        end
+    end
+    local total = ns.previewMode and 0 or (GetNumGuildMembers() or 0)
     for i = 1, total do
         -- name, rank, rank index, level, class, zone, public note, officer note, online, status, class file
         local name, rank, rankIndex, level, _, zone, note, _, online, status, class = GetGuildRosterInfo(i)
@@ -111,46 +133,90 @@ end
 -- clickable list (FriendsList.lua). Each: { kind = "wow" or "bnet", name (to whisper), label (shown),
 -- level, class, zone, note, afk, dnd, inviteName (nil when the game gives no way to invite) }.
 function ns.FriendsOnline(cfg)
-    local list = {}
+    local wow, bnet = {}, {}
     if On(cfg, "friendsTipWoW") then
-        for i = 1, C_FriendList.GetNumFriends() or 0 do
-            local info = C_FriendList.GetFriendInfoByIndex(i)
-            if info and info.connected and info.name then
-                list[#list + 1] = { kind = "wow", name = info.name, label = info.name, level = info.level or 0,
-                    class = info.className and info.className:upper(), zone = info.area or "", note = info.notes,
-                    afk = info.afk, dnd = info.dnd, inviteName = info.name }
+        if ns.previewMode then
+            for i = 1, 5 do
+                local p = PREVIEW_PEOPLE[i + 2]
+                wow[#wow + 1] = { kind = "wow", name = p[1], label = p[1], level = p[3], class = p[2], zone = p[4],
+                    note = i == 2 and "cousin" or nil, afk = i == 3, dnd = i == 4, inviteName = p[1] }
             end
-        end
-    end
-    if not (cfg and cfg.noBNetFriends) and On(cfg, "friendsTipBNet") then
-        for _, f in ipairs(BNetFriendsOnline()) do
-            local account, game = f.account, f.game
-            local who = account.accountName or account.battleTag
-            if who then
-                local inWoW = game.clientProgram == BNET_CLIENT_WOW and game.characterName
-                if inWoW then
-                    local realm = game.realmName
-                    local invite = game.characterName
-                    if realm and realm ~= "" and realm ~= GetRealmName() then invite = invite .. "-" .. realm:gsub("%s", "") end
-                    list[#list + 1] = { kind = "bnet", name = who, label = who .. " : " .. game.characterName,
-                        level = game.characterLevel or 0, class = game.className and game.className:upper(),
-                        zone = game.areaName or "", note = account.note, afk = account.isAFK or game.isGameAFK,
-                        dnd = account.isDND or game.isGameBusy, inviteName = invite }
-                elseif not (cfg and cfg.friendsWoWOnly) then
-                    list[#list + 1] = { kind = "bnet", name = who, label = who, level = 0,
-                        zone = game.richPresence or game.clientProgram or "", note = account.note,
-                        afk = account.isAFK, dnd = account.isDND }
+        else
+            for i = 1, C_FriendList.GetNumFriends() or 0 do
+                local info = C_FriendList.GetFriendInfoByIndex(i)
+                if info and info.connected and info.name then
+                    wow[#wow + 1] = { kind = "wow", name = info.name, label = info.name, level = info.level or 0,
+                        class = info.className and info.className:upper(), zone = info.area or "", note = info.notes,
+                        afk = info.afk, dnd = info.dnd, inviteName = info.name }
                 end
             end
         end
     end
-    SortFriends(list, cfg and cfg.friendsSort)
-    local total, online = C_FriendList.GetNumFriends() or 0, C_FriendList.GetNumOnlineFriends() or 0
-    if BNGetNumFriends and not (cfg and cfg.noBNetFriends) then
-        local bnTotal, bnOnline = BNGetNumFriends()
-        total, online = total + (bnTotal or 0), online + (bnOnline or 0)
+    if not (cfg and cfg.noBNetFriends) and On(cfg, "friendsTipBNet") then
+        if ns.previewMode then
+            local p = PREVIEW_PEOPLE[9]
+            bnet[#bnet + 1] = { kind = "bnet", name = "Kaz", label = "Kaz : " .. p[1], level = p[3], class = p[2], zone = p[4],
+                note = "raid lead", inviteName = p[1] }
+            if not (cfg and cfg.friendsWoWOnly) then
+                bnet[#bnet + 1] = { kind = "bnet", name = "Mo", label = "Mo", level = 0, zone = "In the app", note = nil }
+            end
+        else
+            for _, f in ipairs(BNetFriendsOnline()) do
+                local account, game = f.account, f.game
+                local who = account.accountName or account.battleTag
+                if who then
+                    local inWoW = game.clientProgram == BNET_CLIENT_WOW and game.characterName
+                    if inWoW then
+                        local realm = game.realmName
+                        local invite = game.characterName
+                        if realm and realm ~= "" and realm ~= GetRealmName() then invite = invite .. "-" .. realm:gsub("%s", "") end
+                        bnet[#bnet + 1] = { kind = "bnet", name = who, label = who .. " : " .. game.characterName,
+                            level = game.characterLevel or 0, class = game.className and game.className:upper(),
+                            zone = game.areaName or "", note = account.note, afk = account.isAFK or game.isGameAFK,
+                            dnd = account.isDND or game.isGameBusy, inviteName = invite }
+                    elseif not (cfg and cfg.friendsWoWOnly) then
+                        bnet[#bnet + 1] = { kind = "bnet", name = who, label = who, level = 0,
+                            zone = game.richPresence or game.clientProgram or "", note = account.note,
+                            afk = account.isAFK, dnd = account.isDND }
+                    end
+                end
+            end
+        end
     end
-    return list, online, total
+    -- as the tooltip: the game's friends first, then Battle.net's, each in the chosen order;
+    -- the right column is the note (if asked) then the zone
+    SortFriends(wow, cfg and cfg.friendsSort)
+    SortFriends(bnet, cfg and cfg.friendsSort)
+    local list = {}
+    for _, group in ipairs({ wow, bnet }) do
+        for _, f in ipairs(group) do
+            local zone = f.zone or ""
+            if cfg and cfg.friendsNotes and type(f.note) == "string" and f.note ~= "" then
+                f.right = f.note .. (zone ~= "" and " - " .. zone or "")
+            else
+                f.right = zone
+            end
+            list[#list + 1] = f
+        end
+    end
+    local total, online
+    if not ns.previewMode then
+        total, online = C_FriendList.GetNumFriends() or 0, C_FriendList.GetNumOnlineFriends() or 0
+        if BNGetNumFriends and not (cfg and cfg.noBNetFriends) then
+            local bnTotal, bnOnline = BNGetNumFriends()
+            total, online = total + (bnTotal or 0), online + (bnOnline or 0)
+        end
+    else
+        online = #list
+        total = online + 4
+    end
+    -- your own status, as the tooltip's first line shows it
+    local status
+    if On(cfg, "friendsTipStatus") then
+        local mine = MyStatus()
+        status = ("%s |c%s%s|r"):format(L.TT_MY_STATUS, STATUS_COLORS[mine], L[STATUS_TEXT[mine]])
+    end
+    return list, online, total, status
 end
 
 ns:RegisterModule("friends", {
@@ -389,7 +455,7 @@ ns:RegisterModule("guild", {
     clickHint = L.HINT_GUILD,
     -- "Member list": a clickable list under the mouse in place of the tooltip (GuildList.lua)
     hoverList = function(frame, cfg)
-        if cfg and cfg.guildShow == "list" and IsInGuild() and ns.ShowGuildList then
+        if cfg and cfg.guildShow == "list" and (ns.previewMode or IsInGuild()) and ns.ShowGuildList then
             ns:ShowGuildList(frame, cfg)
             return true
         end
@@ -523,10 +589,26 @@ end
 -- role tags and the state, as the tooltip shows them), isMe }.
 function ns.GroupMembers(cfg)
     local list = {}
-    local units = GroupUnits()
-    local _, _, master = LootInfo()
     local showRole, showState = cfg == nil or cfg.groupTipRole ~= false, cfg == nil or cfg.groupTipState ~= false
     local showLevel = cfg == nil or cfg.groupTipLevel ~= false
+    if ns.previewMode then
+        -- a raid of 20: a leader, an assistant, a master looter, one offline, one dead, one away
+        for i = 1, 20 do
+            local p = PREVIEW_PEOPLE[i]
+            local status = {}
+            if showRole and i == 1 then status[#status + 1] = L.TT_LEADER end
+            if showRole and i == 2 then status[#status + 1] = L.TT_ASSISTANT end
+            if showRole and i == 3 then status[#status + 1] = L.TT_LOOTER end
+            if showState and i == 6 then status[#status + 1] = _G.PLAYER_OFFLINE or "Offline" end
+            if showState and i == 9 then status[#status + 1] = _G.DEAD or "Dead" end
+            if showState and i == 12 then status[#status + 1] = _G.CHAT_FLAG_AFK or "AFK" end
+            list[#list + 1] = { kind = "wow", name = p[1], label = p[1], class = p[2], level = showLevel and p[3] or 0,
+                zone = table.concat(status, ", "), isMe = i == 4 }
+        end
+        return list
+    end
+    local units = GroupUnits()
+    local _, _, master = LootInfo()
     for _, unit in ipairs(units) do
         local name, realm = Try(UnitName, unit)
         if name then
@@ -622,7 +704,7 @@ ns:RegisterModule("group", {
     end,
     -- "Group list": a clickable list under the mouse in place of the tooltip (GroupList.lua)
     hoverList = function(frame, cfg)
-        if cfg and cfg.groupShow ~= "tooltip" and IsInGroup and IsInGroup() and ns.ShowGroupList then
+        if cfg and cfg.groupShow ~= "tooltip" and (ns.previewMode or (IsInGroup and IsInGroup())) and ns.ShowGroupList then
             ns:ShowGroupList(frame, cfg)
             return true
         end

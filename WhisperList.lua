@@ -48,7 +48,14 @@ local function Draw()
         end
     end
     list.empty:SetShown(#history == 0)
-    list:SetHeight(8 + math.max(1, #history) * rowH + 8 + m.line + 4)
+    -- the list's own help line, then the block's blue click hints (as its tooltip shows them)
+    local hint = L.WHISPERLIST_HINT
+    local more = owner and owner.key and ns:BlockHints(owner.key, cfgNow or {}) or {}
+    if #more > 0 then hint = hint .. "\n" .. table.concat(more, "\n") end
+    list.hint:SetWidth(list:GetWidth() - 24)
+    list.hint:SetText(hint)
+    local hintH = math.max(m.line, list.hint:GetStringHeight() or m.line)
+    list:SetHeight(8 + math.max(1, #history) * rowH + 8 + hintH + 4)
 end
 
 local function Click(row, button)
@@ -107,6 +114,7 @@ local function Build()
     -- what the clicks do
     list.hint = list:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     list.hint:SetPoint("BOTTOMLEFT", 12, 8)
+    list.hint:SetJustifyH("LEFT")
     list.hint:SetTextColor(0.5, 0.8, 1)
     list.hint:SetText(L.WHISPERLIST_HINT)
     list.empty = list:CreateFontString(nil, "OVERLAY", "GameFontDisable")

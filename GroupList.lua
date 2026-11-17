@@ -214,6 +214,12 @@ local function MakeRow(i, m)
     return row
 end
 
+-- The blue click hints of the block's tooltip, kept under the list (they go with the tooltip it replaces)
+local function HintText()
+    local lines = owner and owner.key and ns:BlockHints(owner.key, cfgNow or {}) or {}
+    return table.concat(lines, "\n")
+end
+
 -- Sizes the list for `rows` visible rows at `scale` percent; makes the rows it lacks
 local function Layout(rows, scale)
     local m = Metrics()
@@ -225,7 +231,13 @@ local function Layout(rows, scale)
     -- the tooltip size setting (General tab) also sizes the list when it looks like a tooltip
     local k = (cfgNow and cfgNow.groupListLook == "window") and 1 or ((ns.db and ns.db.tooltipScale) or 1)
     list:SetScale(math.min(150, math.max(80, tonumber(scale) or 100)) / 100 * k)
-    list:SetSize(width, top + rows * m.row + 8)
+    local hintText = HintText()
+    list.hint:SetWidth(width - 20)
+    list.hint:SetText(hintText)
+    local hintH = hintText ~= "" and ((list.hint:GetStringHeight() or 0) + 8) or 0
+    list:SetSize(width, top + rows * m.row + 8 + hintH)
+    list.hint:ClearAllPoints()
+    list.hint:SetPoint("BOTTOMLEFT", 10, 6)
     list.box:ClearAllPoints()
     list.box:SetPoint("TOPLEFT", 14, -head)
     list.box:SetSize(width - 36, m.row)
@@ -279,6 +291,9 @@ local function Build()
     box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
     list.box = box
 
+    list.hint = list:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    list.hint:SetJustifyH("LEFT")
+    list.hint:SetTextColor(0.5, 0.8, 1)
     list.rows = {}
     list.empty = list:CreateFontString(nil, "OVERLAY", "GameFontDisable")
 
@@ -357,6 +372,7 @@ function ns:ShowGroupList(block, cfg)
     end
     offset = 0
     list.box:SetText("")
+    filter = "" -- (the search field empties itself; the filter follows even if no event comes)
     Reload()
     list:Show()
 end

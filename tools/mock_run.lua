@@ -229,6 +229,9 @@ GetFramerate = function() return 60 end
 GetNetStats = function() return 1, 1, 50, 60 end
 GetMoney = function() return 123456 end
 UnitName = function() return "Ellen" end
+GetGuildInfo = GetGuildInfo or function() return nil end
+GetNumGuildMembers = GetNumGuildMembers or function() return 0, 0 end
+GetGuildRosterInfo = GetGuildRosterInfo or function() end
 GetRealmName = function() return "Realm" end
 UnitFactionGroup = function() return "Alliance", "Alliance" end
 UnitClass = function() return "Mage", "MAGE" end
@@ -2996,6 +2999,39 @@ for _, step in ipairs({
         flist:GetScript("OnUpdate")(flist, 0.2)
         assert(not flist:IsShown(), "the list closes once the mouse stayed away")
         ChatFrameUtil, C_PartyInfo = savedUtil, savedParty
+        -- (1.6) the list shows what the tooltip shows: your status, notes in the right column, the
+        -- tooltip's tags, the game's friends first then Battle.net's
+        local fl2, _, _, status2 = ns.FriendsOnline({ friendsNotes = true })
+        assert(status2 and status2:find(ns.L.TT_MY_STATUS, 1, true), "your status comes with the list")
+        assert(not select(4, ns.FriendsOnline({ friendsTipStatus = false })), "status part off: no status")
+        assert(fl2[1].kind == "wow" and fl2[2].kind == "bnet", "the game's friends come before Battle.net's")
+        assert(fl2[1].right == "my cousin - Orgrimmar" and fl2[2].right == "raid lead - Tanaris", "the note comes before the zone")
+        assert(ns.FriendsOnline({})[1].right == "Orgrimmar", "no note unless asked")
+        m.hoverList(block, { friendsShow = "list", friendsNotes = true })
+        assert(flist.rows[1].zone:GetText():find("my cousin - Orgrimmar", 1, true), "the list row shows note and zone: " .. tostring(flist.rows[1].zone:GetText()) .. " / " .. tostring(flist.rows[1].friend and flist.rows[1].friend.right))
+        assert(flist.rows[1].name:GetText():find(ns.L.TT_AFK_TAG, 1, true), "the tooltip's away tag in the list")
+        flist:Hide()
+        -- (1.6) the blue click hints of the tooltip go under the lists too (unless the player turned them off)
+        local hints = ns:BlockHints("friends", ns.db.blocks.friends)
+        assert(hints[1] == ns.L.HINT_FRIENDS and hints[#hints] == ns.L.HINT_QUICK_MENU, "block hints: its click, then the quick menu")
+        ns.db.tooltipHints = false
+        assert(#ns:BlockHints("friends", ns.db.blocks.friends) == 0, "hints off: no hint lines")
+        ns.db.tooltipHints = nil
+        -- (1.6) preview mode: made-up players in every list
+        ns.previewMode = true
+        local pf, pOnline, pTotal = ns.FriendsOnline({})
+        assert(#pf == 7 and pOnline == 7 and pTotal > pOnline, "preview: made-up friends")
+        assert(#ns.FriendsOnline({ friendsWoWOnly = true }) == 6, "preview: the settings still apply")
+        assert(#ns.GuildMembers({}) == 24, "preview: made-up guild members")
+        assert(#ns.GroupMembers({}) == 20 and ns.GroupMembers({})[4].isMe, "preview: a made-up raid")
+        assert(m.hoverList(block, { friendsShow = "list" }), "preview: the friends list opens")
+        flist:Hide()
+        assert(ns.modules.guild.hoverList(block, { guildShow = "list" }), "preview: the guild list opens without a guild")
+        assert(_G["TesseraGuildList"]:IsShown(), "preview: the guild list is shown")
+        _G["TesseraGuildList"]:Hide()
+        assert(ns.modules.group.hoverList(block, { groupShow = "list" }), "preview: the group list opens without a group")
+        _G["TesseraGroupList"]:Hide()
+        ns.previewMode = nil
         C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet = oldFL, oldBN, oldInfo, oldC
     end,
     -- whispers history: the last whispers stay after you answered, a clickable list replies and pins

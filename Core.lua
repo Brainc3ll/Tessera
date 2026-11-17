@@ -1692,6 +1692,25 @@ end
 
 -- Mouse-over: placement help when unlocked, otherwise the module's tooltip.
 -- Module callbacks run in pcall so a broken module cannot break the addon.
+-- The blue help lines about clicks of a block's tooltip (a list under the mouse shows the same ones):
+-- its own click, Shift and middle click actions, right click, the quick menu. Empty when the player
+-- turned the hints off (General tab).
+function ns:BlockHints(key, cfg)
+    local lines = {}
+    local mod = ns:GetModule(key)
+    if not mod or ns.db.tooltipHints == false then return lines end
+    if mod.clickHint then lines[#lines + 1] = mod.clickHint end
+    if not ns.IsForwardingKey(key) then
+        local shift = ns:GetActionName(key, cfg.shiftClick)
+        if shift then lines[#lines + 1] = L.HINT_SHIFT_ACTION:format(shift) end
+        local middle = ns:GetActionName(key, cfg.middleClick)
+        if middle then lines[#lines + 1] = L.HINT_MIDDLE_ACTION:format(middle) end
+        lines[#lines + 1] = L.HINT_RIGHT_CLICK
+    end
+    lines[#lines + 1] = L.HINT_QUICK_MENU
+    return lines
+end
+
 local function OnEnter(self)
     local key = self.key
     local cfg, mod = ns.db.blocks[key], ns:GetModule(key)
@@ -1725,17 +1744,10 @@ local function OnEnter(self)
     end
     -- blue help lines about clicks (can be turned off in the General tab); the blank line
     -- before them is already there when the title is followed by an empty body
-    if ns.db.tooltipHints ~= false then
+    local hints = ns:BlockHints(key, cfg)
+    if #hints > 0 then
         if not bodyEmpty then GameTooltip:AddLine(" ") end
-        if mod.clickHint then GameTooltip:AddLine(mod.clickHint, 0.5, 0.8, 1) end
-        if not ns.IsForwardingKey(key) then
-            local shift = ns:GetActionName(key, cfg.shiftClick)
-            if shift then GameTooltip:AddLine(L.HINT_SHIFT_ACTION:format(shift), 0.5, 0.8, 1) end
-            local middle = ns:GetActionName(key, cfg.middleClick)
-            if middle then GameTooltip:AddLine(L.HINT_MIDDLE_ACTION:format(middle), 0.5, 0.8, 1) end
-            GameTooltip:AddLine(L.HINT_RIGHT_CLICK, 0.5, 0.8, 1)
-        end
-        GameTooltip:AddLine(L.HINT_QUICK_MENU, 0.5, 0.8, 1)
+        for _, line in ipairs(hints) do GameTooltip:AddLine(line, 0.5, 0.8, 1) end
     end
     GameTooltip:Show()
 end

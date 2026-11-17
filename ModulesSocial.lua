@@ -246,9 +246,13 @@ ns:RegisterModule("guild", {
         return ("%d / %d"):format(online or 0, total or 0)
     end,
     defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
-                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildList = false },
+                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildList = false, guildListRows = 14, guildListScale = 100 },
     options = { COUNT_OPTION,
                 { kind = "check", field = "guildList", tab = "text", label = "GUILD_LIST", tip = "TIP_GUILD_LIST" },
+                { kind = "slider", field = "guildListRows", tab = "text", label = "GUILD_LIST_ROWS", tip = "TIP_GUILD_LIST_ROWS",
+                  min = 8, max = 30, step = 1, default = 14 },
+                { kind = "slider", field = "guildListScale", tab = "text", label = "GUILD_LIST_SCALE", tip = "TIP_GUILD_LIST_SCALE",
+                  min = 80, max = 150, step = 5, default = 100 },
                 { kind = "dropdown", field = "guildSort", section = "tooltip", tab = "text", label = "GUILD_SORT", tip = "TIP_GUILD_SORT",
                   values = { { key = "game", label = "FRIENDS_SORT_GAME" }, { key = "name", label = "FRIENDS_SORT_NAME" },
                              { key = "level", label = "FRIENDS_SORT_LEVEL" }, { key = "zone", label = "FRIENDS_SORT_ZONE" },
@@ -315,7 +319,7 @@ ns:RegisterModule("guild", {
     -- "Member list": a clickable list under the mouse in place of the tooltip (GuildList.lua)
     hoverList = function(frame, cfg)
         if cfg and cfg.guildList and IsInGuild() and ns.ShowGuildList then
-            ns:ShowGuildList(frame)
+            ns:ShowGuildList(frame, cfg)
             return true
         end
     end,

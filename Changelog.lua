@@ -47,12 +47,14 @@ ns.CHANGELOG = {
                         .. " A click on a name whispers, a right click invites and Shift + click opens a menu.",
                     "The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds."
                         .. " It follows the block's own sort and leaders on top. A click on the block still opens the game's guild window.",
+                    "Two settings size the list: List rows (8 to 30 members at once) and List size (80 to 150 percent).",
                 },
                 fr = {
                     "Bloc Guilde : un nouveau réglage, Liste des membres, affiche les membres en ligne sous la souris à la place"
                         .. " de l'infobulle. Un clic sur un nom chuchote, un clic droit invite et Maj + clic ouvre un menu.",
                     "La liste a un champ de recherche (nom, zone, rang ou note), la molette et une barre de défilement pour les"
                         .. " grosses guildes. Elle suit le tri du bloc et les chefs en tête. Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
+                    "Deux réglages donnent sa taille à la liste : Lignes de la liste (de 8 à 30 membres d'un coup) et Taille de la liste (de 80 à 150 %).",
                 },
             },
         },

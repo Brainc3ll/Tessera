@@ -2976,6 +2976,18 @@ for _, step in ipairs({
         assert(asked == 1, "hovering again does not ask the roster again")
         assert(#list.rows == 14 and list.rows[1]:IsShown() and list.rows[14]:IsShown(), "14 rows on screen for 30 members")
         assert(list.rows[1].member.name == "Member01-Realm", "first row: the first member")
+        -- size settings: fewer rows and a bigger scale
+        list:Hide()
+        local scaled
+        list.SetScale = function(_, v) scaled = v end
+        mod.hoverList(block, { guildList = true, guildListRows = 9, guildListScale = 120 })
+        assert(list.rows[9]:IsShown() and not list.rows[10]:IsShown(), "9 rows on screen")
+        assert(math.abs((scaled or -1) - 1.2) < 0.001, "scale 120 percent, got " .. tostring(scaled))
+        list:Hide()
+        mod.hoverList(block, { guildList = true, guildListRows = 99, guildListScale = 500 })
+        assert(#list.rows == 30 and scaled == 1.5, "rows and scale stay inside their limits")
+        list:Hide()
+        mod.hoverList(block, { guildList = true })
         local click = list.rows[1]:GetScript("OnClick")
         click(list.rows[2], "LeftButton")
         assert(told == "Member02-Realm", "a click whispers the member: " .. tostring(told))

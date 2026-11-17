@@ -9,10 +9,11 @@ local L = ns.L
 -- Online members only, in the order of the block's own settings (sort, leaders on top). A click on a
 -- name whispers, a right click invites, Shift + click opens a small menu (the same two choices, for
 -- players without a right button). Big guilds: a search field, the mouse wheel and a scroll bar; only
--- the visible rows exist (VISIBLE, reused), so memory does not depend on the guild's size.
+-- the visible rows exist (reused), so memory does not depend on the guild's size.
 
 local Tools = ns.BlockTools
-local VISIBLE = 14 -- rows on screen
+local ROWS_DEFAULT, ROWS_MIN, ROWS_MAX = 14, 8, 30 -- rows on screen: the block's "List rows" setting
+local visible = ROWS_DEFAULT
 local WHEEL_STEP = 3
 local CLASS_ICONS = "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"
 
@@ -80,6 +81,8 @@ end
 local function RowMenu(row)
     local m = row.member
     if not m or not MenuUtil or not MenuUtil.CreateContextMenu then return end
+    -- the menu opens in a lower strata than the list: the list steps back so the menu stays visible
+    list:SetFrameStrata("DIALOG")
     MenuUtil.CreateContextMenu(row, function(_, root)
         root:CreateTitle(Plain(m.name))
         root:CreateButton(L.GUILDLIST_WHISPER, function() Tell(m.name) list:Hide() end)
@@ -144,9 +147,9 @@ end
 local function Draw()
     if not list then return end
     local total = #shownList
-    local maxOffset = math.max(0, total - VISIBLE)
+    local maxOffset = math.max(0, total - visible)
     offset = math.min(math.max(0, offset), maxOffset)
-    for i, row in ipairs(list.rows) do FillRow(row, shownList[offset + i]) end
+    for i, row in ipairs(list.rows) do FillRow(row, i <= visible and shownList[offset + i] or nil) end
     local guild = GetGuildInfo("player")
     local count, online = GetNumGuildMembers()
     list.title:SetText(("%s  |cffcccccc%s|r"):format(Tools.Masked(guild or ""),
@@ -183,18 +186,76 @@ local function Scroll(delta)
     Draw()
 end
 
+-- One row of the list (made once, then reused); Layout() sizes and places it
+local function MakeRow(i, m)
+    local row = CreateFrame("Button", nil, list)
+    row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    row:EnableMouseWheel(true)
+    row:SetScript("OnMouseWheel", function(_, delta) Scroll(delta) end)
+    row:SetScript("OnClick", RowClick)
+    row:SetScript("OnEnter", RowTooltip)
+    row:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    local hl = row:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    hl:SetColorTexture(1, 1, 1, 0.12)
+    row.icon = row:CreateTexture(nil, "ARTWORK")
+    row.icon:SetSize(m.icon, m.icon)
+    row.icon:SetPoint("LEFT", 2, 0)
+    row.level = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.level:SetPoint("LEFT", row.icon, "RIGHT", 4, 0)
+    row.level:SetWidth(m.level)
+    row.level:SetJustifyH("LEFT")
+    row.level:SetTextColor(0.8, 0.8, 0.8)
+    row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.name:SetPoint("LEFT", row.level, "RIGHT", 4, 0)
+    row.name:SetWidth(m.name)
+    row.name:SetJustifyH("LEFT")
+    row.rank = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.rank:SetPoint("LEFT", row.name, "RIGHT", 4, 0)
+    row.rank:SetWidth(m.rank)
+    row.rank:SetJustifyH("LEFT")
+    row.rank:SetTextColor(1, 0.82, 0)
+    row.zone = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.zone:SetPoint("LEFT", row.rank, "RIGHT", 4, 0)
+    row.zone:SetPoint("RIGHT", -2, 0)
+    row.zone:SetJustifyH("RIGHT")
+    row.zone:SetTextColor(0.8, 0.8, 0.8)
+    list.rows[i] = row
+    return row
+end
+
+-- Sizes the list for `rows` visible rows at `scale` percent; makes the rows it lacks
+local function Layout(rows, scale)
+    local m = Metrics()
+    local width = 16 + m.icon + m.level + m.name + m.rank + m.zone + 16 + 10
+    local top = 8 + m.row + 4 + m.row + 4 -- title, search
+    rows = math.min(ROWS_MAX, math.max(ROWS_MIN, tonumber(rows) or ROWS_DEFAULT))
+    visible = rows
+    list:SetScale(math.min(150, math.max(80, tonumber(scale) or 100)) / 100)
+    list:SetSize(width, top + rows * m.row + 8)
+    list.box:SetSize(width - 36, m.row)
+    list.empty:ClearAllPoints()
+    list.empty:SetPoint("TOP", list, "TOP", 0, -(top + 8))
+    list.bar:ClearAllPoints()
+    list.bar:SetPoint("TOPRIGHT", -6, -top)
+    list.bar:SetSize(12, rows * m.row)
+    for i = 1, rows do
+        local row = list.rows[i] or MakeRow(i, m)
+        row:SetSize(width - 32, m.row)
+        row:ClearAllPoints()
+        row:SetPoint("TOPLEFT", 8, -(top + (i - 1) * m.row))
+    end
+    for i = rows + 1, #list.rows do list.rows[i]:Hide() end
+end
+
 local function Build()
     if list then return list end
-    local m = Metrics()
     list = CreateFrame("Frame", "TesseraGuildList", UIParent, "BackdropTemplate")
-    list:SetFrameStrata("DIALOG")
+    list:SetFrameStrata("TOOLTIP") -- the highest strata, over every window and bar
     list:SetClampedToScreen(true)
     list:EnableMouse(true)
     list:EnableMouseWheel(true)
     list:SetScript("OnMouseWheel", function(_, delta) Scroll(delta) end)
-    local width = 16 + m.icon + m.level + m.name + m.rank + m.zone + 16 + 10
-    local top = 8 + m.row + 4 + m.row + 4 -- title, search
-    list:SetSize(width, top + VISIBLE * m.row + 8)
 
     list.title = list:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     list.title:SetPoint("TOPLEFT", 10, -8 - 2)
@@ -203,8 +264,7 @@ local function Build()
 
     local box = CreateFrame("EditBox", nil, list, "InputBoxTemplate")
     box:SetAutoFocus(false)
-    box:SetSize(width - 36, m.row)
-    box:SetPoint("TOPLEFT", 14, -(8 + m.row + 4))
+    box:SetPoint("TOPLEFT", 14, -(8 + Metrics().row + 4))
     box:SetMaxLetters(40)
     box.hint = box:CreateFontString(nil, "OVERLAY", "GameFontDisable")
     box.hint:SetPoint("LEFT", 2, 0)
@@ -226,51 +286,11 @@ local function Build()
     list.box = box
 
     list.rows = {}
-    for i = 1, VISIBLE do
-        local row = CreateFrame("Button", nil, list)
-        row:SetSize(width - 16 - 16, m.row)
-        row:SetPoint("TOPLEFT", 8, -(top + (i - 1) * m.row))
-        row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-        row:EnableMouseWheel(true)
-        row:SetScript("OnMouseWheel", function(_, delta) Scroll(delta) end)
-        row:SetScript("OnClick", RowClick)
-        row:SetScript("OnEnter", RowTooltip)
-        row:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        local hl = row:CreateTexture(nil, "HIGHLIGHT")
-        hl:SetAllPoints()
-        hl:SetColorTexture(1, 1, 1, 0.12)
-        row.icon = row:CreateTexture(nil, "ARTWORK")
-        row.icon:SetSize(m.icon, m.icon)
-        row.icon:SetPoint("LEFT", 2, 0)
-        row.level = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        row.level:SetPoint("LEFT", row.icon, "RIGHT", 4, 0)
-        row.level:SetWidth(m.level)
-        row.level:SetJustifyH("LEFT")
-        row.level:SetTextColor(0.8, 0.8, 0.8)
-        row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        row.name:SetPoint("LEFT", row.level, "RIGHT", 4, 0)
-        row.name:SetWidth(m.name)
-        row.name:SetJustifyH("LEFT")
-        row.rank = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        row.rank:SetPoint("LEFT", row.name, "RIGHT", 4, 0)
-        row.rank:SetWidth(m.rank)
-        row.rank:SetJustifyH("LEFT")
-        row.rank:SetTextColor(1, 0.82, 0)
-        row.zone = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        row.zone:SetPoint("LEFT", row.rank, "RIGHT", 4, 0)
-        row.zone:SetPoint("RIGHT", -2, 0)
-        row.zone:SetJustifyH("RIGHT")
-        row.zone:SetTextColor(0.8, 0.8, 0.8)
-        list.rows[i] = row
-    end
 
     list.empty = list:CreateFontString(nil, "OVERLAY", "GameFontDisable")
-    list.empty:SetPoint("TOP", list, "TOP", 0, -(top + 8))
 
     local bar = CreateFrame("Slider", nil, list)
     bar:SetOrientation("VERTICAL")
-    bar:SetPoint("TOPRIGHT", -6, -top)
-    bar:SetSize(12, VISIBLE * m.row)
     bar:SetValueStep(1)
     bar:SetObeyStepOnDrag(true)
     bar:SetMinMaxValues(0, 1)
@@ -310,15 +330,19 @@ local function Build()
     list:Hide()
     -- closes with Escape, like Blizzard's menus
     table.insert(UISpecialFrames, "TesseraGuildList")
+    Layout(ROWS_DEFAULT, 100)
     return list
 end
 
-function ns:ShowGuildList(block)
+function ns:ShowGuildList(block, cfg)
     if not IsInGuild() then return end
     Build()
     owner = block or UIParent
     if list:IsShown() then away = 0 return end
+    list:SetFrameStrata("TOOLTIP")
     if ns.SkinWindow then ns:SkinWindow(list) end
+    -- after the skin, which sets the windows' own scale: the block's "List size" wins
+    Layout(cfg and cfg.guildListRows, cfg and cfg.guildListScale)
     list:ClearAllPoints()
     local _, y = owner:GetCenter()
     -- touching the block, so the mouse crosses no gap on its way to the list

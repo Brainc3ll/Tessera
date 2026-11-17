@@ -9,6 +9,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Guild block: a new setting, Member list, shows the members online under the mouse in place of the tooltip. A click on a name whispers, a right click invites and Shift + click opens a menu.
 - The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds. It follows the block's own sort and leaders on top. A click on the block still opens the game's guild window.
+- Two settings size the list: List rows (8 to 30 members at once) and List size (80 to 150 percent).
 
 ## 1.5.1 — 2026-11-15
 

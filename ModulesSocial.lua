@@ -158,7 +158,7 @@ function ns.FriendsOnline(cfg)
             bnet[#bnet + 1] = { kind = "bnet", name = "Kaz", label = "Kaz : " .. p[1], level = p[3], class = p[2], zone = p[4],
                 note = "raid lead", inviteName = p[1] }
             if not (cfg and cfg.friendsWoWOnly) then
-                bnet[#bnet + 1] = { kind = "bnet", name = "Mo", label = "Mo", level = 0, zone = "In the app", note = nil }
+                bnet[#bnet + 1] = { kind = "bnet", name = "Mo", label = "Mo", level = 0, zone = L.PREVIEW_IN_APP, note = nil }
             end
         else
             for _, f in ipairs(BNetFriendsOnline()) do
@@ -602,14 +602,20 @@ function ns.GroupMembers(cfg)
             if showState and i == 6 then status[#status + 1] = _G.PLAYER_OFFLINE or "Offline" end
             if showState and i == 9 then status[#status + 1] = _G.DEAD or "Dead" end
             if showState and i == 12 then status[#status + 1] = _G.CHAT_FLAG_AFK or "AFK" end
+            local group = i % 4 + 1
+            table.insert(status, 1, L.GROUPLIST_GROUP:format(group))
             list[#list + 1] = { kind = "wow", name = p[1], label = p[1], class = p[2], level = showLevel and p[3] or 0,
-                zone = table.concat(status, ", "), isMe = i == 4 }
+                zone = table.concat(status, ", "), isMe = i == 4, group = group, order = i }
         end
+        table.sort(list, function(a, b)
+            if a.group ~= b.group then return a.group < b.group end
+            return a.order < b.order
+        end)
         return list
     end
-    local units = GroupUnits()
+    local units, raid = GroupUnits()
     local _, _, master = LootInfo()
-    for _, unit in ipairs(units) do
+    for idx, unit in ipairs(units) do
         local name, realm = Try(UnitName, unit)
         if name then
             local _, class = Try(UnitClass, unit)
@@ -630,10 +636,23 @@ function ns.GroupMembers(cfg)
             end
             local whisper = name
             if type(realm) == "string" and realm ~= "" then whisper = name .. "-" .. realm end
+            -- in a raid: the group the player stands in (the game's raid roster, same order as the units)
+            local group
+            if raid and GetRaidRosterInfo then
+                group = tonumber(select(3, Try(GetRaidRosterInfo, idx)))
+                if group then table.insert(status, 1, L.GROUPLIST_GROUP:format(group)) end
+            end
             list[#list + 1] = { kind = "wow", name = whisper, label = name, class = class,
                 level = showLevel and tonumber(Try(UnitLevel, unit)) or 0, zone = table.concat(status, ", "),
-                isMe = UnitIsUnit and UnitIsUnit(unit, "player") or unit == "player" }
+                isMe = UnitIsUnit and UnitIsUnit(unit, "player") or unit == "player", group = group, order = idx }
         end
+    end
+    -- a raid: sorted by group, then as the game gives it
+    if raid then
+        table.sort(list, function(a, b)
+            if (a.group or 99) ~= (b.group or 99) then return (a.group or 99) < (b.group or 99) end
+            return a.order < b.order
+        end)
     end
     return list
 end

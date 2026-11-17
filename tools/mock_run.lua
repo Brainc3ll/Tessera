@@ -2453,6 +2453,15 @@ for _, step in ipairs({
         local gblock = CreateFrame("Frame", nil, UIParent)
         assert(not ns.modules.group.hoverList(gblock, { groupShow = "tooltip" }), "tooltip setting: the normal tooltip")
         assert(ns.modules.group.hoverList(gblock, { groupShow = "list" }), "list setting: the list takes its place")
+        -- a real raid (not the preview): sorted by the raid's groups
+        local oldRaid, oldRoster, oldNum, oldName2 = IsInRaid, GetRaidRosterInfo, GetNumGroupMembers, UnitName
+        IsInRaid = function() return true end
+        GetNumGroupMembers = function() return 3 end
+        UnitName = function(unit) return unit end
+        GetRaidRosterInfo = function(i) return "raid" .. i, 0, ({ 3, 1, 2 })[i] end
+        local raidReal = ns.GroupMembers({})
+        assert(raidReal[1].name == "raid2" and raidReal[2].name == "raid3" and raidReal[3].name == "raid1", "raid: sorted by group")
+        IsInRaid, GetRaidRosterInfo, GetNumGroupMembers, UnitName = oldRaid, oldRoster, oldNum, oldName2
         local glist = _G["TesseraGroupList"]
         assert(glist and glist:IsShown() and glist.rows[2]:IsShown() and not glist.rows[3]:IsShown(), "2 rows for 2 members")
         local gTold
@@ -2463,6 +2472,27 @@ for _, step in ipairs({
         glist.rows[2]:GetScript("OnClick")(glist.rows[2], "LeftButton")
         assert(gTold == "Pal" and not glist:IsShown(), "a click whispers a member")
         ChatFrameUtil = oldUtil
+        -- the list opens on the tooltip's side, with the block's alignment setting
+        local pts = {}
+        local fakeList = { ClearAllPoints = function() pts = {} end, SetPoint = function(_, ...) pts[#pts + 1] = { ... } end }
+        local realRect2 = ns.GetRectUI
+        ns.GetRectUI = function() return 100, 700, 200, 720 end -- a block in the top left of a 1000 x 800 screen
+        local gcfg = ns.db.blocks.group
+        gcfg.tooltipAlign, gcfg.tooltipAnchor = nil, nil
+        local fakeOwner = { key = "group" }
+        ns.PlaceHoverList(fakeList, fakeOwner)
+        assert(pts[1][1] == "TOPLEFT" and pts[1][3] == "BOTTOMLEFT", "automatic: under the block, left edge: " .. tostring(pts[1][1]))
+        gcfg.tooltipAlign, gcfg.tooltipAnchor = "right", "top"
+        ns.PlaceHoverList(fakeList, fakeOwner)
+        assert(pts[1][1] == "BOTTOMRIGHT" and pts[1][3] == "TOPRIGHT", "forced: above the block, right edge: " .. tostring(pts[1][1]))
+        gcfg.tooltipAlign, gcfg.tooltipAnchor = nil, nil
+        ns.GetRectUI = realRect2
+        -- hovering another block closes a list, the block's own stays (no overlap)
+        ns.modules.group.hoverList(gblock, { groupShow = "list" })
+        ns:HideHoverLists(gblock)
+        assert(glist:IsShown(), "a list stays while its own block is hovered")
+        ns:HideHoverLists(CreateFrame("Frame", nil, UIParent))
+        assert(not glist:IsShown(), "hovering another block closes the list")
         IsInGroup = function() return false end
         assert(not ns.modules.group.hoverList(gblock, { groupShow = "list" }), "no list outside a group")
         IsInGroup = function() return true end
@@ -3023,7 +3053,11 @@ for _, step in ipairs({
         assert(#pf == 7 and pOnline == 7 and pTotal > pOnline, "preview: made-up friends")
         assert(#ns.FriendsOnline({ friendsWoWOnly = true }) == 6, "preview: the settings still apply")
         assert(#ns.GuildMembers({}) == 24, "preview: made-up guild members")
-        assert(#ns.GroupMembers({}) == 20 and ns.GroupMembers({})[4].isMe, "preview: a made-up raid")
+        local raidList = ns.GroupMembers({})
+        assert(#raidList == 20, "preview: a made-up raid")
+        local sortedByGroup = true
+        for i = 2, #raidList do if raidList[i].group < raidList[i - 1].group then sortedByGroup = false end end
+        assert(sortedByGroup and raidList[1].zone:find(ns.L.GROUPLIST_GROUP:format(1), 1, true), "a raid is sorted by group, the group shown")
         assert(m.hoverList(block, { friendsShow = "list" }), "preview: the friends list opens")
         flist:Hide()
         assert(ns.modules.guild.hoverList(block, { guildShow = "list" }), "preview: the guild list opens without a guild")
@@ -3150,6 +3184,12 @@ for _, step in ipairs({
         list.box:SetText("")
         list.box:GetScript("OnTextChanged")(list.box)
         assert(not list.rows[1].rank:IsShown(), "no rank column when the tooltip hides ranks")
+        assert(list.rows[1].note:IsShown(), "the note column follows the tooltip's note setting (on)")
+        list:Hide()
+        mod.hoverList(block, { guildShow = "list", guildTipNote = false })
+        assert(not list.rows[1].note:IsShown(), "no note column when the tooltip hides notes")
+        list:Hide()
+        mod.hoverList(block, { guildShow = "list", guildMax = "5", guildTipRank = false, guildTipCount = false })
         assert(not tostring(list.title:GetText()):find("%d"), "no count in the title when the tooltip hides it")
         list:Hide()
         mod.hoverList(block, { guildShow = "list" })

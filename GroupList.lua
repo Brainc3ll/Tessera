@@ -31,7 +31,7 @@ local away = 0
 
 -- Sizes follow the font height, so a bigger text makes bigger rows
 local function Metrics()
-    local font = _G["GameFontHighlight"]
+    local font = _G["GameTooltipText"] or _G["GameFontHighlight"]
     local _, height
     if font then _, height = font:GetFont() end
     local k = math.max(1, (height or 12) / 12)
@@ -194,17 +194,17 @@ local function MakeRow(i, m)
     row.icon = row:CreateTexture(nil, "ARTWORK")
     row.icon:SetSize(m.icon, m.icon)
     row.icon:SetPoint("LEFT", 2, 0)
-    row.level = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.level = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     row.level:SetPoint("LEFT", row.icon, "RIGHT", 4, 0)
     row.level:SetWidth(m.level)
     row.level:SetJustifyH("LEFT")
     row.level:SetTextColor(0.8, 0.8, 0.8)
-    row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.name = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     row.name:SetPoint("LEFT", row.level, "RIGHT", 4, 0)
     row.name:SetWidth(m.name)
     row.name:SetJustifyH("LEFT")
     row.name:SetWordWrap(false)
-    row.zone = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.zone = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     row.zone:SetPoint("LEFT", row.name, "RIGHT", 4, 0)
     row.zone:SetPoint("RIGHT", -2, 0)
     row.zone:SetJustifyH("RIGHT")
@@ -264,7 +264,7 @@ local function Build()
     list:EnableMouseWheel(true)
     list:SetScript("OnMouseWheel", function(_, delta) Scroll(delta) end)
 
-    list.title = list:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    list.title = list:CreateFontString(nil, "OVERLAY", "GameTooltipHeaderText")
     list.title:SetPoint("TOPLEFT", 10, -8 - 2)
     list.title:SetPoint("RIGHT", -10, 0)
     list.title:SetJustifyH("LEFT")
@@ -291,7 +291,7 @@ local function Build()
     box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
     list.box = box
 
-    list.hint = list:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    list.hint = list:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     list.hint:SetJustifyH("LEFT")
     list.hint:SetTextColor(0.5, 0.8, 1)
     list.rows = {}
@@ -351,25 +351,12 @@ function ns:ShowGroupList(block, cfg)
     cfgNow = cfg
     if cfg and cfg.groupListLook == "window" then
         if ns.SkinWindow then ns:SkinWindow(list) end
-    elseif list.SetBackdrop then
-        -- the look of a tooltip: the game's own background and border
-        list:SetBackdrop({
-            bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true, tileSize = 16, edgeSize = 16, insets = { left = 4, right = 4, top = 4, bottom = 4 },
-        })
-        list:SetBackdropColor(0.07, 0.07, 0.1, 0.96)
-        list:SetBackdropBorderColor(1, 1, 1, 1)
+    else
+        ns.ApplyTooltipLook(list) -- the game's own tooltip look (or the look another addon gives it)
     end
     -- after the skin, which sets the windows' own scale: the block's "List size" wins
     Layout(cfg and cfg.groupListRows, cfg and cfg.groupListScale)
-    list:ClearAllPoints()
-    local _, y = owner:GetCenter()
-    -- touching the block, so the mouse crosses no gap on its way to the list
-    if y and y < UIParent:GetHeight() / 2 then
-        list:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 0)
-    else
-        list:SetPoint("TOPLEFT", owner, "BOTTOMLEFT", 0, 0)
-    end
+    ns.PlaceHoverList(list, owner) -- the tooltip's own side and alignment settings
     offset = 0
     list.box:SetText("")
     filter = "" -- (the search field empties itself; the filter follows even if no event comes)
@@ -381,3 +368,8 @@ end
 function ns:HideGroupList()
     if list and list:IsShown() then list:Hide() end
 end
+
+-- another block is hovered: this list closes, unless it belongs to that block
+table.insert(ns.hoverListHiders, function(except)
+    if list and list:IsShown() and owner ~= except then list:Hide() end
+end)

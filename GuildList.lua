@@ -35,14 +35,14 @@ local away = 0
 
 -- Sizes follow the font height, so a bigger text makes bigger rows
 local function Metrics()
-    local font = _G["GameFontHighlight"]
+    local font = _G["GameTooltipText"] or _G["GameFontHighlight"]
     local _, height
     if font then _, height = font:GetFont() end
     local k = math.max(1, (height or 12) / 12)
     return {
         row = math.max(22, math.floor((height or 12) * 1.7)),
         icon = math.floor(16 * k), level = math.floor(26 * k), name = math.floor(130 * k),
-        rank = math.floor(90 * k), zone = math.floor(150 * k),
+        rank = math.floor(90 * k), note = math.floor(130 * k), zone = math.floor(150 * k),
     }
 end
 
@@ -157,6 +157,7 @@ local function FillRow(row, m)
     elseif m.status == 2 then tag = " " .. (_G.CHAT_FLAG_DND or "DND") end
     row.name:SetText(("|cff%02x%02x%02x%s|r%s"):format(r * 255 + 0.5, g * 255 + 0.5, b * 255 + 0.5, Plain(m.name), tag))
     row.rank:SetText(Tools.Masked(m.rank or ""))
+    row.note:SetText(type(m.note) == "string" and Tools.Masked(m.note) or "")
     row.zone:SetText(Tools.Masked(m.zone or ""))
     row:Show()
 end
@@ -226,22 +227,28 @@ local function MakeRow(i, m)
     row.icon = row:CreateTexture(nil, "ARTWORK")
     row.icon:SetSize(m.icon, m.icon)
     row.icon:SetPoint("LEFT", 2, 0)
-    row.level = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.level = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     row.level:SetPoint("LEFT", row.icon, "RIGHT", 4, 0)
     row.level:SetWidth(m.level)
     row.level:SetJustifyH("LEFT")
     row.level:SetTextColor(0.8, 0.8, 0.8)
-    row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.name = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     row.name:SetPoint("LEFT", row.level, "RIGHT", 4, 0)
     row.name:SetWidth(m.name)
     row.name:SetJustifyH("LEFT")
-    row.rank = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    row.rank = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     row.rank:SetPoint("LEFT", row.name, "RIGHT", 4, 0)
     row.rank:SetWidth(m.rank)
     row.rank:SetJustifyH("LEFT")
     row.rank:SetTextColor(1, 0.82, 0)
-    row.zone = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    row.zone:SetPoint("LEFT", row.rank, "RIGHT", 4, 0)
+    -- the member's public note, white, as in the tooltip (shown with the "Note" tooltip setting)
+    row.note = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+    row.note:SetPoint("LEFT", row.rank, "RIGHT", 4, 0)
+    row.note:SetWidth(m.note)
+    row.note:SetJustifyH("LEFT")
+    row.note:SetWordWrap(false)
+    row.zone = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+    row.zone:SetPoint("LEFT", row.note, "RIGHT", 4, 0)
     row.zone:SetPoint("RIGHT", -2, 0)
     row.zone:SetJustifyH("RIGHT")
     row.zone:SetTextColor(0.8, 0.8, 0.8)
@@ -258,11 +265,11 @@ end
 -- Sizes the list for `rows` visible rows at `scale` percent; makes the rows it lacks
 local function Layout(rows, scale)
     local m = Metrics()
-    local showRank = On("guildTipRank")
+    local showRank, showNote = On("guildTipRank"), On("guildTipNote")
     local motd = On("guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and C_GuildInfo.GetMOTD()
     if ns.previewMode and On("guildTipMotd") then motd = ns.PREVIEW_GUILD.motd end
     local hasMotd = type(motd) == "string" and motd ~= ""
-    local width = 16 + m.icon + m.level + m.name + (showRank and m.rank or 0) + m.zone + 16 + 10
+    local width = 16 + m.icon + m.level + m.name + (showRank and m.rank or 0) + (showNote and m.note or 0) + m.zone + 16 + 10
     -- the message of the day wraps onto as many lines as it needs (4 at most)
     local motdHeight = 0
     if hasMotd then
@@ -300,6 +307,8 @@ local function Layout(rows, scale)
         row:SetPoint("TOPLEFT", 8, -(top + (i - 1) * m.row))
         row.rank:SetShown(showRank)
         row.rank:SetWidth(showRank and m.rank or 1)
+        row.note:SetShown(showNote)
+        row.note:SetWidth(showNote and m.note or 1)
     end
     for i = rows + 1, #list.rows do list.rows[i]:Hide() end
 end
@@ -313,11 +322,11 @@ local function Build()
     list:EnableMouseWheel(true)
     list:SetScript("OnMouseWheel", function(_, delta) Scroll(delta) end)
 
-    list.title = list:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    list.title = list:CreateFontString(nil, "OVERLAY", "GameTooltipHeaderText")
     list.title:SetPoint("TOPLEFT", 10, -8 - 2)
     list.title:SetPoint("RIGHT", -10, 0)
     list.title:SetJustifyH("LEFT")
-    list.motd = list:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    list.motd = list:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     list.motd:SetPoint("TOPLEFT", list.title, "BOTTOMLEFT", 0, -4)
     list.motd:SetJustifyH("LEFT")
     list.motd:SetWordWrap(true)
@@ -346,7 +355,7 @@ local function Build()
     box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
     list.box = box
 
-    list.hint = list:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    list.hint = list:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     list.hint:SetJustifyH("LEFT")
     list.hint:SetTextColor(0.5, 0.8, 1)
     list.rows = {}
@@ -406,25 +415,12 @@ function ns:ShowGuildList(block, cfg)
     cfgNow = cfg
     if cfg and cfg.guildListLook == "window" then
         if ns.SkinWindow then ns:SkinWindow(list) end
-    elseif list.SetBackdrop then
-        -- the look of a tooltip: the game's own background and border
-        list:SetBackdrop({
-            bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true, tileSize = 16, edgeSize = 16, insets = { left = 4, right = 4, top = 4, bottom = 4 },
-        })
-        list:SetBackdropColor(0.07, 0.07, 0.1, 0.96)
-        list:SetBackdropBorderColor(1, 1, 1, 1)
+    else
+        ns.ApplyTooltipLook(list) -- the game's own tooltip look (or the look another addon gives it)
     end
     -- after the skin, which sets the windows' own scale: the block's "List size" wins
     Layout(cfg and cfg.guildListRows, cfg and cfg.guildListScale)
-    list:ClearAllPoints()
-    local _, y = owner:GetCenter()
-    -- touching the block, so the mouse crosses no gap on its way to the list
-    if y and y < UIParent:GetHeight() / 2 then
-        list:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 0)
-    else
-        list:SetPoint("TOPLEFT", owner, "BOTTOMLEFT", 0, 0)
-    end
+    ns.PlaceHoverList(list, owner) -- the tooltip's own side and alignment settings
     offset = 0
     list.box:SetText("")
     filter = "" -- (the search field empties itself; the filter follows even if no event comes)
@@ -438,3 +434,8 @@ end
 function ns:HideGuildList()
     if list and list:IsShown() then list:Hide() end
 end
+
+-- another block is hovered: this list closes, unless it belongs to that block
+table.insert(ns.hoverListHiders, function(except)
+    if list and list:IsShown() and owner ~= except then list:Hide() end
+end)

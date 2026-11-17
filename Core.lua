@@ -924,12 +924,12 @@ function ns.AnchorTooltip(owner, tooltip)
     ns.MoveTooltip(owner, tooltip)
 end
 
--- Repositions an already-owned tooltip (also used when the block moves)
-function ns.MoveTooltip(owner, tooltip)
-    tooltip = tooltip or GameTooltip
+-- Which side of the block a tooltip (or a list) opens on, from the block's "tooltip alignment" and
+-- "tooltip position" settings: h is "LEFT", "RIGHT" or "" (centered), below is true under the block
+local function TooltipSide(owner)
     -- center of the block in UIParent units (the block may have its own scale)
     local l, b, r, t = ns:GetRectUI(owner)
-    if not l then return end
+    if not l then return nil end
     local x, y = (l + r) / 2, (b + t) / 2
     local cfg = owner.key and ns.db and ns.db.blocks[owner.key]
     -- the block's "tooltip alignment" option: left edge, centered or right edge of the block;
@@ -941,11 +941,32 @@ function ns.MoveTooltip(owner, tooltip)
     local below = y > UIParent:GetHeight() / 2
     if cfg and cfg.tooltipAnchor == "top" then below = false end
     if cfg and cfg.tooltipAnchor == "bottom" then below = true end
+    return h, below
+end
+
+-- Repositions an already-owned tooltip (also used when the block moves)
+function ns.MoveTooltip(owner, tooltip)
+    tooltip = tooltip or GameTooltip
+    local h, below = TooltipSide(owner)
+    if not h then return end
     tooltip:ClearAllPoints()
     if below then
         tooltip:SetPoint("TOP" .. h, owner, "BOTTOM" .. h, 0, -4)
     else
         tooltip:SetPoint("BOTTOM" .. h, owner, "TOP" .. h, 0, 4)
+    end
+end
+
+-- Places a list that opens in place of the tooltip: the same side and alignment as the tooltip would
+-- have (the block's own settings), a few pixels from the block like the tooltip
+function ns.PlaceHoverList(list, owner)
+    list:ClearAllPoints()
+    local h, below = TooltipSide(owner)
+    if not h then h, below = "LEFT", true end
+    if below then
+        list:SetPoint("TOP" .. h, owner, "BOTTOM" .. h, 0, -2)
+    else
+        list:SetPoint("BOTTOM" .. h, owner, "TOP" .. h, 0, 2)
     end
 end
 
@@ -1692,6 +1713,55 @@ end
 
 -- Mouse-over: placement help when unlocked, otherwise the module's tooltip.
 -- Module callbacks run in pcall so a broken module cannot break the addon.
+-- The lists that open under the mouse in place of a tooltip (guild, friends, group, whispers) each
+-- register a function here; hovering another block closes the others, so two lists or a list and a
+-- tooltip never overlap.
+ns.hoverListHiders = {}
+function ns:HideHoverLists(except)
+    for _, hide in ipairs(ns.hoverListHiders) do hide(except) end
+end
+
+-- Gives a list the look of the game's tooltip: the same backdrop and colors as GameTooltip when it
+-- has them (other interface addons restyle it), else the game's own nine-slice tooltip layout, else
+-- the classic tooltip texture.
+function ns.ApplyTooltipLook(frame)
+    local tip = GameTooltip
+    if tip and tip.GetBackdrop and frame.SetBackdrop then
+        local ok, info = pcall(tip.GetBackdrop, tip)
+        if ok and type(info) == "table" and (info.bgFile or info.edgeFile) then
+            frame:SetBackdrop(info)
+            local r, g, b, a = tip:GetBackdropColor()
+            frame:SetBackdropColor(r or 0.07, g or 0.07, b or 0.1, a or 0.96)
+            r, g, b, a = tip:GetBackdropBorderColor()
+            frame:SetBackdropBorderColor(r or 1, g or 1, b or 1, a or 1)
+            return
+        end
+    end
+    if tip and tip.NineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName and not frame.tesseraTipNine then
+        local layout = tip.NineSlice.layoutType or "TooltipDefaultLayout"
+        if pcall(NineSliceUtil.ApplyLayoutByName, frame, layout) and frame.NineSlice then
+            if frame.backdropInfo then frame:SetBackdrop(nil) end
+            frame.tesseraTipNine = true
+            local r, g, b, a = 0.07, 0.07, 0.1, 0.96
+            if tip.NineSlice.GetCenterColor then r, g, b, a = tip.NineSlice:GetCenterColor() end
+            if frame.NineSlice.SetCenterColor then frame.NineSlice:SetCenterColor(r, g, b, a) end
+            if tip.NineSlice.GetBorderColor and frame.NineSlice.SetBorderColor then
+                frame.NineSlice:SetBorderColor(tip.NineSlice:GetBorderColor())
+            end
+            return
+        end
+    end
+    if frame.tesseraTipNine then return end -- the nine-slice look stays
+    if frame.SetBackdrop then
+        frame:SetBackdrop({
+            bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 16, insets = { left = 4, right = 4, top = 4, bottom = 4 },
+        })
+        frame:SetBackdropColor(0.07, 0.07, 0.1, 0.96)
+        frame:SetBackdropBorderColor(1, 1, 1, 1)
+    end
+end
+
 -- The blue help lines about clicks of a block's tooltip (a list under the mouse shows the same ones):
 -- its own click, Shift and middle click actions, right click, the quick menu. Empty when the player
 -- turned the hints off (General tab).
@@ -1716,6 +1786,7 @@ local function OnEnter(self)
     local cfg, mod = ns.db.blocks[key], ns:GetModule(key)
     if not cfg or not mod then return end
     ns.hoveredBlock = self -- for "tooltips only while Alt is held" (watcher below)
+    ns:HideHoverLists(self) -- a list of another block closes: no overlap
     if not ns:IsLocked() then
         ShowPlacementHelp(self)
         ns:ShowBlockControls(self)

@@ -53,12 +53,15 @@ ns.CHANGELOG = {
                         .. " for blocks that can have nothing to show.",
                     "Whispers list: Ctrl + click on a row deletes that whisper (a pinned one stays until you unpin it); a Clear button at the top"
                         .. " removes every whisper that is not pinned (a second click confirms).",
-                    "Lists on hover: the blue click hints of the tooltip (click, Shift click, right click, quick menu) show under the list too."
+                    "Lists on hover: they take the look and the fonts of the game's tooltip, open on the side and with the alignment of the"
+                        .. " block's tooltip settings, show the tooltip's blue click hints (click, Shift click, right click, quick menu) under the"
+                        .. " list, and close when you hover another block, so two lists never overlap."
                         .. " The Friends list also shows your status, the friends' notes and the same away and busy tags as the tooltip.",
                     "Preview mode and the demo fill the Guild, Friends and Group lists with made-up players, so you can see every list"
                         .. " without a guild, a group or friends.",
                     "Group block: the same On hover setting. The list of your party or raid members shows under the mouse in place of the"
-                        .. " tooltip, with their role and state and a search field. A click on a name whispers and Shift + click opens a menu.",
+                        .. " tooltip, with their role and state and a search field (a raid is sorted by group). A click on a name whispers and"
+                        .. " Shift + click opens a menu.",
                     "Friends block: the same On hover setting as the Guild block. The friends list (your WoW and Battle.net friends online)"
                         .. " shows under the mouse in place of the tooltip, with a search field. A click on a name whispers,"
                         .. " a right click invites and Shift + click opens a menu. It follows the block's sort, notes and parts settings.",
@@ -83,12 +86,15 @@ ns.CHANGELOG = {
                         .. " (l'ancien « Sur l'écran », renommé), pour les blocs qui peuvent n'avoir rien à montrer.",
                     "Liste des chuchotements : Ctrl + clic sur une ligne supprime ce chuchotement (un épinglé reste jusqu'à ce que tu retires l'épingle) ;"
                         .. " un bouton Vider, en haut, retire tous les chuchotements non épinglés (un second clic confirme).",
-                    "Listes au survol : les lignes d'aide bleues de l'infobulle (clic, Maj + clic, clic droit, menu rapide) s'affichent aussi sous la liste."
+                    "Listes au survol : elles prennent l'aspect et les polices de l'infobulle du jeu, montrent les lignes d'aide bleues de l'infobulle"
+                        .. " (clic, Maj + clic, clic droit, menu rapide) sous la liste, et se ferment quand tu survoles un autre bloc :"
+                        .. " deux listes ne se chevauchent plus. Elles s'ouvrent du côté et avec l'alignement des réglages d'infobulle du bloc."
                         .. " La liste des amis montre aussi ton statut, les notes des amis et les mêmes marques absent et occupé que l'infobulle.",
                     "Le mode aperçu et la démo remplissent les listes Guilde, Amis et Groupe de joueurs inventés, pour voir chaque liste"
                         .. " sans guilde, sans groupe et sans amis.",
                     "Bloc Groupe : le même réglage Au survol. La liste des membres de ton groupe ou raid s'affiche sous la souris à la place de"
-                        .. " l'infobulle, avec leur rôle, leur état et un champ de recherche. Un clic sur un nom chuchote et Maj + clic ouvre un menu.",
+                        .. " l'infobulle, avec leur rôle, leur état et un champ de recherche (un raid est classé par groupe)."
+                        .. " Un clic sur un nom chuchote et Maj + clic ouvre un menu.",
                     "Bloc Amis : le même réglage Au survol que le bloc Guilde. La liste des amis (tes amis du jeu et Battle.net en ligne)"
                         .. " s'affiche sous la souris à la place de l'infobulle, avec un champ de recherche. Un clic sur un nom chuchote,"
                         .. " un clic droit invite et Maj + clic ouvre un menu. Elle suit les réglages de tri, de notes et de parties du bloc.",

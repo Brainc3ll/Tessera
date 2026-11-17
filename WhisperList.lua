@@ -15,7 +15,7 @@ local away = 0
 
 -- Sizes follow the font height, so a bigger text makes bigger rows
 local function Metrics()
-    local font = _G["GameFontHighlight"]
+    local font = _G["GameTooltipText"] or _G["GameFontHighlight"]
     local _, height
     if font then _, height = font:GetFont() end
     local k = math.max(1, (height or 12) / 12)
@@ -90,7 +90,7 @@ local function Build()
     local headH = m.line + 12
     list:SetSize(width, headH + rowH + 8 + m.line + 4)
     list.rows = {}
-    list.title = list:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    list.title = list:CreateFontString(nil, "OVERLAY", "GameTooltipHeaderText")
     list.title:SetPoint("TOPLEFT", 12, -8)
     list.title:SetText(ns:GetBlockName("whispers"))
     -- "Clear": removes the whispers that are not pinned; a second click within 3 seconds confirms
@@ -130,22 +130,22 @@ local function Build()
         local hl = row:CreateTexture(nil, "HIGHLIGHT")
         hl:SetAllPoints()
         hl:SetColorTexture(1, 1, 1, 0.12)
-        row.name = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        row.name = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
         row.name:SetPoint("TOPLEFT", 4, -2)
         row.name:SetWidth(m.name)
         row.name:SetJustifyH("LEFT")
         row.name:SetWordWrap(false)
-        row.count = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        row.count = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
         row.count:SetPoint("LEFT", row.name, "RIGHT", 4, 0)
         row.count:SetWidth(m.count)
         row.count:SetJustifyH("LEFT")
         row.count:SetTextColor(1, 0.82, 0)
-        row.time = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        row.time = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
         row.time:SetPoint("TOPRIGHT", -4, -2)
         row.time:SetJustifyH("RIGHT")
         row.time:SetTextColor(0.7, 0.7, 0.7)
         -- the start of the message, cut with "..." when it is too long for the line
-        row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        row.text = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
         row.text:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -2)
         row.text:SetPoint("RIGHT", row, "RIGHT", -4, 0)
         row.text:SetJustifyH("LEFT")
@@ -154,7 +154,7 @@ local function Build()
         list.rows[i] = row
     end
     -- what the clicks do
-    list.hint = list:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    list.hint = list:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     list.hint:SetPoint("BOTTOMLEFT", 12, 8)
     list.hint:SetJustifyH("LEFT")
     list.hint:SetTextColor(0.5, 0.8, 1)
@@ -181,24 +181,9 @@ function ns:ShowWhisperList(block, cfg)
     owner = block or UIParent
     cfgNow = cfg
     if list:IsShown() then away = 0 return end
-    if list.SetBackdrop then
-        -- the look of a tooltip: the game's own background and border
-        list:SetBackdrop({
-            bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true, tileSize = 16, edgeSize = 16, insets = { left = 4, right = 4, top = 4, bottom = 4 },
-        })
-        list:SetBackdropColor(0.07, 0.07, 0.1, 0.96)
-        list:SetBackdropBorderColor(1, 1, 1, 1)
-    end
+    ns.ApplyTooltipLook(list) -- the game's own tooltip look (or the look another addon gives it)
     list:SetScale((ns.db and ns.db.tooltipScale) or 1)
-    list:ClearAllPoints()
-    local _, y = owner:GetCenter()
-    -- touching the block, so the mouse crosses no gap on its way to the list
-    if y and y < UIParent:GetHeight() / 2 then
-        list:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 0)
-    else
-        list:SetPoint("TOPLEFT", owner, "BOTTOMLEFT", 0, 0)
-    end
+    ns.PlaceHoverList(list, owner) -- the tooltip's own side and alignment settings
     Draw()
     list:Show()
 end
@@ -212,3 +197,8 @@ end
 function ns:HideWhisperList()
     if list and list:IsShown() then list:Hide() end
 end
+
+-- another block is hovered: this list closes, unless it belongs to that block
+table.insert(ns.hoverListHiders, function(except)
+    if list and list:IsShown() and owner ~= except then list:Hide() end
+end)

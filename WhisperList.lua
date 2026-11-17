@@ -48,19 +48,24 @@ local function Draw()
             row.count:SetText(tag)
             row.time:SetText(("%s (%s)"):format(date("%H:%M", w.when or 0), L.TT_AGO:format(Tools.ShortDuration(GetTime() - w.at))))
             row.text:SetText(Tools.Masked(w.text or ""))
+            -- the two small buttons: the pin (filled when pinned, an outline when not: a shape, not only a
+            -- color) and the cross (not on a pinned whisper: unpin it first)
+            row.pin:SetAtlas(w.pinned and "auctionhouse-icon-favorite" or "auctionhouse-icon-favorite-off")
+            row.del:SetShown(not w.pinned)
+            if row.del.sure and row.del.sure ~= w then row.del.sure = nil end
+            if row.del.sure then row.time:SetText("|cffff5050" .. L.WHISPERLIST_SURE .. "|r") end
             row:Show()
         else
             row:Hide()
         end
     end
     list.empty:SetShown(#history == 0)
-    -- the list's own help line, then the block's blue click hints (as its tooltip shows them)
-    local hint = L.WHISPERLIST_HINT .. "\n" .. L.WHISPERLIST_DELETE_HINT .. "\n" .. L.GUILDLIST_ROW_MENU
-    local more = owner and owner.key and ns:BlockHints(owner.key, cfgNow or {}) or {}
-    if #more > 0 then hint = hint .. "\n" .. table.concat(more, "\n") end
+    -- what a click on a row does, then the block's own clicks (as its tooltip shows them)
+    local hint = ns:ListHintText({ L.WHISPERLIST_HINT, L.WHISPERLIST_DELETE_HINT, L.GUILDLIST_ROW_MENU },
+        owner and owner.key, cfgNow)
     list.hint:SetWidth(list:GetWidth() - 24)
     list.hint:SetText(hint)
-    local hintH = math.max(m.line, list.hint:GetStringHeight() or m.line)
+    local hintH = hint ~= "" and math.max(m.line, list.hint:GetStringHeight() or m.line) or 0
     list:SetHeight(headH + math.max(1, #history) * rowH + 8 + hintH + 4)
 end
 
@@ -171,7 +176,56 @@ local function Build()
         -- the start of the message, cut with "..." when it is too long for the line
         row.text = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
         row.text:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -2)
-        row.text:SetPoint("RIGHT", row, "RIGHT", -4, 0)
+        -- small buttons at the end of the message line: pin, then delete (a second click within 3 seconds
+        -- confirms; the time then reads "Sure?")
+        local size = math.max(16, m.line)
+        local del = CreateFrame("Button", nil, row)
+        del:SetSize(size, size)
+        del:SetPoint("BOTTOMRIGHT", row, "BOTTOMRIGHT", -4, 2)
+        del:SetNormalAtlas("communities-icon-redx")
+        del:SetHighlightAtlas("communities-icon-redx", "ADD")
+        del:SetScript("OnClick", function(self)
+            local entry = row.entry
+            if not entry then return end
+            if self.sure == entry then
+                self.sure = nil
+                ns.WhisperDelete(entry)
+            else
+                self.sure = entry
+                Draw()
+                C_Timer.After(3, function()
+                    if self.sure == entry then
+                        self.sure = nil
+                        if list:IsShown() then Draw() end
+                    end
+                end)
+            end
+        end)
+        del:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:AddLine(L.WHISPER_MENU_DELETE, 1, 1, 1)
+            GameTooltip:AddLine(L.TIP_WHISPER_DELETE_BUTTON, 0.8, 0.8, 0.8, true)
+            GameTooltip:Show()
+        end)
+        del:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        row.del = del
+        local pinButton = CreateFrame("Button", nil, row)
+        pinButton:SetSize(size, size)
+        pinButton:SetPoint("RIGHT", del, "LEFT", -4, 0)
+        row.pin = pinButton:CreateTexture(nil, "ARTWORK")
+        row.pin:SetAllPoints()
+        local glow = pinButton:CreateTexture(nil, "HIGHLIGHT")
+        glow:SetAllPoints()
+        glow:SetColorTexture(1, 1, 1, 0.2)
+        pinButton:SetScript("OnClick", function() if row.entry then ns.WhisperTogglePin(row.entry) end end)
+        pinButton:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:AddLine(row.entry and row.entry.pinned and L.WHISPER_MENU_UNPIN or L.WHISPER_MENU_PIN, 1, 1, 1)
+            GameTooltip:Show()
+        end)
+        pinButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        row.pinButton = pinButton
+        row.text:SetPoint("RIGHT", pinButton, "LEFT", -6, 0)
         row.text:SetJustifyH("LEFT")
         row.text:SetWordWrap(false)
         row.text:SetTextColor(0.6, 0.6, 0.6)

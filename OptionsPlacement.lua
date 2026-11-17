@@ -222,6 +222,8 @@ function ns:UpdatePlacementBanner()
         b.snapCheck = PlaceCheck(L.SNAP, L.TIP_SNAP, "snap", 10)
         b.mergeCheck = PlaceCheck(L.MERGE_DROP, L.TIP_MERGE_DROP, "dropMerge", 250)
         b.gridCheck = PlaceCheck(L.GRID_SNAP, L.TIP_GRID_SNAP, "gridSnap", 10, 120)
+        -- placing to the pixel hides them with the grid row (the arrows of the pad take that room)
+        for _, c in ipairs({ b.snapCheck, b.mergeCheck, b.gridCheck }) do table.insert(b.gridRow, c) end
         b:HookScript("OnShow", function() ns:RefreshPlaceChecks() end)
         -- G: next grid size, V: empty blocks (only while the banner shows its own buttons)
         b.OnOwnKey = function(_, key)

@@ -1797,6 +1797,25 @@ function ns:BlockHints(key, cfg)
     return lines
 end
 
+-- The help under a list that replaces a tooltip, in two parts with a title each, so you know what a
+-- click does where: "In the list" (a click on a row), then "On the block" (the block's own clicks).
+-- Nothing when the player turned the hints off (General tab).
+function ns:ListHintText(rowLines, key, cfg)
+    if ns.db and ns.db.tooltipHints == false then return "" end
+    local out = {}
+    if rowLines and #rowLines > 0 then
+        out[#out + 1] = "|cffffffff" .. L.HINTS_IN_LIST .. "|r"
+        for _, line in ipairs(rowLines) do out[#out + 1] = "  " .. line end
+    end
+    local block = key and self:BlockHints(key, cfg or {}) or {}
+    if #block > 0 then
+        if #out > 0 then out[#out + 1] = " " end
+        out[#out + 1] = "|cffffffff" .. L.HINTS_ON_BLOCK .. "|r"
+        for _, line in ipairs(block) do out[#out + 1] = "  " .. line end
+    end
+    return table.concat(out, "\n")
+end
+
 local function OnEnter(self)
     local key = self.key
     local cfg, mod = ns.db.blocks[key], ns:GetModule(key)

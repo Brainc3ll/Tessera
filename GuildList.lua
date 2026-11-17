@@ -262,8 +262,7 @@ end
 
 -- The blue click hints of the block's tooltip, kept under the list (they go with the tooltip it replaces)
 local function HintText()
-    local lines = owner and owner.key and ns:BlockHints(owner.key, cfgNow or {}) or {}
-    return table.concat(lines, "\n")
+    return ns:ListHintText({ L.GUILDLIST_ROW_WHISPER, L.GUILDLIST_ROW_INVITE, L.GUILDLIST_ROW_MENU }, owner and owner.key, cfgNow)
 end
 
 -- Sizes the list for `rows` visible rows at `scale` percent; makes the rows it lacks

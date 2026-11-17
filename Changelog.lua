@@ -87,11 +87,12 @@ ns.CHANGELOG = {
                         .. " the setting and a button to come back. After an update, the window that announces it lists the new version's lines.",
                     "Guild, friends, group and whispers lists: the Shift + click menu also copies the name into the chat, adds the player"
                         .. " as a friend, shows the player's info (/who) and ignores the player. In the whispers list it also pins and deletes.",
-                    "Whispers list: Ctrl + click on a row deletes that whisper (a pinned one stays until you unpin it); a Clear button at the top"
+                    "Whispers list: each row has a star to pin it and a red cross to delete it (click twice)."
+                        .. " Ctrl + click on a row also deletes that whisper (a pinned one stays until you unpin it); a Clear button at the top"
                         .. " removes every whisper that is not pinned (a second click confirms).",
                     "Lists on hover: they take the look and the fonts of the game's tooltip, open on the side and with the alignment of the"
-                        .. " block's tooltip settings, show the tooltip's blue click hints (click, Shift click, right click, quick menu) under the"
-                        .. " list, and close when you hover another block, so two lists never overlap."
+                        .. " block's tooltip settings, show the blue click hints under the list in two parts (in the list, on the block),"
+                        .. " and close when you hover another block, so two lists never overlap."
                         .. " The Friends list also shows your status, the friends' notes and the same away and busy tags as the tooltip.",
                     "Preview mode and the demo fill the Guild, Friends and Group lists with made-up players, so you can see every list"
                         .. " without a guild, a group or friends.",
@@ -125,10 +126,11 @@ ns.CHANGELOG = {
                         .. " les lignes de la nouvelle version.",
                     "Listes de guilde, d'amis, de groupe et de chuchotements : le menu Maj + clic copie aussi le nom dans la discussion,"
                         .. " ajoute le joueur en ami, montre ses infos (/qui) et l'ignore. Dans les chuchotements, il épingle et supprime aussi.",
-                    "Liste des chuchotements : Ctrl + clic sur une ligne supprime ce chuchotement (un épinglé reste jusqu'à ce que tu retires l'épingle) ;"
+                    "Liste des chuchotements : chaque ligne a une étoile pour l'épingler et une croix rouge pour la supprimer (deux clics)."
+                        .. " Ctrl + clic sur une ligne supprime aussi ce chuchotement (un épinglé reste jusqu'à ce que tu retires l'épingle) ;"
                         .. " un bouton Vider, en haut, retire tous les chuchotements non épinglés (un second clic confirme).",
-                    "Listes au survol : elles prennent l'aspect et les polices de l'infobulle du jeu, montrent les lignes d'aide bleues de l'infobulle"
-                        .. " (clic, Maj + clic, clic droit, menu rapide) sous la liste, et se ferment quand tu survoles un autre bloc :"
+                    "Listes au survol : elles prennent l'aspect et les polices de l'infobulle du jeu, montrent l'aide bleue sous la liste"
+                        .. " en deux parties (dans la liste, sur le bloc), et se ferment quand tu survoles un autre bloc :"
                         .. " deux listes ne se chevauchent plus. Elles s'ouvrent du côté et avec l'alignement des réglages d'infobulle du bloc."
                         .. " La liste des amis montre aussi ton statut, les notes des amis et les mêmes marques absent et occupé que l'infobulle.",
                     "Le mode aperçu et la démo remplissent les listes Guilde, Amis et Groupe de joueurs inventés, pour voir chaque liste"

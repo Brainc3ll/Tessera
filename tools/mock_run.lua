@@ -3063,8 +3063,12 @@ for _, step in ipairs({
         -- (1.6) the blue click hints of the tooltip go under the lists too (unless the player turned them off)
         local hints = ns:BlockHints("friends", ns.db.blocks.friends)
         assert(hints[1] == ns.L.HINT_FRIENDS and hints[#hints] == ns.L.HINT_QUICK_MENU, "block hints: its click, then the quick menu")
+        local two = ns:ListHintText({ "row" }, "friends", ns.db.blocks.friends)
+        assert(two:find(ns.L.HINTS_IN_LIST, 1, true) and two:find(ns.L.HINTS_ON_BLOCK, 1, true)
+            and two:find(ns.L.HINTS_IN_LIST, 1, true) < two:find(ns.L.HINTS_ON_BLOCK, 1, true), "list hints: in the list, then on the block")
         ns.db.tooltipHints = false
         assert(#ns:BlockHints("friends", ns.db.blocks.friends) == 0, "hints off: no hint lines")
+        assert(ns:ListHintText({ "row" }, "friends", ns.db.blocks.friends) == "", "hints off: no list help")
         ns.db.tooltipHints = nil
         -- (1.6) preview mode: made-up players in every list
         ns.previewMode = true
@@ -3125,6 +3129,21 @@ for _, step in ipairs({
         mod.hoverList(block, { whispersHover = "list", whispersHistory = "5" })
         list.rows[1]:GetScript("OnClick")(list.rows[1], "RightButton")
         assert(not oldest.pinned and list:IsShown(), "a right click unpins, the list stays open")
+        -- (1.6) the row's small buttons: the star pins, the cross deletes on a second click
+        local starRow = list.rows[3]
+        local starEntry = starRow.entry
+        starRow.pinButton:GetScript("OnClick")(starRow.pinButton)
+        assert(starEntry.pinned, "the star pins the whisper")
+        -- pinned, it moves to the top of the list: its star is on the first row now
+        assert(list.rows[1].entry == starEntry, "a pinned whisper comes first")
+        list.rows[1].pinButton:GetScript("OnClick")(list.rows[1].pinButton)
+        assert(not starEntry.pinned, "the star unpins it")
+        local beforeDel = #ns.WhisperHistory({ whispersHistory = "20" })
+        local delRow = list.rows[3]
+        delRow.del:GetScript("OnClick")(delRow.del)
+        assert(#ns.WhisperHistory({ whispersHistory = "20" }) == beforeDel, "the first click on the cross only asks")
+        delRow.del:GetScript("OnClick")(delRow.del)
+        assert(#ns.WhisperHistory({ whispersHistory = "20" }) == beforeDel - 1, "the second click deletes")
         -- (1.6) Shift + click: the full menu (reply, invite, pin, delete, copy, friend, /who, ignore)
         local oldMenu, labels = MenuUtil, {}
         local node = { CreateTitle = function() end, CreateButton = function(_, label) labels[#labels + 1] = label end }
@@ -4287,6 +4306,7 @@ do
     if TesseraOptions.folded or not TesseraOptions:IsShown() then print("STEP ERROR: placing: options window not opened again") end
     -- Enter keeps the place; Ctrl + Z then undoes the whole placement
     ns:StartNudge(key)
+    if b.snapCheck and b.snapCheck:IsShown() then print("STEP ERROR: placing by pixel: the banner checks overlap the arrows") end
     for _ = 1, 3 do ns:NudgeBy(key, 1, 0) end
     b:GetScript("OnKeyDown")(b, "ENTER")
     local x5 = ns:GetNudgePosition(key)

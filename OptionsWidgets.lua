@@ -288,12 +288,13 @@ end
 -- then a track with a knob that slides (left: off, right: on) and the word Yes / No:
 -- a shape and a word, not only a color. Click, Enter or the gamepad's confirm flips it.
 local SWITCH_W = 150
-local function CreateSwitch(parent, label, getter, setter, isShown, tip)
+local function CreateSwitch(parent, label, getter, setter, isShown, tip, width)
+    local boxW = width or SWITCH_W -- a narrower switch leaves room for the list beside it
     local b = CreateFrame("Button", nil, parent)
-    b:SetSize(SWITCH_W, 44)
+    b:SetSize(boxW, 44)
     local title = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     title:SetPoint("TOPLEFT")
-    title:SetWidth(SWITCH_W)
+    title:SetWidth(boxW)
     title:SetJustifyH("LEFT")
     title:SetText(label)
     local titleH = math.max(12, title:GetStringHeight() or 12)

@@ -14,7 +14,7 @@ local FitRow, GROUP_PREFIX, GroupHead, IsGroup = Tools.FitRow, Tools.GROUP_PREFI
 local LAUNCHERS, LauncherKeys, NewLayout, NewRow = Tools.LAUNCHERS, Tools.LauncherKeys, Tools.NewLayout, Tools.NewRow
 local PAGE_LOOK, ROW_CONTROL_W, ROW_CONTROL_X, ROW_LABEL_W = Tools.PAGE_LOOK, Tools.ROW_CONTROL_W, Tools.ROW_CONTROL_X, Tools.ROW_LABEL_W
 local Register, RowHover, RowLabel, ScrollToBox = Tools.Register, Tools.RowHover, Tools.RowLabel, Tools.ScrollToBox
-local SWITCH_W, ScrollArea, SetField = Tools.SWITCH_W, Tools.ScrollArea, Tools.SetField
+local ScrollArea, SetField = Tools.ScrollArea, Tools.SetField
 
 
 ---------------------------------------------------------------------------
@@ -306,8 +306,9 @@ local function BuildBlockPage(page)
     -- selection list), then "Replace with..." and "Place by pixel"
     local top = NewLayout(page)
     local REPLACE_W, PLACE_W = 140, 140
+    local ENABLED_W, HIDE_W = 96, 112 -- the two switches stay narrow: the list needs room for a block name
     local getE, setE = Field("enabled")
-    local switch = top.Place(CreateSwitch(page, L.ENABLED, function() return getE() end, setE, nil, L.TIP_ENABLED), 1)
+    local switch = top.Place(CreateSwitch(page, L.ENABLED, function() return getE() end, setE, nil, L.TIP_ENABLED, ENABLED_W), 1)
     ns.blockSwitch = switch -- (tools/mock_run.lua)
     -- "Hide when empty", right of it: same setting as the Behaviour tab's check, within reach.
     -- Only for blocks that can be empty (friends, guild, mail...) or for a group / all blocks.
@@ -320,7 +321,7 @@ local function BuildBlockPage(page)
     local hideSwitch = CreateSwitch(page, L.HIDE_EMPTY, function() return getH() end, function(v)
         setH(v)
         ns:UpdateAllVisibility()
-    end, CanBeEmpty, L.TIP_HIDE_EMPTY)
+    end, CanBeEmpty, L.TIP_HIDE_EMPTY, HIDE_W)
     hideSwitch:SetPoint("TOPLEFT", switch, "TOPRIGHT", 6, 0)
     ns.hideEmptySwitch = hideSwitch -- (tools/mock_run.lua)
     -- the list sits right of the switches, on the same line (not a row of the page)
@@ -329,7 +330,7 @@ local function BuildBlockPage(page)
         function(v)
             S.selected = v
             ns:RefreshOptions()
-        end, nil, FULL_W - REPLACE_W - PLACE_W - 2 * SWITCH_W - 16, L.TIP_SELECTION)
+        end, nil, math.max(170, FULL_W - REPLACE_W - PLACE_W - ENABLED_W - HIDE_W - 16), L.TIP_SELECTION)
     -- next to "Hide when empty", or next to "Enabled" when that one is not shown for this block
     local origRefresh = hideSwitch.Refresh
     hideSwitch.Refresh = function(self)

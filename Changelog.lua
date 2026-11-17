@@ -37,6 +37,27 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.6.0",
+        date = "2026-11-17",
+        sections = {
+            {
+                kind = "new",
+                en = {
+                    "Guild block: a new setting, Member list, shows the members online under the mouse in place of the tooltip."
+                        .. " A click on a name whispers, a right click invites and Shift + click opens a menu.",
+                    "The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds."
+                        .. " It follows the block's own sort and leaders on top. A click on the block still opens the game's guild window.",
+                },
+                fr = {
+                    "Bloc Guilde : un nouveau réglage, Liste des membres, affiche les membres en ligne sous la souris à la place"
+                        .. " de l'infobulle. Un clic sur un nom chuchote, un clic droit invite et Maj + clic ouvre un menu.",
+                    "La liste a un champ de recherche (nom, zone, rang ou note), la molette et une barre de défilement pour les"
+                        .. " grosses guildes. Elle suit le tri du bloc et les chefs en tête. Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
+                },
+            },
+        },
+    },
+    {
         version = "1.5.1",
         date = "2026-11-15",
         sections = {

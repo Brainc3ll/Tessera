@@ -2948,6 +2948,73 @@ for _, step in ipairs({
         assert(all:find("Mo", 1, true) < all:find("Kaz", 1, true), "zone sort")
         C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet = oldFL, oldBN, oldInfo, oldC
     end,
+    -- clickable guild list (1.5.2): the click setting, the list, whisper, invite, search and scrolling
+    function()
+        local saved = { IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, GetGuildInfo, C_GuildInfo, C_PartyInfo, ChatFrameUtil }
+        IsInGuild = function() return true end
+        GetNumGuildMembers = function() return 30, 30 end
+        GetGuildInfo = function() return "The Mosaic" end
+        local asked = 0
+        C_GuildInfo = { GuildRoster = function() asked = asked + 1 end }
+        GetGuildRosterInfo = function(i)
+            return ("Member%02d-Realm"):format(i), "Member", 2, 10 + i, "Mage", i % 2 == 0 and "Orgrimmar" or "Tanaris", "",
+                "", true, i == 3 and 1 or 0, "MAGE"
+        end
+        local told, invited
+        ChatFrameUtil = { SendTell = function(n) told = n end }
+        C_PartyInfo = { InviteUnit = function(n) invited = n end }
+        local mod = ns.modules.guild
+        assert(mod.defaults.guildList == false, "the member list is off by default")
+        assert(mod.secureMacro == "/click GuildMicroButton", "a click on the block still opens the guild window")
+        local block = CreateFrame("Frame", nil, UIParent)
+        assert(not mod.hoverList(block, { guildList = false }), "setting off: the normal tooltip")
+        assert(mod.hoverList(block, { guildList = true }), "setting on: the list takes the tooltip's place")
+        local list = _G["TesseraGuildList"]
+        assert(list and list:IsShown(), "the list opens")
+        assert(asked == 1, "the roster is asked for when the list opens")
+        mod.hoverList(block, { guildList = true })
+        assert(asked == 1, "hovering again does not ask the roster again")
+        assert(#list.rows == 14 and list.rows[1]:IsShown() and list.rows[14]:IsShown(), "14 rows on screen for 30 members")
+        assert(list.rows[1].member.name == "Member01-Realm", "first row: the first member")
+        local click = list.rows[1]:GetScript("OnClick")
+        click(list.rows[2], "LeftButton")
+        assert(told == "Member02-Realm", "a click whispers the member: " .. tostring(told))
+        assert(not list:IsShown(), "the list closes after a whisper")
+        mod.hoverList(block, { guildList = true })
+        click(list.rows[4], "RightButton")
+        assert(invited == "Member04-Realm" and list:IsShown(), "a right click invites and keeps the list open: " .. tostring(invited))
+        -- search: name, zone, rank or note; the number of rows follows
+        list.box:SetText("member2")
+        list.box:GetScript("OnTextChanged")(list.box)
+        assert(list.rows[1].member.name == "Member20-Realm" and list.rows[10].member and not list.rows[11].member,
+            "search by name: 10 matches (Member20 to Member29)")
+        list.box:SetText("zzz")
+        list.box:GetScript("OnTextChanged")(list.box)
+        assert(not list.rows[1].member and list.empty:IsShown(), "search without a match: no rows, a message")
+        list.box:SetText("")
+        list.box:GetScript("OnTextChanged")(list.box)
+        -- scrolling: the wheel moves by 3, the first row follows
+        list:GetScript("OnMouseWheel")(list, -1)
+        assert(list.rows[1].member.name == "Member04-Realm", "the wheel scrolls three rows: " .. tostring(list.rows[1].member and list.rows[1].member.name))
+        for _ = 1, 20 do list:GetScript("OnMouseWheel")(list, -1) end
+        assert(list.rows[14].member.name == "Member30-Realm", "scrolling stops at the end of the list")
+        -- a member who is not online does not show, and the list follows the block's sort
+        GetGuildRosterInfo = function(i)
+            return ("Member%02d-Realm"):format(i), "Member", 2, 10 + i, "Mage", "A", "", "", i ~= 1, 0, "MAGE"
+        end
+        ns.db.blocks.guild = ns.db.blocks.guild or {}
+        local members = ns.GuildMembers({ guildSort = "level" })
+        assert(#members == 29 and members[1].name == "Member30-Realm", "online members only, highest level first")
+        -- the mouse is on neither the block nor the list: the list closes after a short moment
+        mod.hoverList(block, { guildList = true })
+        assert(list:IsShown(), "the list is open again")
+        list:GetScript("OnUpdate")(list, 0.2)
+        assert(list:IsShown(), "a short moment off the list: it stays")
+        list:GetScript("OnUpdate")(list, 0.2)
+        assert(list:IsShown() == false, "the list closes once the mouse stayed away")
+        IsInGuild = saved[1]; GetNumGuildMembers = saved[2]; GetGuildRosterInfo = saved[3]; GetGuildInfo = saved[4]
+        C_GuildInfo = saved[5]; C_PartyInfo = saved[6]; ChatFrameUtil = saved[7]
+    end,
     -- guild tooltip parts, item level and stats choices, time-left thresholds (1.5)
     function()
         local oldIn, oldNum, oldRoster, oldGI, oldInfo = IsInGuild, GetNumGuildMembers, GetGuildRosterInfo, C_GuildInfo, GetGuildInfo

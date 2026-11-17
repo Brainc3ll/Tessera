@@ -1706,6 +1706,11 @@ local function OnEnter(self)
         pcall(mod.customTooltip, self, cfg)
         return
     end
+    -- a block that shows a clickable list in place of the tooltip (the Guild block's member list)
+    if mod.hoverList then
+        local ok, shown = pcall(mod.hoverList, self, cfg)
+        if ok and shown then return end
+    end
     if not mod.tooltip and not mod.clickHint then return end
     ns.AnchorTooltip(self)
     GameTooltip:AddLine(ns:GetBlockName(key), 1, 0.82, 0)

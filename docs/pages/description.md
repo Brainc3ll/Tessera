@@ -11,6 +11,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 - 27 styles to match your UI: Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, or fantasy looks made from the game's own frames.
 - Place a bar to the exact pixel with the arrow keys. Style a whole bar at once.
 - DataBroker both ways: your Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
+- Guild member list: hover the Guild block to see who is online. Click a name to whisper, right-click to invite. Search field and scroll bar for big guilds.
 - Streamer mode hides other players' names, your other characters, your guild and your gold.
 - Accessibility: high contrast, fewer animations, a minimum text size and six reading fonts.
 - An options window with a search and a help panel for each setting. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
@@ -43,6 +44,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - 27 styles pour coller à ton interface : Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, ou des looks fantasy faits avec les cadres du jeu.
 - Place une barre au pixel près avec les flèches du clavier. Donne un style à toute une barre d'un coup.
 - DataBroker dans les deux sens : les plugins Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (ex-ChocolateBar).
+- Liste des membres de la guilde : survole le bloc Guilde pour voir qui est en ligne. Clique sur un nom pour chuchoter, clic droit pour inviter. Recherche et barre de défilement pour les grosses guildes.
 - Le mode streamer cache les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
 - Accessibilité : contraste élevé, moins d'animations, taille de texte minimale et six polices de lecture.
 - Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.

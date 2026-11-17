@@ -3,6 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.6.0 — 2026-11-17
+
+### New
+
+- Guild block: a new setting, Member list, shows the members online under the mouse in place of the tooltip. A click on a name whispers, a right click invites and Shift + click opens a menu.
+- The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds. It follows the block's own sort and leaders on top. A click on the block still opens the game's guild window.
+
 ## 1.5.1 — 2026-11-15
 
 - Thank you to Ahlen and Malkkav on the FlareUI Discord. Ahlen's idea of a data panel under the minimap started the talk where players tried Tessera, and Malkkav showed me how to measure performance. Players there also reported Tessera's memory use, which led to this version's change.

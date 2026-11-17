@@ -86,6 +86,26 @@ local function SortGuild(list, mode, leaders)
     end)
 end
 
+-- The online guild members, in the order the player chose (leaders first, then the sort), with the
+-- number of leaders on top: shared by the tooltip and the clickable list (GuildList.lua)
+function ns.GuildMembers(cfg)
+    local members = {}
+    local total = GetNumGuildMembers() or 0
+    for i = 1, total do
+        -- name, rank, rank index, level, class, zone, public note, officer note, online, status, class file
+        local name, rank, rankIndex, level, _, zone, note, _, online, status, class = GetGuildRosterInfo(i)
+        if online and name then
+            members[#members + 1] = { name = name, rank = rank, rankIndex = rankIndex or 99, level = level or 0,
+                zone = zone or "", note = note, class = class, status = status, order = i }
+        end
+    end
+    local leaders = tonumber(cfg and cfg.guildLeaders) or 0
+    SortGuild(members, cfg and cfg.guildSort, leaders)
+    local nLeaders = 0
+    while leaders > 0 and members[nLeaders + 1] and members[nLeaders + 1].rankIndex < leaders do nLeaders = nLeaders + 1 end
+    return members, nLeaders
+end
+
 ns:RegisterModule("friends", {
     label = "FRIENDS",
     icon = "Interface\\Icons\\INV_Misc_GroupNeedMore",
@@ -226,8 +246,9 @@ ns:RegisterModule("guild", {
         return ("%d / %d"):format(online or 0, total or 0)
     end,
     defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
-                 guildSort = "game", guildLeaders = "0", guildMax = "20" },
+                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildList = false },
     options = { COUNT_OPTION,
+                { kind = "check", field = "guildList", tab = "text", label = "GUILD_LIST", tip = "TIP_GUILD_LIST" },
                 { kind = "dropdown", field = "guildSort", section = "tooltip", tab = "text", label = "GUILD_SORT", tip = "TIP_GUILD_SORT",
                   values = { { key = "game", label = "FRIENDS_SORT_GAME" }, { key = "name", label = "FRIENDS_SORT_NAME" },
                              { key = "level", label = "FRIENDS_SORT_LEVEL" }, { key = "zone", label = "FRIENDS_SORT_ZONE" },
@@ -263,20 +284,7 @@ ns:RegisterModule("guild", {
             tt:AddLine(Masked(motd), 0.9, 0.9, 0.55, true)
         end
         -- online members first, then the order the player chose
-        local members = {}
-        for i = 1, total do
-            -- name, rank, rank index, level, class, zone, public note, officer note, online, status, class file
-            local name, rank, rankIndex, level, _, zone, note, _, online, _, class = GetGuildRosterInfo(i)
-            if online and name then
-                members[#members + 1] = { name = name, rank = rank, rankIndex = rankIndex or 99, level = level or 0,
-                    zone = zone or "", note = note, class = class, order = i }
-            end
-        end
-        local leaders = tonumber(cfg and cfg.guildLeaders) or 0
-        SortGuild(members, cfg and cfg.guildSort, leaders)
-        -- the leaders ("Leaders on top") come first and do not count in the number of members shown
-        local nLeaders = 0
-        while leaders > 0 and members[nLeaders + 1] and members[nLeaders + 1].rankIndex < leaders do nLeaders = nLeaders + 1 end
+        local members, nLeaders = ns.GuildMembers(cfg)
         -- one line: level (grey), name (class color), rank (gold), note (white); the zone on the right
         local function Line(m)
             local r, g, b = ClassColor(m.class)
@@ -304,6 +312,13 @@ ns:RegisterModule("guild", {
     end,
     secureMacro = "/click GuildMicroButton",
     clickHint = L.HINT_GUILD,
+    -- "Member list": a clickable list under the mouse in place of the tooltip (GuildList.lua)
+    hoverList = function(frame, cfg)
+        if cfg and cfg.guildList and IsInGuild() and ns.ShowGuildList then
+            ns:ShowGuildList(frame)
+            return true
+        end
+    end,
 })
 
 ---------------------------------------------------------------------------

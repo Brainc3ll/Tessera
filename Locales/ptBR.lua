@@ -1636,3 +1636,5 @@ L["TIP_STREAMER_HIDE_GUILD"] = "O nome da sua guilda e a mensagem do dia aparece
 L["STREAMER_HIDE_GOLD"] = "Ocultar seu ouro"
 L["TIP_STREAMER_HIDE_GOLD"] = "Seu ouro, a dica dele, o ouro da sessão, o custo de reparo e o valor dos seus itens cinza aparecem como ***."
 L["HELP_GENERAL_7"] = "- Nos ajustes próprios do bloco Streamer, quatro caixas escolhem o que o modo oculta: os nomes de outros jogadores, seus outros personagens, o nome da guilda, seu ouro. As quatro começam marcadas."
+L["GUILD_SHOW_NAME"] = "Mostrar o nome da guilda"
+L["TIP_GUILD_SHOW_NAME"] = "Escreve o nome da sua guilda antes do número de membros, no bloco. O modo streamer o oculta quando \"Ocultar o nome da guilda\" está marcado."

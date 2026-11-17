@@ -1636,3 +1636,5 @@ L["TIP_STREAMER_HIDE_GUILD"] = "Der Name deiner Gilde und ihre Nachricht des Tag
 L["STREAMER_HIDE_GOLD"] = "Dein Gold verbergen"
 L["TIP_STREAMER_HIDE_GOLD"] = "Dein Gold, sein Tooltip, das Gold der Sitzung, die Reparaturkosten und der Wert deines Plunders erscheinen als ***."
 L["HELP_GENERAL_7"] = "- In den eigenen Einstellungen des Streamer-Blocks wählen vier Kästchen, was der Modus verbirgt: Namen anderer Spieler, deine anderen Charaktere, den Gildennamen, dein Gold. Anfangs sind alle vier aktiv."
+L["GUILD_SHOW_NAME"] = "Gildennamen anzeigen"
+L["TIP_GUILD_SHOW_NAME"] = "Schreibt den Namen deiner Gilde vor die Mitgliederzahl, im Block. Der Streamer-Modus verbirgt ihn, wenn \"Gildennamen verbergen\" aktiv ist."

@@ -1636,3 +1636,5 @@ L["TIP_STREAMER_HIDE_GUILD"] = "El nombre de tu hermandad y su mensaje del día 
 L["STREAMER_HIDE_GOLD"] = "Ocultar tu oro"
 L["TIP_STREAMER_HIDE_GOLD"] = "Tu oro, su descripción, el oro de la sesión, el coste de reparación y el valor de tus objetos grises se muestran como ***."
 L["HELP_GENERAL_7"] = "- En los ajustes propios del bloque Streamer, cuatro casillas eligen lo que oculta el modo: los nombres de otros jugadores, tus otros personajes, el nombre de hermandad, tu oro. Las cuatro están marcadas al principio."
+L["GUILD_SHOW_NAME"] = "Mostrar el nombre de hermandad"
+L["TIP_GUILD_SHOW_NAME"] = "Escribe el nombre de tu hermandad antes del número de miembros, en el bloque. El modo streamer lo oculta cuando \"Ocultar el nombre de hermandad\" está marcado."

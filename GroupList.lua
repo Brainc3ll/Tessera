@@ -361,11 +361,8 @@ function ns:ShowGroupList(block, cfg)
     if list:IsShown() then away = 0 return end
     list:SetFrameStrata("TOOLTIP")
     cfgNow = cfg
-    if cfg and cfg.groupListLook == "window" then
-        if ns.SkinWindow then ns:SkinWindow(list) end
-    else
-        ns.ApplyTooltipLook(list) -- the game's own tooltip look (or the look another addon gives it)
-    end
+    -- the game's own tooltip look (or the look another addon gives it), or Tessera's windows
+    ns.ApplyListLook(list, cfg and cfg.groupListLook == "window")
     -- after the skin, which sets the windows' own scale: the block's "List size" wins
     Layout(cfg and cfg.groupListRows, cfg and cfg.groupListScale)
     ns.PlaceHoverList(list, owner) -- the tooltip's own side and alignment settings

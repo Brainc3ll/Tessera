@@ -3283,7 +3283,21 @@ for _, step in ipairs({
         GetGuildInfo = function() return "The Mosaic" end
         assert(not ns.GuildEmblem(), "no emblem for another guild")
         GetGuildInfo, C_AddOns = oldGI2, oldAddOns
+        assert(not mod.update({}):find("The Mosaic", 1, true), "no guild name in the block by default")
+        assert(mod.update({ guildShowName = true }):find("The Mosaic", 1, true), "Show the guild name")
+        ns.sv.streamerMode = true
+        assert(not mod.update({ guildShowName = true }):find("The Mosaic", 1, true), "streamer mode hides the name in the block too")
+        ns.sv.streamerMode = nil
         assert(list.rows[1].icon:IsShown(), "class icons on by default")
+        -- (1.6.1) window look then tooltip look: the window skin is cleared first
+        list:Hide()
+        mod.hoverList(block, { guildShow = "list", guildListLook = "window" })
+        assert(list.skinKind ~= "tooltip", "window look applied")
+        list:Hide()
+        mod.hoverList(block, { guildShow = "list", guildListLook = "tooltip" })
+        assert(list.skinKind == "tooltip", "back to the tooltip look")
+        list:Hide()
+        mod.hoverList(block, { guildShow = "list" })
         list:Hide()
         mod.hoverList(block, { guildShow = "list", guildListIcons = false })
         assert(not list.rows[1].icon:IsShown(), "Class icons unchecked: no icon")

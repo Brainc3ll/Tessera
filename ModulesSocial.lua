@@ -421,13 +421,17 @@ ns:RegisterModule("guild", {
     update = function(cfg)
         if not IsInGuild() then return L.NO_GUILD end
         local total, online = GetNumGuildMembers()
-        if cfg and cfg.countFormat == "online" then return tostring(online or 0) end
-        return ("%d / %d"):format(online or 0, total or 0)
+        local text = (cfg and cfg.countFormat == "online") and tostring(online or 0) or ("%d / %d"):format(online or 0, total or 0)
+        -- "Show the guild name" (off by default): the name before the count (hidden by streamer mode)
+        local name = cfg and cfg.guildShowName and GetGuildInfo("player")
+        if name then text = Masked(name, "guild") .. "  " .. text end
+        return text
     end,
-    defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
+    defaults = { countFormat = "onlineTotal", guildShowName = false, guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
                  guildSort = "game", guildLeaders = "0", guildMax = "20", guildShow = "list", guildListRows = 14, guildListIcons = true,
                  guildListScale = 100, guildListLook = "tooltip" },
     options = { COUNT_OPTION,
+                { kind = "check", field = "guildShowName", tab = "text", label = "GUILD_SHOW_NAME", tip = "TIP_GUILD_SHOW_NAME" },
                 { kind = "dropdown", field = "guildShow", tab = "text", label = "GUILD_SHOW", tip = "TIP_GUILD_SHOW",
                   values = { { key = "tooltip", label = "GUILD_SHOW_TOOLTIP" }, { key = "list", label = "GUILD_SHOW_LIST" } } },
                 { kind = "slider", field = "guildListRows", tab = "text", label = "GUILD_LIST_ROWS", tip = "TIP_GUILD_LIST_ROWS",

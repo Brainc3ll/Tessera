@@ -54,6 +54,9 @@ ns.CHANGELOG = {
             { en = "Streamer mode: choose what it hides (other players, your characters, guild name, gold).",
               fr = "Mode streamer : choisis ce qu'il cache (autres joueurs, tes personnages, nom de guilde, or).",
               show = { block = "streamer", label = "STREAMER_HIDE_PLAYERS" } },
+            { en = "Guild block: show your guild's name before the member count.",
+              fr = "Bloc Guilde : affiche le nom de ta guilde avant le nombre de membres.",
+              show = { block = "guild", label = "GUILD_SHOW_NAME" } },
             { en = "New Essentials layout: one bar where every block stays shown, the start of a first install.",
               fr = "Nouvelle disposition L'essentiel : une barre où chaque bloc reste affiché, le départ d'une première installation." },
         },
@@ -62,6 +65,7 @@ ns.CHANGELOG = {
               en = {
                 "Streamer mode: four checkboxes in the Streamer block's own settings choose what it hides: other players' names, your other characters, the"
                     .. " guild name and your gold. All four are on, as before; uncheck the guild name if your guild is part of your stream.",
+                "Guild block: a new setting, Show the guild name (off by default), writes your guild's name before the member count.",
                 "New layout, Essentials: one bar at the top with talents, gold, bags, durability, guild, friends, FPS, played time"
                     .. " and whispers, every block shown even at zero. A first install starts with it; your layout does not change.",
               },
@@ -69,6 +73,7 @@ ns.CHANGELOG = {
                 "Mode streamer : quatre cases dans les réglages du bloc Streamer choisissent ce qu'il cache :"
                     .. " les noms des autres joueurs, tes autres personnages,"
                     .. " le nom de guilde et ton or. Les quatre sont cochées, comme avant ; décoche le nom de guilde si ta guilde fait partie de ton stream.",
+                "Bloc Guilde : un nouveau réglage, Afficher le nom de guilde (décoché par défaut), écrit le nom de ta guilde avant le nombre de membres.",
                 "Nouvelle disposition, L'essentiel : une barre en haut avec talents, or, sacs, durabilité, guilde, amis, FPS, temps de jeu"
                     .. " et chuchotements, chaque bloc affiché même à zéro. Une première installation part de celle-ci ; ta disposition ne change pas.",
               },
@@ -77,10 +82,12 @@ ns.CHANGELOG = {
               en = {
                 "Quick tour: the layouts step says in big letters that the layouts are examples and that Tessera has more than 50 blocks.",
                 "After an update, the window lists the news of every version since yours.",
+                "Lists on hover: switching a list between the tooltip look and the window look no longer leaves the old look showing through.",
               },
               fr = {
                 "Visite guidée : l'étape des dispositions dit en gros qu'elles ne sont que des exemples et que Tessera a plus de 50 blocs.",
                 "Après une mise à jour, la fenêtre liste les nouveautés de chaque version depuis la tienne.",
+                "Listes au survol : passer une liste du style infobulle au style fenêtre ne laisse plus l'ancien style transparaître.",
               },
             },
             { kind = "fixed",

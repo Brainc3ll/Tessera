@@ -273,7 +273,7 @@ function ns:ShowWhisperList(block, cfg)
     cfgNow = cfg
     if list:IsShown() then away = 0 return end
     list:SetFrameStrata("TOOLTIP") -- back on top after a menu
-    ns.ApplyTooltipLook(list) -- the game's own tooltip look (or the look another addon gives it)
+    ns.ApplyListLook(list, false) -- the game's own tooltip look (or the look another addon gives it)
     list:SetScale((ns.db and ns.db.tooltipScale) or 1)
     ns.PlaceHoverList(list, owner) -- the tooltip's own side and alignment settings
     Draw()

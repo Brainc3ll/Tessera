@@ -1799,6 +1799,7 @@ function ns.ApplyTooltipLook(frame)
                         to:SetVertexColor(from:GetVertexColor())
                     end
                     if name:find("Corner") and from.GetSize then to:SetSize(from:GetSize()) end
+                    if to.Show then to:Show() end
                 end
             end
             return
@@ -1812,6 +1813,23 @@ function ns.ApplyTooltipLook(frame)
         })
         frame:SetBackdropColor(0.07, 0.07, 0.1, 0.96)
         frame:SetBackdropBorderColor(1, 1, 1, 1)
+    end
+end
+
+-- A list under the mouse takes the look of a tooltip or of Tessera's windows (its "List look"
+-- setting). Going from one to the other first clears the previous look: the two share the frame's
+-- nine pieces, so a look left half in place would show through the new one.
+function ns.ApplyListLook(frame, window)
+    if window then
+        frame.tesseraTipNine = nil -- (the window skin resets the pieces: skinKind is "tooltip")
+        if ns.SkinWindow then ns:SkinWindow(frame) end
+    else
+        if frame.skinKind and frame.skinKind ~= "tooltip" then
+            ns:ApplySkin(frame, { kind = "tooltip" }) -- a kind of its own: clears the window's skin
+            frame.tesseraTipNine = nil
+        end
+        ns.ApplyTooltipLook(frame)
+        frame.skinKind = "tooltip"
     end
 end
 

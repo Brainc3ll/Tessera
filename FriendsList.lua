@@ -389,11 +389,8 @@ function ns:ShowFriendsList(block, cfg)
     if list:IsShown() then away = 0 return end
     list:SetFrameStrata("TOOLTIP")
     cfgNow = cfg
-    if cfg and cfg.friendsListLook == "window" then
-        if ns.SkinWindow then ns:SkinWindow(list) end
-    else
-        ns.ApplyTooltipLook(list) -- the game's own tooltip look (or the look another addon gives it)
-    end
+    -- the game's own tooltip look (or the look another addon gives it), or Tessera's windows
+    ns.ApplyListLook(list, cfg and cfg.friendsListLook == "window")
     -- after the skin, which sets the windows' own scale: the block's "List size" wins
     Layout(cfg and cfg.friendsListRows, cfg and cfg.friendsListScale)
     ns.PlaceHoverList(list, owner) -- the tooltip's own side and alignment settings

@@ -1629,3 +1629,5 @@ L["TIP_STREAMER_HIDE_GOLD"] = "Your gold, its tooltip, gold this session, the re
 L["TIP_STREAMER_HIDE_GUILD"] = "Your guild's name and its message of the day show as ***. Uncheck it if your guild is part of your stream."
 L["TIP_STREAMER_HIDE_PLAYERS"] = "Friends, guild members, group, whispers, mail: their names, notes and zones show as ***."
 L["TUTORIAL_EXAMPLES"] = "These layouts are only examples. Tessera has more than 50 blocks: the Help tab and its demo mode show them all."
+L["GUILD_SHOW_NAME"] = "Show the guild name"
+L["TIP_GUILD_SHOW_NAME"] = "Writes your guild's name before the member count, in the block. Streamer mode hides it when \"Hide the guild name\" is checked."

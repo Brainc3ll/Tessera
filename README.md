@@ -283,7 +283,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
 | `Profiles.lua` | Profile export / import (compact text; older texts still read), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
 | `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
-| `Changelog.lua` | Version history for the in-game About tab (Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
+| `Changelog.lua` | Version history for the in-game About tab (What's new topic: each entry's `highlights`, one short line per new thing with an optional `show` target; Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
 | `Modules.lua` | Tools shared by the data blocks (thresholds, durations, money, item counts; `ns.BlockTools`), the order of the blocks (`ns.MODULE_ORDER`) and the guide to adding a block. |
 | `ModulesCharacter.lua` | Data blocks about your character: gold, bags, durability, experience, rested, stats, regeneration, speed, talents, item level, pet, buffs, corpse. **Add a block in the file of its category.** |
 | `ModulesSocial.lua` | Data blocks about other players: friends, guild, group, whispers, mail, loot. |

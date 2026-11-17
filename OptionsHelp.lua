@@ -182,6 +182,20 @@ local function BuildTopicPage(page, getSections, bottomRoom)
     text:SetSpacing(3)
 
     local buttons, sections, chapters, groupLines = {}, {}, {}, {}
+    -- rows of a "What's new" topic: a version title, or a line with its "Show me" button
+    local rowPool = {}
+    local SHOW_W = 110
+    local function NewsRow(n)
+        local row = rowPool[n]
+        if row then return row end
+        row = { text = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight") }
+        row.text:SetJustifyH("LEFT")
+        row.text:SetSpacing(2)
+        row.button = CreateButton(content, L.SHOW_ME, function(self) if self.spec and ns.ShowWhatsNewTarget then
+            ns:ShowWhatsNewTarget(self.spec) end end, nil, SHOW_W - 10, L.TIP_SHOW_ME)
+        rowPool[n] = row
+        return row
+    end
 
     local function ShowSection(index)
         local section = sections[index]
@@ -222,6 +236,34 @@ local function BuildTopicPage(page, getSections, bottomRoom)
             elseif c then
                 c.line:Hide()
                 c.text:Hide()
+            end
+        end
+        -- the "What's new" rows, under the text
+        local rows = section.rows or {}
+        for n = 1, math.max(#rows, #rowPool) do
+            local item = rows[n]
+            if item then
+                local row = NewsRow(n)
+                local heading = item.heading ~= nil
+                row.text:SetFontObject(heading and "GameFontNormal" or "GameFontHighlight")
+                row.text:SetWidth(heading and textW or (textW - SHOW_W - 8))
+                row.text:SetText(heading and item.heading or ("- " .. item.text))
+                row.text:ClearAllPoints()
+                row.text:SetPoint("TOPLEFT", above, "BOTTOMLEFT", 0, heading and -16 or -8)
+                row.text:Show()
+                local h = row.text:GetStringHeight()
+                row.button.spec = item.show
+                row.button:SetShown(item.show ~= nil)
+                if item.show then
+                    row.button:ClearAllPoints()
+                    row.button:SetPoint("LEFT", row.text, "LEFT", textW - SHOW_W + 4, 0)
+                    h = math.max(h, row.button:GetHeight())
+                end
+                height = height + (heading and 16 or 8) + h
+                above = row.text
+            elseif rowPool[n] then
+                rowPool[n].text:Hide()
+                rowPool[n].button:Hide()
             end
         end
         content:SetHeight(height + 20)
@@ -339,8 +381,23 @@ end
 ---------------------------------------------------------------------------
 local GetMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or function() end
 local SOURCE_URL = "https://github.com/Brainc3ll/Tessera"
-local CHANGELOG_TOPIC = 2 -- second topic of the About tab
+local WHATS_NEW_TOPIC = 2 -- second topic of the About tab
+local CHANGELOG_TOPIC = 3
 -- S.aboutContent: content frame of the About tab, to open the changelog topic
+
+-- "What's new": each version and its short lines, with a "Show me" button when the line has a place
+local function WhatsNewRows()
+    local lang = GetLocale() == "frFR" and "fr" or "en"
+    local rows = {}
+    for _, entry in ipairs(ns.CHANGELOG or {}) do
+        local lines = ns.ChangelogHighlights(entry, lang)
+        if #lines > 0 then
+            rows[#rows + 1] = { heading = ("%s  |cff999999%s|r"):format(entry.version, entry.date or "") }
+            for _, line in ipairs(lines) do rows[#rows + 1] = line end
+        end
+    end
+    return rows
+end
 
 local function ChangelogText()
     local lang = GetLocale() == "frFR" and "fr" or "en"
@@ -475,6 +532,7 @@ local function BuildAboutPage(page)
     S.aboutContent = BuildTopicPage(page, function()
         sections = sections or {
             { title = L.TAB_ABOUT, body = AboutText(), raw = true },
+            { title = L.WHATS_NEW_TITLE, body = L.WHATS_NEW_INTRO, raw = true, rows = WhatsNewRows() },
             { title = L.CHANGELOG_TITLE, body = ChangelogText(), raw = true },
             { title = L.LICENSES_TITLE, body = LicensesText(), raw = true },
         }
@@ -498,6 +556,7 @@ local sideWindows = {}
 Tools.BuildAboutPage = BuildAboutPage
 Tools.BuildHelpPage = BuildHelpPage
 Tools.CHANGELOG_TOPIC = CHANGELOG_TOPIC
+Tools.WHATS_NEW_TOPIC = WHATS_NEW_TOPIC
 Tools.GetMetadata = GetMetadata
 Tools.sideWindows = sideWindows
 

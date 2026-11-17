@@ -4045,6 +4045,30 @@ do
     if ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not take the block off the screen") end
     switch:Activate()
     if not ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not put the block back") end
+    -- (1.6) "What's new": every line's "Show me" finds its setting, the popup lists the version's lines
+    for _, entry in ipairs(ns.CHANGELOG) do
+        for _, line in ipairs(ns.ChangelogHighlights(entry, "fr")) do
+            if not line.text or #line.text > 120 then print("STEP ERROR: what's new line too long or empty in " .. entry.version) end
+            local spec = line.show
+            if spec then
+                if spec.label and not ns.L[spec.label] then print("STEP ERROR: what's new: unknown label " .. spec.label) end
+                if spec.page and not ns.OptionsTools[spec.page] then print("STEP ERROR: what's new: unknown page " .. spec.page) end
+                local found = not spec.label
+                for _, r in ipairs(ns.optionRows) do
+                    if spec.label and r.label == ns.L[spec.label] then found = true end
+                end
+                if not found then print("STEP ERROR: what's new: no setting row for " .. tostring(spec.label)) end
+                local ok, err = pcall(ns.ShowWhatsNewTarget, ns, spec)
+                if not ok then print("STEP ERROR: what's new target " .. tostring(spec.label) .. ": " .. tostring(err)) end
+            end
+        end
+    end
+    local popup = ns.WhatsNewPopupText(ns.CHANGELOG[1].version)
+    if not popup:find(ns.ChangelogHighlights(ns.CHANGELOG[1], "en")[1].text, 1, true)
+        and not popup:find(ns.ChangelogHighlights(ns.CHANGELOG[1], "fr")[1].text, 1, true) then
+        print("STEP ERROR: the update popup does not list the version's lines")
+    end
+    ns:OpenOptionsFor(key)
     -- (1.6) "Hide when empty" beside it: the same setting as the Behaviour tab's check
     local hs = ns.hideEmptySwitch
     if not hs then print("STEP ERROR: no \"Hide when empty\" switch beside \"Enabled\"")

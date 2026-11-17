@@ -5,7 +5,7 @@ local L = ns.L
 -- Shared with the other Options*.lua files through ns.OptionsTools (see Options.lua).
 local Tools = ns.OptionsTools
 local S = Tools.S
-local Blink, CHANGELOG_TOPIC, GetMetadata = Tools.Blink, Tools.CHANGELOG_TOPIC, Tools.GetMetadata
+local Blink, WHATS_NEW_TOPIC, GetMetadata = Tools.Blink, Tools.WHATS_NEW_TOPIC, Tools.GetMetadata
 local PAGE_ABOUT, PAGE_ACCESS, PAGE_LOOK = Tools.PAGE_ABOUT, Tools.PAGE_ACCESS, Tools.PAGE_LOOK
 
 
@@ -265,8 +265,39 @@ function ns:StartTutorial()
 end
 
 -- After an update: offers to read what's new (About tab, Changelog topic), once per version
+-- "Show me" of a "What's new" line: opens the place it talks about and makes the setting blink.
+-- spec: { block = key } (a block's page), { page = "PAGE_..." } (a tab), and a label (a text key)
+-- to find the setting there. A block the profile lacks: the first block takes its place.
+function ns:ShowWhatsNewTarget(spec)
+    if type(spec) ~= "table" then return end
+    local block = spec.block
+    if block and not (ns.db.blocks[block]) then block = ns.order[1] end
+    local page = spec.page and Tools[spec.page]
+    if block then ns:OpenOptionsFor(block) elseif page then ns:OpenOptions(page) else ns:OpenOptions() end
+    local label = spec.label and L[spec.label]
+    if not label then return end
+    for _, r in ipairs(ns.optionRows) do
+        if r.label == label and (not block or not r.block or r.block == block) and (not page or r.page == page) then
+            ns.GoToOption(r, ns.ShowOptionsPage)
+            return
+        end
+    end
+end
+
+-- The update popup: the version and its "What's new" lines (all of them, they are short)
+local function WhatsNewPopupText(version)
+    local lang = GetLocale() == "frFR" and "fr" or "en"
+    local lines = { L.WHATS_NEW_TEXT:format(version) }
+    for _, entry in ipairs(ns.CHANGELOG or {}) do
+        if entry.version == version then
+            for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do lines[#lines + 1] = "- " .. line.text end
+        end
+    end
+    return table.concat(lines, "\n")
+end
+
 StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
-    text = L.WHATS_NEW_TEXT,
+    text = "%s",
     button1 = L.WHATS_NEW_SHOW,
     button2 = L.WELCOME_LATER,
     timeout = 0,
@@ -274,19 +305,21 @@ StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
     hideOnEscape = true,
     OnAccept = function()
         ns:OpenOptions(PAGE_ABOUT)
-        if S.aboutContent then S.aboutContent:ShowTopic(CHANGELOG_TOPIC) end
+        if S.aboutContent then S.aboutContent:ShowTopic(WHATS_NEW_TOPIC) end
     end,
 }
 
 -- Shows the welcome popup once per saved-variables file (first install), or the
 -- "what's new" popup when the installed version changed since last time
+ns.WhatsNewPopupText = WhatsNewPopupText -- (tools/mock_run.lua)
+
 function ns:ShowWelcomeIfNeeded()
     if not self.sv then return end
     local version = GetMetadata and GetMetadata(ADDON, "Version") or nil
     -- (welcomed but no version saved: installed before this popup existed, i.e. updated)
     if self.sv.welcomed and version and self.sv.lastVersion ~= version then
         self.sv.lastVersion = version
-        StaticPopup_Show("TESSERA_WHATS_NEW", version)
+        StaticPopup_Show("TESSERA_WHATS_NEW", WhatsNewPopupText(version))
         return
     end
     self.sv.newsSeen = nil -- the old "What's new in 1.3" window is gone

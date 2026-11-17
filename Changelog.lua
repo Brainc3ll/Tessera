@@ -35,10 +35,42 @@ function ns.ChangelogSections(entry, lang)
     return out
 end
 
+-- The "What's new" lines of an entry: { { text = ..., show = spec or nil }, ... } (spec: where the
+-- "Show me" button goes, see ns:ShowWhatsNewTarget in OptionsTour.lua)
+function ns.ChangelogHighlights(entry, lang)
+    local out = {}
+    for _, h in ipairs(entry.highlights or {}) do
+        out[#out + 1] = { text = h[lang] or h.en, show = h.show }
+    end
+    return out
+end
+
 ns.CHANGELOG = {
     {
         version = "1.6.0",
         date = "2026-11-17",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Guild, Friends and Group: hover the block for a clickable list (whisper, invite, search).",
+              fr = "Guilde, Amis et Groupe : survole le bloc pour une liste cliquable (chuchoter, inviter, rechercher).",
+              show = { block = "guild", label = "GUILD_SHOW" } },
+            { en = "Whispers: the last 20 stay after a reload; pin the ones you must not forget.",
+              fr = "Chuchotements : les 20 derniers restent après un rechargement ; épingle ceux à ne pas oublier.",
+              show = { block = "whispers", label = "WHISPERS_HOVER" } },
+            { en = "Shift + click a name in a list: copy it, add a friend, /who or ignore.",
+              fr = "Maj + clic sur un nom d'une liste : le copier, ajouter en ami, /qui ou ignorer." },
+            { en = "\"Hide when empty\" sits next to \"Enabled\", at the top of each block's page.",
+              fr = "« Masquer si vide » se place à côté de « Activé », en haut de la page de chaque bloc.",
+              show = { block = "friends" } },
+            { en = "Placement: choose whether dropped blocks merge and whether they snap to the grid.",
+              fr = "Placement : choisis si les blocs posés fusionnent et s'ils s'aimantent à la grille.",
+              show = { page = "PAGE_GENERAL", label = "MERGE_DROP" } },
+            { en = "Freeze a group from its settings: no block joins it any more.",
+              fr = "Fige un groupe depuis ses réglages : plus aucun bloc ne s'y ajoute.",
+              show = { block = "gold", label = "FREEZE_GROUP" } },
+            { en = "/tessera preview fills the lists with made-up players.",
+              fr = "/tessera preview remplit les listes de joueurs inventés." },
+        },
         sections = {
             {
                 kind = "new",
@@ -51,6 +83,8 @@ ns.CHANGELOG = {
                         .. " A click on the block still opens the game's guild window.",
                     "Block settings: a \"Hide when empty\" switch sits next to the block's \"Enabled\" switch (the \"On screen\" switch, renamed),"
                         .. " for blocks that can have nothing to show.",
+                    "What's new, in the About tab: one short line for each new thing, version by version, with a Show me button that opens"
+                        .. " the setting. After an update, the window that announces it lists the new version's lines.",
                     "Guild, friends and group lists: the Shift + click menu also copies the name into the chat, adds the player as a friend,"
                         .. " asks who it is (/who) and ignores the player.",
                     "Whispers list: Ctrl + click on a row deletes that whisper (a pinned one stays until you unpin it); a Clear button at the top"
@@ -86,6 +120,8 @@ ns.CHANGELOG = {
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
                     "Réglages du bloc : un interrupteur « Masquer si vide » se place à côté de l'interrupteur « Activé » du bloc"
                         .. " (l'ancien « Sur l'écran », renommé), pour les blocs qui peuvent n'avoir rien à montrer.",
+                    "Quoi de neuf, dans l'onglet À propos : une ligne courte par nouveauté, version par version, avec un bouton Montre-moi"
+                        .. " qui ouvre le réglage. Après une mise à jour, la fenêtre qui l'annonce liste les lignes de la nouvelle version.",
                     "Listes de guilde, d'amis et de groupe : le menu Maj + clic copie aussi le nom dans la discussion, ajoute le joueur en ami,"
                         .. " demande qui c'est (/qui) et ignore le joueur.",
                     "Liste des chuchotements : Ctrl + clic sur une ligne supprime ce chuchotement (un épinglé reste jusqu'à ce que tu retires l'épingle) ;"
@@ -130,6 +166,11 @@ ns.CHANGELOG = {
     {
         version = "1.5.1",
         date = "2026-11-15",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Less memory, and no more short pauses when you move blocks or close the options.",
+              fr = "Moins de mémoire, et plus de petites pauses quand tu déplaces des blocs ou fermes les options." },
+        },
         sections = {
             { kind = "intro",
               en = {
@@ -197,6 +238,19 @@ ns.CHANGELOG = {
     {
         version = "1.5.0",
         date = "2026-11-15",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Choose the parts each tooltip shows (gold, bags, durability, guild...).",
+              fr = "Choisis les parties de chaque infobulle (or, sacs, durabilité, guilde...).",
+              show = { block = "gold" } },
+            { en = "Reset session: your gold, XP and reputation gains start again from zero.",
+              fr = "Réinitialiser la session : tes gains d'or, d'XP et de réputation repartent de zéro." },
+            { en = "Settings sit in boxes with a Reset button; the search says where a setting is.",
+              fr = "Les réglages sont rangés en cadres avec un bouton Réinitialiser ; la recherche dit où se trouve un réglage." },
+            { en = "Line a tooltip up with the left edge, the center or the right edge of its block.",
+              fr = "Aligne une infobulle sur le bord gauche, le centre ou le bord droit de son bloc.",
+              show = { block = "gold", label = "TOOLTIP_ALIGN" } },
+        },
         sections = {
             { kind = "new",
               en = {
@@ -341,6 +395,12 @@ ns.CHANGELOG = {
     {
         version = "1.4.0",
         date = "2026-11-14",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Six fonts made for easier reading (low vision, dyslexia).",
+              fr = "Six polices pour lire plus facilement (malvoyance, dyslexie).",
+              show = { page = "PAGE_ACCESS", label = "FONT" } },
+        },
         sections = {
             { kind = "new",
               en = {
@@ -393,6 +453,12 @@ ns.CHANGELOG = {
     {
         version = "1.3.2",
         date = "2026-11-14",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Aurora style, for DaylightUI.",
+              fr = "Style Aurora, pour DaylightUI.",
+              show = { page = "PAGE_LOOK" } },
+        },
         sections = {
             { kind = "new",
               en = {
@@ -433,6 +499,15 @@ ns.CHANGELOG = {
     {
         version = "1.3.1",
         date = "2026-11-12",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Bronze and gold style, after FlareUI 6's settings window.",
+              fr = "Style Bronze et or, d'après la fenêtre de réglages de FlareUI 6.",
+              show = { page = "PAGE_LOOK" } },
+            { en = "Automatic style: your blocks follow the interface you installed.",
+              fr = "Style automatique : tes blocs suivent l'interface que tu as installée.",
+              show = { page = "PAGE_LOOK" } },
+        },
         sections = {
             { kind = "new",
               en = {
@@ -485,6 +560,17 @@ ns.CHANGELOG = {
     {
         version = "1.3.0",
         date = "2026-11-11",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Accessibility tab: high contrast, minimum text size, fewer animations.",
+              fr = "Onglet Accessibilité : contraste élevé, taille de texte minimale, moins d'animations.",
+              show = { page = "PAGE_ACCESS", label = "HIGH_CONTRAST" } },
+            { en = "Place by pixel: move a group with the arrow keys.",
+              fr = "Placer au pixel : déplace un groupe avec les flèches du clavier.",
+              show = { block = "gold" } },
+            { en = "A new options window: search, help panel, one setting per row.",
+              fr = "Nouvelle fenêtre d'options : recherche, panneau d'aide, un réglage par ligne." },
+        },
         sections = {
             { kind = "new",
               en = {
@@ -621,6 +707,13 @@ ns.CHANGELOG = {
     {
         version = "1.2.0",
         date = "2026-11-07",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "Style a whole bar of merged blocks at once.",
+              fr = "Donne un style à toute une barre de blocs d'un coup." },
+            { en = "Friends: the count takes your status color; Battle.net friends join the tooltip.",
+              fr = "Amis : le compte prend la couleur de ton statut ; les amis Battle.net arrivent dans l'infobulle." },
+        },
         sections = {
             { kind = "new",
               en = {
@@ -700,6 +793,16 @@ ns.CHANGELOG = {
     {
         version = "1.1.0",
         date = "2026-11-06",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "7 new blocks, among them the micro-menu, the hunter pet and the way back to your corpse.",
+              fr = "7 nouveaux blocs, dont le micro-menu, le familier du chasseur et le chemin vers ton corps." },
+            { en = "Pin a tooltip next to its block.",
+              fr = "Épingle une infobulle à côté de son bloc." },
+            { en = "Give any block a name of your own.",
+              fr = "Donne à n'importe quel bloc un nom à toi.",
+              show = { block = "gold", label = "CUSTOM_NAME" } },
+        },
         sections = {
             { kind = "intro",
               en = {
@@ -832,6 +935,12 @@ ns.CHANGELOG = {
     {
         version = "1.0.3",
         date = "2026-11-05",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "New styles: Tessera, The War Within, Midnight and Blizzard Forever.",
+              fr = "Nouveaux styles : Tessera, The War Within, Midnight et Blizzard Forever.",
+              show = { page = "PAGE_LOOK" } },
+        },
         sections = {
             { kind = "new",
               en = {
@@ -905,6 +1014,13 @@ ns.CHANGELOG = {
     {
         version = "1.0.0",
         date = "2026-11-04",
+        -- "What's new": one short line per new thing (About tab, update popup), with where to see it
+        highlights = {
+            { en = "More than 40 blocks, launchers and DataBroker, made for WoW Forever.",
+              fr = "Plus de 40 blocs, des lanceurs et DataBroker, faits pour WoW Forever." },
+            { en = "Blocks dropped together merge like the tiles of a mosaic.",
+              fr = "Les blocs posés ensemble s'assemblent comme les tesselles d'une mosaïque." },
+        },
         sections = {
             { kind = "intro",
               en = {

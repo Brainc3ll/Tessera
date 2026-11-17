@@ -32,7 +32,7 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 |---|---|
 | Aide en jeu (onglet Aide, anglais et français) | le sujet concerné ; un nouvel onglet ou une nouvelle section a son paragraphe |
 | Infobulles des options | une infobulle claire pour chaque nouvelle option |
-| `Changelog.lua` / `CHANGELOG.md` | une ligne par nouveauté ou correction visible, rangée dans sa catégorie |
+| `Changelog.lua` / `CHANGELOG.md` | une ligne par nouveauté ou correction visible, rangée dans sa catégorie ; `highlights` : une ligne courte par nouveauté pour « Quoi de neuf » |
 | `README.md` | points forts, liste des blocs, commandes, tableau des fichiers, partie développeurs |
 | `docs/pages/description.md` | la page des joueurs, anglais et français (à recoller à la main sur CurseForge et Wago quand elle change) |
 | `docs/pages/summary.md` | titre, résumé, texte « About » de GitHub, si le cœur de l'addon change |

@@ -13,7 +13,8 @@ or visible fix, update:
 - `Changelog.lua`, then `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Reread the whole entry of the
   version: it must not contradict itself (a later change in the same version rewrites the earlier
   line instead of adding a "fix" for something players never had). Sort the changes by kind
-  (`sections`: intro, new, improved, fixed). The changelog stays in `Changelog.lua` (English and
+  (`sections`: intro, new, improved, fixed). Each version also gets `highlights`: one short line per new
+  thing for the What's new topic and the update popup, with a `show` target when a setting fits. The changelog stays in `Changelog.lua` (English and
   French only);
 - `README.md` (highlights, block list, commands, file table, developer notes);
 - `docs/pages/description.md`, the CurseForge and Wago page (English and French parts);

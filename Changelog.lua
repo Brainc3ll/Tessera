@@ -43,24 +43,29 @@ ns.CHANGELOG = {
             {
                 kind = "new",
                 en = {
-                    "Guild block: a new setting, Member list, shows the members online under the mouse in place of the tooltip."
-                        .. " A click on a name whispers, a right click invites and Shift + click opens a menu.",
+                    "Guild block: a new setting, On hover, shows the members online in a list under the mouse in place of the"
+                        .. " tooltip. A click on a name whispers, a right click invites and Shift + click opens a menu.",
                     "The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds."
-                        .. " It follows the block's own sort and leaders on top. A click on the block still opens the game's guild window.",
-                    "Two settings size the list: List rows (8 to 30 members at once) and List size (80 to 150 percent).",
+                        .. " It follows the tooltip settings (sort, leaders, members shown, message, count, rank, note, size)."
+                        .. " A click on the block still opens the game's guild window.",
+                    "Three settings shape the list: List rows (5 to 100), List size (80 to 150 percent) and List look (tooltip or window).",
                     "New setting in General, Movement: Merge blocks dropped together."
                         .. " Unchecked, a block dropped against another one does not merge with it.",
-                    "Freeze this group is now also a setting of the block (Behaviour tab), not only in the quick menu.",
+                    "Freeze this block / group is now also a setting of the block (Behaviour tab), not only in the quick menu.",
+                    "The placement banner has the checkboxes Snap blocks to each other and Merge blocks dropped together.",
                 },
                 fr = {
-                    "Bloc Guilde : un nouveau réglage, Liste des membres, affiche les membres en ligne sous la souris à la place"
-                        .. " de l'infobulle. Un clic sur un nom chuchote, un clic droit invite et Maj + clic ouvre un menu.",
+                    "Bloc Guilde : un nouveau réglage, Au survol, affiche les membres en ligne dans une liste sous la souris"
+                        .. " à la place de l'infobulle. Un clic sur un nom chuchote, un clic droit invite et Maj + clic ouvre un menu.",
                     "La liste a un champ de recherche (nom, zone, rang ou note), la molette et une barre de défilement pour les"
-                        .. " grosses guildes. Elle suit le tri du bloc et les chefs en tête. Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
-                    "Deux réglages donnent sa taille à la liste : Lignes de la liste (de 8 à 30 membres d'un coup) et Taille de la liste (de 80 à 150 %).",
+                        .. " grosses guildes. Elle suit les réglages de l'infobulle (tri, chefs, membres affichés, message, compte,"
+                        .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
+                    "Trois réglages donnent sa forme à la liste : Lignes de la liste (de 5 à 100), Taille de la liste (de 80 à 150 %)"
+                        .. " et Aspect de la liste (infobulle ou fenêtre).",
                     "Nouveau réglage dans Général, Déplacement : Fusionner les blocs posés ensemble."
                         .. " Décoché, un bloc posé contre un autre ne fusionne pas avec lui.",
-                    "Figer ce groupe devient aussi un réglage du bloc (onglet Comportement), plus seulement dans le menu rapide.",
+                    "Figer ce bloc / groupe devient aussi un réglage du bloc (onglet Comportement), plus seulement dans le menu rapide.",
+                    "Le bandeau de placement a les cases Aimanter les blocs entre eux et Fusionner les blocs posés ensemble.",
                 },
             },
         },

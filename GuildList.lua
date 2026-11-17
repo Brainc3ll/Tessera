@@ -12,8 +12,14 @@ local L = ns.L
 -- the visible rows exist (reused), so memory does not depend on the guild's size.
 
 local Tools = ns.BlockTools
-local ROWS_DEFAULT, ROWS_MIN, ROWS_MAX = 14, 8, 30 -- rows on screen: the block's "List rows" setting
+local ROWS_DEFAULT, ROWS_MIN, ROWS_MAX = 14, 5, 100 -- rows on screen: the block's "List rows" setting
 local visible = ROWS_DEFAULT
+local cfgNow -- the Guild block's settings, read when the list opens
+
+-- the tooltip's own checkboxes (count, message, rank, note) also drive the list
+local function On(field)
+    return not cfgNow or cfgNow[field] ~= false
+end
 local WHEEL_STEP = 3
 local CLASS_ICONS = "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"
 
@@ -109,9 +115,9 @@ local function RowTooltip(row)
     GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
     local r, g, b = Tools.ClassColor(m.class)
     GameTooltip:AddLine(("%d %s"):format(m.level, Plain(m.name)), r, g, b)
-    if type(m.rank) == "string" and m.rank ~= "" then GameTooltip:AddLine(m.rank, 1, 0.82, 0) end
+    if On("guildTipRank") and type(m.rank) == "string" and m.rank ~= "" then GameTooltip:AddLine(m.rank, 1, 0.82, 0) end
     if m.zone ~= "" then GameTooltip:AddLine(Tools.Masked(m.zone), 0.8, 0.8, 0.8) end
-    if type(m.note) == "string" and m.note ~= "" then GameTooltip:AddLine(Tools.Masked(m.note), 1, 1, 1, true) end
+    if On("guildTipNote") and type(m.note) == "string" and m.note ~= "" then GameTooltip:AddLine(Tools.Masked(m.note), 1, 1, 1, true) end
     if not IsMe(m.name) then
         GameTooltip:AddLine(" ")
         GameTooltip:AddLine(L.GUILDLIST_ROW_WHISPER, 0.5, 0.8, 1)
@@ -152,8 +158,12 @@ local function Draw()
     for i, row in ipairs(list.rows) do FillRow(row, i <= visible and shownList[offset + i] or nil) end
     local guild = GetGuildInfo("player")
     local count, online = GetNumGuildMembers()
-    list.title:SetText(("%s  |cffcccccc%s|r"):format(Tools.Masked(guild or ""),
-        L.GUILDLIST_ONLINE:format(online or #members, count or 0)))
+    if On("guildTipCount") then
+        list.title:SetText(("%s  |cffcccccc%s|r"):format(Tools.Masked(guild or ""),
+            L.GUILDLIST_ONLINE:format(online or #members, count or 0)))
+    else
+        list.title:SetText(Tools.Masked(guild or ""))
+    end
     list.empty:SetShown(total == 0)
     if total == 0 then list.empty:SetText(#members == 0 and L.GUILDLIST_EMPTY or L.GUILDLIST_NO_MATCH) end
     list.bar:SetShown(maxOffset > 0)
@@ -164,8 +174,11 @@ local function Draw()
 end
 
 local function Reload()
-    local cfg = ns.db and ns.db.blocks and ns.db.blocks.guild
+    local cfg = cfgNow or (ns.db and ns.db.blocks and ns.db.blocks.guild)
     members = ns.GuildMembers(cfg)
+    -- "Members shown" of the tooltip is also the most the list holds
+    local cap = tonumber(cfg and cfg.guildMax)
+    if cap then for i = #members, cap + 1, -1 do members[i] = nil end end
     Filter()
     Draw()
 end
@@ -227,12 +240,25 @@ end
 -- Sizes the list for `rows` visible rows at `scale` percent; makes the rows it lacks
 local function Layout(rows, scale)
     local m = Metrics()
-    local width = 16 + m.icon + m.level + m.name + m.rank + m.zone + 16 + 10
-    local top = 8 + m.row + 4 + m.row + 4 -- title, search
+    local showRank = On("guildTipRank")
+    local motd = On("guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and C_GuildInfo.GetMOTD()
+    local hasMotd = type(motd) == "string" and motd ~= ""
+    local width = 16 + m.icon + m.level + m.name + (showRank and m.rank or 0) + m.zone + 16 + 10
+    local head = 8 + m.row + (hasMotd and m.row or 0) + 4 -- title and message of the day
+    local top = head + m.row + 4 -- and the search field
     rows = math.min(ROWS_MAX, math.max(ROWS_MIN, tonumber(rows) or ROWS_DEFAULT))
     visible = rows
-    list:SetScale(math.min(150, math.max(80, tonumber(scale) or 100)) / 100)
+    -- the tooltip size setting (General tab) also sizes the list when it looks like a tooltip
+    local k = (cfgNow and cfgNow.guildListLook == "window") and 1 or ((ns.db and ns.db.tooltipScale) or 1)
+    list:SetScale(math.min(150, math.max(80, tonumber(scale) or 100)) / 100 * k)
     list:SetSize(width, top + rows * m.row + 8)
+    list.motd:SetShown(hasMotd)
+    if hasMotd then
+        list.motd:SetWidth(width - 20)
+        list.motd:SetText(Tools.Masked(motd))
+    end
+    list.box:ClearAllPoints()
+    list.box:SetPoint("TOPLEFT", 14, -head)
     list.box:SetSize(width - 36, m.row)
     list.empty:ClearAllPoints()
     list.empty:SetPoint("TOP", list, "TOP", 0, -(top + 8))
@@ -244,6 +270,8 @@ local function Layout(rows, scale)
         row:SetSize(width - 32, m.row)
         row:ClearAllPoints()
         row:SetPoint("TOPLEFT", 8, -(top + (i - 1) * m.row))
+        row.rank:SetShown(showRank)
+        row.rank:SetWidth(showRank and m.rank or 1)
     end
     for i = rows + 1, #list.rows do list.rows[i]:Hide() end
 end
@@ -261,10 +289,14 @@ local function Build()
     list.title:SetPoint("TOPLEFT", 10, -8 - 2)
     list.title:SetPoint("RIGHT", -10, 0)
     list.title:SetJustifyH("LEFT")
+    list.motd = list:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    list.motd:SetPoint("TOPLEFT", list.title, "BOTTOMLEFT", 0, -4)
+    list.motd:SetJustifyH("LEFT")
+    list.motd:SetWordWrap(false)
+    list.motd:SetTextColor(0.9, 0.9, 0.55)
 
     local box = CreateFrame("EditBox", nil, list, "InputBoxTemplate")
     box:SetAutoFocus(false)
-    box:SetPoint("TOPLEFT", 14, -(8 + Metrics().row + 4))
     box:SetMaxLetters(40)
     box.hint = box:CreateFontString(nil, "OVERLAY", "GameFontDisable")
     box.hint:SetPoint("LEFT", 2, 0)
@@ -330,7 +362,6 @@ local function Build()
     list:Hide()
     -- closes with Escape, like Blizzard's menus
     table.insert(UISpecialFrames, "TesseraGuildList")
-    Layout(ROWS_DEFAULT, 100)
     return list
 end
 
@@ -340,7 +371,18 @@ function ns:ShowGuildList(block, cfg)
     owner = block or UIParent
     if list:IsShown() then away = 0 return end
     list:SetFrameStrata("TOOLTIP")
-    if ns.SkinWindow then ns:SkinWindow(list) end
+    cfgNow = cfg
+    if cfg and cfg.guildListLook == "window" then
+        if ns.SkinWindow then ns:SkinWindow(list) end
+    elseif list.SetBackdrop then
+        -- the look of a tooltip: the game's own background and border
+        list:SetBackdrop({
+            bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 16, insets = { left = 4, right = 4, top = 4, bottom = 4 },
+        })
+        list:SetBackdropColor(0.07, 0.07, 0.1, 0.96)
+        list:SetBackdropBorderColor(1, 1, 1, 1)
+    end
     -- after the skin, which sets the windows' own scale: the block's "List size" wins
     Layout(cfg and cfg.guildListRows, cfg and cfg.guildListScale)
     list:ClearAllPoints()

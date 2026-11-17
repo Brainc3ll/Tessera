@@ -29,10 +29,10 @@ local function BuildGeneralPage(page)
         function(v) ns:SetLocked(v) end, nil, L.TIP_LOCKED), { half = true, default = D.locked })
     move.Add(CreateCheck(page, L.SNAP,
         function() return ns.db.snap end,
-        function(v) ns.db.snap = v end, nil, L.TIP_SNAP), { half = true, default = D.snap })
+        function(v) ns.db.snap = v ns:RefreshPlaceChecks() end, nil, L.TIP_SNAP), { half = true, default = D.snap })
     move.Add(CreateCheck(page, L.MERGE_DROP,
         function() return ns.db.dropMerge ~= false end,
-        function(v) ns.db.dropMerge = v end, nil, L.TIP_MERGE_DROP), { half = true, default = D.dropMerge })
+        function(v) ns.db.dropMerge = v ns:RefreshPlaceChecks() end, nil, L.TIP_MERGE_DROP), { half = true, default = D.dropMerge })
     move.Add(CreateCheck(page, L.SNAP_BLIZZARD,
         function() return ns.db.snapBlizzard end,
         function(v) ns.db.snapBlizzard = v end, nil, L.TIP_SNAP_BLIZZARD), { half = true, default = D.snapBlizzard })

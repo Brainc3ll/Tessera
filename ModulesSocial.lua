@@ -246,13 +246,18 @@ ns:RegisterModule("guild", {
         return ("%d / %d"):format(online or 0, total or 0)
     end,
     defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
-                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildList = false, guildListRows = 14, guildListScale = 100 },
+                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildShow = "tooltip", guildListRows = 14,
+                 guildListScale = 100, guildListLook = "tooltip" },
     options = { COUNT_OPTION,
-                { kind = "check", field = "guildList", tab = "text", label = "GUILD_LIST", tip = "TIP_GUILD_LIST" },
+                { kind = "dropdown", field = "guildShow", tab = "text", label = "GUILD_SHOW", tip = "TIP_GUILD_SHOW",
+                  values = { { key = "tooltip", label = "GUILD_SHOW_TOOLTIP" }, { key = "list", label = "GUILD_SHOW_LIST" } } },
                 { kind = "slider", field = "guildListRows", tab = "text", label = "GUILD_LIST_ROWS", tip = "TIP_GUILD_LIST_ROWS",
-                  min = 8, max = 30, step = 1, default = 14 },
+                  min = 5, max = 100, step = 1, default = 14, shown = function(cfg) return cfg.guildShow == "list" end },
                 { kind = "slider", field = "guildListScale", tab = "text", label = "GUILD_LIST_SCALE", tip = "TIP_GUILD_LIST_SCALE",
-                  min = 80, max = 150, step = 5, default = 100 },
+                  min = 80, max = 150, step = 5, default = 100, shown = function(cfg) return cfg.guildShow == "list" end },
+                { kind = "dropdown", field = "guildListLook", tab = "text", label = "GUILD_LIST_LOOK", tip = "TIP_GUILD_LIST_LOOK",
+                  shown = function(cfg) return cfg.guildShow == "list" end,
+                  values = { { key = "tooltip", label = "GUILD_LOOK_TOOLTIP" }, { key = "window", label = "GUILD_LOOK_WINDOW" } } },
                 { kind = "dropdown", field = "guildSort", section = "tooltip", tab = "text", label = "GUILD_SORT", tip = "TIP_GUILD_SORT",
                   values = { { key = "game", label = "FRIENDS_SORT_GAME" }, { key = "name", label = "FRIENDS_SORT_NAME" },
                              { key = "level", label = "FRIENDS_SORT_LEVEL" }, { key = "zone", label = "FRIENDS_SORT_ZONE" },
@@ -263,7 +268,8 @@ ns:RegisterModule("guild", {
                              { key = "4", label = "GUILD_LEADERS_4" } } },
                 { kind = "dropdown", field = "guildMax", section = "tooltip", tab = "text", label = "GUILD_MAX", tip = "TIP_GUILD_MAX",
                   values = { { key = "5", label = "5" }, { key = "10", label = "10" }, { key = "20", label = "20" },
-                             { key = "30", label = "30" }, { key = "50", label = "50" }, { key = "100", label = "100" } } },
+                             { key = "30", label = "30" }, { key = "50", label = "50" }, { key = "100", label = "100" },
+                             { key = "200", label = "200" }, { key = "500", label = "500" } } },
                 { kind = "check", field = "guildTipMotd", section = "tooltip", tab = "text", label = "GUILD_TIP_MOTD", tip = "TIP_GUILD_TIP_MOTD" },
                 { kind = "check", field = "guildTipCount", section = "tooltip", tab = "text", label = "GUILD_TIP_COUNT", tip = "TIP_GUILD_TIP_COUNT" },
                 { kind = "check", field = "guildTipRank", section = "tooltip", tab = "text", label = "GUILD_TIP_RANK", tip = "TIP_GUILD_TIP_RANK" },
@@ -318,7 +324,7 @@ ns:RegisterModule("guild", {
     clickHint = L.HINT_GUILD,
     -- "Member list": a clickable list under the mouse in place of the tooltip (GuildList.lua)
     hoverList = function(frame, cfg)
-        if cfg and cfg.guildList and IsInGuild() and ns.ShowGuildList then
+        if cfg and cfg.guildShow == "list" and IsInGuild() and ns.ShowGuildList then
             ns:ShowGuildList(frame, cfg)
             return true
         end

@@ -21,7 +21,7 @@ local function BannerButton(b, text, tip, onClick)
     return btn
 end
 
-local BANNER_W, BANNER_H = 530, 130
+local BANNER_W, BANNER_H = 530, 156
 
 -- "Empty blocks: shown / hidden": one button in each placement banner (V on the keyboard)
 local emptyButtons = {}
@@ -37,6 +37,14 @@ end
 function ns:RefreshPlaceEmptyButtons()
     local text = self.placeHideEmpty and L.EMPTY_BLOCKS_HIDDEN or L.EMPTY_BLOCKS_SHOWN
     for _, btn in ipairs(emptyButtons) do btn:SetText(text) end
+end
+
+-- The two checkboxes of the banner follow the settings (also changed from the General tab)
+function ns:RefreshPlaceChecks()
+    local b = self.banner
+    if not (b and b.snapCheck and self.db) then return end
+    b.snapCheck:SetChecked(self.db.snap ~= false)
+    b.mergeCheck:SetChecked(self.db.dropMerge ~= false)
 end
 
 -- Grid sizes, the same as the General tab's list
@@ -195,6 +203,24 @@ function ns:UpdatePlacementBanner()
         b.emptyBtn = EmptyBlocksButton(b)
         b.emptyBtn:SetPoint("TOPRIGHT", b, "TOPRIGHT", -12, -66)
         b.gridRow = { b.gridLabel, b.gridPrev, b.gridValue, b.gridNext, b.emptyBtn }
+        -- snapping and merging, the same settings as the General tab, one click away while you place
+        local function PlaceCheck(label, tip, field, left)
+            local c = CreateFrame("CheckButton", nil, b, "UICheckButtonTemplate")
+            c:SetSize(24, 24)
+            c:SetPoint("TOPLEFT", b, "TOPLEFT", left, -94)
+            c.text = c.text or c.Text or _G[(c:GetName() or "") .. "Text"]
+            if c.text then c.text:SetText(label) end
+            c:SetScript("OnClick", function(box)
+                ns.db[field] = box:GetChecked() and true or false
+                if ns.RefreshOptions then ns:RefreshOptions() end
+            end)
+            AttachTip(c, label, tip)
+            c.field = field
+            return c
+        end
+        b.snapCheck = PlaceCheck(L.SNAP, L.TIP_SNAP, "snap", 10)
+        b.mergeCheck = PlaceCheck(L.MERGE_DROP, L.TIP_MERGE_DROP, "dropMerge", 250)
+        b:HookScript("OnShow", function() ns:RefreshPlaceChecks() end)
         -- G: next grid size, V: empty blocks (only while the banner shows its own buttons)
         b.OnOwnKey = function(_, key)
             if ns.nudge or IsShiftKeyDown() or IsControlKeyDown() or IsAltKeyDown() then return false end

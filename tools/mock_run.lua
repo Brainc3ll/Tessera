@@ -2964,15 +2964,15 @@ for _, step in ipairs({
         ChatFrameUtil = { SendTell = function(n) told = n end }
         C_PartyInfo = { InviteUnit = function(n) invited = n end }
         local mod = ns.modules.guild
-        assert(mod.defaults.guildList == false, "the member list is off by default")
+        assert(mod.defaults.guildShow == "tooltip", "the tooltip is the default")
         assert(mod.secureMacro == "/click GuildMicroButton", "a click on the block still opens the guild window")
         local block = CreateFrame("Frame", nil, UIParent)
-        assert(not mod.hoverList(block, { guildList = false }), "setting off: the normal tooltip")
-        assert(mod.hoverList(block, { guildList = true }), "setting on: the list takes the tooltip's place")
+        assert(not mod.hoverList(block, { guildShow = "tooltip" }), "setting off: the normal tooltip")
+        assert(mod.hoverList(block, { guildShow = "list" }), "setting on: the list takes the tooltip's place")
         local list = _G["TesseraGuildList"]
         assert(list and list:IsShown(), "the list opens")
         assert(asked == 1, "the roster is asked for when the list opens")
-        mod.hoverList(block, { guildList = true })
+        mod.hoverList(block, { guildShow = "list" })
         assert(asked == 1, "hovering again does not ask the roster again")
         assert(#list.rows == 14 and list.rows[1]:IsShown() and list.rows[14]:IsShown(), "14 rows on screen for 30 members")
         assert(list.rows[1].member.name == "Member01-Realm", "first row: the first member")
@@ -2980,19 +2980,25 @@ for _, step in ipairs({
         list:Hide()
         local scaled
         list.SetScale = function(_, v) scaled = v end
-        mod.hoverList(block, { guildList = true, guildListRows = 9, guildListScale = 120 })
+        mod.hoverList(block, { guildShow = "list", guildListRows = 9, guildListScale = 120 })
         assert(list.rows[9]:IsShown() and not list.rows[10]:IsShown(), "9 rows on screen")
         assert(math.abs((scaled or -1) - 1.2) < 0.001, "scale 120 percent, got " .. tostring(scaled))
         list:Hide()
-        mod.hoverList(block, { guildList = true, guildListRows = 99, guildListScale = 500 })
-        assert(#list.rows == 30 and scaled == 1.5, "rows and scale stay inside their limits")
+        mod.hoverList(block, { guildShow = "list", guildListRows = 999, guildListScale = 500 })
+        assert(#list.rows == 100 and scaled == 1.5, "rows and scale stay inside their limits")
         list:Hide()
-        mod.hoverList(block, { guildList = true })
+        -- the tooltip's settings also drive the list: members shown, rank, count
+        mod.hoverList(block, { guildShow = "list", guildMax = "5", guildTipRank = false, guildTipCount = false })
+        assert(list.rows[5]:IsShown() and not list.rows[6]:IsShown(), "Members shown caps the list")
+        assert(not list.rows[1].rank:IsShown(), "no rank column when the tooltip hides ranks")
+        assert(not tostring(list.title:GetText()):find("%d"), "no count in the title when the tooltip hides it")
+        list:Hide()
+        mod.hoverList(block, { guildShow = "list" })
         local click = list.rows[1]:GetScript("OnClick")
         click(list.rows[2], "LeftButton")
         assert(told == "Member02-Realm", "a click whispers the member: " .. tostring(told))
         assert(not list:IsShown(), "the list closes after a whisper")
-        mod.hoverList(block, { guildList = true })
+        mod.hoverList(block, { guildShow = "list" })
         click(list.rows[4], "RightButton")
         assert(invited == "Member04-Realm" and list:IsShown(), "a right click invites and keeps the list open: " .. tostring(invited))
         -- search: name, zone, rank or note; the number of rows follows
@@ -3018,7 +3024,7 @@ for _, step in ipairs({
         local members = ns.GuildMembers({ guildSort = "level" })
         assert(#members == 29 and members[1].name == "Member30-Realm", "online members only, highest level first")
         -- the mouse is on neither the block nor the list: the list closes after a short moment
-        mod.hoverList(block, { guildList = true })
+        mod.hoverList(block, { guildShow = "list" })
         assert(list:IsShown(), "the list is open again")
         list:GetScript("OnUpdate")(list, 0.2)
         assert(list:IsShown(), "a short moment off the list: it stays")

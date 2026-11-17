@@ -55,7 +55,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - Liste des amis : survole le bloc Amis pour voir tes amis du jeu et Battle.net en ligne. Clique sur un nom pour chuchoter, clic droit pour inviter.
 - Historique des chuchotements : Ctrl + clic supprime un chuchotement, un bouton Vider retire tous les non épinglés.
 - Historique des chuchotements : les 5, 10 ou 20 derniers chuchotements avec le début de chaque message, dans une liste sur laquelle cliquer pour répondre. Un clic droit épingle un chuchotement pour ne pas oublier une demande.
-- Le mode streamer cache, au choix, les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
+- Le mode streamer cache, au choix, les noms des autres joueurs, tes personnages, ta guilde et ton or.
 - Accessibilité : contraste élevé, moins d'animations, taille de texte minimale et six polices de lecture.
 - Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.
 - Tes dispositions et tes profils passent d'une version à l'autre.

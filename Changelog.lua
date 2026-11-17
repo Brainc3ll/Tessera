@@ -44,7 +44,8 @@ ns.CHANGELOG = {
                 kind = "new",
                 en = {
                     "Guild block: a new setting, On hover, shows the members online in a list under the mouse in place of the"
-                        .. " tooltip. A click on a name whispers, a right click invites and Shift + click opens a menu.",
+                        .. " tooltip (Tooltip brings back the old one)."
+                        .. " A click on a name whispers, a right click invites and Shift + click opens a menu.",
                     "The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds."
                         .. " It follows the tooltip settings (sort, leaders, members shown, message, count, rank, note, size)."
                         .. " A click on the block still opens the game's guild window.",
@@ -56,7 +57,8 @@ ns.CHANGELOG = {
                 },
                 fr = {
                     "Bloc Guilde : un nouveau réglage, Au survol, affiche les membres en ligne dans une liste sous la souris"
-                        .. " à la place de l'infobulle. Un clic sur un nom chuchote, un clic droit invite et Maj + clic ouvre un menu.",
+                        .. " à la place de l'infobulle (Infobulle remet l'ancienne)."
+                        .. " Un clic sur un nom chuchote, un clic droit invite et Maj + clic ouvre un menu.",
                     "La liste a un champ de recherche (nom, zone, rang ou note), la molette et une barre de défilement pour les"
                         .. " grosses guildes. Elle suit les réglages de l'infobulle (tri, chefs, membres affichés, message, compte,"
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",

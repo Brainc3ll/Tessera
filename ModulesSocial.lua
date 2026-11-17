@@ -246,7 +246,7 @@ ns:RegisterModule("guild", {
         return ("%d / %d"):format(online or 0, total or 0)
     end,
     defaults = { countFormat = "onlineTotal", guildTipMotd = true, guildTipCount = true, guildTipRank = true, guildTipNote = true,
-                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildShow = "tooltip", guildListRows = 14,
+                 guildSort = "game", guildLeaders = "0", guildMax = "20", guildShow = "list", guildListRows = 14,
                  guildListScale = 100, guildListLook = "tooltip" },
     options = { COUNT_OPTION,
                 { kind = "dropdown", field = "guildShow", tab = "text", label = "GUILD_SHOW", tip = "TIP_GUILD_SHOW",

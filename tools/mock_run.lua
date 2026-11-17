@@ -2964,7 +2964,7 @@ for _, step in ipairs({
         ChatFrameUtil = { SendTell = function(n) told = n end }
         C_PartyInfo = { InviteUnit = function(n) invited = n end }
         local mod = ns.modules.guild
-        assert(mod.defaults.guildShow == "tooltip", "the tooltip is the default")
+        assert(mod.defaults.guildShow == "list", "the member list is the default")
         assert(mod.secureMacro == "/click GuildMicroButton", "a click on the block still opens the guild window")
         local block = CreateFrame("Frame", nil, UIParent)
         assert(not mod.hoverList(block, { guildShow = "tooltip" }), "setting off: the normal tooltip")

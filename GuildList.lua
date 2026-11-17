@@ -244,7 +244,14 @@ local function Layout(rows, scale)
     local motd = On("guildTipMotd") and C_GuildInfo and C_GuildInfo.GetMOTD and C_GuildInfo.GetMOTD()
     local hasMotd = type(motd) == "string" and motd ~= ""
     local width = 16 + m.icon + m.level + m.name + (showRank and m.rank or 0) + m.zone + 16 + 10
-    local head = 8 + m.row + (hasMotd and m.row or 0) + 4 -- title and message of the day
+    -- the message of the day wraps onto as many lines as it needs (4 at most)
+    local motdHeight = 0
+    if hasMotd then
+        list.motd:SetWidth(width - 20)
+        list.motd:SetText(Tools.Masked(motd))
+        motdHeight = math.max(m.row, (list.motd:GetStringHeight() or 0) + 4)
+    end
+    local head = 8 + m.row + motdHeight + 4 -- title and message of the day
     local top = head + m.row + 4 -- and the search field
     rows = math.min(ROWS_MAX, math.max(ROWS_MIN, tonumber(rows) or ROWS_DEFAULT))
     visible = rows
@@ -253,10 +260,6 @@ local function Layout(rows, scale)
     list:SetScale(math.min(150, math.max(80, tonumber(scale) or 100)) / 100 * k)
     list:SetSize(width, top + rows * m.row + 8)
     list.motd:SetShown(hasMotd)
-    if hasMotd then
-        list.motd:SetWidth(width - 20)
-        list.motd:SetText(Tools.Masked(motd))
-    end
     list.box:ClearAllPoints()
     list.box:SetPoint("TOPLEFT", 14, -head)
     list.box:SetSize(width - 36, m.row)
@@ -292,7 +295,8 @@ local function Build()
     list.motd = list:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     list.motd:SetPoint("TOPLEFT", list.title, "BOTTOMLEFT", 0, -4)
     list.motd:SetJustifyH("LEFT")
-    list.motd:SetWordWrap(false)
+    list.motd:SetWordWrap(true)
+    list.motd:SetMaxLines(4)
     list.motd:SetTextColor(0.9, 0.9, 0.55)
 
     local box = CreateFrame("EditBox", nil, list, "InputBoxTemplate")

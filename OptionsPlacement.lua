@@ -237,6 +237,7 @@ function ns:UpdatePlacementBanner()
         -- Ctrl + Z undoes while the banner is shown (see ListenForUndo)
         ListenForUndo(b)
         self.banner = b
+        self:RefreshPlaceChecks() -- shown before the hook existed: set the boxes now
     end
     self:SkinWindow(b, b.text)
     b.layer:SetText(self:LayerShown() == "behind" and L.LAYER_BEHIND_STATE or L.LAYER_FRONT_STATE)

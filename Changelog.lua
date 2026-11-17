@@ -53,7 +53,8 @@ ns.CHANGELOG = {
                     "New setting in General, Movement: Merge blocks dropped together."
                         .. " Unchecked, a block dropped against another one does not merge with it.",
                     "Freeze this block / group is now also a setting of the block (Behaviour tab), not only in the quick menu.",
-                    "The placement banner has the checkboxes Snap blocks to each other and Merge blocks dropped together.",
+                    "New setting in General, Movement: Snap to the grid. Off, the grid stays shown and blocks do not snap to it.",
+                    "The placement banner has the checkboxes Snap blocks to each other, Merge blocks dropped together and Snap to the grid.",
                 },
                 fr = {
                     "Bloc Guilde : un nouveau réglage, Au survol, affiche les membres en ligne dans une liste sous la souris"
@@ -67,7 +68,8 @@ ns.CHANGELOG = {
                     "Nouveau réglage dans Général, Déplacement : Fusionner les blocs posés ensemble."
                         .. " Décoché, un bloc posé contre un autre ne fusionne pas avec lui.",
                     "Figer ce bloc / groupe devient aussi un réglage du bloc (onglet Comportement), plus seulement dans le menu rapide.",
-                    "Le bandeau de placement a les cases Aimanter les blocs entre eux et Fusionner les blocs posés ensemble.",
+                    "Nouveau réglage dans Général, Déplacement : Aimanter à la grille. Décoché, la grille reste affichée et les blocs ne s'y aimantent pas.",
+                    "Le bandeau de placement a les cases Aimanter les blocs entre eux, Fusionner les blocs posés ensemble et Aimanter à la grille.",
                 },
             },
             {

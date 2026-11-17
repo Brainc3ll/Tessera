@@ -46,6 +46,9 @@ local function BuildGeneralPage(page)
         { key = 32, name = "32 px" },
     }, function() return ns.db.grid or 0 end,
        function(v) ns.db.grid = v; ns:UpdateGrid() end, nil, nil, L.TIP_GRID), { half = true, default = D.grid })
+    move.Add(CreateCheck(page, L.GRID_SNAP,
+        function() return ns.db.gridSnap ~= false end,
+        function(v) ns.db.gridSnap = v ns:RefreshPlaceChecks() end, nil, L.TIP_GRID_SNAP), { half = true, default = D.gridSnap })
     move.Add(CreateButton(page, L.RECOVER_BUTTON, function() ns:RecoverBlocksCommand() end,
         nil, nil, L.TIP_RECOVER), { half = true })
 

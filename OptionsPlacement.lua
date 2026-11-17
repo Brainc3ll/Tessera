@@ -21,7 +21,7 @@ local function BannerButton(b, text, tip, onClick)
     return btn
 end
 
-local BANNER_W, BANNER_H = 530, 156
+local BANNER_W, BANNER_H = 530, 182
 
 -- "Empty blocks: shown / hidden": one button in each placement banner (V on the keyboard)
 local emptyButtons = {}
@@ -45,6 +45,7 @@ function ns:RefreshPlaceChecks()
     if not (b and b.snapCheck and self.db) then return end
     b.snapCheck:SetChecked(self.db.snap ~= false)
     b.mergeCheck:SetChecked(self.db.dropMerge ~= false)
+    b.gridCheck:SetChecked(self.db.gridSnap ~= false)
 end
 
 -- Grid sizes, the same as the General tab's list
@@ -204,10 +205,10 @@ function ns:UpdatePlacementBanner()
         b.emptyBtn:SetPoint("TOPRIGHT", b, "TOPRIGHT", -12, -66)
         b.gridRow = { b.gridLabel, b.gridPrev, b.gridValue, b.gridNext, b.emptyBtn }
         -- snapping and merging, the same settings as the General tab, one click away while you place
-        local function PlaceCheck(label, tip, field, left)
+        local function PlaceCheck(label, tip, field, left, top)
             local c = CreateFrame("CheckButton", nil, b, "UICheckButtonTemplate")
             c:SetSize(24, 24)
-            c:SetPoint("TOPLEFT", b, "TOPLEFT", left, -94)
+            c:SetPoint("TOPLEFT", b, "TOPLEFT", left, -(top or 94))
             c.text = c.text or c.Text or _G[(c:GetName() or "") .. "Text"]
             if c.text then c.text:SetText(label) end
             c:SetScript("OnClick", function(box)
@@ -220,6 +221,7 @@ function ns:UpdatePlacementBanner()
         end
         b.snapCheck = PlaceCheck(L.SNAP, L.TIP_SNAP, "snap", 10)
         b.mergeCheck = PlaceCheck(L.MERGE_DROP, L.TIP_MERGE_DROP, "dropMerge", 250)
+        b.gridCheck = PlaceCheck(L.GRID_SNAP, L.TIP_GRID_SNAP, "gridSnap", 10, 120)
         b:HookScript("OnShow", function() ns:RefreshPlaceChecks() end)
         -- G: next grid size, V: empty blocks (only while the banner shows its own buttons)
         b.OnOwnKey = function(_, key)

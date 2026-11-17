@@ -2990,6 +2990,11 @@ for _, step in ipairs({
         -- the tooltip's settings also drive the list: members shown, rank, count
         mod.hoverList(block, { guildShow = "list", guildMax = "5", guildTipRank = false, guildTipCount = false })
         assert(list.rows[5]:IsShown() and not list.rows[6]:IsShown(), "Members shown caps the list")
+        list.box:SetText("Member2")
+        list.box:GetScript("OnTextChanged")(list.box)
+        assert(list.rows[1]:IsShown() and list.rows[1].member.name:find("Member2"), "a search reaches members beyond Members shown")
+        list.box:SetText("")
+        list.box:GetScript("OnTextChanged")(list.box)
         assert(not list.rows[1].rank:IsShown(), "no rank column when the tooltip hides ranks")
         assert(not tostring(list.title:GetText()):find("%d"), "no count in the title when the tooltip hides it")
         list:Hide()
@@ -3370,6 +3375,7 @@ for _, step in ipairs({
     -- keeping a block alone: the "Merge blocks dropped together" setting and "Freeze this group"
     function()
         assert(ns.PROFILE_DEFAULTS.dropMerge == true, "blocks merge when dropped together by default")
+        assert(ns.PROFILE_DEFAULTS.gridSnap == true, "blocks snap to the grid by default")
         local key = ns:GetBlockKeys()[1]
         ns:SetFrozen(key, true)
         assert(ns:IsFrozen(key), "the group is frozen")

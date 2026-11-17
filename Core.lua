@@ -1053,6 +1053,7 @@ local PROFILE_DEFAULTS = {
     merge = true,
     dropMerge = true,        -- a block dropped against another one merges with it (and aligns with it)
     grid = 0,
+    gridSnap = true,         -- blocks snap to the grid lines (off: the grid stays shown, nothing snaps)
     groupDefaults = {},      -- settings made on "All blocks", inherited by new blocks
     launcherDefaults = { tooltip = true, showLabel = true, showIcon = true },
     blocks = {},
@@ -1514,7 +1515,7 @@ function ns:SnapAndSave(f)
 
     -- Grid: only on the axes that did not snap to another block
     local grid = self.db.grid or 0
-    if grid > 0 then
+    if grid > 0 and self.db.gridSnap ~= false then
         local root = members[f.key]
         if not snappedX then dx = math.floor(root.left / grid + 0.5) * grid - root.left end
         if not snappedY then dy = math.floor(root.top / grid + 0.5) * grid - root.top end

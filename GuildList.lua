@@ -15,6 +15,7 @@ local Tools = ns.BlockTools
 local ROWS_DEFAULT, ROWS_MIN, ROWS_MAX = 14, 5, 100 -- rows on screen: the block's "List rows" setting
 local visible = ROWS_DEFAULT
 local cfgNow -- the Guild block's settings, read when the list opens
+local memberCap -- "Members shown": the most the list shows without a search
 
 -- the tooltip's own checkboxes (count, message, rank, note) also drive the list
 local function On(field)
@@ -82,6 +83,9 @@ local function Filter()
             if hay:find(needle, 1, true) then shownList[#shownList + 1] = m end
         end
     end
+    if needle == "" and memberCap then
+        for i = #shownList, memberCap + 1, -1 do shownList[i] = nil end
+    end
 end
 
 local function RowMenu(row)
@@ -112,7 +116,15 @@ end
 local function RowTooltip(row)
     local m = row.member
     if not m then return end
-    GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+    -- beside the list, not over its scroll bar: the row stops a few pixels before the list's edge
+    GameTooltip:SetOwner(row, "ANCHOR_NONE")
+    local listRight, rowRight = list:GetRight(), row:GetRight()
+    local gap = 26
+    if listRight and rowRight then
+        gap = (listRight - rowRight) * list:GetEffectiveScale() / GameTooltip:GetEffectiveScale() + 2
+    end
+    GameTooltip:ClearAllPoints()
+    GameTooltip:SetPoint("TOPLEFT", row, "TOPRIGHT", gap, 0)
     local r, g, b = Tools.ClassColor(m.class)
     GameTooltip:AddLine(("%d %s"):format(m.level, Plain(m.name)), r, g, b)
     if On("guildTipRank") and type(m.rank) == "string" and m.rank ~= "" then GameTooltip:AddLine(m.rank, 1, 0.82, 0) end
@@ -176,9 +188,8 @@ end
 local function Reload()
     local cfg = cfgNow or (ns.db and ns.db.blocks and ns.db.blocks.guild)
     members = ns.GuildMembers(cfg)
-    -- "Members shown" of the tooltip is also the most the list holds
-    local cap = tonumber(cfg and cfg.guildMax)
-    if cap then for i = #members, cap + 1, -1 do members[i] = nil end end
+    -- "Members shown" of the tooltip is also the most the list holds; a search looks at everyone online
+    memberCap = tonumber(cfg and cfg.guildMax)
     Filter()
     Draw()
 end

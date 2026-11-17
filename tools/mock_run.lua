@@ -3909,6 +3909,21 @@ do
     if ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not take the block off the screen") end
     switch:Activate()
     if not ns.db.blocks[key].enabled then print("STEP ERROR: the switch does not put the block back") end
+    -- (1.6) "Hide when empty" beside it: the same setting as the Behaviour tab's check
+    local hs = ns.hideEmptySwitch
+    if not hs then print("STEP ERROR: no \"Hide when empty\" switch beside \"Enabled\"")
+    else
+        local fkey = "friends"
+        ns:OpenOptionsFor(fkey)
+        TesseraOptions:GetScript("OnShow")(TesseraOptions)
+        if not hs:IsShown() then print("STEP ERROR: the hide-when-empty switch is hidden for the Friends block") end
+        local before = ns.db.blocks[fkey].hideEmpty and true or false
+        hs:Activate()
+        if (ns.db.blocks[fkey].hideEmpty and true or false) == before then print("STEP ERROR: the hide-when-empty switch changes nothing") end
+        hs:Activate()
+        if (ns.db.blocks[fkey].hideEmpty and true or false) ~= before then print("STEP ERROR: the hide-when-empty switch does not flip back") end
+        ns:OpenOptionsFor(key)
+    end
     -- every block off at once, then Ctrl + Z in the options window brings them back
     local onBefore = 0
     for _, k in ipairs(ns:GetBlockKeys()) do if ns.db.blocks[k].enabled then onBefore = onBefore + 1 end end

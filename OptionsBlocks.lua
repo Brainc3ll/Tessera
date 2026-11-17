@@ -309,14 +309,35 @@ local function BuildBlockPage(page)
     local getE, setE = Field("enabled")
     local switch = top.Place(CreateSwitch(page, L.ENABLED, function() return getE() end, setE, nil, L.TIP_ENABLED), 1)
     ns.blockSwitch = switch -- (tools/mock_run.lua)
-    -- the list sits right of the switch, on the same line (not a row of the page)
+    -- "Hide when empty", right of it: same setting as the Behaviour tab's check, within reach.
+    -- Only for blocks that can be empty (friends, guild, mail...) or for a group / all blocks.
+    local getH, setH = Field("hideEmpty")
+    local function CanBeEmpty()
+        if not single() then return true end
+        local mod = ns.modules[S.selected]
+        return mod ~= nil and mod.isEmpty ~= nil
+    end
+    local hideSwitch = CreateSwitch(page, L.HIDE_EMPTY, function() return getH() end, function(v)
+        setH(v)
+        ns:UpdateAllVisibility()
+    end, CanBeEmpty, L.TIP_HIDE_EMPTY)
+    hideSwitch:SetPoint("TOPLEFT", switch, "TOPRIGHT", 6, 0)
+    ns.hideEmptySwitch = hideSwitch -- (tools/mock_run.lua)
+    -- the list sits right of the switches, on the same line (not a row of the page)
     local selection = CreateDropdown(page, L.SELECTION, SelectionOptions,
         function() return S.selected end,
         function(v)
             S.selected = v
             ns:RefreshOptions()
-        end, nil, FULL_W - REPLACE_W - PLACE_W - SWITCH_W - 10, L.TIP_SELECTION)
-    selection:SetPoint("TOPLEFT", switch, "TOPRIGHT", 10, 0)
+        end, nil, FULL_W - REPLACE_W - PLACE_W - 2 * SWITCH_W - 16, L.TIP_SELECTION)
+    -- next to "Hide when empty", or next to "Enabled" when that one is not shown for this block
+    local origRefresh = hideSwitch.Refresh
+    hideSwitch.Refresh = function(self)
+        origRefresh(self)
+        selection:ClearAllPoints()
+        selection:SetPoint("TOPLEFT", CanBeEmpty() and self or switch, "TOPRIGHT", 10, 0)
+    end
+    selection:SetPoint("TOPLEFT", hideSwitch, "TOPRIGHT", 10, 0)
     -- "Replace with...": another block takes the selected block's place
     local replace = CreateButton(page, L.REPLACE_BLOCK, function(self)
         if not (MenuUtil and MenuUtil.CreateContextMenu) then return end

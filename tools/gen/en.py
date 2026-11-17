@@ -17,7 +17,7 @@ EN = [
 ("HINT_BAGS","Click: open bags"),("HINT_CHARACTER","Click: character sheet"),("HINT_MAP","Click: world map"),
 ("HINT_CALENDAR","Click: calendar"),("HINT_FRIENDS","Click: friends list"),("HINT_GUILD","Click: guild"),
 ("OPTIONS_TITLE","Tessera"),("TAB_BLOCK","Blocks and groups"),("TAB_GENERAL","Placement and more"),("TAB_PROFILES","Profiles and sharing"),
-("ENABLED","On screen"),("SHOW_LABEL","Show label"),("SHOW_ICON","Show icon"),("SHOW_TOOLTIP","Tooltip on hover"),
+("ENABLED","Enabled"),("SHOW_LABEL","Show label"),("SHOW_ICON","Show icon"),("SHOW_TOOLTIP","Tooltip on hover"),
 ("COLORIZE","Color by threshold"),("HIDE_COMBAT","Hide in combat"),("HIDE_INSTANCE","Hide in instances"),
 ("WIDTH","Minimum width"),("HEIGHT","Minimum height"),
 ("AUTO_WIDTH","Fit width to text"),

@@ -55,7 +55,7 @@ local function Draw()
     end
     list.empty:SetShown(#history == 0)
     -- the list's own help line, then the block's blue click hints (as its tooltip shows them)
-    local hint = L.WHISPERLIST_HINT .. "\n" .. L.WHISPERLIST_DELETE_HINT
+    local hint = L.WHISPERLIST_HINT .. "\n" .. L.WHISPERLIST_DELETE_HINT .. "\n" .. L.GUILDLIST_ROW_MENU
     local more = owner and owner.key and ns:BlockHints(owner.key, cfgNow or {}) or {}
     if #more > 0 then hint = hint .. "\n" .. table.concat(more, "\n") end
     list.hint:SetWidth(list:GetWidth() - 24)
@@ -64,8 +64,32 @@ local function Draw()
     list:SetHeight(headH + math.max(1, #history) * rowH + 8 + hintH + 4)
 end
 
+-- Shift + click: the full menu (reply, invite, pin, delete, and the menu of the other lists)
+local function RowMenu(row)
+    local w = row.entry
+    if not w or not MenuUtil or not MenuUtil.CreateContextMenu then return end
+    -- the menu opens in a lower strata than the list: the list steps back so the menu stays visible
+    list:SetFrameStrata("DIALOG")
+    MenuUtil.CreateContextMenu(row, function(_, root)
+        root:CreateTitle(Tools.Masked(w.name))
+        root:CreateButton(L.GUILDLIST_WHISPER, function() ns.WhisperReply(w) list:Hide() end)
+        if not w.bnet then
+            root:CreateButton(L.GUILDLIST_INVITE, function()
+                local party = C_PartyInfo
+                local invite = (party and party.InviteUnit) or _G["InviteUnit"]
+                if invite then pcall(invite, w.name) end
+            end)
+        end
+        root:CreateButton(w.pinned and L.WHISPER_MENU_UNPIN or L.WHISPER_MENU_PIN, function() ns.WhisperTogglePin(w) end)
+        if not w.pinned then root:CreateButton(L.WHISPER_MENU_DELETE, function() ns.WhisperDelete(w) end) end
+        -- a Battle.net whisper comes from an account: no character name to add, look up or ignore
+        ns.AddPlayerMenuEntries(root, not w.bnet and w.name or nil, w.name, false)
+    end)
+end
+
 local function Click(row, button)
     if not row.entry then return end
+    if IsShiftKeyDown() then RowMenu(row) return end
     if IsControlKeyDown() then
         ns.WhisperDelete(row.entry) -- a pinned whisper stays: unpin it first
         return
@@ -181,6 +205,7 @@ function ns:ShowWhisperList(block, cfg)
     owner = block or UIParent
     cfgNow = cfg
     if list:IsShown() then away = 0 return end
+    list:SetFrameStrata("TOOLTIP") -- back on top after a menu
     ns.ApplyTooltipLook(list) -- the game's own tooltip look (or the look another addon gives it)
     list:SetScale((ns.db and ns.db.tooltipScale) or 1)
     ns.PlaceHoverList(list, owner) -- the tooltip's own side and alignment settings

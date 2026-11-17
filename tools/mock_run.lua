@@ -3125,6 +3125,19 @@ for _, step in ipairs({
         mod.hoverList(block, { whispersHover = "list", whispersHistory = "5" })
         list.rows[1]:GetScript("OnClick")(list.rows[1], "RightButton")
         assert(not oldest.pinned and list:IsShown(), "a right click unpins, the list stays open")
+        -- (1.6) Shift + click: the full menu (reply, invite, pin, delete, copy, friend, /who, ignore)
+        local oldMenu, labels = MenuUtil, {}
+        local node = { CreateTitle = function() end, CreateButton = function(_, label) labels[#labels + 1] = label end }
+        MenuUtil = { CreateContextMenu = function(owner, gen) gen(owner, node) end }
+        local shiftDown, oldFL3 = IsShiftKeyDown, C_FriendList
+        IsShiftKeyDown = function() return true end
+        C_FriendList = { AddFriend = function() end, SendWho = function() end, AddIgnore = function() end }
+        list.rows[2]:GetScript("OnClick")(list.rows[2], "LeftButton")
+        IsShiftKeyDown, MenuUtil, C_FriendList = shiftDown, oldMenu, oldFL3
+        local menuText = table.concat(labels, "|")
+        assert(menuText:find(ns.L.WHISPER_MENU_PIN, 1, true) and menuText:find(ns.L.WHISPER_MENU_DELETE, 1, true)
+            and menuText:find(ns.L.MENU_WHO, 1, true) and menuText:find(ns.L.GUILDLIST_INVITE, 1, true), "whisper menu: " .. menuText)
+        assert(list:IsShown(), "the menu keeps the list open")
         -- (1.6) Ctrl + click deletes one whisper (not a pinned one); Clear removes the loose ones
         local before = #ns.WhisperHistory({ whispersHistory = "20" })
         local ctrlDown = IsControlKeyDown

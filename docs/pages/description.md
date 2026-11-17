@@ -12,13 +12,12 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 - Place a bar to the exact pixel with the arrow keys. Style a whole bar at once.
 - DataBroker both ways: your Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 - Guild member list: hover the Guild block to see who is online, in a list that looks like a tooltip. Click a name to whisper, right-click to invite. Search field and scroll bar for big guilds.
-- Streamer mode: choose what it hides (other players, your characters, guild name, gold).
 - What's new: one line per new thing in the About tab, with a Show me button that opens the setting.
 - Group list: hover the Group block to see your party or raid members. Click a name to whisper.
 - Friends list: hover the Friends block to see your WoW and Battle.net friends online. Click a name to whisper, right-click to invite.
 - Whispers history: Ctrl + click deletes a whisper, a Clear button removes all the loose ones.
 - Whispers history: the last 5, 10 or 20 whispers with the start of each message, in a list you can click to reply. Right-click pins a whisper so you do not forget a request.
-- Streamer mode hides other players' names, your other characters, your guild and your gold.
+- Streamer mode hides, as you choose, other players' names, your other characters, your guild and your gold.
 - Accessibility: high contrast, fewer animations, a minimum text size and six reading fonts.
 - An options window with a search and a help panel for each setting. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
 - Your layouts and profiles carry over between versions.
@@ -51,13 +50,12 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - Place une barre au pixel près avec les flèches du clavier. Donne un style à toute une barre d'un coup.
 - DataBroker dans les deux sens : les plugins Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (ex-ChocolateBar).
 - Liste des membres de la guilde : survole le bloc Guilde pour voir qui est en ligne, dans une liste qui ressemble à une infobulle. Clique sur un nom pour chuchoter, clic droit pour inviter. Recherche et barre de défilement pour les grosses guildes.
-- Mode streamer : choisis ce qu'il cache (autres joueurs, tes personnages, nom de guilde, or).
 - « Quoi de neuf ? » : une ligne par nouveauté dans l'onglet À propos, avec un bouton Montre-moi qui ouvre le réglage.
 - Liste du groupe : survole le bloc Groupe pour voir les membres de ton groupe ou raid. Clique sur un nom pour chuchoter.
 - Liste des amis : survole le bloc Amis pour voir tes amis du jeu et Battle.net en ligne. Clique sur un nom pour chuchoter, clic droit pour inviter.
 - Historique des chuchotements : Ctrl + clic supprime un chuchotement, un bouton Vider retire tous les non épinglés.
 - Historique des chuchotements : les 5, 10 ou 20 derniers chuchotements avec le début de chaque message, dans une liste sur laquelle cliquer pour répondre. Un clic droit épingle un chuchotement pour ne pas oublier une demande.
-- Le mode streamer cache les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
+- Le mode streamer cache, au choix, les noms des autres joueurs, tes autres personnages, ta guilde et ton or.
 - Accessibilité : contraste élevé, moins d'animations, taille de texte minimale et six polices de lecture.
 - Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.
 - Tes dispositions et tes profils passent d'une version à l'autre.

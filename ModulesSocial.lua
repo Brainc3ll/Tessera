@@ -113,6 +113,27 @@ function ns.AddPlayerMenuEntries(root, name, shown, isMe)
     end
 end
 
+-- A guild's emblem (a hidden thank-you, on purpose not in the changelog or the help): a member of one of these
+-- guilds who runs the guild's own addon sees its emblem at the top of the guild tooltip and list.
+-- The image comes from that addon; if it is gone (the addon moved it), nothing shows.
+local GUILD_EMBLEMS = {
+    ["Forts Rêveurs"] = { addon = "GuildSelfForever", image = "Interface\\AddOns\\GuildSelfForever\\Media\\GuildSelfForeverIcon.tga" },
+}
+local emblemProbe
+ns.GUILD_EMBLEM_SIZE = 64 -- pixels, in the tooltip and at the top of the list
+function ns.GuildEmblem()
+    if not IsInGuild() then return nil end
+    local emblem = GUILD_EMBLEMS[GetGuildInfo("player") or ""]
+    if not emblem then return nil end
+    local loaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or _G["IsAddOnLoaded"]
+    if not (loaded and loaded(emblem.addon)) then return nil end
+    -- the image must exist: the game answers false (or gives no texture) for a missing file
+    emblemProbe = emblemProbe or UIParent:CreateTexture(nil, "BACKGROUND")
+    local ok = emblemProbe:SetTexture(emblem.image)
+    if ok == false or not emblemProbe:GetTexture() then return nil end
+    return emblem.image
+end
+
 -- Preview mode (/tessera preview, the demo): the lists show made-up players, so every list can be
 -- seen without a guild, a group or friends. Names, classes, levels and zones are invented.
 local PREVIEW_PEOPLE = {
@@ -438,6 +459,8 @@ ns:RegisterModule("guild", {
                 { kind = "check", field = "guildTipNote", section = "tooltip", tab = "text", label = "GUILD_TIP_NOTE", tip = "TIP_GUILD_TIP_NOTE" } },
     tooltip = function(tt, cfg)
         if not IsInGuild() then return end
+        local emblem = ns.GuildEmblem()
+        if emblem then tt:AddLine(("|T%s:%d:%d|t"):format(emblem, ns.GUILD_EMBLEM_SIZE, ns.GUILD_EMBLEM_SIZE)) end
         local guildName = GetGuildInfo("player")
         local total, onlineCount = GetNumGuildMembers()
         total = total or 0

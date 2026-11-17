@@ -3229,6 +3229,16 @@ for _, step in ipairs({
         -- the tooltip's settings also drive the list: members shown, rank, count
         mod.hoverList(block, { guildShow = "list", guildMax = "5", guildTipRank = false, guildTipCount = false })
         assert(list.rows[14]:IsShown(), "the list ignores Members shown: it scrolls through everyone")
+        -- the emblem of a guild that plays with Tessera: only with its addon loaded and its image found
+        local oldGI2, oldAddOns = GetGuildInfo, C_AddOns
+        GetGuildInfo = function() return "Forts Rêveurs" end
+        C_AddOns = setmetatable({ IsAddOnLoaded = function(name) return name == "GuildSelfForever" end }, { __index = oldAddOns })
+        assert(ns.GuildEmblem() and ns.GuildEmblem():find("GuildSelfForeverIcon", 1, true), "emblem with the guild and its addon")
+        C_AddOns = setmetatable({ IsAddOnLoaded = function() return false end }, { __index = oldAddOns })
+        assert(not ns.GuildEmblem(), "no emblem without the guild's addon")
+        GetGuildInfo = function() return "The Mosaic" end
+        assert(not ns.GuildEmblem(), "no emblem for another guild")
+        GetGuildInfo, C_AddOns = oldGI2, oldAddOns
         assert(list.rows[1].icon:IsShown(), "class icons on by default")
         list:Hide()
         mod.hoverList(block, { guildShow = "list", guildListIcons = false })

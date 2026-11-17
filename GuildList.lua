@@ -283,7 +283,18 @@ local function Layout(rows, scale)
         list.motd:SetText(Tools.Masked(motd))
         motdHeight = math.max(m.row, (list.motd:GetStringHeight() or 0) + 4)
     end
-    local head = 8 + m.row + motdHeight + 4 -- title and message of the day
+    -- the guild's emblem above the title, like a heading (GuildEmblem in ModulesSocial.lua)
+    local emblem = not ns.previewMode and ns.GuildEmblem and ns.GuildEmblem()
+    local emblemH = emblem and (ns.GUILD_EMBLEM_SIZE + 6) or 0
+    list.emblem:SetShown(emblem and true or false)
+    if emblem then
+        list.emblem:SetTexture(emblem)
+        list.emblem:SetSize(ns.GUILD_EMBLEM_SIZE, ns.GUILD_EMBLEM_SIZE)
+    end
+    list.title:ClearAllPoints()
+    list.title:SetPoint("TOPLEFT", 10, -8 - 2 - emblemH)
+    list.title:SetPoint("RIGHT", -10, 0)
+    local head = 8 + emblemH + m.row + motdHeight + 4 -- emblem, title and message of the day
     local top = head + m.row + 4 -- and the search field
     rows = math.min(ROWS_MAX, math.max(ROWS_MIN, tonumber(rows) or ROWS_DEFAULT))
     visible = rows
@@ -334,6 +345,9 @@ local function Build()
     list.title = list:CreateFontString(nil, "OVERLAY", "GameTooltipHeaderText")
     list.title:SetPoint("TOPLEFT", 10, -8 - 2)
     list.title:SetPoint("RIGHT", -10, 0)
+    list.emblem = list:CreateTexture(nil, "ARTWORK")
+    list.emblem:SetPoint("TOP", list, "TOP", 0, -8)
+    list.emblem:Hide()
     list.title:SetJustifyH("LEFT")
     list.motd = list:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     list.motd:SetPoint("TOPLEFT", list.title, "BOTTOMLEFT", 0, -4)

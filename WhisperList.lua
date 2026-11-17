@@ -23,6 +23,19 @@ local function Metrics()
              time = math.floor(120 * k) }
 end
 
+-- A small tooltip for a button inside the list: set beside the list, not over it (the list sits in
+-- the TOOLTIP strata too and would cover it)
+local function SideTip(button)
+    GameTooltip:SetOwner(button, "ANCHOR_NONE")
+    local gap = 8
+    local listRight, right = list:GetRight(), button:GetRight()
+    if listRight and right then
+        gap = (listRight - right) * list:GetEffectiveScale() / GameTooltip:GetEffectiveScale() + 6
+    end
+    GameTooltip:ClearAllPoints()
+    GameTooltip:SetPoint("LEFT", button, "RIGHT", gap, 0)
+end
+
 local function Draw()
     if not list then return end
     local history = ns.WhisperHistory(cfgNow)
@@ -144,7 +157,7 @@ local function Build()
         end
     end)
     clear:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        SideTip(self)
         GameTooltip:AddLine(L.TIP_WHISPERLIST_CLEAR, 1, 1, 1, true)
         GameTooltip:Show()
     end)
@@ -202,7 +215,7 @@ local function Build()
             end
         end)
         del:SetScript("OnEnter", function(self)
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            SideTip(self)
             GameTooltip:AddLine(L.WHISPER_MENU_DELETE, 1, 1, 1)
             GameTooltip:AddLine(L.TIP_WHISPER_DELETE_BUTTON, 0.8, 0.8, 0.8, true)
             GameTooltip:Show()
@@ -219,7 +232,7 @@ local function Build()
         glow:SetColorTexture(1, 1, 1, 0.2)
         pinButton:SetScript("OnClick", function() if row.entry then ns.WhisperTogglePin(row.entry) end end)
         pinButton:SetScript("OnEnter", function(self)
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            SideTip(self)
             GameTooltip:AddLine(row.entry and row.entry.pinned and L.WHISPER_MENU_UNPIN or L.WHISPER_MENU_PIN, 1, 1, 1)
             GameTooltip:Show()
         end)

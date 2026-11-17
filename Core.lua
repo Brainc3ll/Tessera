@@ -93,15 +93,16 @@ ns.Print = Print
 -- Streamer mode (account-wide): blocks and tooltips hide other players' names, your
 -- other characters, your realm, your guild's name and your gold, for streams and videos
 ns.HIDDEN = "***"
--- Streamer mode on; with a kind, whether that kind of information is hidden (each has its checkbox,
--- all on by default): "players" (other players' names, notes, zones), "alts" (your other characters),
--- "guild" (its name, message of the day and emblem), "gold" (your gold and money amounts)
-ns.STREAMER_KINDS = { "players", "alts", "guild", "gold" }
+-- Streamer mode on; with a kind, whether that kind of information is hidden. Each kind has its
+-- checkbox in the Streamer block's own settings (all on by default): "players" (other players'
+-- names, notes, zones), "alts" (your other characters), "guild" (its name, message of the day and
+-- emblem), "gold" (your gold and money amounts)
+local STREAMER_FIELDS = { players = "streamerPlayers", alts = "streamerAlts", guild = "streamerGuild", gold = "streamerGold" }
 function ns:IsStreamer(kind)
     if not (self.sv ~= nil and self.sv.streamerMode == true) then return false end
     if kind == nil then return true end
-    local hide = self.sv.streamerHide
-    return not (type(hide) == "table" and hide[kind] == false)
+    local cfg = self.db and self.db.blocks and self.db.blocks.streamer
+    return not (cfg and cfg[STREAMER_FIELDS[kind] or ""] == false)
 end
 
 function ns:SetStreamerMode(on)

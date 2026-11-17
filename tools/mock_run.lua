@@ -3265,12 +3265,12 @@ for _, step in ipairs({
         ns.sv.streamerMode = true
         assert(not ns.GuildEmblem(), "streamer mode: no emblem (it would show the guild)")
         -- (1.6.1) the four kinds: the guild name unchecked shows the guild and its emblem, players stay hidden
-        ns.sv.streamerHide = { guild = false }
+        ns.db.blocks.streamer.streamerGuild = false
         assert(ns.GuildEmblem(), "guild name not hidden: the emblem shows")
         assert(ns.BlockTools.Masked("The Mosaic", "guild") == "The Mosaic", "guild name shown")
         assert(ns.BlockTools.Masked("Ana") == ns.HIDDEN, "other players still hidden")
         assert(ns:IsStreamer("gold") and ns:IsStreamer("alts"), "gold and characters still hidden")
-        ns.sv.streamerHide = nil
+        ns.db.blocks.streamer.streamerGuild = true
         ns.sv.streamerMode = nil
         assert(ns.BlockTools.Masked("Ana") == "Ana", "streamer mode off: nothing hidden")
         -- (1.6.1) a first install starts with Essentials: one bar, every block always shown

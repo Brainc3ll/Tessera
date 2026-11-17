@@ -7,7 +7,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### New
 
-- Streamer mode: four checkboxes under it choose what it hides: other players' names, your other characters, the guild name and your gold. All four are on, as before; uncheck the guild name if your guild is part of your stream.
+- Streamer mode: four checkboxes in the Streamer block's own settings choose what it hides: other players' names, your other characters, the guild name and your gold. All four are on, as before; uncheck the guild name if your guild is part of your stream.
 - New layout, Essentials: one bar at the top with talents, gold, bags, durability, guild, friends, FPS, played time and whispers, every block shown even at zero. A first install starts with it; your layout does not change.
 
 ### Improvements

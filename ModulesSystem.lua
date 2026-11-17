@@ -418,7 +418,19 @@ ns:RegisterModule("streamer", {
     defaultEnabled = false,
     -- "Hide when empty" (off by default, 1.3: the block stays on screen to switch the mode
     -- on with a click): when ticked, the block only shows while the mode is on
-    defaults = { hideEmpty = false }, -- new profiles; saved profiles keep their choice
+    defaults = { hideEmpty = false, -- new profiles; saved profiles keep their choice
+                 streamerPlayers = true, streamerAlts = true, streamerGuild = true, streamerGold = true },
+    -- what the mode hides (ns:IsStreamer(kind) reads these fields of this block's settings)
+    options = {
+        { kind = "check", field = "streamerPlayers", tab = "text", label = "STREAMER_HIDE_PLAYERS", tip = "TIP_STREAMER_HIDE_PLAYERS",
+          after = function() ns:UpdateAll() end },
+        { kind = "check", field = "streamerAlts", tab = "text", label = "STREAMER_HIDE_ALTS", tip = "TIP_STREAMER_HIDE_ALTS",
+          after = function() ns:UpdateAll() end },
+        { kind = "check", field = "streamerGuild", tab = "text", label = "STREAMER_HIDE_GUILD", tip = "TIP_STREAMER_HIDE_GUILD",
+          after = function() ns:UpdateAll() end },
+        { kind = "check", field = "streamerGold", tab = "text", label = "STREAMER_HIDE_GOLD", tip = "TIP_STREAMER_HIDE_GOLD",
+          after = function() ns:UpdateAll() end },
+    },
     isEmpty = function() return not ns:IsStreamer() end,
     update = function()
         if ns:IsStreamer() then return L.STREAMER_ON, WARN end

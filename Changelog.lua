@@ -53,20 +53,21 @@ ns.CHANGELOG = {
         highlights = {
             { en = "Streamer mode: choose what it hides (other players, your characters, guild name, gold).",
               fr = "Mode streamer : choisis ce qu'il cache (autres joueurs, tes personnages, nom de guilde, or).",
-              show = { page = "PAGE_GENERAL", label = "STREAMER_HIDE_PLAYERS" } },
+              show = { block = "streamer", label = "STREAMER_HIDE_PLAYERS" } },
             { en = "New Essentials layout: one bar where every block stays shown, the start of a first install.",
               fr = "Nouvelle disposition L'essentiel : une barre où chaque bloc reste affiché, le départ d'une première installation." },
         },
         sections = {
             { kind = "new",
               en = {
-                "Streamer mode: four checkboxes under it choose what it hides: other players' names, your other characters, the"
+                "Streamer mode: four checkboxes in the Streamer block's own settings choose what it hides: other players' names, your other characters, the"
                     .. " guild name and your gold. All four are on, as before; uncheck the guild name if your guild is part of your stream.",
                 "New layout, Essentials: one bar at the top with talents, gold, bags, durability, guild, friends, FPS, played time"
                     .. " and whispers, every block shown even at zero. A first install starts with it; your layout does not change.",
               },
               fr = {
-                "Mode streamer : quatre cases sous lui choisissent ce qu'il cache : les noms des autres joueurs, tes autres personnages,"
+                "Mode streamer : quatre cases dans les réglages du bloc Streamer choisissent ce qu'il cache :"
+                    .. " les noms des autres joueurs, tes autres personnages,"
                     .. " le nom de guilde et ton or. Les quatre sont cochées, comme avant ; décoche le nom de guilde si ta guilde fait partie de ton stream.",
                 "Nouvelle disposition, L'essentiel : une barre en haut avec talents, or, sacs, durabilité, guilde, amis, FPS, temps de jeu"
                     .. " et chuchotements, chaque bloc affiché même à zéro. Une première installation part de celle-ci ; ta disposition ne change pas.",

@@ -94,6 +94,8 @@ local function RowMenu(row)
         root:CreateTitle(Plain(f))
         root:CreateButton(L.GUILDLIST_WHISPER, function() Tell(f) list:Hide() end)
         if f.inviteName and not IsMe(f) then root:CreateButton(L.GUILDLIST_INVITE, function() Invite(f) end) end
+        -- a WoW friend: the name; a Battle.net friend in WoW: the character; elsewhere: the account name to copy
+        ns.AddPlayerMenuEntries(root, f.inviteName, f.name, IsMe(f))
     end)
 end
 

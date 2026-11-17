@@ -97,6 +97,7 @@ local function RowMenu(row)
         root:CreateTitle(Plain(m.name))
         root:CreateButton(L.GUILDLIST_WHISPER, function() Tell(m.name) list:Hide() end)
         if not IsMe(m.name) then root:CreateButton(L.GUILDLIST_INVITE, function() Invite(m.name) end) end
+        ns.AddPlayerMenuEntries(root, m.name, m.name, IsMe(m.name))
     end)
 end
 

@@ -51,6 +51,8 @@ ns.CHANGELOG = {
                         .. " A click on the block still opens the game's guild window.",
                     "Block settings: a \"Hide when empty\" switch sits next to the block's \"Enabled\" switch (the \"On screen\" switch, renamed),"
                         .. " for blocks that can have nothing to show.",
+                    "Guild, friends and group lists: the Shift + click menu also copies the name into the chat, adds the player as a friend,"
+                        .. " asks who it is (/who) and ignores the player.",
                     "Whispers list: Ctrl + click on a row deletes that whisper (a pinned one stays until you unpin it); a Clear button at the top"
                         .. " removes every whisper that is not pinned (a second click confirms).",
                     "Lists on hover: they take the look and the fonts of the game's tooltip, open on the side and with the alignment of the"
@@ -84,6 +86,8 @@ ns.CHANGELOG = {
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
                     "Réglages du bloc : un interrupteur « Masquer si vide » se place à côté de l'interrupteur « Activé » du bloc"
                         .. " (l'ancien « Sur l'écran », renommé), pour les blocs qui peuvent n'avoir rien à montrer.",
+                    "Listes de guilde, d'amis et de groupe : le menu Maj + clic copie aussi le nom dans la discussion, ajoute le joueur en ami,"
+                        .. " demande qui c'est (/qui) et ignore le joueur.",
                     "Liste des chuchotements : Ctrl + clic sur une ligne supprime ce chuchotement (un épinglé reste jusqu'à ce que tu retires l'épingle) ;"
                         .. " un bouton Vider, en haut, retire tous les chuchotements non épinglés (un second clic confirme).",
                     "Listes au survol : elles prennent l'aspect et les polices de l'infobulle du jeu, montrent les lignes d'aide bleues de l'infobulle"

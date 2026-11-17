@@ -79,6 +79,7 @@ local function RowMenu(row)
     MenuUtil.CreateContextMenu(row, function(_, root)
         root:CreateTitle(Plain(f))
         root:CreateButton(L.GUILDLIST_WHISPER, function() Tell(f) list:Hide() end)
+        ns.AddPlayerMenuEntries(root, f.name, f.label, IsMe(f))
     end)
 end
 

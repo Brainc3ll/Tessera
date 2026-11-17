@@ -3041,6 +3041,25 @@ for _, step in ipairs({
         assert(flist.rows[1].zone:GetText():find("my cousin - Orgrimmar", 1, true), "the list row shows note and zone: " .. tostring(flist.rows[1].zone:GetText()) .. " / " .. tostring(flist.rows[1].friend and flist.rows[1].friend.right))
         assert(flist.rows[1].name:GetText():find(ns.L.TT_AFK_TAG, 1, true), "the tooltip's away tag in the list")
         flist:Hide()
+        -- (1.6) the Shift + click menu: copy, add friend, /who, ignore (not for yourself)
+        local entries = {}
+        local root = { CreateButton = function(_, label, fn) entries[#entries + 1] = label entries[label] = fn end }
+        local oldFL2, oldUtil2 = C_FriendList, ChatFrameUtil
+        local added, ignored, opened
+        C_FriendList = { AddFriend = function(n) added = n end, IsFriend = function() return false end,
+            SendWho = function() end, AddIgnore = function(n) ignored = n end, IsIgnored = function() return false end }
+        ChatFrameUtil = { OpenChat = function(t) opened = t end }
+        ns.AddPlayerMenuEntries(root, "Zug", "Kaz", false)
+        assert(#entries == 4, "four extra menu entries: " .. #entries)
+        entries[ns.L.MENU_COPY_NAME]() entries[ns.L.MENU_ADD_FRIEND]() entries[ns.L.MENU_IGNORE]()
+        assert(opened == "Zug" and added == "Zug" and ignored == "Zug", "copy, add friend and ignore use the character name")
+        entries = {}
+        ns.AddPlayerMenuEntries(root, nil, "Mo", false)
+        assert(#entries == 1, "a Battle.net friend outside WoW: copy only")
+        entries = {}
+        ns.AddPlayerMenuEntries(root, "Me", "Me", true)
+        assert(#entries == 1, "yourself: copy only")
+        C_FriendList, ChatFrameUtil = oldFL2, oldUtil2
         -- (1.6) the blue click hints of the tooltip go under the lists too (unless the player turned them off)
         local hints = ns:BlockHints("friends", ns.db.blocks.friends)
         assert(hints[1] == ns.L.HINT_FRIENDS and hints[#hints] == ns.L.HINT_QUICK_MENU, "block hints: its click, then the quick menu")

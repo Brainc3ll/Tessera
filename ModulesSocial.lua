@@ -88,6 +88,31 @@ end
 
 -- The online guild members, in the order the player chose (leaders first, then the sort), with the
 -- number of leaders on top: shared by the tooltip and the clickable list (GuildList.lua)
+-- The Shift + click menu of the lists (guild, friends, group): besides whisper and invite (the left
+-- and right clicks), what the clicks do not do. `name` is a character name (nil for a Battle.net
+-- friend outside WoW: only "copy" is offered then, with the account name in `shown`).
+function ns.AddPlayerMenuEntries(root, name, shown, isMe)
+    local copy = name or shown
+    if copy then
+        root:CreateButton(L.MENU_COPY_NAME, function()
+            local util = ChatFrameUtil
+            local open = (util and util.OpenChat) or _G["ChatFrame_OpenChat"]
+            if open then pcall(open, copy) end
+        end)
+    end
+    if not name or isMe then return end
+    local fl = C_FriendList
+    if fl and fl.AddFriend and not (fl.IsFriend and fl.IsFriend(name)) then
+        root:CreateButton(L.MENU_ADD_FRIEND, function() pcall(fl.AddFriend, name) end)
+    end
+    if fl and fl.SendWho then
+        root:CreateButton(L.MENU_WHO, function() pcall(fl.SendWho, ('n-"%s"'):format(name)) end)
+    end
+    if fl and fl.AddIgnore and not (fl.IsIgnored and fl.IsIgnored(name)) then
+        root:CreateButton(L.MENU_IGNORE, function() pcall(fl.AddIgnore, name) end)
+    end
+end
+
 -- Preview mode (/tessera preview, the demo): the lists show made-up players, so every list can be
 -- seen without a guild, a group or friends. Names, classes, levels and zones are invented.
 local PREVIEW_PEOPLE = {

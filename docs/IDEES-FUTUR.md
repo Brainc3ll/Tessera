@@ -446,4 +446,4 @@ Garde-fou : chaque idée ajoutée coûte des textes à traduire en 4 langues et 
 
 - **17/11 (idée de Braincell1980) : bloc Chuchotements.** Choix d'afficher ou non le nom du joueur qui chuchote dans le bloc ; l'infobulle liste les derniers chuchotements (10 au plus, avec l'heure) ; à étudier : les rendre cliquables (répondre). Pas commencé.
 
-- Listes au survol pour d'autres blocs (comme Guilde, Amis, Chuchotements) : Groupe (membres du groupe), Quêtes, Réputations, Monnaies, Instances sauvegardées, Talents (changer de build). À décider avec Braincell1980.
+- Listes au survol pour d'autres blocs (comme Guilde, Amis, Chuchotements) : Groupe (fait en 1.6), Quêtes, Réputations, Monnaies, Instances sauvegardées, Talents (changer de build). À décider avec Braincell1980.

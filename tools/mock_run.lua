@@ -2442,6 +2442,27 @@ for _, step in ipairs({
         tt, got = FakeTip()
         m.group.tooltip(tt, { groupTipRole = false, groupTipState = false, groupTipLevel = false })
         assert(not got():find(L.TT_LEADER, 1, true) and not got():find("42", 1, true), "parts off: " .. got())
+        -- (1.6) the clickable group list: members, status, whisper, search, not in a group
+        local members = ns.GroupMembers({})
+        assert(#members == 2 and members[1].isMe and members[1].label == "Me" and members[2].label == "Pal", "group members")
+        assert(members[1].zone:find(L.TT_LEADER, 1, true), "the leader tag is in the status column")
+        assert(ns.modules.group.defaults.groupShow == "list", "the group list is the default")
+        local gblock = CreateFrame("Frame", nil, UIParent)
+        assert(not ns.modules.group.hoverList(gblock, { groupShow = "tooltip" }), "tooltip setting: the normal tooltip")
+        assert(ns.modules.group.hoverList(gblock, { groupShow = "list" }), "list setting: the list takes its place")
+        local glist = _G["TesseraGroupList"]
+        assert(glist and glist:IsShown() and glist.rows[2]:IsShown() and not glist.rows[3]:IsShown(), "2 rows for 2 members")
+        local gTold
+        local oldUtil = ChatFrameUtil
+        ChatFrameUtil = { SendTell = function(n) gTold = n end }
+        glist.rows[1]:GetScript("OnClick")(glist.rows[1], "LeftButton")
+        assert(gTold == nil and glist:IsShown(), "you cannot whisper yourself")
+        glist.rows[2]:GetScript("OnClick")(glist.rows[2], "LeftButton")
+        assert(gTold == "Pal" and not glist:IsShown(), "a click whispers a member")
+        ChatFrameUtil = oldUtil
+        IsInGroup = function() return false end
+        assert(not ns.modules.group.hoverList(gblock, { groupShow = "list" }), "no list outside a group")
+        IsInGroup = function() return true end
         for name, fn in pairs(saved) do _G[name] = fn end
         -- Memory: the total line and the shares come with their checkboxes
         pcall(m.memory.update, {})

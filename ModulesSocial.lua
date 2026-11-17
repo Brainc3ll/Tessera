@@ -518,6 +518,44 @@ local function GroupUnits()
     return units, raid
 end
 
+-- The members of your party or raid, in the game's order: shared by the tooltip's settings and the
+-- clickable list (GroupList.lua). Each: { name (to whisper), label (shown), level, class, zone (the
+-- role tags and the state, as the tooltip shows them), isMe }.
+function ns.GroupMembers(cfg)
+    local list = {}
+    local units = GroupUnits()
+    local _, _, master = LootInfo()
+    local showRole, showState = cfg == nil or cfg.groupTipRole ~= false, cfg == nil or cfg.groupTipState ~= false
+    local showLevel = cfg == nil or cfg.groupTipLevel ~= false
+    for _, unit in ipairs(units) do
+        local name, realm = Try(UnitName, unit)
+        if name then
+            local _, class = Try(UnitClass, unit)
+            local status = {}
+            if showRole then
+                if UnitIsGroupLeader and Try(UnitIsGroupLeader, unit) then status[#status + 1] = L.TT_LEADER end
+                if UnitIsGroupAssistant and Try(UnitIsGroupAssistant, unit) then status[#status + 1] = L.TT_ASSISTANT end
+                if master and master == name then status[#status + 1] = L.TT_LOOTER end
+            end
+            if showState then
+                if UnitIsConnected and Try(UnitIsConnected, unit) == false then
+                    status[#status + 1] = _G.PLAYER_OFFLINE
+                elseif UnitIsDeadOrGhost and Try(UnitIsDeadOrGhost, unit) then
+                    status[#status + 1] = _G.DEAD
+                elseif UnitIsAFK and Try(UnitIsAFK, unit) then
+                    status[#status + 1] = _G.CHAT_FLAG_AFK
+                end
+            end
+            local whisper = name
+            if type(realm) == "string" and realm ~= "" then whisper = name .. "-" .. realm end
+            list[#list + 1] = { kind = "wow", name = whisper, label = name, class = class,
+                level = showLevel and tonumber(Try(UnitLevel, unit)) or 0, zone = table.concat(status, ", "),
+                isMe = UnitIsUnit and UnitIsUnit(unit, "player") or unit == "player" }
+        end
+    end
+    return list
+end
+
 ns:RegisterModule("group", {
     label = "GROUP",
     icon = "Interface\\Icons\\INV_Misc_GroupLooking",
@@ -528,8 +566,18 @@ ns:RegisterModule("group", {
         local units, raid = GroupUnits()
         return ("%d / %d"):format(#units, raid and 40 or 5)
     end,
-    defaults = { groupTipRole = true, groupTipState = true, groupTipLevel = true },
+    defaults = { groupTipRole = true, groupTipState = true, groupTipLevel = true, groupShow = "list", groupListRows = 14,
+                 groupListScale = 100, groupListLook = "tooltip" },
     options = {
+        { kind = "dropdown", field = "groupShow", tab = "text", label = "GUILD_SHOW", tip = "TIP_GROUP_SHOW",
+          values = { { key = "list", label = "GROUP_SHOW_LIST" }, { key = "tooltip", label = "GUILD_SHOW_TOOLTIP" } } },
+        { kind = "slider", field = "groupListRows", tab = "text", label = "GUILD_LIST_ROWS", tip = "TIP_GUILD_LIST_ROWS",
+          min = 5, max = 100, step = 1, default = 14, shown = function(cfg) return cfg.groupShow ~= "tooltip" end },
+        { kind = "slider", field = "groupListScale", tab = "text", label = "GUILD_LIST_SCALE", tip = "TIP_GUILD_LIST_SCALE",
+          min = 80, max = 150, step = 5, default = 100, shown = function(cfg) return cfg.groupShow ~= "tooltip" end },
+        { kind = "dropdown", field = "groupListLook", tab = "text", label = "GUILD_LIST_LOOK", tip = "TIP_GUILD_LIST_LOOK",
+          shown = function(cfg) return cfg.groupShow ~= "tooltip" end,
+          values = { { key = "tooltip", label = "GUILD_LOOK_TOOLTIP" }, { key = "window", label = "GUILD_LOOK_WINDOW" } } },
         { kind = "check", field = "groupTipRole", section = "tooltip", tab = "text", label = "GROUP_TIP_ROLE", tip = "TIP_GROUP_TIP_ROLE" },
         { kind = "check", field = "groupTipState", section = "tooltip", tab = "text", label = "GROUP_TIP_STATE", tip = "TIP_GROUP_TIP_STATE" },
         { kind = "check", field = "groupTipLevel", section = "tooltip", tab = "text", label = "GROUP_TIP_LEVEL", tip = "TIP_GROUP_TIP_LEVEL" },
@@ -571,6 +619,13 @@ ns:RegisterModule("group", {
             end
         end
         if #units > MAX_LINES then tt:AddLine(L.TT_MORE:format(#units - MAX_LINES), 0.8, 0.8, 0.8) end
+    end,
+    -- "Group list": a clickable list under the mouse in place of the tooltip (GroupList.lua)
+    hoverList = function(frame, cfg)
+        if cfg and cfg.groupShow ~= "tooltip" and IsInGroup and IsInGroup() and ns.ShowGroupList then
+            ns:ShowGroupList(frame, cfg)
+            return true
+        end
     end,
 })
 

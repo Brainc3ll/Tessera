@@ -51,6 +51,8 @@ ns.CHANGELOG = {
                         .. " A click on the block still opens the game's guild window.",
                     "Block settings: a \"Hide when empty\" switch sits next to the block's \"Enabled\" switch (the \"On screen\" switch, renamed),"
                         .. " for blocks that can have nothing to show.",
+                    "Group block: the same On hover setting. The list of your party or raid members shows under the mouse in place of the"
+                        .. " tooltip, with their role and state and a search field. A click on a name whispers and Shift + click opens a menu.",
                     "Friends block: the same On hover setting as the Guild block. The friends list (your WoW and Battle.net friends online)"
                         .. " shows under the mouse in place of the tooltip, with a search field. A click on a name whispers,"
                         .. " a right click invites and Shift + click opens a menu. It follows the block's sort, notes and parts settings.",
@@ -73,6 +75,8 @@ ns.CHANGELOG = {
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
                     "Réglages du bloc : un interrupteur « Masquer si vide » se place à côté de l'interrupteur « Activé » du bloc"
                         .. " (l'ancien « Sur l'écran », renommé), pour les blocs qui peuvent n'avoir rien à montrer.",
+                    "Bloc Groupe : le même réglage Au survol. La liste des membres de ton groupe ou raid s'affiche sous la souris à la place de"
+                        .. " l'infobulle, avec leur rôle, leur état et un champ de recherche. Un clic sur un nom chuchote et Maj + clic ouvre un menu.",
                     "Bloc Amis : le même réglage Au survol que le bloc Guilde. La liste des amis (tes amis du jeu et Battle.net en ligne)"
                         .. " s'affiche sous la souris à la place de l'infobulle, avec un champ de recherche. Un clic sur un nom chuchote,"
                         .. " un clic droit invite et Maj + clic ouvre un menu. Elle suit les réglages de tri, de notes et de parties du bloc.",

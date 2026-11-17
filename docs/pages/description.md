@@ -50,7 +50,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - Place une barre au pixel près avec les flèches du clavier. Donne un style à toute une barre d'un coup.
 - DataBroker dans les deux sens : les plugins Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (ex-ChocolateBar).
 - Liste des membres de la guilde : survole le bloc Guilde pour voir qui est en ligne, dans une liste qui ressemble à une infobulle. Clique sur un nom pour chuchoter, clic droit pour inviter. Recherche et barre de défilement pour les grosses guildes.
-- Quoi de neuf : une ligne par nouveauté dans l'onglet À propos, avec un bouton Montre-moi qui ouvre le réglage.
+- « Quoi de neuf ? » : une ligne par nouveauté dans l'onglet À propos, avec un bouton Montre-moi qui ouvre le réglage.
 - Liste du groupe : survole le bloc Groupe pour voir les membres de ton groupe ou raid. Clique sur un nom pour chuchoter.
 - Liste des amis : survole le bloc Amis pour voir tes amis du jeu et Battle.net en ligne. Clique sur un nom pour chuchoter, clic droit pour inviter.
 - Historique des chuchotements : Ctrl + clic supprime un chuchotement, un bouton Vider retire tous les non épinglés.

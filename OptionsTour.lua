@@ -268,8 +268,32 @@ end
 -- "Show me" of a "What's new" line: opens the place it talks about and makes the setting blink.
 -- spec: { block = key } (a block's page), { page = "PAGE_..." } (a tab), and a label (a text key)
 -- to find the setting there. A block the profile lacks: the first block takes its place.
+-- "Back to What's new": shown after a "Show me", bottom right of the options window (under the help
+-- panel); a click goes back to the What's new topic. It goes away once used or when the window closes.
+local backButton
+function ns.WhatsNewGoBack()
+    if backButton then backButton:Hide() end
+    ns:OpenOptions(PAGE_ABOUT)
+    if S.aboutContent then S.aboutContent:ShowTopic(WHATS_NEW_TOPIC) end
+end
+local function ShowBackButton()
+    if not S.panel then return end
+    if not backButton then
+        backButton = CreateFrame("Button", nil, S.panel, "UIPanelButtonTemplate")
+        backButton:SetText(L.BACK_TO_WHATS_NEW)
+        backButton:SetSize(math.max(180, (backButton:GetFontString():GetStringWidth() or 0) + 30), 26)
+        backButton:SetPoint("BOTTOMRIGHT", S.panel, "BOTTOMRIGHT", -16, 14)
+        backButton:SetFrameLevel(S.panel:GetFrameLevel() + 20)
+        backButton:SetScript("OnClick", function() ns.WhatsNewGoBack() end)
+        S.panel:HookScript("OnHide", function() backButton:Hide() end)
+    end
+    backButton:Show()
+end
+ns.WhatsNewBackButton = function() return backButton end -- (tools/mock_run.lua)
+
 function ns:ShowWhatsNewTarget(spec)
     if type(spec) ~= "table" then return end
+    C_Timer.After(0, ShowBackButton) -- after the page change, which may rebuild the window
     local block = spec.block
     if block and not (ns.db.blocks[block]) then block = ns.order[1] end
     local page = spec.page and Tools[spec.page]

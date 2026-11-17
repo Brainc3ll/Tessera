@@ -4063,6 +4063,18 @@ do
             end
         end
     end
+    -- after a "Show me", a button brings you back to What's new
+    ns:ShowWhatsNewTarget({ page = "PAGE_LOOK" })
+    local timers = _G.__timers
+    _G.__timers = {}
+    for _, fn in ipairs(timers) do pcall(fn) end
+    local back = ns.WhatsNewBackButton()
+    if not back then print("STEP ERROR: no Back to What's new button after Show me")
+    else
+        if not back:IsShown() then print("STEP ERROR: no Back to What's new button after Show me") end
+        ns.WhatsNewGoBack()
+        if back:IsShown() then print("STEP ERROR: the back button stays after use") end
+    end
     local popup = ns.WhatsNewPopupText(ns.CHANGELOG[1].version)
     if not popup:find(ns.ChangelogHighlights(ns.CHANGELOG[1], "en")[1].text, 1, true)
         and not popup:find(ns.ChangelogHighlights(ns.CHANGELOG[1], "fr")[1].text, 1, true) then

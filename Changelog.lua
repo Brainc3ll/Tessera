@@ -84,7 +84,7 @@ ns.CHANGELOG = {
                     "Block settings: a \"Hide when empty\" switch sits next to the block's \"Enabled\" switch (the \"On screen\" switch, renamed),"
                         .. " for blocks that can have nothing to show.",
                     "What's new, in the About tab: one short line for each new thing, version by version, with a Show me button that opens"
-                        .. " the setting. After an update, the window that announces it lists the new version's lines.",
+                        .. " the setting and a button to come back. After an update, the window that announces it lists the new version's lines.",
                     "Guild, friends and group lists: the Shift + click menu also copies the name into the chat, adds the player as a friend,"
                         .. " asks who it is (/who) and ignores the player.",
                     "Whispers list: Ctrl + click on a row deletes that whisper (a pinned one stays until you unpin it); a Clear button at the top"
@@ -120,8 +120,9 @@ ns.CHANGELOG = {
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
                     "Réglages du bloc : un interrupteur « Masquer si vide » se place à côté de l'interrupteur « Activé » du bloc"
                         .. " (l'ancien « Sur l'écran », renommé), pour les blocs qui peuvent n'avoir rien à montrer.",
-                    "Quoi de neuf, dans l'onglet À propos : une ligne courte par nouveauté, version par version, avec un bouton Montre-moi"
-                        .. " qui ouvre le réglage. Après une mise à jour, la fenêtre qui l'annonce liste les lignes de la nouvelle version.",
+                    "« Quoi de neuf ? », dans l'onglet À propos : une ligne courte par nouveauté, version par version, avec un bouton Montre-moi"
+                        .. " qui ouvre le réglage et un bouton pour revenir. Après une mise à jour, la fenêtre qui l'annonce liste"
+                        .. " les lignes de la nouvelle version.",
                     "Listes de guilde, d'amis et de groupe : le menu Maj + clic copie aussi le nom dans la discussion, ajoute le joueur en ami,"
                         .. " demande qui c'est (/qui) et ignore le joueur.",
                     "Liste des chuchotements : Ctrl + clic sur une ligne supprime ce chuchotement (un épinglé reste jusqu'à ce que tu retires l'épingle) ;"

@@ -292,7 +292,9 @@ local function BuildTopicPage(page, getSections, bottomRoom)
         b.mark:SetPoint("LEFT", b, "LEFT", 0, 0)
         b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         b.label:SetPoint("LEFT", b, "LEFT", 10, 0)
-        b.label:SetPoint("RIGHT", b, "RIGHT", -4, 0)
+        -- a fixed width (not two anchors): the height of a title on two lines is known at once,
+        -- so the button grows before the next one is placed (no overlap)
+        b.label:SetWidth(TOPIC_W - 14)
         b.label:SetJustifyH("LEFT")
         b.label:SetWordWrap(true) -- long titles wrap on two lines
         b:SetScript("OnClick", function() ShowSection(i) end)

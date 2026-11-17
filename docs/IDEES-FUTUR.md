@@ -445,3 +445,5 @@ Garde-fou : chaque idée ajoutée coûte des textes à traduire en 4 langues et 
   À reprendre seulement si un joueur le demande. Raison : au repos Tessera produit peu de déchets, et dans la mesure du 15/11 les 269 mises à jour de blocs prenaient 5 ms en tout. Masquer un bloc suffit déjà à l'arrêter.
 
 - **17/11 (idée de Braincell1980) : bloc Chuchotements.** Choix d'afficher ou non le nom du joueur qui chuchote dans le bloc ; l'infobulle liste les derniers chuchotements (10 au plus, avec l'heure) ; à étudier : les rendre cliquables (répondre). Pas commencé.
+
+- Listes au survol pour d'autres blocs (comme Guilde, Amis, Chuchotements) : Groupe (membres du groupe), Quêtes, Réputations, Monnaies, Instances sauvegardées, Talents (changer de build). À décider avec Braincell1980.

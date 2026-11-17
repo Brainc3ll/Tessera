@@ -288,6 +288,7 @@ are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and 
 | `ModulesCharacter.lua` | Data blocks about your character: gold, bags, durability, experience, rested, stats, regeneration, speed, talents, item level, pet, buffs, corpse. **Add a block in the file of its category.** |
 | `ModulesSocial.lua` | Data blocks about other players: friends, guild, group, whispers, mail, loot. |
 | `WhisperList.lua` | The Whispers block's history, shown under the mouse in place of the tooltip: the last players who whispered you, a click replies. |
+| `FriendsList.lua` | The Friends block's list (WoW and Battle.net friends online), shown under the mouse in place of the tooltip: search, scrolling, whisper and invite. |
 | `GuildList.lua` | The Guild block's member list, shown under the mouse in place of the tooltip: search, scrolling, whisper and invite. |
 | `ModulesWorld.lua` | Data blocks about the world: zone, subzone, coordinates, clocks, date, hearthstone, instances, reset. |
 | `ModulesProgress.lua` | Data blocks about progress: reputation, currencies, quests, goal, professions, ammo, reagents, experience rate, gold gained. |

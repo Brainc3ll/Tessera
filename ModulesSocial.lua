@@ -106,6 +106,53 @@ function ns.GuildMembers(cfg)
     return members, nLeaders
 end
 
+-- The friends online, in the order of the block's own settings (sort; the parts and "WoW only" it
+-- shows), with how many are online out of the total: shared by the tooltip's settings and the
+-- clickable list (FriendsList.lua). Each: { kind = "wow" or "bnet", name (to whisper), label (shown),
+-- level, class, zone, note, afk, dnd, inviteName (nil when the game gives no way to invite) }.
+function ns.FriendsOnline(cfg)
+    local list = {}
+    if On(cfg, "friendsTipWoW") then
+        for i = 1, C_FriendList.GetNumFriends() or 0 do
+            local info = C_FriendList.GetFriendInfoByIndex(i)
+            if info and info.connected and info.name then
+                list[#list + 1] = { kind = "wow", name = info.name, label = info.name, level = info.level or 0,
+                    class = info.className and info.className:upper(), zone = info.area or "", note = info.notes,
+                    afk = info.afk, dnd = info.dnd, inviteName = info.name }
+            end
+        end
+    end
+    if not (cfg and cfg.noBNetFriends) and On(cfg, "friendsTipBNet") then
+        for _, f in ipairs(BNetFriendsOnline()) do
+            local account, game = f.account, f.game
+            local who = account.accountName or account.battleTag
+            if who then
+                local inWoW = game.clientProgram == BNET_CLIENT_WOW and game.characterName
+                if inWoW then
+                    local realm = game.realmName
+                    local invite = game.characterName
+                    if realm and realm ~= "" and realm ~= GetRealmName() then invite = invite .. "-" .. realm:gsub("%s", "") end
+                    list[#list + 1] = { kind = "bnet", name = who, label = who .. " : " .. game.characterName,
+                        level = game.characterLevel or 0, class = game.className and game.className:upper(),
+                        zone = game.areaName or "", note = account.note, afk = account.isAFK or game.isGameAFK,
+                        dnd = account.isDND or game.isGameBusy, inviteName = invite }
+                elseif not (cfg and cfg.friendsWoWOnly) then
+                    list[#list + 1] = { kind = "bnet", name = who, label = who, level = 0,
+                        zone = game.richPresence or game.clientProgram or "", note = account.note,
+                        afk = account.isAFK, dnd = account.isDND }
+                end
+            end
+        end
+    end
+    SortFriends(list, cfg and cfg.friendsSort)
+    local total, online = C_FriendList.GetNumFriends() or 0, C_FriendList.GetNumOnlineFriends() or 0
+    if BNGetNumFriends and not (cfg and cfg.noBNetFriends) then
+        local bnTotal, bnOnline = BNGetNumFriends()
+        total, online = total + (bnTotal or 0), online + (bnOnline or 0)
+    end
+    return list, online, total
+end
+
 ns:RegisterModule("friends", {
     label = "FRIENDS",
     icon = "Interface\\Icons\\INV_Misc_GroupNeedMore",
@@ -138,8 +185,19 @@ ns:RegisterModule("friends", {
         return text
     end,
     defaults = { countFormat = "online", statusColor = true, friendsSort = "game", friendsNotes = false, friendsWoWOnly = false,
-                 friendsTipStatus = true, friendsTipWoW = true, friendsTipBNet = true },
-    options = { COUNT_OPTION, { kind = "check", field = "noBNetFriends", tab = "text", label = "NO_BNET_FRIENDS",
+                 friendsTipStatus = true, friendsTipWoW = true, friendsTipBNet = true, friendsShow = "list", friendsListRows = 14,
+                 friendsListScale = 100, friendsListLook = "tooltip" },
+    options = { COUNT_OPTION,
+                { kind = "dropdown", field = "friendsShow", tab = "text", label = "GUILD_SHOW", tip = "TIP_FRIENDS_SHOW",
+                  values = { { key = "list", label = "FRIENDS_SHOW_LIST" }, { key = "tooltip", label = "GUILD_SHOW_TOOLTIP" } } },
+                { kind = "slider", field = "friendsListRows", tab = "text", label = "GUILD_LIST_ROWS", tip = "TIP_GUILD_LIST_ROWS",
+                  min = 5, max = 100, step = 1, default = 14, shown = function(cfg) return cfg.friendsShow ~= "tooltip" end },
+                { kind = "slider", field = "friendsListScale", tab = "text", label = "GUILD_LIST_SCALE", tip = "TIP_GUILD_LIST_SCALE",
+                  min = 80, max = 150, step = 5, default = 100, shown = function(cfg) return cfg.friendsShow ~= "tooltip" end },
+                { kind = "dropdown", field = "friendsListLook", tab = "text", label = "GUILD_LIST_LOOK", tip = "TIP_GUILD_LIST_LOOK",
+                  shown = function(cfg) return cfg.friendsShow ~= "tooltip" end,
+                  values = { { key = "tooltip", label = "GUILD_LOOK_TOOLTIP" }, { key = "window", label = "GUILD_LOOK_WINDOW" } } },
+                { kind = "check", field = "noBNetFriends", tab = "text", label = "NO_BNET_FRIENDS",
                                 tip = "TIP_NO_BNET_FRIENDS" },
                 { kind = "check", field = "statusColor", tab = "text", label = "STATUS_COLOR", tip = "TIP_STATUS_COLOR" },
                 { kind = "dropdown", field = "friendsSort", section = "tooltip", tab = "text", label = "FRIENDS_SORT", tip = "TIP_FRIENDS_SORT",
@@ -225,6 +283,13 @@ ns:RegisterModule("friends", {
     end,
     secureMacro = "/run ToggleFriendsFrame(1)",
     clickHint = L.HINT_FRIENDS,
+    -- "Friends list": a clickable list under the mouse in place of the tooltip (FriendsList.lua)
+    hoverList = function(frame, cfg)
+        if cfg and cfg.friendsShow ~= "tooltip" and ns.ShowFriendsList then
+            ns:ShowFriendsList(frame, cfg)
+            return true
+        end
+    end,
 })
 
 ns:RegisterModule("guild", {

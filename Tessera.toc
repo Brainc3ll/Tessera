@@ -33,6 +33,7 @@ Modules.lua
 ModulesCharacter.lua
 ModulesSocial.lua
 GuildList.lua
+FriendsList.lua
 WhisperList.lua
 ModulesWorld.lua
 ModulesProgress.lua

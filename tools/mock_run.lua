@@ -2946,6 +2946,35 @@ for _, step in ipairs({
         assert(all:find("Kaz", 1, true) < all:find("Mo", 1, true), "level sort: highest first")
         all = Tip({ friendsSort = "zone" })
         assert(all:find("Mo", 1, true) < all:find("Kaz", 1, true), "zone sort")
+        -- (1.6) the clickable friends list: the same friends, whisper, invite, search
+        local fl, online, total = ns.FriendsOnline({})
+        assert(#fl == 3 and online == 3 and total == 4, "friends online: WoW and Battle.net")
+        assert(#ns.FriendsOnline({ noBNetFriends = true }) == 1 and #ns.FriendsOnline({ friendsWoWOnly = true }) == 2, "the block's settings choose the friends")
+        assert(m.defaults.friendsShow == "list", "the list is the default")
+        local block = CreateFrame("Frame", nil, UIParent)
+        assert(not m.hoverList(block, { friendsShow = "tooltip" }), "tooltip setting: the normal tooltip")
+        assert(m.hoverList(block, { friendsShow = "list", friendsNotes = true }), "list setting: the list takes its place")
+        local flist = _G["TesseraFriendsList"]
+        assert(flist and flist:IsShown() and flist.rows[3]:IsShown() and not flist.rows[4]:IsShown(), "3 rows for 3 friends")
+        local savedUtil, savedParty = ChatFrameUtil, C_PartyInfo
+        local told, bnTold, invited
+        ChatFrameUtil = { SendTell = function(n) told = n end, SendBNetTell = function(n) bnTold = n end }
+        C_PartyInfo = { InviteUnit = function(n) invited = n end }
+        flist.rows[1]:GetScript("OnClick")(flist.rows[1], "RightButton")
+        assert(invited == "Tilda", "a right click invites the WoW friend: " .. tostring(invited))
+        flist.rows[2]:GetScript("OnClick")(flist.rows[2], "LeftButton")
+        assert(bnTold == "Kaz" and not flist:IsShown(), "a click whispers a Battle.net friend by account name")
+        m.hoverList(block, { friendsShow = "list" })
+        flist.rows[1]:GetScript("OnClick")(flist.rows[1], "LeftButton")
+        assert(told == "Tilda", "a click whispers a WoW friend")
+        m.hoverList(block, { friendsShow = "list" })
+        flist.box:SetText("Zug")
+        flist.box:GetScript("OnTextChanged")(flist.box)
+        assert(flist.rows[1]:IsShown() and flist.rows[1].friend.name == "Kaz" and not flist.rows[2]:IsShown(), "the search finds a character name")
+        flist:GetScript("OnUpdate")(flist, 0.2)
+        flist:GetScript("OnUpdate")(flist, 0.2)
+        assert(not flist:IsShown(), "the list closes once the mouse stayed away")
+        ChatFrameUtil, C_PartyInfo = savedUtil, savedParty
         C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet = oldFL, oldBN, oldInfo, oldC
     end,
     -- whispers history: the last whispers stay after you answered, a clickable list replies and pins

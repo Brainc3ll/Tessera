@@ -9,6 +9,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Guild block: a new setting, On hover, shows the members online in a list under the mouse in place of the tooltip (Tooltip brings back the old one). A click on a name whispers, a right click invites and Shift + click opens a menu.
 - The list has a search field (name, zone, rank or note), the mouse wheel and a scroll bar for big guilds. It follows the tooltip settings (sort, leaders, members shown, message, count, rank, note, size). A click on the block still opens the game's guild window.
+- Friends block: the same On hover setting as the Guild block. The friends list (your WoW and Battle.net friends online) shows under the mouse in place of the tooltip, with a search field. A click on a name whispers, a right click invites and Shift + click opens a menu. It follows the block's sort, notes and parts settings.
 - Whispers block: it now keeps the last 5, 10 or 20 whispers, even after you answered and after a reload, with the time and the start of each message. A new setting, On hover, shows them as a clickable list or as a tooltip. In the list, a click replies and a right click pins a whisper so you do not forget it.
 - Three settings shape the list: List rows (5 to 100), List size (80 to 150 percent) and List look (tooltip or window).
 - New setting in General, Movement: Merge blocks dropped together. Unchecked, a block dropped against another one does not merge with it.

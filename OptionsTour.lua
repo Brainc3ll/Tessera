@@ -298,6 +298,14 @@ function ns:ShowWhatsNewTarget(spec)
     if block and not (ns.db.blocks[block]) then block = ns.order[1] end
     local page = spec.page and Tools[spec.page]
     if block then ns:OpenOptionsFor(block) elseif page then ns:OpenOptions(page) else ns:OpenOptions() end
+    -- a widget of the head of a block's page ("Hide when empty", "Place by pixel")
+    if spec.widget then
+        C_Timer.After(0, function()
+            local w = ns[spec.widget]
+            if w and w:IsShown() then Blink(w) end
+        end)
+        return
+    end
     local label = spec.label and L[spec.label]
     if not label then return end
     for _, r in ipairs(ns.optionRows) do

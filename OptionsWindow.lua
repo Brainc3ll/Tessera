@@ -344,43 +344,43 @@ function ns.SearchOptions(text)
     return found
 end
 
--- the row lights up three times ("Fewer animations": it stays lit for a moment)
--- A gold frame around a widget: seen whatever its colors (the "On screen" switch,
--- a button), a shape as well as a color (high contrast). Shown and hidden as one.
+-- The setting lights up: a thick gold frame with a light gold fill around it, four times
+-- ("Fewer animations": it stays lit for a moment, without blinking). A shape as well as a color,
+-- seen whatever the style of the window (high contrast too).
 local function BlinkFrame(w)
     if w.blinkFrame then return w.blinkFrame end
     local f = CreateFrame("Frame", nil, w)
-    f:SetPoint("TOPLEFT", -4, 4)
-    f:SetPoint("BOTTOMRIGHT", 4, -4)
+    f:SetPoint("TOPLEFT", -5, 5)
+    f:SetPoint("BOTTOMRIGHT", 5, -5)
     f:SetFrameLevel(w:GetFrameLevel() + 10)
+    local fill = f:CreateTexture(nil, "BACKGROUND")
+    fill:SetAllPoints()
+    fill:SetColorTexture(1, 0.82, 0, 0.18)
     for _, side in ipairs({ { "TOPLEFT", "TOPRIGHT", true }, { "BOTTOMLEFT", "BOTTOMRIGHT", true },
                             { "TOPLEFT", "BOTTOMLEFT" }, { "TOPRIGHT", "BOTTOMRIGHT" } }) do
         local t = f:CreateTexture(nil, "OVERLAY")
         t:SetColorTexture(1, 0.82, 0, 1)
         t:SetPoint(side[1])
         t:SetPoint(side[2])
-        if side[3] then t:SetHeight(3) else t:SetWidth(3) end
+        if side[3] then t:SetHeight(4) else t:SetWidth(4) end
     end
     f:Hide()
     w.blinkFrame = f
     return f
 end
 
-local function Blink(w, framed)
-    local light = not framed and w.hover
-    if not light then light = BlinkFrame(w) end
+local function Blink(w)
+    local light = BlinkFrame(w)
     if ns.sv and ns.sv.reduceMotion then
-        light:SetAlpha(2.5)
         light:Show()
-        C_Timer.After(1.5, function() light:Hide() end)
+        C_Timer.After(2.5, function() light:Hide() end)
         return
     end
     local n = 0
     local function Step()
         n = n + 1
-        light:SetAlpha(2.5)
         light:SetShown(n % 2 == 1)
-        if n < 6 then C_Timer.After(0.25, Step) end
+        if n < 8 then C_Timer.After(0.3, Step) end
     end
     Step()
 end

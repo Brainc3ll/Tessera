@@ -4053,6 +4053,8 @@ do
             if spec then
                 if spec.label and not ns.L[spec.label] then print("STEP ERROR: what's new: unknown label " .. spec.label) end
                 if spec.page and not ns.OptionsTools[spec.page] then print("STEP ERROR: what's new: unknown page " .. spec.page) end
+                if spec.widget and not ns[spec.widget] then print("STEP ERROR: what's new: no widget " .. spec.widget) end
+                if not spec.label and not spec.widget then print("STEP ERROR: what's new: nothing to blink in " .. entry.version) end
                 local found = not spec.label
                 for _, r in ipairs(ns.optionRows) do
                     if spec.label and r.label == ns.L[spec.label] then found = true end

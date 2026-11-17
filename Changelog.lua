@@ -61,7 +61,7 @@ ns.CHANGELOG = {
               fr = "Maj + clic sur un nom d'une liste : le copier, ajouter en ami, /qui ou ignorer." },
             { en = "\"Hide when empty\" sits next to \"Enabled\", at the top of each block's page.",
               fr = "« Masquer si vide » se place à côté de « Activé », en haut de la page de chaque bloc.",
-              show = { block = "friends" } },
+              show = { block = "friends", widget = "hideEmptySwitch" } },
             { en = "Placement: choose whether dropped blocks merge and whether they snap to the grid.",
               fr = "Placement : choisis si les blocs posés fusionnent et s'ils s'aimantent à la grille.",
               show = { page = "PAGE_GENERAL", label = "MERGE_DROP" } },
@@ -243,7 +243,7 @@ ns.CHANGELOG = {
         highlights = {
             { en = "Choose the parts each tooltip shows (gold, bags, durability, guild...).",
               fr = "Choisis les parties de chaque infobulle (or, sacs, durabilité, guilde...).",
-              show = { block = "gold" } },
+              show = { block = "gold", label = "GOLD_TIP_SESSION" } },
             { en = "Reset session: your gold, XP and reputation gains start again from zero.",
               fr = "Réinitialiser la session : tes gains d'or, d'XP et de réputation repartent de zéro." },
             { en = "Settings sit in boxes with a Reset button; the search says where a setting is.",
@@ -458,7 +458,7 @@ ns.CHANGELOG = {
         highlights = {
             { en = "Aurora style, for DaylightUI.",
               fr = "Style Aurora, pour DaylightUI.",
-              show = { page = "PAGE_LOOK" } },
+              show = { page = "PAGE_LOOK", label = "THEME" } },
         },
         sections = {
             { kind = "new",
@@ -504,10 +504,10 @@ ns.CHANGELOG = {
         highlights = {
             { en = "Bronze and gold style, after FlareUI 6's settings window.",
               fr = "Style Bronze et or, d'après la fenêtre de réglages de FlareUI 6.",
-              show = { page = "PAGE_LOOK" } },
+              show = { page = "PAGE_LOOK", label = "THEME" } },
             { en = "Automatic style: your blocks follow the interface you installed.",
               fr = "Style automatique : tes blocs suivent l'interface que tu as installée.",
-              show = { page = "PAGE_LOOK" } },
+              show = { page = "PAGE_LOOK", label = "THEME" } },
         },
         sections = {
             { kind = "new",
@@ -568,7 +568,7 @@ ns.CHANGELOG = {
               show = { page = "PAGE_ACCESS", label = "HIGH_CONTRAST" } },
             { en = "Place by pixel: move a group with the arrow keys.",
               fr = "Placer au pixel : déplace un groupe avec les flèches du clavier.",
-              show = { block = "gold" } },
+              show = { block = "gold", widget = "placeButton" } },
             { en = "A new options window: search, help panel, one setting per row.",
               fr = "Nouvelle fenêtre d'options : recherche, panneau d'aide, un réglage par ligne." },
         },
@@ -940,7 +940,7 @@ ns.CHANGELOG = {
         highlights = {
             { en = "New styles: Tessera, The War Within, Midnight and Blizzard Forever.",
               fr = "Nouveaux styles : Tessera, The War Within, Midnight et Blizzard Forever.",
-              show = { page = "PAGE_LOOK" } },
+              show = { page = "PAGE_LOOK", label = "THEME" } },
         },
         sections = {
             { kind = "new",

@@ -39,7 +39,7 @@ local function Metrics()
     local k = math.max(1, (height or 12) / 12)
     return {
         row = math.max(22, math.floor((height or 12) * 1.7)),
-        icon = math.floor(16 * k), level = math.floor(26 * k), name = math.floor(210 * k), zone = math.floor(150 * k),
+        icon = math.floor(16 * k), level = math.floor(26 * k), name = math.floor(210 * k), zone = math.floor(190 * k),
     }
 end
 

@@ -1737,16 +1737,32 @@ function ns.ApplyTooltipLook(frame)
             return
         end
     end
-    if tip and tip.NineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName and not frame.tesseraTipNine then
-        local layout = tip.NineSlice.layoutType or "TooltipDefaultLayout"
-        if pcall(NineSliceUtil.ApplyLayoutByName, frame, layout) and frame.NineSlice then
-            if frame.backdropInfo then frame:SetBackdrop(nil) end
-            frame.tesseraTipNine = true
-            local r, g, b, a = 0.07, 0.07, 0.1, 0.96
-            if tip.NineSlice.GetCenterColor then r, g, b, a = tip.NineSlice:GetCenterColor() end
-            if frame.NineSlice.SetCenterColor then frame.NineSlice:SetCenterColor(r, g, b, a) end
-            if tip.NineSlice.GetBorderColor and frame.NineSlice.SetBorderColor then
-                frame.NineSlice:SetBorderColor(tip.NineSlice:GetBorderColor())
+    -- the game's tooltip made of nine pieces: the same layout, then each piece takes the texture, the
+    -- color and the size the tooltip's piece has now (this is where an interface addon restyles it)
+    local src = tip and (tip.NineSlice or tip)
+    if src and src.TopLeftCorner and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
+        if not frame.tesseraTipNine then
+            local layout = (tip.NineSlice and tip.NineSlice.layoutType) or "TooltipDefaultLayout"
+            if pcall(NineSliceUtil.ApplyLayoutByName, frame, layout) and frame.TopLeftCorner then
+                if frame.backdropInfo then frame:SetBackdrop(nil) end
+                frame.tesseraTipNine = true
+            end
+        end
+        if frame.tesseraTipNine then
+            for _, name in ipairs({ "TopLeftCorner", "TopRightCorner", "BottomLeftCorner", "BottomRightCorner", "TopEdge",
+                                    "BottomEdge", "LeftEdge", "RightEdge", "Center" }) do
+                local from, to = src[name], frame[name]
+                if from and to then
+                    local atlas = from.GetAtlas and from:GetAtlas()
+                    if atlas then
+                        to:SetAtlas(atlas, false)
+                    elseif from.GetTexture and from:GetTexture() then
+                        to:SetTexture(from:GetTexture())
+                        if from.GetTexCoord then to:SetTexCoord(from:GetTexCoord()) end
+                    end
+                    if from.GetVertexColor then to:SetVertexColor(from:GetVertexColor()) end
+                    if name:find("Corner") and from.GetSize then to:SetSize(from:GetSize()) end
+                end
             end
             return
         end

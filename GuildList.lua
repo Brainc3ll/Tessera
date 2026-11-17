@@ -41,8 +41,8 @@ local function Metrics()
     local k = math.max(1, (height or 12) / 12)
     return {
         row = math.max(22, math.floor((height or 12) * 1.7)),
-        icon = math.floor(16 * k), level = math.floor(26 * k), name = math.floor(130 * k),
-        rank = math.floor(90 * k), note = math.floor(130 * k), zone = math.floor(150 * k),
+        icon = math.floor(16 * k), level = math.floor(26 * k), name = math.floor(160 * k),
+        rank = math.floor(100 * k), note = math.floor(150 * k), zone = math.floor(170 * k),
     }
 end
 
@@ -236,10 +236,12 @@ local function MakeRow(i, m)
     row.name:SetPoint("LEFT", row.level, "RIGHT", 4, 0)
     row.name:SetWidth(m.name)
     row.name:SetJustifyH("LEFT")
+    row.name:SetWordWrap(false)
     row.rank = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     row.rank:SetPoint("LEFT", row.name, "RIGHT", 4, 0)
     row.rank:SetWidth(m.rank)
     row.rank:SetJustifyH("LEFT")
+    row.rank:SetWordWrap(false)
     row.rank:SetTextColor(1, 0.82, 0)
     -- the member's public note, white, as in the tooltip (shown with the "Note" tooltip setting)
     row.note = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
@@ -251,6 +253,7 @@ local function MakeRow(i, m)
     row.zone:SetPoint("LEFT", row.note, "RIGHT", 4, 0)
     row.zone:SetPoint("RIGHT", -2, 0)
     row.zone:SetJustifyH("RIGHT")
+    row.zone:SetWordWrap(false)
     row.zone:SetTextColor(0.8, 0.8, 0.8)
     list.rows[i] = row
     return row

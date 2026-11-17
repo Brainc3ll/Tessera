@@ -877,6 +877,33 @@ function ns.WhisperTogglePin(w)
     if ns.RefreshWhisperList then ns:RefreshWhisperList() end
 end
 
+-- Ctrl + click on a row of the list: removes that whisper from the history. A pinned whisper stays
+-- until it is unpinned.
+function ns.WhisperDelete(w)
+    if not w or w.pinned then return false end
+    for i, entry in ipairs(whispers) do
+        if entry == w then
+            table.remove(whispers, i)
+            SaveWhispers()
+            ns:UpdateBlock("whispers")
+            if ns.RefreshWhisperList then ns:RefreshWhisperList() end
+            return true
+        end
+    end
+    return false
+end
+
+-- The "Clear" button of the list: removes every whisper that is not pinned
+function ns.WhisperClear()
+    LoadWhispers()
+    for i = #whispers, 1, -1 do
+        if not whispers[i].pinned then table.remove(whispers, i) end
+    end
+    SaveWhispers()
+    ns:UpdateBlock("whispers")
+    if ns.RefreshWhisperList then ns:RefreshWhisperList() end
+end
+
 ns:RegisterModule("whispers", {
     label = "WHISPERS",
     icon = "Interface\\Icons\\INV_Letter_02",

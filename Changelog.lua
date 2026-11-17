@@ -51,6 +51,8 @@ ns.CHANGELOG = {
                         .. " A click on the block still opens the game's guild window.",
                     "Block settings: a \"Hide when empty\" switch sits next to the block's \"Enabled\" switch (the \"On screen\" switch, renamed),"
                         .. " for blocks that can have nothing to show.",
+                    "Whispers list: Ctrl + click on a row deletes that whisper (a pinned one stays until you unpin it); a Clear button at the top"
+                        .. " removes every whisper that is not pinned (a second click confirms).",
                     "Lists on hover: the blue click hints of the tooltip (click, Shift click, right click, quick menu) show under the list too."
                         .. " The Friends list also shows your status, the friends' notes and the same away and busy tags as the tooltip.",
                     "Preview mode and the demo fill the Guild, Friends and Group lists with made-up players, so you can see every list"
@@ -79,6 +81,8 @@ ns.CHANGELOG = {
                         .. " rang, note, taille). Un clic sur le bloc ouvre toujours la fenêtre de guilde du jeu.",
                     "Réglages du bloc : un interrupteur « Masquer si vide » se place à côté de l'interrupteur « Activé » du bloc"
                         .. " (l'ancien « Sur l'écran », renommé), pour les blocs qui peuvent n'avoir rien à montrer.",
+                    "Liste des chuchotements : Ctrl + clic sur une ligne supprime ce chuchotement (un épinglé reste jusqu'à ce que tu retires l'épingle) ;"
+                        .. " un bouton Vider, en haut, retire tous les chuchotements non épinglés (un second clic confirme).",
                     "Listes au survol : les lignes d'aide bleues de l'infobulle (clic, Maj + clic, clic droit, menu rapide) s'affichent aussi sous la liste."
                         .. " La liste des amis montre aussi ton statut, les notes des amis et les mêmes marques absent et occupé que l'infobulle.",
                     "Le mode aperçu et la démo remplissent les listes Guilde, Amis et Groupe de joueurs inventés, pour voir chaque liste"

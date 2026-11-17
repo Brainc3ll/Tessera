@@ -3,7 +3,8 @@ local L = ns.L
 
 -- The history of the Whispers block, shown under the mouse in place of its tooltip (setting
 -- "On hover"): one row for each of the last whispers (the pinned ones first), with the start of the
--- message. A click on a row replies, a right click pins it or unpins it. It stays while the mouse is on the block or on the list and
+-- message. A click on a row replies, a right click pins it or unpins it, Ctrl + click deletes it
+-- (not a pinned one); the "Clear" button at the top removes all the whispers that are not pinned. It stays while the mouse is on the block or on the list and
 -- closes a moment after it leaves both. Same idea as GuildList.lua, smaller: at most 20 rows.
 local Tools = ns.BlockTools
 local MAX_ROWS = 40 -- 20 whispers and the pinned ones
@@ -27,6 +28,11 @@ local function Draw()
     local history = ns.WhisperHistory(cfgNow)
     local m = Metrics()
     local rowH = m.line * 2 + 6
+    local headH = m.line + 12 -- the title line with the Clear button
+    local loose = 0
+    for _, w in ipairs(history) do if not w.pinned then loose = loose + 1 end end
+    list.clear:SetShown(loose > 0)
+    if loose == 0 then list.clear.sure = nil list.clear:SetText(L.WHISPERLIST_CLEAR) end
     for i = 1, MAX_ROWS do
         local row = list.rows[i]
         local w = history[i]
@@ -49,17 +55,21 @@ local function Draw()
     end
     list.empty:SetShown(#history == 0)
     -- the list's own help line, then the block's blue click hints (as its tooltip shows them)
-    local hint = L.WHISPERLIST_HINT
+    local hint = L.WHISPERLIST_HINT .. "\n" .. L.WHISPERLIST_DELETE_HINT
     local more = owner and owner.key and ns:BlockHints(owner.key, cfgNow or {}) or {}
     if #more > 0 then hint = hint .. "\n" .. table.concat(more, "\n") end
     list.hint:SetWidth(list:GetWidth() - 24)
     list.hint:SetText(hint)
     local hintH = math.max(m.line, list.hint:GetStringHeight() or m.line)
-    list:SetHeight(8 + math.max(1, #history) * rowH + 8 + hintH + 4)
+    list:SetHeight(headH + math.max(1, #history) * rowH + 8 + hintH + 4)
 end
 
 local function Click(row, button)
     if not row.entry then return end
+    if IsControlKeyDown() then
+        ns.WhisperDelete(row.entry) -- a pinned whisper stays: unpin it first
+        return
+    end
     if button == "RightButton" then
         ns.WhisperTogglePin(row.entry) -- the list stays open
     else
@@ -77,12 +87,44 @@ local function Build()
     list:SetFrameStrata("TOOLTIP") -- the highest strata, over every window and bar
     list:SetClampedToScreen(true)
     list:EnableMouse(true)
-    list:SetSize(width, 8 + rowH + 8 + m.line + 4)
+    local headH = m.line + 12
+    list:SetSize(width, headH + rowH + 8 + m.line + 4)
     list.rows = {}
+    list.title = list:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    list.title:SetPoint("TOPLEFT", 12, -8)
+    list.title:SetText(ns:GetBlockName("whispers"))
+    -- "Clear": removes the whispers that are not pinned; a second click within 3 seconds confirms
+    local clear = CreateFrame("Button", nil, list, "UIPanelButtonTemplate")
+    clear:SetSize(math.floor(90 * (m.name / 170)), m.line + 6)
+    clear:SetPoint("TOPRIGHT", -8, -5)
+    clear:SetText(L.WHISPERLIST_CLEAR)
+    clear:SetScript("OnClick", function(self)
+        if self.sure then
+            self.sure = nil
+            self:SetText(L.WHISPERLIST_CLEAR)
+            ns.WhisperClear()
+        else
+            self.sure = true
+            self:SetText(L.WHISPERLIST_SURE)
+            C_Timer.After(3, function()
+                if self.sure then
+                    self.sure = nil
+                    self:SetText(L.WHISPERLIST_CLEAR)
+                end
+            end)
+        end
+    end)
+    clear:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(L.TIP_WHISPERLIST_CLEAR, 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    clear:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    list.clear = clear
     for i = 1, MAX_ROWS do
         local row = CreateFrame("Button", nil, list)
         row:SetSize(width - 16, rowH)
-        row:SetPoint("TOPLEFT", 8, -(8 + (i - 1) * rowH))
+        row:SetPoint("TOPLEFT", 8, -(headH + (i - 1) * rowH))
         row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
         row:SetScript("OnClick", Click)
         local hl = row:CreateTexture(nil, "HIGHLIGHT")
@@ -118,7 +160,7 @@ local function Build()
     list.hint:SetTextColor(0.5, 0.8, 1)
     list.hint:SetText(L.WHISPERLIST_HINT)
     list.empty = list:CreateFontString(nil, "OVERLAY", "GameFontDisable")
-    list.empty:SetPoint("TOP", list, "TOP", 0, -14)
+    list.empty:SetPoint("TOP", list, "TOP", 0, -(headH + 6))
     list.empty:SetText(L.NONE)
     list:SetScript("OnShow", function() away = 0 end)
     list:SetScript("OnUpdate", function(self, elapsed)

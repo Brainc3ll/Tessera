@@ -3072,9 +3072,29 @@ for _, step in ipairs({
         mod.hoverList(block, { whispersHover = "list", whispersHistory = "5" })
         list.rows[1]:GetScript("OnClick")(list.rows[1], "RightButton")
         assert(not oldest.pinned and list:IsShown(), "a right click unpins, the list stays open")
+        -- (1.6) Ctrl + click deletes one whisper (not a pinned one); Clear removes the loose ones
+        local before = #ns.WhisperHistory({ whispersHistory = "20" })
+        local ctrlDown = IsControlKeyDown
+        IsControlKeyDown = function() return true end
+        local victim = list.rows[3].entry
+        list.rows[3]:GetScript("OnClick")(list.rows[3], "LeftButton")
+        assert(#ns.WhisperHistory({ whispersHistory = "20" }) == before - 1 and not victim.pinned, "Ctrl + click deletes a whisper")
+        local keep = ns.WhisperHistory({ whispersHistory = "20" })[1]
+        ns.WhisperTogglePin(keep)
+        list.rows[1]:GetScript("OnClick")(list.rows[1], "LeftButton")
+        assert(keep.pinned and ns.WhisperHistory({ whispersHistory = "20" })[1] == keep, "Ctrl + click leaves a pinned whisper")
+        IsControlKeyDown = ctrlDown
+        list.clear:GetScript("OnClick")(list.clear)
+        assert(#ns.WhisperHistory({ whispersHistory = "20" }) > 1, "the first click on Clear only asks")
+        list.clear:GetScript("OnClick")(list.clear)
+        local left = ns.WhisperHistory({ whispersHistory = "20" })
+        assert(#left == 1 and left[1] == keep, "Clear removes everything except the pinned whispers")
+        ns.WhisperTogglePin(keep)
         local tt = { lines = 0 }
         tt.AddLine = function() tt.lines = tt.lines + 1 end
         tt.AddDoubleLine = tt.AddLine
+        Fire("CHAT_MSG_WHISPER", "one", "Aa-Realm") Fire("CHAT_MSG_WHISPER", "two", "Bb-Realm") Fire("CHAT_MSG_WHISPER", "three", "Cc-Realm")
+        Fire("CHAT_MSG_WHISPER", "four", "Dd-Realm") Fire("CHAT_MSG_WHISPER", "five", "Ee-Realm")
         mod.tooltip(tt, { whispersHistory = "5" })
         assert(tt.lines >= 5, "the tooltip lists the history")
         list:GetScript("OnUpdate")(list, 0.2)

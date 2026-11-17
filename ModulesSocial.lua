@@ -603,7 +603,7 @@ function ns.GroupMembers(cfg)
             if showState and i == 9 then status[#status + 1] = _G.DEAD or "Dead" end
             if showState and i == 12 then status[#status + 1] = _G.CHAT_FLAG_AFK or "AFK" end
             local group = i % 4 + 1
-            table.insert(status, 1, L.GROUPLIST_GROUP:format(group))
+            status[#status + 1] = L.GROUPLIST_GROUP:format(group) -- last: "Dead, Group 1"
             list[#list + 1] = { kind = "wow", name = p[1], label = p[1], class = p[2], level = showLevel and p[3] or 0,
                 zone = table.concat(status, ", "), isMe = i == 4, group = group, order = i }
         end
@@ -640,7 +640,7 @@ function ns.GroupMembers(cfg)
             local group
             if raid and GetRaidRosterInfo then
                 group = tonumber(select(3, Try(GetRaidRosterInfo, idx)))
-                if group then table.insert(status, 1, L.GROUPLIST_GROUP:format(group)) end
+                if group then status[#status + 1] = L.GROUPLIST_GROUP:format(group) end -- last: "Dead, Group 1"
             end
             list[#list + 1] = { kind = "wow", name = whisper, label = name, class = class,
                 level = showLevel and tonumber(Try(UnitLevel, unit)) or 0, zone = table.concat(status, ", "),

@@ -4567,6 +4567,40 @@ do
             end
         end
     end
+    -- the lines sit on whole screen pixels (1080 pixels high: one pixel is 0.711 units, so
+    -- block edges fall between pixels) and stay inside their block
+    if key then
+        local physical = GetPhysicalScreenSize
+        GetPhysicalScreenSize = function() return 1920, 1080 end
+        local unit = 768 / 1080
+        local function OnPixel(v) return math.abs(v / unit - math.floor(v / unit + 0.5)) < 1e-4 end
+        ns:UpdateLayout()
+        local checked, fractional = 0, false
+        for _, k in ipairs(ns:GetBlockKeys()) do
+            local f = ns.frames[k]
+            if f and f:IsShown() and not OnPixel(f:GetRight()) then fractional = true end
+            for _, t in ipairs(f and f.separatorPool or {}) do
+                if t:IsShown() then
+                    checked = checked + 1
+                    local vertical = t:GetWidth() < t:GetHeight()
+                    local edge = vertical and t:GetRight() or t:GetBottom()
+                    if not OnPixel(edge) or not OnPixel(t:GetLeft()) or not OnPixel(t:GetTop()) then
+                        print("STEP ERROR: separators: a line of " .. k .. " is not on whole pixels (" .. edge .. ")")
+                        break
+                    end
+                    if (vertical and t:GetRight() > f:GetRight() + 1e-6) or (not vertical and t:GetBottom() < f:GetBottom() - 1e-6) then
+                        print("STEP ERROR: separators: a line of " .. k .. " goes past its block")
+                        break
+                    end
+                end
+            end
+        end
+        if checked == 0 or not fractional then
+            print("STEP ERROR: separators: pixel test found no line (" .. checked .. ") or no block between two pixels")
+        end
+        GetPhysicalScreenSize = physical
+        ns:UpdateLayout()
+    end
     MOCK_GEOMETRY = false
     ns:ResetProfile("top")
 end

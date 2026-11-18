@@ -1114,6 +1114,33 @@ end
 -- by the block on its right and bottom sides only, so each line is drawn once,
 -- a little shorter than the side so it does not touch the group's border.
 -- Spacers draw none (a stretched bar stays clean).
+-- Size of one screen pixel in the frame's own units (nil if the game cannot tell)
+local function PixelUnit(f)
+    local factor
+    if PixelUtil and PixelUtil.GetPixelToUIUnitFactor then
+        factor = PixelUtil.GetPixelToUIUnitFactor()
+    elseif GetPhysicalScreenSize then
+        local _, h = GetPhysicalScreenSize()
+        if h and h > 0 then factor = 768 / h end
+    end
+    local s = f:GetEffectiveScale()
+    if factor and factor > 0 and s and s > 0 then return factor / s end
+end
+
+-- Shift that moves a position (frame units) onto the nearest pixel boundary.
+-- Block edges often fall between two pixels (offsets are whole units, and one unit
+-- is rarely one pixel): a 1-pixel line drawn there turns into two faint pixels, or
+-- almost nothing, and changes each time the group moves by a fraction of a pixel.
+-- dir: -1 rounds down (left / below), 1 rounds up, nil to the nearest boundary.
+function ns.PixelShift(pos, unit, dir)
+    if not unit or not pos then return 0 end
+    local n = pos / unit
+    if dir == -1 then n = math.floor(n + 1e-3)
+    elseif dir == 1 then n = math.ceil(n - 1e-3)
+    else n = math.floor(n + 0.5) end
+    return n * unit - pos
+end
+
 function ns:DrawSeparators(f, cov)
     local cfg = self.db.blocks[f.key]
     f.separatorPool = f.separatorPool or {}
@@ -1128,7 +1155,12 @@ function ns:DrawSeparators(f, cov)
     if cfg and cfg.separators then
         local c = cfg.separatorColor or { r = 1, g = 1, b = 1, a = 0.4 }
         if cfg.classColorSeparator then c = self:GetClassColor(c.a) or c end
-        local thick = self:PixelSize(1, f)
+        -- the line is placed on whole screen pixels (see ns.PixelShift), so it stays one
+        -- sharp pixel wide wherever the group sits
+        local unit = PixelUnit(f)
+        local thick = unit or self:PixelSize(1, f)
+        local Shift = ns.PixelShift
+        local fl, fb, fr, ft = f:GetLeft(), f:GetBottom(), f:GetRight(), f:GetTop()
         local function Line(side, a, b)
             local len = b - a
             local inset = math.min(6, len / 4)
@@ -1138,16 +1170,26 @@ function ns:DrawSeparators(f, cov)
             if not tex then
                 tex = f:CreateTexture(nil, "OVERLAY", nil, 2)
                 tex:SetTexture("Interface\\Buttons\\WHITE8X8")
+                -- already on whole pixels: the game must not round it again
+                if tex.SetSnapToPixelGrid then tex:SetSnapToPixelGrid(false) end
+                if tex.SetTexelSnappingBias then tex:SetTexelSnappingBias(0) end
                 f.separatorPool[used] = tex
             end
             tex:SetVertexColor(c.r, c.g, c.b, c.a)
             tex:ClearAllPoints()
+            local size = len - 2 * inset
+            if unit then size = math.max(1, math.floor(size / unit + 0.5)) * unit end
             if side == "RIGHT" then
-                tex:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, -(a + inset))
-                tex:SetSize(thick, len - 2 * inset)
+                -- (rounded toward the inside: the block next to it never covers the line)
+                local x = unit and fr and Shift(fr, unit, -1) or 0
+                local y = unit and ft and Shift(ft - a - inset, unit) or 0
+                tex:SetPoint("TOPRIGHT", f, "TOPRIGHT", x, -(a + inset) + y)
+                tex:SetSize(thick, size)
             else
-                tex:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", a + inset, 0)
-                tex:SetSize(len - 2 * inset, thick)
+                local x = unit and fl and Shift(fl + a + inset, unit) or 0
+                local y = unit and fb and Shift(fb, unit, 1) or 0
+                tex:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", a + inset + x, y)
+                tex:SetSize(size, thick)
             end
             tex:Show()
         end

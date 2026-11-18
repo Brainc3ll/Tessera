@@ -54,10 +54,14 @@ ns.CHANGELOG = {
               en = {
                 "Separators: the lines follow the \"Line between merged blocks\" box and the line color as you change them."
                     .. " In 1.6.1 they updated only after a reload or a style change.",
+                "Separators: each line stays one sharp pixel wide, wherever the bar sits."
+                    .. " In 1.6.1 some lines showed doubled and faint, or vanished, and changed when a block's text changed width.",
               },
               fr = {
                 "Séparateurs : les traits suivent la case « Ligne entre les blocs fusionnés » et la couleur de la ligne dès que tu les changes."
                     .. " En 1.6.1, ils ne se mettaient à jour qu'après un rechargement ou un changement de style.",
+                "Séparateurs : chaque trait reste net, large d'un pixel, où que soit la barre."
+                    .. " En 1.6.1, certains traits apparaissaient en double et pâles, ou disparaissaient, et changeaient quand le texte d'un bloc changeait de largeur.",
               },
             },
         },

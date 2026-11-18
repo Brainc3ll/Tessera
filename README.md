@@ -208,6 +208,98 @@ Help tab inside the game explains everything.
   (action bars, minimap, buffs), you choose whether the blocks stay in front or behind; placement
   mode (and Blizzard's Edit Mode) can switch every block for a while to see what is underneath.
 
+### The blocks, one by one
+
+Every block has a tooltip (hover it), a click (below), **Shift + click** to copy its value to the
+chat and a **right-click** for its own settings. Blocks marked *(shown at first)* are on screen
+after a first install (the Essentials layout); add the others from the list at the top of the
+Blocks and groups tab, then turn on "Enabled".
+
+**Character**
+
+| Block | What it shows | Click |
+|---|---|---|
+| Gold *(shown at first)* | Your gold; tooltip: session gain, history of 7, 14 or 30 days, your characters' gold and their total | Open your bags |
+| Bags *(shown at first)* | Free (or used) bag slots; tooltip: junk value, profession bags apart | Open your bags |
+| Durability *(shown at first)* | Your lowest durability; tooltip: each item and the repair cost | Character sheet |
+| XP | XP to the next level; tooltip: rested XP, time to level, quests to hand in | |
+| Rested XP | Your rested XP | |
+| Item level | Equipped item level, best available, or both; weakest items first in the tooltip | Character sheet |
+| Character stats | The stat of your choice, and a second one | Character sheet |
+| Mana regeneration | Your mana per 5 seconds | Character sheet |
+| Talent points *(shown at first)* | Unspent talent points | Open the talents |
+| Hunter pet | Your pet's happiness | |
+| Weapon enchant | Time left on your poison or sharpening stone | |
+| Long buffs | Your long buffs and the time left on them | |
+| Corpse | Distance and direction to your body after a death | A map pin on your body |
+
+**Social**
+
+| Block | What it shows | Click |
+|---|---|---|
+| Friends *(shown at first)* | Friends online, colored by your status. Hover: a clickable list of your WoW and Battle.net friends online (click to whisper, right-click to invite, Shift + click for a menu, search) | Friends list |
+| Guild *(shown at first)* | Members online (and the guild name if you want). Hover: a clickable list with rank, public note, message of the day and search, same clicks as Friends | Guild window |
+| Group | Your party or raid. Hover: a clickable list with roles and state, a raid sorted by group | |
+| Whispers *(shown at first)* | Unread whispers, or the last sender. Hover: your last 5, 10 or 20 whispers, kept after a reload; click to reply, the star pins one, the cross deletes it, Clear removes the rest | Reply to the last one |
+| Mail | Mail waiting for you | |
+| Group loot | The loot method of your group | /roll (1-100) |
+
+**World**
+
+| Block | What it shows | Click |
+|---|---|---|
+| Time | Local time | Calendar |
+| Server time | The realm's time | Calendar |
+| Date | Today's date | Calendar |
+| Coordinates | Your position on the map | World map |
+| Zone, Subzone | Where you are | World map |
+| Hearthstone | Its bind location and cooldown | Use the Hearthstone |
+| Instances | Your saved instances, nearest reset first, with an alert | |
+| Daily and weekly reset | Time to the next resets | |
+
+**Progress**
+
+| Block | What it shows | Click |
+|---|---|---|
+| Reputation | Your watched reputation, points left, session gain | Open reputations |
+| Currencies | Any currency you own, its cap and session gain | Open currencies |
+| Quests | Quests in your log, sorted by level or finished first, with a free-slot alert | Open the quest log |
+| Goal | Gold, a level, a currency, or up to 3 items to collect; "Reached" and the time left at your pace | Add, change or remove an item (or drop an item from your bags on it) |
+| Professions | One block per profession, plus Cooking, First Aid and Fishing | Open the profession |
+| Class reagents | Your reagents, grayed at zero | |
+| Ammo | Ammo left | |
+| XP per hour | Your XP rate this session (or the time to level at that pace) | |
+| Gold this session | Gold earned or spent since you logged in | |
+
+**System**
+
+| Block | What it shows | Click |
+|---|---|---|
+| FPS *(shown at first)* | Frames per second, with a graph | |
+| Latency | Home and world latency, with a graph | |
+| Addon memory | Memory of your addons (5 to 30 listed) | |
+| Volume | Master volume | Mute or unmute; wheel: volume |
+| Played time *(shown at first)* | This level, total or this session | |
+| Streamer mode | Whether it is on; its settings choose what it hides (other players, your characters, guild name, gold) | Turn it on or off |
+| Micro-menu | Blizzard's micro menu in one block; the menus in its tooltip | The menu list |
+
+**WoW Forever**
+
+| Block | What it shows | Click |
+|---|---|---|
+| Legacy points | Your points, the next reward, the whole track and your challenges | Open the Legacy panel |
+| Comprehension | Your scroll-reading skill and the scrolls in your bags | Cast Scroll Comprehension |
+| Camping | Time left on your camp buffs, or the kit's cooldown | Light a campfire with the kit |
+| Honor | Your honor points | |
+| Skills | The skill of the weapon in hand (or one you pick) | Open the skills |
+
+**Not data blocks**
+
+- **Launchers:** any minimap button of another addon becomes a block you place anywhere
+  (Launchers tab).
+- **DataBroker blocks:** other addons' DataBroker objects shown as blocks (DataBroker tab).
+- **Spacers:** empty blocks to leave room in a bar.
+
 | Command | Effect |
 |---|---|
 | `/tessera` | Open or close the options |

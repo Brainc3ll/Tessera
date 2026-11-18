@@ -91,7 +91,7 @@ Tessera is a collaboration between me, a player, and an AI.
 - all the code of the addon (Lua), and the automatic tests that run it outside the game;
 - the English and French texts (options, tooltips, help, changelog, this page) and the German, Spanish and Brazilian Portuguese translations;
 - the release tools (GitHub workflows, CurseForge upload) and the debug versions;
-- the logo (set in Outfit, a free font) and the banner images.
+- the banner images.
 
 **Thanks** to Funkeh, whose [StatBlock Core](https://www.curseforge.com/wow/addons/stat-block-core) (free-floating DataBroker blocks, no longer updated since 2022) was my first inspiration for Tessera.
 

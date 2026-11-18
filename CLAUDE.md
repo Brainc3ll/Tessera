@@ -10,11 +10,11 @@ Quick start for a new session: `docs/REPRISE-CLAUDE.md`. Game texts are written 
 The documentation is as important as the code. With any new feature, block, option, command
 or visible fix, update:
 - the in-game help (Help tab, English and French) and the tooltip of every new option;
-- `Changelog.lua`, then `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Reread the whole entry of the
+- `Extras/Changelog.lua`, then `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Reread the whole entry of the
   version: it must not contradict itself (a later change in the same version rewrites the earlier
   line instead of adding a "fix" for something players never had). Sort the changes by kind
   (`sections`: intro, new, improved, fixed). Each version also gets `highlights`: one short line per new
-  thing for the What's new topic and the update popup, with a `show` target when a setting fits. The changelog stays in `Changelog.lua` (English and
+  thing for the What's new topic and the update popup, with a `show` target when a setting fits. The changelog stays in `Extras/Changelog.lua` (English and
   French only);
 - `README.md` (highlights, block list, commands, file table, developer notes);
 - `docs/pages/description.md`, the CurseForge and Wago page (English and French parts);
@@ -46,9 +46,10 @@ locals or 50 upvalues. When a file gets near that, split it before adding anythi
 one file (exported through a table on `ns`), then one file per topic, in the same commit and with no
 change a player can see (see the `tessera-refactor` skill). Never add a local to a file that is over
 the limit (`KNOWN_DEBT` in the tool lists a file waiting for its split; it is empty since 13/11).
-`Options.lua` is split in `Options*.lua` (shared tools through `ns.OptionsTools`, shared state in its table `S`).
+The Lua files live in folders (`Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/`; `Locales/` and `Media/` unchanged): a new file goes in the folder of its topic and in `Tessera.toc` with its folder (`Blocks\\Foo.lua`), and the tools read the file list from the .toc.
+`Options/Options.lua` is split in `Options*.lua` (shared tools through `ns.OptionsTools`, shared state in its table `S`).
 Data blocks go in the `Modules*.lua` file of their category; the order of the older blocks is
-`ns.MODULE_ORDER` in `Modules.lua`.
+`ns.MODULE_ORDER` in `Blocks/Modules.lua`.
 
 ## Texts that are easy to translate
 Changing a text makes translators redo all of it. Keep every text short: one key

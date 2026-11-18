@@ -359,50 +359,51 @@ Blocks that forward another addon (DataBroker, launchers) update every 2 s. Hidd
 
 The code is plain Lua with no build step and no embedded libraries. Every file starts with a
 header explaining its role, and the tricky parts (secure clicks, secret values, border seams)
-are commented in place. Start with the headers of `Core.lua`, `Modules.lua` and `Merge.lua`. Lua refuses a file with more than 200 local variables alive at once: `tools/check_locals.py` keeps every file under 160, so a big file is split before it gets there.
+are commented in place. Start with the headers of `Core/Core.lua`, `Blocks/Modules.lua` and `Core/Merge.lua`. Lua refuses a file with more than 200 local variables alive at once: `tools/check_locals.py` keeps every file under 160, so a big file is split before it gets there.
 
 ### Files (in load order, see `Tessera.toc`)
+The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Blocks/` (the data blocks and their tools), `Lists/` (the lists shown under the mouse), `Options/` (the options window) and `Extras/` (changelog, demo mode, DataBroker). `Locales/`, `Media/` and `Licenses/` keep their place; `Tessera.toc` and `Bindings.xml` stay at the root (the game reads them there).
 
 | File | Role |
 |---|---|
 | `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
 | `Locales/deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`... | The other languages, sent by pull request or issue; a missing text shows in English. |
-| `Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
-| `Themes.lua` | The styles (Bronze, Bronze and gold and Bronze (old) for FlareUI, Emerald for EllesmereUI, Elven for ElvUI, Aurora for DaylightUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
-| `Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
-| `Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
-| `Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
-| `Profiles.lua` | Profile export / import (compact text; older texts still read), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
-| `SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
-| `Changelog.lua` | Version history for the in-game About tab (What's new topic: each entry's `highlights`, one short line per new thing with an optional `show` target; Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
-| `Modules.lua` | Tools shared by the data blocks (thresholds, durations, money, item counts; `ns.BlockTools`), the order of the blocks (`ns.MODULE_ORDER`) and the guide to adding a block. |
-| `ModulesCharacter.lua` | Data blocks about your character: gold, bags, durability, experience, rested, stats, regeneration, speed, talents, item level, pet, buffs, corpse. **Add a block in the file of its category.** |
-| `ModulesSocial.lua` | Data blocks about other players: friends, guild, group, whispers, mail, loot. |
-| `WhisperList.lua` | The Whispers block's history, shown under the mouse in place of the tooltip: the last players who whispered you, a click replies. |
-| `FriendsList.lua` | The Friends block's list (WoW and Battle.net friends online), shown under the mouse in place of the tooltip: search, scrolling, whisper and invite. |
-| `GroupList.lua` | The Group block's list (party or raid members), shown under the mouse in place of the tooltip: search, scrolling, whisper. |
-| `GuildList.lua` | The Guild block's member list, shown under the mouse in place of the tooltip: search, scrolling, whisper and invite. |
-| `ModulesWorld.lua` | Data blocks about the world: zone, subzone, coordinates, clocks, date, hearthstone, instances, reset. |
-| `ModulesProgress.lua` | Data blocks about progress: reputation, currencies, quests, goal, professions, ammo, reagents, experience rate, gold gained. |
-| `ModulesSystem.lua` | Data blocks about the computer and the game: FPS, latency, memory, volume, time played, streamer mode. |
-| `ModulesForever.lua` | Data blocks for WoW Forever only: Legacy, Comprehension, Camping, Honor, weapon skills. |
-| `MicroMenu.lua` | Micro-menu block: Blizzard's micro menu in a tooltip and a list of secure buttons that open each menu. |
-| `Pins.lua` | Pinned tooltips: a block's tooltip kept open next to it and refreshed every second. |
-| `Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
-| `Spacers.lua` | Spacer blocks (empty, separator line or text). |
-| `Demo.lua` | Demo mode: every block by category with sample values, style switcher (also mixed styles, one per column), the player's profile put aside and given back. |
-| `Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
+| `Core/Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
+| `Core/Themes.lua` | The styles (Bronze, Bronze and gold and Bronze (old) for FlareUI, Emerald for EllesmereUI, Elven for ElvUI, Aurora for DaylightUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
+| `Core/Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
+| `Core/Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
+| `Core/Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
+| `Core/Profiles.lua` | Profile export / import (compact text; older texts still read), style and layout sharing with the check of what is missing, duplicate, automatic dungeon / raid profile. |
+| `Core/SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
+| `Extras/Changelog.lua` | Version history for the in-game About tab (What's new topic: each entry's `highlights`, one short line per new thing with an optional `show` target; Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
+| `Blocks/Modules.lua` | Tools shared by the data blocks (thresholds, durations, money, item counts; `ns.BlockTools`), the order of the blocks (`ns.MODULE_ORDER`) and the guide to adding a block. |
+| `Blocks/ModulesCharacter.lua` | Data blocks about your character: gold, bags, durability, experience, rested, stats, regeneration, speed, talents, item level, pet, buffs, corpse. **Add a block in the file of its category.** |
+| `Blocks/ModulesSocial.lua` | Data blocks about other players: friends, guild, group, whispers, mail, loot. |
+| `Lists/WhisperList.lua` | The Whispers block's history, shown under the mouse in place of the tooltip: the last players who whispered you, a click replies. |
+| `Lists/FriendsList.lua` | The Friends block's list (WoW and Battle.net friends online), shown under the mouse in place of the tooltip: search, scrolling, whisper and invite. |
+| `Lists/GroupList.lua` | The Group block's list (party or raid members), shown under the mouse in place of the tooltip: search, scrolling, whisper. |
+| `Lists/GuildList.lua` | The Guild block's member list, shown under the mouse in place of the tooltip: search, scrolling, whisper and invite. |
+| `Blocks/ModulesWorld.lua` | Data blocks about the world: zone, subzone, coordinates, clocks, date, hearthstone, instances, reset. |
+| `Blocks/ModulesProgress.lua` | Data blocks about progress: reputation, currencies, quests, goal, professions, ammo, reagents, experience rate, gold gained. |
+| `Blocks/ModulesSystem.lua` | Data blocks about the computer and the game: FPS, latency, memory, volume, time played, streamer mode. |
+| `Blocks/ModulesForever.lua` | Data blocks for WoW Forever only: Legacy, Comprehension, Camping, Honor, weapon skills. |
+| `Blocks/MicroMenu.lua` | Micro-menu block: Blizzard's micro menu in a tooltip and a list of secure buttons that open each menu. |
+| `Blocks/Pins.lua` | Pinned tooltips: a block's tooltip kept open next to it and refreshed every second. |
+| `Blocks/Launchers.lua` | Launcher blocks built from minimap buttons, LibDBIcon buttons and addon compartment entries. |
+| `Blocks/Spacers.lua` | Spacer blocks (empty, separator line or text). |
+| `Extras/Demo.lua` | Demo mode: every block by category with sample values, style switcher (also mixed styles, one per column), the player's profile put aside and given back. |
+| `Extras/Broker.lua` | DataBroker: other addons' data objects as blocks, Tessera's blocks published as data objects, DataBroker mode. |
 | `Bindings.xml` | Key bindings (loaded automatically by the game, not listed in the TOC). |
-| `Options.lua` | Options window, first part: constants, the selection (all blocks, launchers, a group or one block), placing newly shown blocks and the state shared by the `Options*.lua` files (`ns.OptionsTools`). Together the nine `Options*.lua` files are the options window. Pages in a list on the left: Blocks (the "On screen" switch and the block list, then three tabs: Content, Appearance, Behaviour), Look, General, Accessibility, Launchers, DataBroker (Plugins as blocks, Sharing and mode, as two tabs), Profiles, Help, About. Since 1.5 every page sits in boxes (`OptionsBoxes.lua`, after FlareUI's settings panel): one setting per row (label on the left, control on the right), two short ones per line; `ns.optionRows` lists every row with its page, tab and box, for the search, the help panel and the gamepad. The top bar holds the logo, the search and the fold button; the help panel sits on the right; Shift + mouse wheel sizes every Tessera window and its help tooltips (the percentage shows at the top). Also here: the placement banner, the text window (export / import / bug report) with a copy box for the About links, the welcome popup and quick tour, side windows kept beside the options (never over them), and the Blizzard Settings page. |
-| `OptionsWidgets.lua` | The widget factory (rows, checkbox, slider, dropdown, color, edit box, button) and the small stack that places the head of the Blocks and groups tab. Every widget has a `Refresh()` method and is registered so `ns:RefreshOptions()` can update them all. |
-| `OptionsBoxes.lua` | Pages laid out in boxes, as in FlareUI's settings panel (1.5): each section in its own box with a Reset button, two short settings per line, indented settings that grey out under the one they depend on, only the shown rows placed; tabs at the top of a page; the keyboard order of the rows. |
-| `OptionsBlocks.lua` | The Blocks and groups tab: its head, its three tabs (Content, Appearance, Behaviour), the options of the selection and of every block, style targets. |
-| `OptionsPages.lua` | The Style and layouts, Placement and more, Accessibility, Launchers, DataBroker and Profiles and sharing tabs, with their popups (new profile, import, preset, reset). |
-| `OptionsHelp.lua` | Themed windows (`ns:SkinWindow`), the help text (`ns.HelpText`) and the Help and About tabs. |
-| `OptionsWindow.lua` | Side windows, folding and zoom, the search box, the main window (`BuildPanel`), open / toggle functions and the Blizzard settings page. |
-| `OptionsPlacement.lua` | The placement banner shown while blocks are unlocked and the nudge pad (move a block by the pixel). |
-| `OptionsTour.lua` | Welcome, quick tour, news, style offer, the text window and the bug report. |
+| `Options/Options.lua` | Options window, first part: constants, the selection (all blocks, launchers, a group or one block), placing newly shown blocks and the state shared by the `Options*.lua` files (`ns.OptionsTools`). Together the nine `Options*.lua` files are the options window. Pages in a list on the left: Blocks (the "On screen" switch and the block list, then three tabs: Content, Appearance, Behaviour), Look, General, Accessibility, Launchers, DataBroker (Plugins as blocks, Sharing and mode, as two tabs), Profiles, Help, About. Since 1.5 every page sits in boxes (`Options/OptionsBoxes.lua`, after FlareUI's settings panel): one setting per row (label on the left, control on the right), two short ones per line; `ns.optionRows` lists every row with its page, tab and box, for the search, the help panel and the gamepad. The top bar holds the logo, the search and the fold button; the help panel sits on the right; Shift + mouse wheel sizes every Tessera window and its help tooltips (the percentage shows at the top). Also here: the placement banner, the text window (export / import / bug report) with a copy box for the About links, the welcome popup and quick tour, side windows kept beside the options (never over them), and the Blizzard Settings page. |
+| `Options/OptionsWidgets.lua` | The widget factory (rows, checkbox, slider, dropdown, color, edit box, button) and the small stack that places the head of the Blocks and groups tab. Every widget has a `Refresh()` method and is registered so `ns:RefreshOptions()` can update them all. |
+| `Options/OptionsBoxes.lua` | Pages laid out in boxes, as in FlareUI's settings panel (1.5): each section in its own box with a Reset button, two short settings per line, indented settings that grey out under the one they depend on, only the shown rows placed; tabs at the top of a page; the keyboard order of the rows. |
+| `Options/OptionsBlocks.lua` | The Blocks and groups tab: its head, its three tabs (Content, Appearance, Behaviour), the options of the selection and of every block, style targets. |
+| `Options/OptionsPages.lua` | The Style and layouts, Placement and more, Accessibility, Launchers, DataBroker and Profiles and sharing tabs, with their popups (new profile, import, preset, reset). |
+| `Options/OptionsHelp.lua` | Themed windows (`ns:SkinWindow`), the help text (`ns.HelpText`) and the Help and About tabs. |
+| `Options/OptionsWindow.lua` | Side windows, folding and zoom, the search box, the main window (`BuildPanel`), open / toggle functions and the Blizzard settings page. |
+| `Options/OptionsPlacement.lua` | The placement banner shown while blocks are unlocked and the nudge pad (move a block by the pixel). |
+| `Options/OptionsTour.lua` | Welcome, quick tour, news, style offer, the text window and the bug report. |
 
 The `docs/` folder (not shipped in the addon) is mapped in `docs/README.md`: the release guide
 (`docs/RELEASE.md`), the project status and ideas (in French), the CurseForge and Wago descriptions
@@ -420,20 +421,20 @@ do. All of them run on every push (`.github/workflows/checks.yml`).
 
 ### How a value gets on screen
 
-1. `ModulesCharacter.lua` and the other `Modules*.lua` files register each block with `ns:RegisterModule(key, def)`.
-2. At login, `Core.lua` loads the profile from `TesseraDB`, creates one frame per block and
-   applies its style (`ns:ApplyStyle`), position and docking (`Merge.lua`).
+1. `Blocks/ModulesCharacter.lua` and the other `Modules*.lua` files register each block with `ns:RegisterModule(key, def)`.
+2. At login, `Core/Core.lua` loads the profile from `TesseraDB`, creates one frame per block and
+   applies its style (`ns:ApplyStyle`), position and docking (`Core/Merge.lua`).
 3. A block is refreshed by `ns:UpdateBlock(key)` when one of its `events` fires, or by the
    shared timer every `interval` seconds while it is shown.
 4. `UpdateBlock` calls the module's `update(cfg)`, which returns a text and an optional level
    (1 good, 2 warning, 3 bad). Core colors it, adds the label and icon if enabled, and asks
    for a layout pass when the text size changes.
-5. The layout pass (`ns:UpdateLayout` in `Merge.lua`) sizes every block to its text, equalizes
+5. The layout pass (`ns:UpdateLayout` in `Core/Merge.lua`) sizes every block to its text, equalizes
    merged groups, keeps second rows flush with their bar and redraws the borders where blocks touch.
 
 ### Adding a data block
 
-Open `Modules.lua`: its header documents every field a block can define, with a minimal
+Open `Blocks/Modules.lua`: its header documents every field a block can define, with a minimal
 example. Put the block in the `Modules*.lua` file of its category (the same categories as the
 demo) and take the shared tools it needs from `ns.BlockTools` at the top of that file. In short:
 
@@ -462,7 +463,7 @@ them.
 
 ### DataBroker
 
-`Broker.lua` explains it in its header. In short: blocks under keys `broker:<object name>` show
+`Extras/Broker.lua` explains it in its header. In short: blocks under keys `broker:<object name>` show
 another addon's data object (looked up by name each time, so a disabled addon only hides the
 block); every data block with `brokerShare` is published as `Tessera_<block key>` while sharing
 is on; DataBroker mode (`ns.brokerModeActive`) hides all of Tessera's frames. A module needs
@@ -488,7 +489,7 @@ branch `forever`), an API reference built from the client
 ([Atraeau/WoW-Addons](https://atraeau.github.io/WoW-Addons/)) and the notes pinned on the
 WoWUIDev Discord. What Tessera found, with those sources and the development probes below:
 
-- **Legacy points** (`legacy` block, `ModulesForever.lua`): the "Legacy" reward track is a renown track
+- **Legacy points** (`legacy` block, `Blocks/ModulesForever.lua`): the "Legacy" reward track is a renown track
   of Blizzard's major factions system, faction ID `2802`. The points are
   `C_MajorFactions.GetMajorFactionData(2802).renownLevel`; the reward levels come from
   `C_MajorFactions.GetRenownLevels(2802)` and each reward from
@@ -522,7 +523,7 @@ WoWUIDev Discord. What Tessera found, with those sources and the development pro
   `ProfessionMicroButton` (professions book, used for gathering professions, which have no
   crafting window), `TalentMicroButton`, `LegacyMicroButton`, `SpellbookMicroButton`. Blocks
   click them with a `/click` macro on their secure overlay (`MicroButtonMacro` in
-  `Modules.lua`), so the panels open from Blizzard's own code, without taint.
+  `Blocks/Modules.lua`), so the panels open from Blizzard's own code, without taint.
 - All IDs above were found on the beta (October 2026) and may change.
 - **Development probes** live in the test builds only (see "Test builds" below): they list
   what the client offers (API namespaces and functions, the Legacy panel's fields and texts,
@@ -533,7 +534,7 @@ WoWUIDev Discord. What Tessera found, with those sources and the development pro
 - **Taint and secret values.** This client uses the Midnight-era API, where some values are
   "secret" and comparing them from addon code raises an error. Values that may be secret are
   read inside `pcall`. Blizzard panels are opened through secure macro buttons
-  (`SecureClicks.lua`).
+  (`Core/SecureClicks.lua`).
 - **Combat lockdown.** Secure buttons cannot be created, moved or hidden in combat; they are
   positioned in screen coordinates and re-synced after combat.
 - **Forever-only functions.** The code uses the modern `C_*` API of this client. Functions that
@@ -549,10 +550,10 @@ WoWUIDev Discord. What Tessera found, with those sources and the development pro
 
 ### Saved variables
 
-`TesseraDB` holds the profiles (`profiles[name]`, see `PROFILE_DEFAULTS` in `Core.lua`), the
+`TesseraDB` holds the profiles (`profiles[name]`, see `PROFILE_DEFAULTS` in `Core/Core.lua`), the
 profile mode (`useGlobal`, `globalProfile`, `charProfiles`), each character's gold (`chars`),
 and a few account-wide options. Each profile stores its general settings and one table per
-block in `blocks[key]` (see `BLOCK_DEFAULTS` in `Core.lua`).
+block in `blocks[key]` (see `BLOCK_DEFAULTS` in `Core/Core.lua`).
 
 ### Translations
 
@@ -629,7 +630,7 @@ Released versions have no command a player does not need. The test builds given 
 author for his test sessions add one extra file (`TesseraDev.lua`, kept out of this repository
 and never packaged) at the end of `Tessera.toc`: `/tessera test` (blocks to check, layouts for
 the name tags, tooltip settings, back to the player's profile) and the development commands
-(debug report, WoW Forever probes, shape test). `Core.lua` only calls
+(debug report, WoW Forever probes, shape test). `Core/Core.lua` only calls
 `ns.DevCommand` when that file is there; the mock loads it with `TESSERA_DEV=<path>`.
 
 ## License

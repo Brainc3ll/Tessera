@@ -31,9 +31,15 @@ known = sorted(names(os.path.join(data, "globals.ts")) - names(os.path.join(data
 work = tempfile.mkdtemp(prefix="tessera-audit-")
 try:
     # the addon's files only (not the tools, docs or workflows)
-    for name in os.listdir(addon):
-        if name.endswith(".lua"):
-            shutil.copy(os.path.join(addon, name), work)
+    # every Lua file of Tessera.toc (they live in folders), except the Locales copied below
+    with open(os.path.join(addon, "Tessera.toc"), encoding="utf-8") as f:
+        toc = [l.strip().replace("\\", "/") for l in f]
+    files = [l for l in toc if re.match(r"^[A-Za-z0-9_/]+\.lua$", l) and not l.startswith("Locales/")]
+    if not files:
+        sys.exit("api_audit: no Lua file found through Tessera.toc")
+    for rel in files:
+        os.makedirs(os.path.dirname(os.path.join(work, rel)), exist_ok=True)
+        shutil.copy(os.path.join(addon, rel), os.path.join(work, rel))
     shutil.copytree(os.path.join(addon, "Locales"), os.path.join(work, "Locales"))
     builtin = {k: "disable" for k in ("basic", "coroutine", "debug", "io", "math", "os",
                                       "package", "string", "table", "utf8")}
@@ -57,10 +63,10 @@ blocking = [f for f in findings if f[2] in ("undefined-global", "deprecated")]
 info = [f for f in findings if f[2] not in ("undefined-global", "deprecated")]
 
 for where, msg, code in blocking:
-    print(f"PROBLEM  {where.split(os.sep)[-1]}  {msg} ({code})")
+    print(f"PROBLEM  {where.replace(work + os.sep, '')}  {msg} ({code})")
 if info:
     print(f"(for information: {len(info)} type warning(s), not blocking)")
     for where, msg, code in info:
-        print(f"  info   {where.split(os.sep)[-1]}  {msg} ({code})")
-print(f"WoW API audit: {len(blocking)} problem(s)")
+        print(f"  info   {where.replace(work + os.sep, '')}  {msg} ({code})")
+print(f"WoW API audit: {len(blocking)} problem(s) in {len(files)} file(s)")
 sys.exit(1 if blocking else 0)

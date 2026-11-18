@@ -81,7 +81,7 @@ end
 ---------------------------------------------------------------------------
 local toc = read("Tessera.toc")
 local version = toc:match("## Version:%s*([^\r\n]+)")
-local changelogLua = read("Changelog.lua")
+local changelogLua = read("Extras/Changelog.lua")
 local luaVersion, luaDate = changelogLua:match('version = "([^"]+)",%s*date = "([^"]*)"')
 local mdVersion = read("CHANGELOG.md"):match("\n## (%S+)")
 if version ~= luaVersion then fail(("version: Tessera.toc says %s, Changelog.lua %s"):format(tostring(version), tostring(luaVersion))) end
@@ -121,10 +121,10 @@ local HIDDEN = { minicarte = true, apercu = true, ["aperçu"] = true, recuperer 
     ["démo"] = true }
 local isPublic = {}
 for _, c in ipairs(PUBLIC) do isPublic[c] = true end
-local core = read("Core.lua")
+local core = read("Core/Core.lua")
 for c in core:gmatch('msg == "([^"]+)"') do
     if not isPublic[c] and not HIDDEN[c] then
-        fail(("command /tessera %s (Core.lua) is not a documented command: document it, or move it to the test builds' extra file"):format(c))
+        fail(("command /tessera %s (Core/Core.lua) is not a documented command: document it, or move it to the test builds' extra file"):format(c))
     end
 end
 local places = {
@@ -171,8 +171,9 @@ end
 ---------------------------------------------------------------------------
 -- 6. Files of the TOC in the README
 ---------------------------------------------------------------------------
-for file in toc:gmatch("\n([%w_/]+%.lua)") do
-    if not readme:find("`" .. file .. "`", 1, true) then fail(("file %s (Tessera.toc) has no line in the README's file table"):format(file)) end
+for file in toc:gsub("\\", "/"):gmatch("\n([%w_/]+%.lua)") do
+    -- the Locales are described together in the README (one line for the other languages)
+    if not file:find("^Locales/") and not readme:find("`" .. file .. "`", 1, true) then fail(("file %s (Tessera.toc) has no line in the README's file table"):format(file)) end
 end
 
 ---------------------------------------------------------------------------
@@ -202,11 +203,10 @@ end
 do
     local code = {}
     local files = { "Locales/enUS.lua" }
-    local ls = io.popen("cd " .. dir .. " && ls *.lua")
-    for file in ls:lines() do
-        if file ~= "Changelog.lua" then table.insert(files, file) end
+    -- every Lua file of the TOC except the Locales (already listed) and the changelog
+    for file in toc:gsub("\\", "/"):gmatch("\n([%w_/]+%.lua)") do
+        if not file:find("^Locales/") and file ~= "Extras/Changelog.lua" then table.insert(files, file) end
     end
-    ls:close()
     for _, file in ipairs(files) do
         local fh = io.open(dir .. "/" .. file)
         if fh then

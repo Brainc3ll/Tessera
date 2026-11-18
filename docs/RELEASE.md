@@ -17,7 +17,7 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 
 ## Avant de lancer la publication (fait par Claude, vérifié par la machine)
 
-1. Nouvelle entrée en haut de `Changelog.lua` (anglais et français) **avec la date**, puis `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Relire toute l'entrée : elle ne doit pas se contredire (un changement fait plus tard dans la même version réécrit la ligne concernée, au lieu d'annoncer la « correction » de quelque chose que les joueurs n'ont jamais eu). Trier les changements par catégorie (`sections` : intro, nouveautés, améliorations, corrections). Le changelog reste dans `Changelog.lua` (anglais et français), jamais dans les textes envoyés à l'outil de traduction de CurseForge.
+1. Nouvelle entrée en haut de `Extras/Changelog.lua` (anglais et français) **avec la date**, puis `lua5.1 tools/changelog_md.lua > CHANGELOG.md`. Relire toute l'entrée : elle ne doit pas se contredire (un changement fait plus tard dans la même version réécrit la ligne concernée, au lieu d'annoncer la « correction » de quelque chose que les joueurs n'ont jamais eu). Trier les changements par catégorie (`sections` : intro, nouveautés, améliorations, corrections). Le changelog reste dans `Extras/Changelog.lua` (anglais et français), jamais dans les textes envoyés à l'outil de traduction de CurseForge.
 2. La même version dans `Tessera.toc` (`## Version:`).
 3. Textes : `python3 tools/gen/build.py` (sur `main` : avec `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_"`), puis `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua` (et pareil pour `frFR`).
 4. Documentation à jour (voir la liste ci-dessous).
@@ -32,7 +32,7 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 |---|---|
 | Aide en jeu (onglet Aide, anglais et français) | le sujet concerné ; un nouvel onglet ou une nouvelle section a son paragraphe |
 | Infobulles des options | une infobulle claire pour chaque nouvelle option |
-| `Changelog.lua` / `CHANGELOG.md` | une ligne par nouveauté ou correction visible, rangée dans sa catégorie ; `highlights` : une ligne courte par nouveauté pour « Quoi de neuf » |
+| `Extras/Changelog.lua` / `CHANGELOG.md` | une ligne par nouveauté ou correction visible, rangée dans sa catégorie ; `highlights` : une ligne courte par nouveauté pour « Quoi de neuf » |
 | `README.md` | points forts, liste des blocs, commandes, tableau des fichiers, partie développeurs |
 | `docs/pages/description.md` | la page des joueurs, anglais et français (à recoller à la main sur CurseForge et Wago quand elle change) |
 | `docs/pages/summary.md` | titre, résumé, texte « About » de GitHub, si le cœur de l'addon change |
@@ -42,8 +42,8 @@ Secrets nécessaires (Settings → Secrets and variables → Actions) : `CF_API_
 ### Ce que la machine vérifie (`tools/check_docs.lua`)
 
 À chaque push (workflow **Checks**) et avant chaque publication :
-- la version est la même dans `Tessera.toc`, `Changelog.lua` et `CHANGELOG.md` ; avant une publication, la dernière entrée a une date ;
-- `CHANGELOG.md` correspond exactement à `Changelog.lua` ;
+- la version est la même dans `Tessera.toc`, `Extras/Changelog.lua` et `CHANGELOG.md` ; avant une publication, la dernière entrée a une date ;
+- `CHANGELOG.md` correspond exactement à `Extras/Changelog.lua` ;
 - `docs/localization` correspond aux fichiers de textes de l'addon ;
 - chaque commande publique est dans le README, l'aide (anglais et français), la liste des commandes de la discussion et les deux descriptions ; une nouvelle commande doit y être ajoutée (ou déclarée cachée) ;
 - chaque bloc est nommé dans le README et dans les parties anglaise et française des deux descriptions ;

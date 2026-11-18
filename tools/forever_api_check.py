@@ -10,7 +10,6 @@ A missing function is only a problem when nothing replaces it: lines like
 `(C_X and C_X.Fn) or OtherFn` fall back to another function, so they are reported as notes.
 Usage: python3 tools/forever_api_check.py <path to a BlizzardInterfaceResources clone, branch forever>
 """
-import glob
 import os
 import re
 import sys
@@ -25,8 +24,15 @@ def main():
         api = set(re.findall(r'"([A-Za-z_][\w.]*)"', f.read()))
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
     problems, notes = [], []
-    for path in sorted(glob.glob(os.path.join(root, "*.lua"))):
-        name = os.path.basename(path)
+    # the addon's Lua files: every .lua of Tessera.toc except the Locales
+    with open(os.path.join(root, "Tessera.toc"), encoding="utf-8") as f:
+        toc = [l.strip().replace("\\", "/") for l in f]
+    files = sorted(l for l in toc if re.match(r"^[A-Za-z0-9_/]+\.lua$", l) and not l.startswith("Locales/"))
+    if not files:
+        sys.exit("forever_api_check: no Lua file found through Tessera.toc")
+    for rel in files:
+        path = os.path.join(root, rel)
+        name = rel
         with open(path, encoding="utf-8") as f:
             for number, line in enumerate(f, 1):
                 code = line.split("--", 1)[0]
@@ -43,7 +49,7 @@ def main():
         print("note: " + note)
     for problem in problems:
         print("ERROR: " + problem)
-    print(f"Forever API check: {len(problems)} problem(s), {len(notes)} note(s)")
+    print(f"Forever API check: {len(problems)} problem(s), {len(notes)} note(s), {len(files)} file(s)")
     return 1 if problems else 0
 
 

@@ -61,7 +61,8 @@ ns.CHANGELOG = {
                 "Séparateurs : les traits suivent la case « Ligne entre les blocs fusionnés » et la couleur de la ligne dès que tu les changes."
                     .. " En 1.6.1, ils ne se mettaient à jour qu'après un rechargement ou un changement de style.",
                 "Séparateurs : chaque trait reste net, large d'un pixel, où que soit la barre."
-                    .. " En 1.6.1, certains traits apparaissaient en double et pâles, ou disparaissaient, et changeaient quand le texte d'un bloc changeait de largeur.",
+                    .. " En 1.6.1, certains traits apparaissaient en double et pâles, ou disparaissaient,"
+                    .. " et changeaient quand le texte d'un bloc changeait de largeur.",
               },
             },
         },

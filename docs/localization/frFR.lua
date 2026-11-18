@@ -1631,3 +1631,4 @@ L["TIP_STREAMER_HIDE_PLAYERS"] = "Amis, membres de la guilde, groupe, chuchoteme
 L["TUTORIAL_EXAMPLES"] = "Ces dispositions ne sont que des exemples. Tessera a plus de 50 blocs : l'onglet Aide et son mode démo les montrent tous."
 L["GUILD_SHOW_NAME"] = "Afficher le nom de guilde"
 L["TIP_GUILD_SHOW_NAME"] = "Écrit le nom de ta guilde avant le nombre de membres, dans le bloc. Le mode streamer le cache quand « Cacher le nom de guilde » est coché."
+L["WHATS_NEW_MORE"] = "... et %d autres dans Quoi de neuf ?"

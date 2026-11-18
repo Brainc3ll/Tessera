@@ -719,6 +719,7 @@ local L = {
     SHOW_ME = "Show me",
     TIP_SHOW_ME = "Opens the place this line talks about and makes the setting blink.",
     BACK_TO_WHATS_NEW = "Back to What's new",
+    WHATS_NEW_MORE = "... and %d more in What's new.",
     WHATS_NEW_TEXT = "Tessera is now in version %s. What's new:\n",
     WHATS_NEW_SHOW = "See what's new",
     RECOVER_ALL_HIDDEN = "All blocks are hidden (key binding): show them first.",

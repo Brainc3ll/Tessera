@@ -1631,3 +1631,4 @@ L["TIP_STREAMER_HIDE_PLAYERS"] = "Friends, guild members, group, whispers, mail:
 L["TUTORIAL_EXAMPLES"] = "These layouts are only examples. Tessera has more than 50 blocks: the Help tab and its demo mode show them all."
 L["GUILD_SHOW_NAME"] = "Show the guild name"
 L["TIP_GUILD_SHOW_NAME"] = "Writes your guild's name before the member count, in the block. Streamer mode hides it when \"Hide the guild name\" is checked."
+L["WHATS_NEW_MORE"] = "... and %d more in What's new."

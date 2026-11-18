@@ -722,6 +722,7 @@ L.WHATS_NEW_INTRO = "Une ligne par nouveauté, version par version. « Montre-mo
 L.SHOW_ME = "Montre-moi"
 L.TIP_SHOW_ME = "Ouvre l'endroit dont parle la ligne et fait clignoter le réglage."
 L.BACK_TO_WHATS_NEW = "Retour à « Quoi de neuf ? »"
+L.WHATS_NEW_MORE = "... et %d autres dans Quoi de neuf ?"
 L.WHATS_NEW_TEXT = "Tessera passe en version %s. Les nouveautés :\n"
 L.WHATS_NEW_SHOW = "Voir les nouveautés"
 L.RECOVER_ALL_HIDDEN = "Tous les blocs sont masqués (raccourci clavier) : affiche-les d'abord."

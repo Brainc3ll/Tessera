@@ -323,46 +323,117 @@ function ns:ShowWhatsNewTarget(spec)
     end
 end
 
--- The update popup: the version and its "What's new" lines (all of them, they are short)
--- The lines of every version since the one the player had (`since`), newest first, 8 at most; a
--- version with fixes only has none: then the lines of the latest version that has some.
-local POPUP_LINES = 8
-local function WhatsNewPopupText(version, since)
+-- The "What's new" lines since the version the player had (`since`), newest first; a version with
+-- fixes only has none: then the lines of the latest version that has some. { text, show } each.
+local function WhatsNewItems(since)
     local lang = GetLocale() == "frFR" and "fr" or "en"
-    local lines = { L.WHATS_NEW_TEXT:format(version) }
-    local function Add(entry)
-        for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do
-            if #lines <= POPUP_LINES then lines[#lines + 1] = "- " .. line.text end
-        end
-    end
+    local items = {}
     for _, entry in ipairs(ns.CHANGELOG or {}) do
         if since and entry.version == since then break end
-        Add(entry)
+        for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do items[#items + 1] = line end
     end
-    if #lines == 1 then
+    if #items == 0 then
         for _, entry in ipairs(ns.CHANGELOG or {}) do
-            if entry.highlights then Add(entry) break end
+            if entry.highlights then
+                for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do items[#items + 1] = line end
+                break
+            end
         end
     end
+    return items
+end
+
+-- The plain text of the update window (tools/mock_run.lua reads it)
+local function WhatsNewPopupText(version, since)
+    local lines = { L.WHATS_NEW_TEXT:format(version) }
+    for _, item in ipairs(WhatsNewItems(since)) do lines[#lines + 1] = "- " .. item.text end
     return table.concat(lines, "\n")
 end
 
-StaticPopupDialogs["TESSERA_WHATS_NEW"] = {
-    text = "%s",
-    button1 = L.WHATS_NEW_SHOW,
-    button2 = L.WELCOME_LATER,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function()
+-- The update window, in Tessera's style: the version, the first news lines with a "Show me" button
+-- when a setting goes with them, "... and N more", then "See what's new" and "Later". Escape closes it.
+local NEWS_SHOWN = 4
+local news
+local function BuildNewsWindow()
+    news = CreateFrame("Frame", "TesseraWhatsNew", UIParent, "BackdropTemplate")
+    news:SetFrameStrata("DIALOG")
+    news:SetPoint("CENTER", 0, 120)
+    news:SetWidth(480)
+    news:EnableMouse(true)
+    table.insert(UISpecialFrames, "TesseraWhatsNew")
+    news.title = news:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    news.title:SetPoint("TOPLEFT", 20, -18)
+    news.title:SetWidth(440)
+    news.title:SetJustifyH("LEFT")
+    news.rows = {}
+    for i = 1, NEWS_SHOWN do
+        local row = { text = news:CreateFontString(nil, "OVERLAY", "GameFontHighlight") }
+        row.text:SetJustifyH("LEFT")
+        row.text:SetWidth(310)
+        row.button = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
+        row.button:SetSize(110, 24)
+        row.button:SetText(L.SHOW_ME)
+        row.button:SetScript("OnClick", function(self)
+            news:Hide()
+            ns:ShowWhatsNewTarget(self.spec)
+        end)
+        news.rows[i] = row
+    end
+    news.more = news:CreateFontString(nil, "OVERLAY", "GameFontDisable")
+    news.more:SetJustifyH("LEFT")
+    news.all = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
+    news.all:SetSize(190, 26)
+    news.all:SetText(L.WHATS_NEW_SHOW)
+    news.all:SetScript("OnClick", function()
+        news:Hide()
         ns:OpenOptions(PAGE_ABOUT)
         if S.aboutContent then S.aboutContent:ShowTopic(WHATS_NEW_TOPIC) end
-    end,
-}
+    end)
+    news.all:SetPoint("BOTTOMLEFT", 18, 16)
+    news.later = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
+    news.later:SetSize(140, 26)
+    news.later:SetText(L.WELCOME_LATER)
+    news.later:SetScript("OnClick", function() news:Hide() end)
+    news.later:SetPoint("BOTTOMRIGHT", -18, 16)
+end
 
--- Shows the welcome popup once per saved-variables file (first install), or the
--- "what's new" popup when the installed version changed since last time
+function ns.WhatsNewShown() return news ~= nil and news:IsShown() end
 ns.WhatsNewPopupText = WhatsNewPopupText -- (tools/mock_run.lua)
+
+function ns:ShowWhatsNewWindow(version, since)
+    if not news then BuildNewsWindow() end
+    if ns.SkinWindow then ns:SkinWindow(news) end
+    news.title:SetText((L.WHATS_NEW_TEXT:format(version):gsub("%s+$", "")))
+    local items = WhatsNewItems(since)
+    local above, height = news.title, 18 + news.title:GetStringHeight()
+    for i, row in ipairs(news.rows) do
+        local item = items[i]
+        row.text:SetShown(item ~= nil)
+        row.button:SetShown(item ~= nil and item.show ~= nil)
+        if item then
+            -- a gold dot, then the line (a shape and a color)
+            row.text:SetText("|cffffd100\226\128\162|r  " .. item.text)
+            row.text:ClearAllPoints()
+            row.text:SetPoint("TOPLEFT", above, "BOTTOMLEFT", 0, -14)
+            row.button.spec = item.show
+            row.button:ClearAllPoints()
+            row.button:SetPoint("RIGHT", news, "RIGHT", -18, 0)
+            row.button:SetPoint("TOP", row.text, "TOP", 0, 4)
+            height = height + 14 + math.max(row.text:GetStringHeight(), 22)
+            above = row.text
+        end
+    end
+    local rest = #items - NEWS_SHOWN
+    news.more:SetShown(rest > 0)
+    if rest > 0 then
+        news.more:SetText(L.WHATS_NEW_MORE:format(rest))
+        news.more:ClearAllPoints()
+        news.more:SetPoint("TOPLEFT", above, "BOTTOMLEFT", 0, -16)
+        height = height + 16 + news.more:GetStringHeight()
+    end
+    news:SetHeight(height + 22 + 26 + 16 + 10)
+    news:Show()
+end
 
 function ns:ShowWelcomeIfNeeded()
     if not self.sv then return end
@@ -371,7 +442,7 @@ function ns:ShowWelcomeIfNeeded()
     if self.sv.welcomed and version and self.sv.lastVersion ~= version then
         local since = self.sv.lastVersion
         self.sv.lastVersion = version
-        StaticPopup_Show("TESSERA_WHATS_NEW", WhatsNewPopupText(version, since))
+        ns:ShowWhatsNewWindow(version, since)
         return
     end
     self.sv.newsSeen = nil -- the old "What's new in 1.3" window is gone
@@ -547,7 +618,7 @@ function ns:OfferStylesIfNeeded()
     if offer and offer:IsShown() then return end
     -- not on top of Tessera's other popups (welcome, DataBroker mode, what's new), nor of another interface's tour
     local busy = StaticPopup_Visible and (StaticPopup_Visible("TESSERA_WELCOME")
-        or StaticPopup_Visible("TESSERA_BROKER_MODE") or StaticPopup_Visible("TESSERA_WHATS_NEW"))
+        or StaticPopup_Visible("TESSERA_BROKER_MODE") or (ns.WhatsNewShown and ns.WhatsNewShown()))
     if InCombatLockdown() or busy or self:OtherUIBusy() then
         C_Timer.After(10, function() ns:OfferStylesIfNeeded() end)
         return

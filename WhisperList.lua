@@ -40,8 +40,8 @@ local function Draw()
     if not list then return end
     local history = ns.WhisperHistory(cfgNow)
     local m = Metrics()
-    local rowH = m.line * 2 + 6
-    local headH = m.line + 12 -- the title line with the Clear button
+    local rowH = m.line * 2 + 16 -- two lines and some air between whispers
+    local headH = m.line + 18 -- the title line with the Clear button
     local loose = 0
     for _, w in ipairs(history) do if not w.pinned then loose = loose + 1 end end
     list.clear:SetShown(loose > 0)
@@ -123,22 +123,22 @@ end
 local function Build()
     if list then return list end
     local m = Metrics()
-    local rowH = m.line * 2 + 6
-    local width = 16 + m.name + m.count + m.time + 10
+    local rowH = m.line * 2 + 16 -- two lines and some air between whispers
+    local width = 16 + m.name + m.count + m.time + 34
     list = CreateFrame("Frame", "TesseraWhisperList", UIParent, "BackdropTemplate")
     list:SetFrameStrata("TOOLTIP") -- the highest strata, over every window and bar
     list:SetClampedToScreen(true)
     list:EnableMouse(true)
-    local headH = m.line + 12
+    local headH = m.line + 18
     list:SetSize(width, headH + rowH + 8 + m.line + 4)
     list.rows = {}
     list.title = list:CreateFontString(nil, "OVERLAY", "GameTooltipHeaderText")
-    list.title:SetPoint("TOPLEFT", 12, -8)
+    list.title:SetPoint("TOPLEFT", 14, -10)
     list.title:SetText(ns:GetBlockName("whispers"))
     -- "Clear": removes the whispers that are not pinned; a second click within 3 seconds confirms
     local clear = CreateFrame("Button", nil, list, "UIPanelButtonTemplate")
     clear:SetSize(math.floor(90 * (m.name / 170)), m.line + 6)
-    clear:SetPoint("TOPRIGHT", -8, -5)
+    clear:SetPoint("TOPRIGHT", -10, -7)
     clear:SetText(L.WHISPERLIST_CLEAR)
     clear:SetScript("OnClick", function(self)
         if self.sure then
@@ -165,15 +165,15 @@ local function Build()
     list.clear = clear
     for i = 1, MAX_ROWS do
         local row = CreateFrame("Button", nil, list)
-        row:SetSize(width - 16, rowH)
-        row:SetPoint("TOPLEFT", 8, -(headH + (i - 1) * rowH))
+        row:SetSize(width - 20, rowH)
+        row:SetPoint("TOPLEFT", 10, -(headH + (i - 1) * rowH))
         row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
         row:SetScript("OnClick", Click)
         local hl = row:CreateTexture(nil, "HIGHLIGHT")
         hl:SetAllPoints()
         hl:SetColorTexture(1, 1, 1, 0.12)
         row.name = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-        row.name:SetPoint("TOPLEFT", 4, -2)
+        row.name:SetPoint("TOPLEFT", 8, -6)
         row.name:SetWidth(m.name)
         row.name:SetJustifyH("LEFT")
         row.name:SetWordWrap(false)
@@ -183,18 +183,18 @@ local function Build()
         row.count:SetJustifyH("LEFT")
         row.count:SetTextColor(1, 0.82, 0)
         row.time = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-        row.time:SetPoint("TOPRIGHT", -4, -2)
+        row.time:SetPoint("TOPRIGHT", -8, -6)
         row.time:SetJustifyH("RIGHT")
         row.time:SetTextColor(0.7, 0.7, 0.7)
         -- the start of the message, cut with "..." when it is too long for the line
         row.text = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-        row.text:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -2)
+        row.text:SetPoint("TOPLEFT", row.name, "BOTTOMLEFT", 0, -4)
         -- small buttons at the end of the message line: pin, then delete (a second click within 3 seconds
         -- confirms; the time then reads "Sure?")
         local size = math.max(16, m.line)
         local del = CreateFrame("Button", nil, row)
         del:SetSize(size, size)
-        del:SetPoint("BOTTOMRIGHT", row, "BOTTOMRIGHT", -4, 2)
+        del:SetPoint("BOTTOMRIGHT", row, "BOTTOMRIGHT", -8, 5)
         del:SetNormalAtlas("communities-icon-redx")
         del:SetHighlightAtlas("communities-icon-redx", "ADD")
         del:SetScript("OnClick", function(self)
@@ -222,6 +222,12 @@ local function Build()
         end)
         del:SetScript("OnLeave", function() GameTooltip:Hide() end)
         row.del = del
+        -- a faint line between two whispers
+        local sep = row:CreateTexture(nil, "BACKGROUND")
+        sep:SetColorTexture(1, 1, 1, 0.08)
+        sep:SetHeight(1)
+        sep:SetPoint("BOTTOMLEFT", 6, 0)
+        sep:SetPoint("BOTTOMRIGHT", -6, 0)
         local pinButton = CreateFrame("Button", nil, row)
         pinButton:SetSize(size, size)
         pinButton:SetPoint("RIGHT", del, "LEFT", -4, 0)
@@ -273,7 +279,8 @@ function ns:ShowWhisperList(block, cfg)
     cfgNow = cfg
     if list:IsShown() then away = 0 return end
     list:SetFrameStrata("TOOLTIP") -- back on top after a menu
-    ns.ApplyListLook(list, false) -- the game's own tooltip look (or the look another addon gives it)
+    -- the game's own tooltip look (or the look another addon gives it), or Tessera's windows
+    ns.ApplyListLook(list, cfgNow and cfgNow.whispersListLook == "window")
     list:SetScale((ns.db and ns.db.tooltipScale) or 1)
     ns.PlaceHoverList(list, owner) -- the tooltip's own side and alignment settings
     Draw()

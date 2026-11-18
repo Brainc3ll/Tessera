@@ -81,12 +81,16 @@ ns.CHANGELOG = {
             { kind = "improved",
               en = {
                 "Quick tour: the layouts step says in big letters that the layouts are examples and that Tessera has more than 50 blocks.",
-                "After an update, the window lists the news of every version since yours.",
+                "After an update, a window in Tessera's style lists the first news since your version, each with its Show me button.",
+                "Whispers list: the same List look setting as the other lists (tooltip or window), and more room between whispers.",
                 "Lists on hover: switching a list between the tooltip look and the window look no longer leaves the old look showing through.",
               },
               fr = {
                 "Visite guidée : l'étape des dispositions dit en gros qu'elles ne sont que des exemples et que Tessera a plus de 50 blocs.",
-                "Après une mise à jour, la fenêtre liste les nouveautés de chaque version depuis la tienne.",
+                "Après une mise à jour, une fenêtre au style de Tessera liste les premières nouveautés depuis ta version,"
+                    .. " chacune avec son bouton Montre-moi.",
+                "Liste des chuchotements : le même réglage Aspect de la liste que les autres listes (infobulle ou fenêtre),"
+                    .. " et plus d'air entre les chuchotements.",
                 "Listes au survol : passer une liste du style infobulle au style fenêtre ne laisse plus l'ancien style transparaître.",
               },
             },

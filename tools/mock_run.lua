@@ -1435,7 +1435,11 @@ for _, step in ipairs({
     end,
     -- what's new popup opens the About tab on the Changelog topic
     function()
-        StaticPopupDialogs.TESSERA_WHATS_NEW.OnAccept()
+        ns:ShowWhatsNewWindow("9.9.9", "1.0.0")
+        local w = _G["TesseraWhatsNew"]
+        assert(w and w:IsShown() and w.more:IsShown(), "the update window shows, with more news than it lists")
+        w.all:GetScript("OnClick")(w.all)
+        assert(not w:IsShown(), "See what's new closes it")
         assert(ns.L.ABOUT_AI and ns.L.TAB_ABOUT, "About strings missing")
     end,
     -- shape test: every shape, then back to the original layout
@@ -3169,6 +3173,13 @@ for _, step in ipairs({
         assert(#ns.WhisperHistory({ whispersHistory = "20" }) == beforeDel, "the first click on the cross only asks")
         delRow.del:GetScript("OnClick")(delRow.del)
         assert(#ns.WhisperHistory({ whispersHistory = "20" }) == beforeDel - 1, "the second click deletes")
+        -- (1.6.1) the whispers list has the window look too
+        list:Hide()
+        ns:ShowWhisperList(CreateFrame("Frame", nil, UIParent), { whispersListLook = "window" })
+        assert(list.skinKind ~= "tooltip", "whispers list: window look")
+        list:Hide()
+        ns:ShowWhisperList(CreateFrame("Frame", nil, UIParent), { whispersListLook = "tooltip" })
+        assert(list.skinKind == "tooltip", "whispers list: back to the tooltip look")
         -- (1.6) Shift + click: the full menu (reply, invite, pin, delete, copy, friend, /who, ignore)
         local oldMenu, labels = MenuUtil, {}
         local node = { CreateTitle = function() end, CreateButton = function(_, label) labels[#labels + 1] = label end }

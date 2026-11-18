@@ -997,12 +997,15 @@ ns:RegisterModule("whispers", {
         if pinned > 0 then text = text .. " " .. L.WHISPERS_PINNED_COUNT:format(pinned) end
         return text, n > 0 and WARN or GOOD
     end,
-    defaults = { whispersShown = "count", whispersHover = "list", whispersHistory = "10" },
+    defaults = { whispersShown = "count", whispersHover = "list", whispersHistory = "10", whispersListLook = "tooltip" },
     options = {
         { kind = "dropdown", field = "whispersShown", tab = "text", label = "WHISPERS_SHOWN", tip = "TIP_WHISPERS_SHOWN",
           values = { { key = "count", label = "WHISPERS_COUNT" }, { key = "name", label = "WHISPERS_NAME" } } },
         { kind = "dropdown", field = "whispersHover", tab = "text", label = "WHISPERS_HOVER", tip = "TIP_WHISPERS_HOVER",
           values = { { key = "list", label = "WHISPERS_HOVER_LIST" }, { key = "tooltip", label = "WHISPERS_HOVER_TOOLTIP" } } },
+        { kind = "dropdown", field = "whispersListLook", tab = "text", label = "GUILD_LIST_LOOK", tip = "TIP_GUILD_LIST_LOOK",
+          shown = function(cfg) return cfg.whispersHover ~= "tooltip" end,
+          values = { { key = "tooltip", label = "GUILD_LOOK_TOOLTIP" }, { key = "window", label = "GUILD_LOOK_WINDOW" } } },
         { kind = "dropdown", field = "whispersHistory", tab = "text", label = "WHISPERS_HISTORY", tip = "TIP_WHISPERS_HISTORY",
           values = { { key = "5", label = "5" }, { key = "10", label = "10" }, { key = "20", label = "20" } } },
     },

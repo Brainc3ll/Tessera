@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
-## 1.6.1 — 2026-11-17
+## 1.6.1 — 2026-11-18
 
 ### New
 

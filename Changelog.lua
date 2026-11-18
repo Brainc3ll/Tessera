@@ -48,7 +48,7 @@ end
 ns.CHANGELOG = {
     {
         version = "1.6.1",
-        date = "2026-11-17",
+        date = "2026-11-18",
         -- "What's new": one short line per new thing (About tab, update popup), with where to see it
         highlights = {
             { en = "Streamer mode: choose what it hides (other players, your characters, guild name, gold).",

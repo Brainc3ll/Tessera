@@ -10,7 +10,7 @@ Rien ici n'est livré dans l'addon (`.pkgmeta` ignore le dossier). Notes de trav
 | `RELEASE.md` | Comment publier une version (GitHub, CurseForge, Wago). |
 | `pages/` | Textes publiés hors de l'addon : description CurseForge et Wago, la même sur les deux (`description.md`), titre, résumé et description GitHub (`summary.md`). |
 | `etudes/` | Études et plans : découpage en modules (`PLAN-modules.md`), bloc Farm (`PLAN-bloc-farm.md`), addons de WoW Forever et compatibilité DataBroker (`ADDONS-FOREVER.md`), ce qu'on a appris ailleurs (`SOURCES.md`), fenêtre d'options 1.3 (`PLAN-options-1.3.md`), modernisation des blocs un par un (`PLAN-modernisation-blocs.md`), « Retirer » (`PLAN-retirer-T2.md`), placement au pixel (`PLAN-placer-T2.md`). |
-| `archive/` | Historique daté du projet de la 1.0 à la 1.3.1 (`HISTORIQUE-1.0-1.3.md`) et de la 1.4 (`HISTORIQUE-1.4.md`), plans terminés et anciennes listes de tests. |
+| `archive/` | Historique daté du projet de la 1.0 à la 1.3.1 (`HISTORIQUE-1.0-1.3.md`), de la 1.4 (`HISTORIQUE-1.4.md`) et de la 1.5 à la 1.6 (`HISTORIQUE-1.5-1.6.md`), plans terminés et anciennes listes de tests. |
 | `localization/` | Textes anglais et français de l'addon, une ligne par texte, pour les traducteurs (générés : `tools/export_locales.lua`). |
 | `TRANSLATING.md` | Comment traduire Tessera (pull request ou issue « Translation »), en anglais. |
 | `art/` | Logo en grand : icône (512 et 1024 px) et nom « Tessera » sur fond clair, sombre ou transparent. Police Outfit (licence OFL). |

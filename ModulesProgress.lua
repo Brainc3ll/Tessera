@@ -843,6 +843,9 @@ ns:RegisterModule("goal", {
         { kind = "dropdown", field = "goalItemsShown", label = "GOAL_ITEMS_SHOWN", tip = "TIP_GOAL_ITEMS_SHOWN",
           values = { { key = "last", label = "GOAL_SHOWN_LAST" }, { key = "all", label = "GOAL_SHOWN_ALL" } },
           shown = function(cfg) return cfg.goalType == "item" end },
+        -- how to add items, and how many: said in the box, not only in the tooltip
+        { kind = "note", label = "GOAL_ITEMS_HOWTO", text = function() return L.GOAL_ITEMS_HOWTO:format(GOAL_MAX_ITEMS) end,
+          shown = function(cfg) return cfg.goalType == "item" end },
     },
     extraAction = { key = "resetSession", label = "ACTION_RESET_SESSION", run = Tools.ResetSession },
     -- an item goal shows the newest item's icon, a currency goal the currency's
@@ -885,6 +888,8 @@ ns:RegisterModule("goal", {
                     1, 1, 1, done and 0.3 or 1, done and 1 or 1, done and 0.3 or 1)
             end
             if GoalProgress(cfg) >= 1 then tt:AddLine(L.GOAL_REACHED, 0.3, 1, 0.3) end
+            -- how many items of the most it can follow
+            tt:AddLine(L.TT_GOAL_ITEMS:format(#items, GOAL_MAX_ITEMS), 0.8, 0.8, 0.8)
             return
         end
         local progress, current, target = GoalProgress(cfg)

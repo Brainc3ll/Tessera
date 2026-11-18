@@ -15,6 +15,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - Quick tour: the layouts step says in big letters that the layouts are examples and that Tessera has more than 50 blocks.
 - After an update, a window in Tessera's style lists the first news since your version, each with its Show me button.
+- Goal block, items: its settings say how to add an item and how many (up to 3), and its tooltip counts them.
 - Whispers list: the same List look setting as the other lists (tooltip or window), and more room between whispers.
 - Lists on hover: switching a list between the tooltip look and the window look no longer leaves the old look showing through.
 

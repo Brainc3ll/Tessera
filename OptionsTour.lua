@@ -325,11 +325,26 @@ end
 
 -- The "What's new" lines since the version the player had (`since`), newest first; a version with
 -- fixes only has none: then the lines of the latest version that has some. { text, show } each.
+-- "1.6.1-test184" -> 1, 6, 1 (a test build counts as its version)
+local function VersionNumbers(v)
+    local a, b, c = tostring(v or ""):match("^(%d+)%.(%d+)%.?(%d*)")
+    return tonumber(a) or 0, tonumber(b) or 0, tonumber(c) or 0
+end
+local function IsNewer(v, than)
+    local a1, b1, c1 = VersionNumbers(v)
+    local a2, b2, c2 = VersionNumbers(than)
+    if a1 ~= a2 then return a1 > a2 end
+    if b1 ~= b2 then return b1 > b2 end
+    return c1 > c2
+end
+ns.WhatsNewIsNewer = IsNewer -- (tools/mock_run.lua)
+
 local function WhatsNewItems(since)
     local lang = GetLocale() == "frFR" and "fr" or "en"
     local items = {}
+    -- only the versions newer than the one the player had (none known: the fallback below)
     for _, entry in ipairs(ns.CHANGELOG or {}) do
-        if since and entry.version == since then break end
+        if not since or not IsNewer(entry.version, since) then break end
         for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do items[#items + 1] = line end
     end
     if #items == 0 then
@@ -383,7 +398,7 @@ local function BuildNewsWindow()
     news.more:SetJustifyH("LEFT")
     news.all = CreateFrame("Button", nil, news, "UIPanelButtonTemplate")
     news.all:SetSize(190, 26)
-    news.all:SetText(L.WHATS_NEW_SHOW)
+    news.all:SetText(L.WHATS_NEW_TITLE) -- "What's new" (the topic it opens)
     news.all:SetScript("OnClick", function()
         news:Hide()
         ns:OpenOptions(PAGE_ABOUT)
@@ -399,6 +414,7 @@ end
 
 function ns.WhatsNewShown() return news ~= nil and news:IsShown() end
 ns.WhatsNewPopupText = WhatsNewPopupText -- (tools/mock_run.lua)
+ns.WhatsNewItems = WhatsNewItems
 
 function ns:ShowWhatsNewWindow(version, since)
     if not news then BuildNewsWindow() end

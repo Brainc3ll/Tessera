@@ -82,6 +82,7 @@ ns.CHANGELOG = {
               en = {
                 "Quick tour: the layouts step says in big letters that the layouts are examples and that Tessera has more than 50 blocks.",
                 "After an update, a window in Tessera's style lists the first news since your version, each with its Show me button.",
+                "Goal block, items: its settings say how to add an item and how many (up to 3), and its tooltip counts them.",
                 "Whispers list: the same List look setting as the other lists (tooltip or window), and more room between whispers.",
                 "Lists on hover: switching a list between the tooltip look and the window look no longer leaves the old look showing through.",
               },
@@ -89,6 +90,7 @@ ns.CHANGELOG = {
                 "Visite guidée : l'étape des dispositions dit en gros qu'elles ne sont que des exemples et que Tessera a plus de 50 blocs.",
                 "Après une mise à jour, une fenêtre au style de Tessera liste les premières nouveautés depuis ta version,"
                     .. " chacune avec son bouton Montre-moi.",
+                "Bloc Objectif, objets : ses réglages expliquent comment ajouter un objet et combien (jusqu'à 3), et son infobulle les compte.",
                 "Liste des chuchotements : le même réglage Aspect de la liste que les autres listes (infobulle ou fenêtre),"
                     .. " et plus d'air entre les chuchotements.",
                 "Listes au survol : passer une liste du style infobulle au style fenêtre ne laisse plus l'ancien style transparaître.",

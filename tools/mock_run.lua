@@ -1435,6 +1435,12 @@ for _, step in ipairs({
     end,
     -- what's new popup opens the About tab on the Changelog topic
     function()
+        -- the news counted: only versions newer than the one the player had; a test build is its version
+        local n161 = #ns.ChangelogHighlights(ns.CHANGELOG[1], "en")
+        assert(#ns.WhatsNewItems("1.6.0") == n161, "1.6.0 -> 1.6.1: the 1.6.1 news only")
+        assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + 7, "a test build counts as its version")
+        assert(#ns.WhatsNewItems("1.5.1") > n161, "1.5.1 -> 1.6.1: the 1.6.0 news too")
+        assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")
         ns:ShowWhatsNewWindow("9.9.9", "1.0.0")
         local w = _G["TesseraWhatsNew"]
         assert(w and w:IsShown() and w.more:IsShown(), "the update window shows, with more news than it lists")

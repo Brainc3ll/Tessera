@@ -169,6 +169,10 @@ local function BuildModuleOptions(keys, route, condition)
                     end
                     setter(v)
                 end, shown, tip, opt.kind == "number")
+            elseif opt.kind == "note" then
+                -- a short explanation in the block's own box (how to use it), shown like the others
+                w = CreateNote(sub, opt.text and opt.text() or L[opt.label])
+                w.isShown = shown
             elseif opt.kind == "color" then
                 local getC, setC = ColorField(opt.field)
                 w = CreateColor(sub, label, true, getC, function(...)

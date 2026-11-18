@@ -1436,8 +1436,9 @@ for _, step in ipairs({
     -- what's new popup opens the About tab on the Changelog topic
     function()
         -- the news counted: only versions newer than the one the player had; a test build is its version
-        local n161 = #ns.ChangelogHighlights(ns.CHANGELOG[1], "en")
-        assert(#ns.WhatsNewItems("1.6.0") == n161, "1.6.0 -> 1.6.1: the 1.6.1 news only")
+        -- (1.6.2 only fixes a bug and has no news: the 1.6.1 entry is the second one)
+        local n161 = #ns.ChangelogHighlights(ns.CHANGELOG[2], "en")
+        assert(#ns.WhatsNewItems("1.6.0") == n161, "1.6.0 -> 1.6.2: the 1.6.1 news only")
         assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + 7, "a test build counts as its version")
         assert(#ns.WhatsNewItems("1.5.1") > n161, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")
@@ -4515,6 +4516,57 @@ do
     if ns.db.grid ~= 0 then print("STEP ERROR: banner: the grid arrow does not go back") end
     ns:SetLocked(true, true)
     GetPhysicalScreenSize = physical
+    MOCK_GEOMETRY = false
+    ns:ResetProfile("top")
+end
+-- Separator lines follow their check box at once (1.6.1 drew them again only at the next layout:
+-- ticking or unticking "Line between merged blocks" showed nothing until a reload or a style change)
+do
+    local L = ns.L
+    MOCK_GEOMETRY = true
+    ns:ResetProfile("top")
+    ns:ApplyTheme("flareui6") -- a style with lines between the blocks
+    ns:UpdateLayout()
+    local function Lines(k)
+        local n = 0
+        for _, t in ipairs(ns.frames[k].separatorPool or {}) do if t:IsShown() then n = n + 1 end end
+        return n
+    end
+    local key
+    for _, k in ipairs(ns:GetBlockKeys()) do
+        local c, f = ns.db.blocks[k], ns.frames[k]
+        if c.enabled and c.dock and f and f:IsShown() and not ns.IsSpacerKey(k) and Lines(k) > 0 then key = k break end
+    end
+    if not key then
+        print("STEP ERROR: separators: no block draws a line with the FlareUI style")
+    else
+        local function Find(label)
+            for _, r in ipairs(ns.optionWidgets) do
+                if r.frame.__shown and (r.frame.headerText or r.label) == label then return r.frame end
+            end
+        end
+        ns:OpenOptionsFor(key)
+        local row
+        for sub = 1, 5 do
+            ns.ShowBlockSub(sub)
+            ns:RefreshOptions()
+            row = Find(L.SEPARATORS)
+            if row then break end
+        end
+        if not (row and row.check) then
+            print("STEP ERROR: separators: the check box is not on the block's page")
+        else
+            -- (the mock's check box always reports "not checked": the row's own setter is what a click calls)
+            row.setter(false)
+            if ns.db.blocks[key].separators ~= false or Lines(key) ~= 0 then
+                print("STEP ERROR: separators: unticking the box did not remove the lines of " .. key .. " (" .. Lines(key) .. " left)")
+            end
+            row.setter(true)
+            if ns.db.blocks[key].separators ~= true or Lines(key) == 0 then
+                print("STEP ERROR: separators: ticking the box did not bring the lines of " .. key .. " back (sep=" .. tostring(ns.db.blocks[key].separators) .. ", lines=" .. Lines(key) .. ")")
+            end
+        end
+    end
     MOCK_GEOMETRY = false
     ns:ResetProfile("top")
 end

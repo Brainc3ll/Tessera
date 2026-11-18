@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Changelog.lua`), in English or French depending on the game language.
 
+## 1.6.2 — 
+
+### Fixes
+
+- Separators: the lines follow the "Line between merged blocks" box and the line color as you change them. In 1.6.1 they updated only after a reload or a style change.
+
 ## 1.6.1 — 2026-11-18
 
 ### New

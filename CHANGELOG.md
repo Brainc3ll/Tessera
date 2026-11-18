@@ -8,6 +8,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - Separators: the lines follow the "Line between merged blocks" box and the line color as you change them. In 1.6.1 they updated only after a reload or a style change.
+- Separators: each line stays one sharp pixel wide, wherever the bar sits. In 1.6.1 some lines showed doubled and faint, or vanished, and changed when a block's text changed width.
 
 ## 1.6.1 — 2026-11-18
 

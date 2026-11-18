@@ -47,6 +47,22 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.6.2",
+        date = "",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "Separators: the lines follow the \"Line between merged blocks\" box and the line color as you change them."
+                    .. " In 1.6.1 they updated only after a reload or a style change.",
+              },
+              fr = {
+                "Séparateurs : les traits suivent la case « Ligne entre les blocs fusionnés » et la couleur de la ligne dès que tu les changes."
+                    .. " En 1.6.1, ils ne se mettaient à jour qu'après un rechargement ou un changement de style.",
+              },
+            },
+        },
+    },
+    {
         version = "1.6.1",
         date = "2026-11-18",
         -- "What's new": one short line per new thing (About tab, update popup), with where to see it

@@ -10,6 +10,8 @@ local FULL_W, GroupHead, IsGroup, LAUNCHERS = Tools.FULL_W, Tools.GroupHead, Too
 local PER_BLOCK_FIELDS, SPACER_SHARED_FIELDS, SPACING, Targets = Tools.PER_BLOCK_FIELDS, Tools.SPACER_SHARED_FIELDS, Tools.SPACING, Tools.Targets
 local widgets = Tools.widgets
 
+-- Settings of the lines between merged blocks: they are drawn by the layout pass (ns:UpdateSeams), not by ApplyStyle
+local SEPARATOR_FIELDS = { separators = true, separatorColor = true, classColorSeparator = true }
 
 local function SetField(name, value)
     if name == "enabled" then
@@ -24,6 +26,7 @@ local function SetField(name, value)
             ns.db.blocks[key][name] = ns.DeepCopy(value)
             ns:ApplyStyle(key)
         end
+        if SEPARATOR_FIELDS[name] then ns:UpdateLayout() end -- the lines follow the setting at once
     end
     if (S.selected == ALL or GroupHead()) and SPACER_SHARED_FIELDS[name] then
         local all = GroupHead() and ns:GetStyleGroup(GroupHead()) or ns:GetBlockKeys()

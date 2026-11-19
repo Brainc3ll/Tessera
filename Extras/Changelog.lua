@@ -47,6 +47,22 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.6.3",
+        date = "",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "FlareUI styles: when the XP bar font is set to Global in FlareUI, Tessera follows FlareUI's Global Font."
+                    .. " In 1.6.2 it fell back to Arial.",
+              },
+              fr = {
+                "Styles FlareUI : quand la police de la barre d'XP est sur Global dans FlareUI, Tessera suit la police globale de FlareUI."
+                    .. " En 1.6.2, il retombait sur Arial.",
+              },
+            },
+        },
+    },
+    {
         version = "1.6.2",
         date = "2026-11-18",
         sections = {

@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
+## 1.6.3 — 
+
+### Fixes
+
+- FlareUI styles: when the XP bar font is set to Global in FlareUI, Tessera follows FlareUI's Global Font. In 1.6.2 it fell back to Arial.
+
 ## 1.6.2 — 2026-11-18
 
 ### Fixes

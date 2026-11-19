@@ -1436,9 +1436,11 @@ for _, step in ipairs({
     -- what's new popup opens the About tab on the Changelog topic
     function()
         -- the news counted: only versions newer than the one the player had; a test build is its version
-        -- (1.6.2 only fixes a bug and has no news: the 1.6.1 entry is the second one)
-        local n161 = #ns.ChangelogHighlights(ns.CHANGELOG[2], "en")
-        assert(#ns.WhatsNewItems("1.6.0") == n161, "1.6.0 -> 1.6.2: the 1.6.1 news only")
+        -- (1.6.2 and 1.6.3 only fix bugs and have no news: the 1.6.1 entry is found by its version)
+        local e161
+        for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.6.1" then e161 = e break end end
+        local n161 = #ns.ChangelogHighlights(e161, "en")
+        assert(#ns.WhatsNewItems("1.6.0") == n161, "1.6.0 -> now: the 1.6.1 news only")
         assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + 7, "a test build counts as its version")
         assert(#ns.WhatsNewItems("1.5.1") > n161, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")
@@ -1738,6 +1740,22 @@ for _, step in ipairs({
         bars.xpFontSeeded, bars.xpFont = nil, nil
         ns:ApplyThemeToCfg(xpCfg, "flareui2")
         assert(xpCfg.outline == "THICKOUTLINE" and xpCfg.textShadow == false, "before FlareUI's copy: the keybind font")
+        -- FlareUI's "Global" font choice (a font set to Global, or "Use Global Font Everywhere"):
+        -- the XP bar's face is the word "__global"; the font is the profile's Global Font
+        -- (Friz Quadrata TT until the player picks another), never Arial
+        do
+            local realLSM = ns.GetLSM
+            ns.GetLSM = function() return { Fetch = function(_, _, name) return name end } end
+            bars.xpFontSeeded, bars.xpFont = true, { face = "__global" }
+            local fontCfg = {}
+            ns:ApplyThemeToCfg(fontCfg, "flareui2")
+            assert(fontCfg.font == "lsm:Friz Quadrata TT", "Global font, default: Friz Quadrata TT (got " .. tostring(fontCfg.font) .. ")")
+            _G.FlareUI2_DB.profiles.Perso.fonts = { global = { face = "Expressway" } }
+            ns:ApplyThemeToCfg(fontCfg, "flareui2")
+            assert(fontCfg.font == "lsm:Expressway", "Global font: the one picked in FlareUI (got " .. tostring(fontCfg.font) .. ")")
+            _G.FlareUI2_DB.profiles.Perso.fonts = nil
+            ns.GetLSM = realLSM
+        end
         _G.FlareUI2_DB = nil
         ns.sv.charProfiles[key], ns.sv.chars[key], ns.sv.goldHistory[key] = nil, nil, nil
         ns.sv.chars["Ellen Kempton"], ns.sv.chars["Bob-Classic Beta PvE"], ns.sv.goldHistory["Tobin Harrow"] = nil, nil, nil

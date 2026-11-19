@@ -56,6 +56,7 @@ end
 -- live apart: xpFontSeeded says the copy was made). An older FlareUI, or one not loaded yet since the
 -- update, only has hotkeyFont: that one is followed until xpFont exists. Arial Narrow with an outline
 -- and a text shadow (FlareUI 4.0: enableShadow, on by default) are FlareUI's defaults.
+-- A font set to "Global" in FlareUI follows its Global Font (profile.fonts.global.face).
 -- Returns a Tessera font key, an outline and the text shadow.
 local OUTLINES = { OUTLINE = true, THICKOUTLINE = true, NONE = true }
 local function FlareFont()
@@ -81,6 +82,13 @@ local function FlareFont()
                 return value
             end
             if type(Field("face")) == "string" then face = Field("face") end
+            -- FlareUI's "Global" choice (also "Use Global Font Everywhere"): the face is the word
+            -- "__global" and the font is the profile's Global Font, Friz Quadrata TT until another is picked
+            if face == "__global" then
+                local fonts = type(profile) == "table" and type(profile.fonts) == "table" and profile.fonts
+                local global = fonts and type(fonts.global) == "table" and fonts.global.face
+                face = type(global) == "string" and global ~= "" and global ~= "__global" and global or "Friz Quadrata TT"
+            end
             if OUTLINES[Field("flags")] then flags = Field("flags") end
             if type(Field("enableShadow")) == "boolean" then shadow = Field("enableShadow") end
             break

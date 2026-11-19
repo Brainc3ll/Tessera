@@ -70,6 +70,7 @@ Un fichier ou une fonction de plus de 200 variables locales actives ne se charge
 - Sous Linux (Wine), après une capture d'écran, les menus déroulants du jeu ne répondent plus jusqu'à un Alt-Tab : c'est le focus de Wine, pas Tessera. Un Alt-Tab peut aussi relancer une mise en page.
 
 ## Journal court (une ligne par décision ; le détail est dans CHANGELOG.md, A-REPRENDRE, `docs/archive/HISTORIQUE-1.0-1.3.md`, IDEES-FUTUR)
+- 19/11 : 1.6.3 prête (police globale de FlareUI suivie, Lexend compris), non publiée ; déco du suivi de quêtes FlareUI écartée ; bloc FPS laissé.
 - 18/11 : 1.6.2 publiée (séparateurs) depuis `main` = `next`, dossier rangé compris (Opus 5.5).
 - 20/10 : rc7 publiée.
 - 21/10 : placement simplifié (rc8) ; bêta des rangées rangée ; FlareUI neutre ; cadres des interfaces connues ; dispositions toutes prêtes corrigées (Double barre en trois rangées, Chemin de ronde sans bloc masqué) ; visite rapide et devant / derrière corrigés ; rc8 publiée ; Retail pas une priorité ; galerie HD refaite (dépôt privé) ; mode démo gardé et corrigé ; fond 50 % des styles FlareUI ; cadres d'EllesmereUI, ElvUI, GW2 UI ajoutés (noms lus dans leur code) ; styles GW2 UI et Tukui notés pour la 1.1 ; pack d'icônes « forever-icons » noté.

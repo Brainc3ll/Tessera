@@ -228,3 +228,5 @@ XP of quests to hand in
 XP per hour and time left
 Yellow threshold
 Your status
+Cost by reputation
+Reputation level of that cost

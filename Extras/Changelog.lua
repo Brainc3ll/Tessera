@@ -47,6 +47,33 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.7.0",
+        date = "",
+        highlights = {
+            { en = "Durability: the tooltip lists the repair cost at each reputation level, Friendly to Exalted.",
+              fr = "Durabilité : l'infobulle liste le coût de réparation à chaque niveau de réputation, d'Amical à Exalté.",
+              show = { block = "durability", label = "DURABILITY_TIP_DISCOUNTS" } },
+        },
+        sections = {
+            { kind = "new",
+              en = {
+                "Durability block: under the repair cost, the tooltip lists what it costs at Friendly, Honored, Revered and Exalted"
+                    .. " (5, 10, 15 and 20% off). The discount depends on your reputation with the vendor's faction, so you read the line that fits."
+                    .. " The checkbox Cost by reputation turns the lines on or off, and one checkbox per level picks which ones show.",
+                "Durability block: a new setting, Reputation level of that cost, picks the level the repair cost in the block is shown for"
+                    .. " (Normal by default, as before).",
+              },
+              fr = {
+                "Bloc Durabilité : sous le coût de réparation, l'infobulle liste ce qu'il coûte à Amical, Honoré, Révéré et Exalté"
+                    .. " (5, 10, 15 et 20 % de remise). La remise dépend de ta réputation auprès de la faction du vendeur : tu lis la ligne qui te correspond."
+                    .. " La case Coût selon la réputation active ou coupe ces lignes, et une case par niveau choisit lesquelles s'affichent.",
+                "Bloc Durabilité : un nouveau réglage, Niveau de réputation de ce coût, choisit le niveau pour lequel le coût de réparation du bloc est affiché"
+                    .. " (Normal par défaut, comme avant).",
+              },
+            },
+        },
+    },
+    {
         version = "1.6.3",
         date = "",
         sections = {

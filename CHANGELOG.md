@@ -3,6 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
+## 1.7.0 — 
+
+### New
+
+- Durability block: under the repair cost, the tooltip lists what it costs at Friendly, Honored, Revered and Exalted (5, 10, 15 and 20% off). The discount depends on your reputation with the vendor's faction, so you read the line that fits. The checkbox Cost by reputation turns the lines on or off, and one checkbox per level picks which ones show.
+- Durability block: a new setting, Reputation level of that cost, picks the level the repair cost in the block is shown for (Normal by default, as before).
+
 ## 1.6.3 — 
 
 ### Fixes

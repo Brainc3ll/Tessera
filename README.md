@@ -151,7 +151,7 @@ Help tab inside the game explains everything.
   - skills read from Forever's skill list (the weapon in hand, the ranged one while you shoot, or
     one you pick); profession, talent and Legacy blocks that open Forever's own windows.
 - More than 50 blocks in all: gold (history of 7, 14 or 30 days, your characters' gold and their total for the same faction and realm; Alt + right-click forgets a deleted character), bags (with junk value and
-  profession bags), durability (with the repair cost), XP (with the time to the next level and the quests to hand in; "Reset session" is a click action on gold, XP, reputation, currencies, XP per hour and goal), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
+  profession bags), durability (with the repair cost, in the tooltip at each reputation level), XP (with the time to the next level and the quests to hand in; "Reset session" is a click action on gold, XP, reputation, currencies, XP per hour and goal), FPS and latency (with graphs), local and server time, date, XP, rested XP, coordinates,
   zone and subzone, friends (notes, sorting, Battle.net friends in WoW only), guild (message of the day, ranks and public notes in the tooltip, 5 to 100 members shown, top ranks on top), group (roles, state and level in the tooltip), quests (sorted by level or finished first, with zone and a free-slot alert), reputation (points left and session gain), currencies (any currency you own, cap, session gain), goal (gold, level, items or a currency, "Reached" and the estimated time), professions (one block
   each, plus cooking, first aid and fishing), talent points, hearthstone, mail, whispers, class
   reagents (choose them, stock levels, grayed at zero), ammo, item level, speed, volume, addon memory (5 to 30 addons, share, total), instances (nearest reset first, reset alert), daily and weekly reset, played time, goal, mana
@@ -221,7 +221,7 @@ Blocks and groups tab, then turn on "Enabled".
 |---|---|---|
 | Gold *(shown at first)* | Your gold; tooltip: session gain, history of 7, 14 or 30 days, your characters' gold and their total | Open your bags |
 | Bags *(shown at first)* | Free (or used) bag slots; tooltip: junk value, profession bags apart | Open your bags |
-| Durability *(shown at first)* | Your lowest durability; tooltip: each item and the repair cost | Character sheet |
+| Durability *(shown at first)* | Your lowest durability; tooltip: each item, the repair cost and its price at each reputation level | Character sheet |
 | XP | XP to the next level; tooltip: rested XP, time to level, quests to hand in | |
 | Rested XP | Your rested XP | |
 | Item level | Equipped item level, best available, or both; weakest items first in the tooltip | Character sheet |

@@ -2364,13 +2364,17 @@ for _, step in ipairs({
         assert(tools.session.xpGained == 0 and ns.sessionMoney == (GetMoney() or 0), "reset session")
         assert(ns.modules.gold.extraAction.key == "resetSession" and ns.modules.xp.extraAction.key == "resetSession")
     end,
-    -- Durability repair cost by reputation (1.7): the tooltip lists the levels ticked, rounded down to the
-    -- copper (796 -> 756, 716, 676, 636); the block shows the level chosen; a level can be unticked
+    -- Durability repair cost by reputation (1.7): the cost counts the worn items (796) and the damaged item in
+    -- the bags (33), like the vendor's Repair all (829); the tooltip lists the levels ticked, rounded down to the
+    -- copper (829 -> 787, 746, 704, 663); the block shows the level chosen; a level can be unticked
     function()
         local mod, cfg = ns.modules.durability, ns.db.blocks.durability
         local savedInfo, saved = C_TooltipInfo, {}
         for k, v in pairs(cfg) do saved[k] = v end
-        C_TooltipInfo = { GetInventoryItem = function(_, slot) return slot == 1 and { repairCost = 796 } or nil end }
+        C_TooltipInfo = {
+            GetInventoryItem = function(_, slot) return slot == 1 and { repairCost = 796 } or nil end,
+            GetBagItem = function(bag, slot) return bag == 0 and slot == 1 and { repairCost = 33 } or nil end,
+        }
         local function Lines()
             local lines = {}
             local tt = setmetatable({ AddLine = function() end,
@@ -2382,18 +2386,22 @@ for _, step in ipairs({
         cfg.durabilityTipCost, cfg.durabilityTipDiscounts = true, true
         for _, f in ipairs({ "Friendly", "Honored", "Revered", "Exalted" }) do cfg["durabilityTip" .. f] = true end
         local text = Lines()
-        for _, c in ipairs({ 796, 756, 716, 676, 636 }) do
+        for _, c in ipairs({ 829, 787, 746, 704, 663 }) do
             assert(text:find(ns.FormatMoney(c), 1, true), "repair cost line for " .. c .. " copper: " .. text)
         end
         cfg.durabilityTipHonored = false
-        assert(not Lines():find(ns.FormatMoney(716), 1, true), "an unticked level is not listed")
+        assert(not Lines():find(ns.FormatMoney(746), 1, true), "an unticked level is not listed")
         cfg.durabilityTipDiscounts = false
-        assert(not Lines():find(ns.FormatMoney(756), 1, true) and Lines():find(ns.FormatMoney(796), 1, true),
+        assert(not Lines():find(ns.FormatMoney(787), 1, true) and Lines():find(ns.FormatMoney(829), 1, true),
             "the discount lines go with their checkbox; the cost stays")
         cfg.durabilityCost, cfg.durabilityCostLevel = true, "exalted"
-        assert(mod.update(cfg):find(ns.FormatMoney(636), 1, true), "the block shows the level chosen")
+        assert(mod.update(cfg):find(ns.FormatMoney(663), 1, true), "the block shows the level chosen")
         cfg.durabilityCostLevel = nil
-        assert(mod.update(cfg):find(ns.FormatMoney(796), 1, true), "no level chosen: the normal price")
+        assert(mod.update(cfg):find(ns.FormatMoney(829), 1, true), "no level chosen: the normal price")
+        cfg.durabilityCostBags = false
+        local noBags = mod.update(cfg)
+        assert(noBags:find(ns.FormatMoney(796), 1, true) and not noBags:find(ns.FormatMoney(829), 1, true),
+            "items in bags left out of the cost when the checkbox is cleared")
         C_TooltipInfo = savedInfo
         for k in pairs(cfg) do cfg[k] = nil end
         for k, v in pairs(saved) do cfg[k] = v end

@@ -10,6 +10,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Durability block: under the repair cost, the tooltip lists what it costs at Friendly, Honored, Revered and Exalted (5, 10, 15 and 20% off). The discount depends on your reputation with the vendor's faction, so you read the line that fits. The checkbox Cost by reputation turns the lines on or off, and one checkbox per level picks which ones show.
 - Durability block: a new setting, Reputation level of that cost, picks the level the repair cost in the block is shown for (Normal by default, as before).
 
+### Fixes
+
+- Durability block: the repair cost counts the damaged items in your bags too, as the vendor's Repair all does. Before, it counted only the items you wear. The checkbox Count items in bags in the cost turns it off.
+
 ## 1.6.3 — 
 
 ### Fixes

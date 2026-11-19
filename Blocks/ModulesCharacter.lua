@@ -296,34 +296,64 @@ local function ShownDurability(cfg)
     return LowestDurability()
 end
 
--- Repair cost of the equipped items, in copper, or nil when this client gives no way to
--- read it. The game gives the cost with each item's tooltip: modern tooltip data first,
--- then a hidden tooltip (older API, 3rd return value of SetInventoryItem).
+-- Repair cost in copper of what the vendor's "Repair all" asks for, or nil when this client gives no way to
+-- read it: the equipped items and the damaged items carried in the bags (the game counts both). The game
+-- gives the cost with each item's tooltip: modern tooltip data first, then a hidden tooltip (older API:
+-- 3rd return of SetInventoryItem, 2nd return of SetBagItem). It is the price with no reputation discount.
 local repairScanner
-local function RepairCost()
+local function ItemRepairCost(bag, slot)
+    local info = C_TooltipInfo
+    local read = info and (bag and info.GetBagItem or info.GetInventoryItem)
+    if read then
+        local ok, data
+        if bag then ok, data = pcall(read, bag, slot) else ok, data = pcall(read, "player", slot) end
+        if ok and type(data) == "table" and type(data.repairCost) == "number" then return data.repairCost end
+    end
+    if not repairScanner then
+        repairScanner = CreateFrame("GameTooltip", "TesseraRepairScanner", nil, "GameTooltipTemplate")
+    end
+    repairScanner:SetOwner(WorldFrame, "ANCHOR_NONE")
+    local cost
+    if bag then
+        local ok, _, c = pcall(repairScanner.SetBagItem, repairScanner, bag, slot)
+        if ok then cost = c end
+    else
+        local ok, hasItem, _, c = pcall(repairScanner.SetInventoryItem, repairScanner, "player", slot)
+        if ok and hasItem then cost = c end
+    end
+    repairScanner:Hide()
+    return type(cost) == "number" and cost or nil
+end
+
+local function RepairCost(cfg)
     local total, known = 0, false
     for slot = 1, 19 do
-        local cost
-        if C_TooltipInfo and C_TooltipInfo.GetInventoryItem then
-            local ok, data = pcall(C_TooltipInfo.GetInventoryItem, "player", slot)
-            if ok and type(data) == "table" and type(data.repairCost) == "number" then cost = data.repairCost end
-        end
-        if cost == nil then
-            if not repairScanner then
-                repairScanner = CreateFrame("GameTooltip", "TesseraRepairScanner", nil, "GameTooltipTemplate")
-            end
-            repairScanner:SetOwner(WorldFrame, "ANCHOR_NONE")
-            local ok, hasItem, _, c = pcall(repairScanner.SetInventoryItem, repairScanner, "player", slot)
-            if ok and hasItem and type(c) == "number" then cost = c end
-            repairScanner:Hide()
-        end
+        local cost = ItemRepairCost(nil, slot)
         if cost then
             known = true
             total = total + cost
         end
     end
+    -- damaged items in the bags: only those are read (a full bag would otherwise mean a tooltip per slot)
+    local getDurability = C_Container and C_Container.GetContainerItemDurability
+    if getDurability and On(cfg, "durabilityCostBags") then
+        for bag = 0, LastBag() do
+            local okS, slots = pcall(C_Container.GetContainerNumSlots, bag)
+            for slot = 1, (okS and tonumber(slots)) or 0 do
+                local okD, cur, max = pcall(getDurability, bag, slot)
+                if okD and type(cur) == "number" and type(max) == "number" and cur < max then
+                    local cost = ItemRepairCost(bag, slot)
+                    if cost then
+                        known = true
+                        total = total + cost
+                    end
+                end
+            end
+        end
+    end
     return known and total or nil
 end
+ns.RepairCost = RepairCost -- (read by the test commands)
 
 -- Repair discounts by reputation with the vendor's faction: Friendly 5 %, Honored 10 %, Revered 15 %,
 -- Exalted 20 %. "normal" is the price with no discount. standing is the game's FACTION_STANDING_LABEL<n>
@@ -364,14 +394,14 @@ ns:RegisterModule("durability", {
         local text = ("%d%%"):format(math.floor(pct + 0.5))
         -- repair cost next to the percentage (streamer mode hides amounts; nothing when this client gives none)
         if cfg and cfg.durabilityCost and not ns:IsStreamer("gold") then
-            local cost = RepairCost()
+            local cost = RepairCost(cfg)
             if cost and cost > 0 then
                 text = text .. " " .. ns.FormatMoney(CostAtLevel(cost, RepairLevelByKey(cfg.durabilityCostLevel)))
             end
         end
         return text, DurabilityLevel(pct, cfg)
     end,
-    defaults = { durabilityMode = "lowest", durabilityCost = false, durabilityCostLevel = "normal", durabilityWornOnly = false,
+    defaults = { durabilityMode = "lowest", durabilityCost = false, durabilityCostLevel = "normal", durabilityCostBags = true, durabilityWornOnly = false,
                  durabilityTipEquipped = true, durabilityTipBags = true, durabilityTipCost = true,
                  durabilityTipDiscounts = true, durabilityTipFriendly = true, durabilityTipHonored = true,
                  durabilityTipRevered = true, durabilityTipExalted = true },
@@ -379,6 +409,7 @@ ns:RegisterModule("durability", {
         { kind = "dropdown", field = "durabilityMode", tab = "text", label = "DURABILITY_SHOWN", tip = "TIP_DURABILITY_SHOWN",
           values = { { key = "lowest", label = "DURABILITY_LOWEST" }, { key = "average", label = "DURABILITY_AVERAGE" } } },
         { kind = "check", field = "durabilityCost", tab = "text", label = "DURABILITY_COST", tip = "TIP_DURABILITY_COST" },
+        { kind = "check", field = "durabilityCostBags", tab = "text", label = "DURABILITY_COST_BAGS", tip = "TIP_DURABILITY_COST_BAGS" },
         { kind = "dropdown", field = "durabilityCostLevel", tab = "text", label = "DURABILITY_COST_LEVEL", tip = "TIP_DURABILITY_COST_LEVEL",
           shown = function(cfg) return cfg.durabilityCost end,
           values = function()
@@ -464,7 +495,7 @@ ns:RegisterModule("durability", {
             end
         end
         if On(cfg, "durabilityTipCost") then
-            local cost = RepairCost()
+            local cost = RepairCost(cfg)
             if cost and cost > 0 then
                 ns.TooltipGap(tt)
                 tt:AddDoubleLine(L.TT_REPAIR_COST, ns.FormatMoney(cost), 1, 1, 1, 1, 1, 1)

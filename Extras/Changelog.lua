@@ -71,6 +71,16 @@ ns.CHANGELOG = {
                     .. " (Normal par défaut, comme avant).",
               },
             },
+            { kind = "fixed",
+              en = {
+                "Durability block: the repair cost counts the damaged items in your bags too, as the vendor's Repair all does."
+                    .. " Before, it counted only the items you wear. The checkbox Count items in bags in the cost turns it off.",
+              },
+              fr = {
+                "Bloc Durabilité : le coût de réparation compte aussi les pièces abîmées dans tes sacs, comme le « Tout réparer » du vendeur."
+                    .. " Avant, il ne comptait que les pièces portées. La case Compter les pièces en sac dans le coût le désactive.",
+              },
+            },
         },
     },
     {

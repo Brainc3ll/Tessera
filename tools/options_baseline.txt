@@ -230,3 +230,4 @@ Yellow threshold
 Your status
 Cost by reputation
 Reputation level of that cost
+Count items in bags in the cost

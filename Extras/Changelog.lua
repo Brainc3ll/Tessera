@@ -54,10 +54,14 @@ ns.CHANGELOG = {
               en = {
                 "FlareUI styles: when the XP bar font is set to Global in FlareUI, Tessera follows FlareUI's Global Font,"
                     .. " including a font that Tessera lends to FlareUI (Lexend, Atkinson...). In 1.6.2 it fell back to Arial.",
+                "Durability block: the repair cost counts the damaged items in your bags too, as the vendor's Repair all does."
+                    .. " Before, it counted only the items you wear. The box \"Count items in bags in the cost\" turns it off.",
               },
               fr = {
                 "Styles FlareUI : quand la police de la barre d'XP est sur Global dans FlareUI, Tessera suit la police globale de FlareUI,"
                     .. " même une police que Tessera lui prête (Lexend, Atkinson...). En 1.6.2, il retombait sur Arial.",
+                "Bloc Durabilité : le coût de réparation compte aussi les pièces abîmées dans tes sacs, comme le « Tout réparer » du vendeur."
+                    .. " Avant, il ne comptait que les pièces portées. La case « Compter les pièces en sac dans le coût » le désactive.",
               },
             },
         },

@@ -23,6 +23,19 @@ Pistes notées par Braincell1980 après la 1.3.1 ; aucune n'est choisie ni daté
 - **[Fait, 1.5.0, test132, validé en jeu le 14/11 (test135 à 137)] Réglages propres des blocs en sections repliables** (Affichage, Infobulle ; maquette A) : voir `docs/etudes/PLAN-modernisation-blocs.md`.
 - **Vol et bateaux** : écarté pour le moment (14/11) ; voir « Idées de blocs du 7/11 » pour les autres idées vérifiées avec forever-lint.
 
+## Revue des blocs (19 novembre 2026, Sonnet 5.5)
+Relevé d'après le journal des versions et le code (`Blocks/Modules*.lua`). Rien de ceci n'est décidé : Braincell1980 choisit.
+- **Modifiés récemment (1.5.0 à 1.7.0)** : Or, Sacs, Durabilité, XP (lot Personnage, 1.5.0 ; Durabilité encore en 1.7.0) ; Guilde, Amis, Groupe, Chuchotements (listes au survol 1.6.0, nom de guilde 1.6.1) ; Quêtes, Réputation, Monnaies, Objectif, XP par heure, Composants ; Mémoire, Instances, Niveau d'objet, Stats, Enchantement d'arme, Buffs longs ; Streamer (1.6.1).
+- **Modifiés plus tôt** : Compétences (1.2.0), Camping et Corps (1.3.0).
+- **Pas touchés depuis leur création** : FPS, Latence, Volume, Temps joué, Heure, Heure serveur, Date, Coordonnées, Zone, Sous-zone, Pierre de foyer, Vitesse, Régénération, Talents, Repos, Familier, Courrier, Butin, Honneur, Legacy, Compréhension, Munitions, Or de la session, menu du jeu.
+- **Correctif à faire (mode streamer, `main`)** : l'infobulle des Sacs (valeur du butin gris) et celle de Durabilité (coût de réparation, et les lignes par réputation de la 1.7.0) ne sont pas masquées par le mode streamer, alors que l'aide dit que ces montants s'affichent en `***`. Le texte du bloc, lui, l'est. Réglage du joueur : la case « Cacher ton or » du bloc Streamer existe déjà (`streamerGold`) ; à trancher : s'en servir, ou ajouter une case à part pour ces deux infobulles.
+- **Infobulles à cases, comme les blocs du lot Personnage** : FPS (maintenant, moyenne, min, max, limite, résolution), Latence (domicile, monde, débit entrant et sortant), Temps joué (session, niveau, total), Pierre de foyer (lieu, temps de recharge), Familier, Honneur, Legacy.
+- **Pierre de foyer** (aucun réglage aujourd'hui) : choisir ce que le bloc écrit (lieu, temps de recharge, ou les deux).
+- **Familier** (aucun réglage) : choisir ce que le bloc écrit (humeur, bonus de dégâts).
+- **Munitions** (aucun réglage ; l'infobulle ne montre que la pile équipée) : ajouter les munitions en réserve dans les sacs, si le jeu les donne (à vérifier).
+- **Talents** (aucun réglage ; ne montre que les points libres) : points dépensés par arbre, si l'API de Forever le permet (à vérifier avec `forever_api_check.py`).
+- **Peu à gagner** : Courrier (le jeu ne donne que trois expéditeurs), Heure et Heure serveur (ont déjà source, 12/24 h, secondes), Volume, Vitesse.
+
 ## Règles et décisions
 
 ### Bilan du 24 octobre 2026 : bon, bof, non

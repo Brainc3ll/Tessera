@@ -50,25 +50,27 @@ ns.CHANGELOG = {
         version = "1.7.0",
         date = "",
         highlights = {
-            { en = "Durability: the tooltip lists the repair cost at each reputation level, Friendly to Exalted.",
-              fr = "Durabilité : l'infobulle liste le coût de réparation à chaque niveau de réputation, d'Amical à Exalté.",
-              show = { block = "durability", label = "DURABILITY_TIP_DISCOUNTS" } },
+            { en = "Durability: at a repair vendor, the tooltip shows the real repair cost and your discount.",
+              fr = "Durabilité : chez un PNJ de réparation, l'infobulle montre le coût réel et ta remise.",
+              show = { block = "durability", label = "DURABILITY_TIP_VENDOR" } },
         },
         sections = {
             { kind = "new",
               en = {
-                "Durability block: under the repair cost, the tooltip lists what it costs at Friendly, Honored, Revered and Exalted"
-                    .. " (5, 10, 15 and 20% off). The discount depends on your reputation with the vendor's faction, so you read the line that fits."
-                    .. " The checkbox Cost by reputation turns the lines on or off, and one checkbox per level picks which ones show.",
-                "Durability block: a new setting, Reputation level of that cost, picks the level the repair cost in the block is shown for"
-                    .. " (Normal by default, as before).",
+                "Durability block: at a repair vendor, the tooltip shows the real price of Repair all and the discount the game gives you there"
+                    .. " (the checkbox Real cost at the vendor). Away from a vendor, it shows the price with no discount, as before.",
+                "Durability block: an optional estimate by reputation level, off by default. Tick Estimate by reputation in the tooltip settings,"
+                    .. " then the levels you want: it lists the cost with the discounts of the modern game (5, 10, 15 and 20%)."
+                    .. " Your game may give other discounts, which is why the real cost at the vendor is the figure to trust.",
+                "Durability block: a new setting, Reputation level of that cost, shows that estimate in the block (Normal by default, as before).",
               },
               fr = {
-                "Bloc Durabilité : sous le coût de réparation, l'infobulle liste ce qu'il coûte à Amical, Honoré, Révéré et Exalté"
-                    .. " (5, 10, 15 et 20 % de remise). La remise dépend de ta réputation auprès de la faction du vendeur : tu lis la ligne qui te correspond."
-                    .. " La case Coût selon la réputation active ou coupe ces lignes, et une case par niveau choisit lesquelles s'affichent.",
-                "Bloc Durabilité : un nouveau réglage, Niveau de réputation de ce coût, choisit le niveau pour lequel le coût de réparation du bloc est affiché"
-                    .. " (Normal par défaut, comme avant).",
+                "Bloc Durabilité : chez un PNJ de réparation, l'infobulle montre le prix réel de « Tout réparer » et la remise que le jeu te donne là"
+                    .. " (la case Coût réel chez le PNJ). Loin d'un PNJ, elle montre le prix sans remise, comme avant.",
+                "Bloc Durabilité : une estimation facultative par niveau de réputation, décochée par défaut. Coche Estimation selon la réputation"
+                    .. " dans les réglages de l'infobulle, puis les niveaux voulus : elle liste le coût avec les remises du jeu moderne (5, 10, 15 et 20 %)."
+                    .. " Ton jeu peut donner d'autres remises : c'est pourquoi le coût réel chez le PNJ est le chiffre à croire.",
+                "Bloc Durabilité : un nouveau réglage, Niveau de réputation de ce coût, montre cette estimation dans le bloc (Normal par défaut, comme avant).",
               },
             },
             { kind = "fixed",

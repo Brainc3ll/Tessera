@@ -228,6 +228,7 @@ XP of quests to hand in
 XP per hour and time left
 Yellow threshold
 Your status
-Cost by reputation
+Estimate by reputation
+Real cost at the vendor
 Reputation level of that cost
 Count items in bags in the cost

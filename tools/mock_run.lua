@@ -2402,6 +2402,21 @@ for _, step in ipairs({
         local noBags = mod.update(cfg)
         assert(noBags:find(ns.FormatMoney(796), 1, true) and not noBags:find(ns.FormatMoney(829), 1, true),
             "items in bags left out of the cost when the checkbox is cleared")
+        -- at a repair vendor: the real price of Repair all (746) and the discount it holds (829 -> 746 = 10%)
+        local savedMerchant, savedCan, savedAll = _G.MerchantFrame, _G.CanMerchantRepair, _G.GetRepairAllCost
+        _G.MerchantFrame = { IsShown = function() return true end }
+        _G.CanMerchantRepair = function() return true end
+        _G.GetRepairAllCost = function() return 746 end
+        cfg.durabilityTipVendor, cfg.durabilityTipCost, cfg.durabilityCostBags = true, true, true
+        local atVendor = Lines()
+        assert(atVendor:find(ns.FormatMoney(746), 1, true) and atVendor:find("10%", 1, true),
+            "vendor lines: real cost and discount: " .. atVendor)
+        cfg.durabilityTipVendor = false
+        assert(not Lines():find("10%", 1, true), "the vendor lines go with their checkbox")
+        cfg.durabilityTipVendor = true
+        _G.MerchantFrame = { IsShown = function() return false end }
+        assert(not Lines():find("10%", 1, true), "no vendor lines when no vendor is open")
+        _G.MerchantFrame, _G.CanMerchantRepair, _G.GetRepairAllCost = savedMerchant, savedCan, savedAll
         C_TooltipInfo = savedInfo
         for k in pairs(cfg) do cfg[k] = nil end
         for k, v in pairs(saved) do cfg[k] = v end

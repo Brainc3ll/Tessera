@@ -377,6 +377,15 @@ local function CostAtLevel(cost, level)
     return math.floor(cost * (100 - level.percent) / 100)
 end
 
+-- The vendor's own price for Repair all, while a repair vendor is open (nil otherwise): it holds the
+-- discount the game really gives you there, whatever the rules of this game version are
+local function VendorRepairCost()
+    local merchant = _G.MerchantFrame
+    if not (merchant and merchant.IsShown and merchant:IsShown() and Try(_G.CanMerchantRepair)) then return nil end
+    local cost = Try(_G.GetRepairAllCost)
+    return type(cost) == "number" and cost or nil
+end
+
 local function RepairLevelByKey(key)
     for _, level in ipairs(REPAIR_LEVELS) do
         if level.key == key then return level end
@@ -403,7 +412,7 @@ ns:RegisterModule("durability", {
     end,
     defaults = { durabilityMode = "lowest", durabilityCost = false, durabilityCostLevel = "normal", durabilityCostBags = true, durabilityWornOnly = false,
                  durabilityTipEquipped = true, durabilityTipBags = true, durabilityTipCost = true,
-                 durabilityTipDiscounts = true, durabilityTipFriendly = true, durabilityTipHonored = true,
+                 durabilityTipVendor = true, durabilityTipDiscounts = false, durabilityTipFriendly = true, durabilityTipHonored = true,
                  durabilityTipRevered = true, durabilityTipExalted = true },
     options = {
         { kind = "dropdown", field = "durabilityMode", tab = "text", label = "DURABILITY_SHOWN", tip = "TIP_DURABILITY_SHOWN",
@@ -422,20 +431,22 @@ ns:RegisterModule("durability", {
           tip = "TIP_DURABILITY_TIP_EQUIPPED" },
         { kind = "check", field = "durabilityTipBags", section = "tooltip", tab = "text", label = "DURABILITY_TIP_BAGS", tip = "TIP_DURABILITY_TIP_BAGS" },
         { kind = "check", field = "durabilityTipCost", section = "tooltip", tab = "text", label = "DURABILITY_TIP_COST", tip = "TIP_DURABILITY_TIP_COST" },
+        { kind = "check", field = "durabilityTipVendor", section = "tooltip", tab = "text", label = "DURABILITY_TIP_VENDOR",
+          tip = "TIP_DURABILITY_TIP_VENDOR" },
         { kind = "check", field = "durabilityTipDiscounts", section = "tooltip", tab = "text", label = "DURABILITY_TIP_DISCOUNTS",
           tip = "TIP_DURABILITY_TIP_DISCOUNTS", shown = function(cfg) return cfg.durabilityTipCost ~= false end },
         { kind = "check", field = "durabilityTipFriendly", section = "tooltip", tab = "text", tip = "TIP_DURABILITY_TIP_LEVEL",
           label = function() return RepairLevelName(REPAIR_LEVELS[2]) end,
-          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts ~= false end },
+          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts == true end },
         { kind = "check", field = "durabilityTipHonored", section = "tooltip", tab = "text", tip = "TIP_DURABILITY_TIP_LEVEL",
           label = function() return RepairLevelName(REPAIR_LEVELS[3]) end,
-          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts ~= false end },
+          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts == true end },
         { kind = "check", field = "durabilityTipRevered", section = "tooltip", tab = "text", tip = "TIP_DURABILITY_TIP_LEVEL",
           label = function() return RepairLevelName(REPAIR_LEVELS[4]) end,
-          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts ~= false end },
+          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts == true end },
         { kind = "check", field = "durabilityTipExalted", section = "tooltip", tab = "text", tip = "TIP_DURABILITY_TIP_LEVEL",
           label = function() return RepairLevelName(REPAIR_LEVELS[5]) end,
-          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts ~= false end },
+          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts == true end },
     },
     thresholds = THRESHOLDS.durability,
     progress = function(cfg)
@@ -499,8 +510,10 @@ ns:RegisterModule("durability", {
             if cost and cost > 0 then
                 ns.TooltipGap(tt)
                 tt:AddDoubleLine(L.TT_REPAIR_COST, ns.FormatMoney(cost), 1, 1, 1, 1, 1, 1)
-                -- what it costs at each reputation level of the vendor's faction (the player ticks the levels)
-                if On(cfg, "durabilityTipDiscounts") then
+                -- an estimate for each reputation level the player ticked (off by default: the discounts are
+                -- those of the modern game, and this game may give others)
+                if cfg and cfg.durabilityTipDiscounts == true then
+                    tt:AddLine(L.TT_REPAIR_ESTIMATE, 0.62, 0.62, 0.62)
                     for _, level in ipairs(REPAIR_LEVELS) do
                         if level.field and On(cfg, level.field) then
                             tt:AddDoubleLine("  " .. RepairLevelName(level), ns.FormatMoney(CostAtLevel(cost, level)),
@@ -508,6 +521,17 @@ ns:RegisterModule("durability", {
                         end
                     end
                 end
+            end
+        end
+        -- at a repair vendor: the real price of Repair all and the discount it holds (hidden by streamer mode)
+        if On(cfg, "durabilityTipVendor") and not ns:IsStreamer("gold") then
+            local real = VendorRepairCost()
+            local base = RepairCost({})
+            if real and base and base > 0 then
+                ns.TooltipGap(tt)
+                tt:AddDoubleLine(L.TT_REPAIR_VENDOR, ns.FormatMoney(real), 1, 1, 1, 1, 1, 1)
+                local percent = math.max(0, math.floor((1 - real / base) * 100 + 0.5))
+                tt:AddDoubleLine(L.TT_REPAIR_VENDOR_DISCOUNT, ("%d%%"):format(percent), 1, 1, 1, 0.3, 1, 0.3)
             end
         end
     end,

@@ -3,7 +3,7 @@
 But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
 ## En une phrase
-Version en jeu : 1.6.2, publiée le 18/11 (correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
+Version en jeu : 1.6.3, publiée le 19/11 (police Global de FlareUI, coût de réparation avec les sacs ; 1.6.2 du 18/11 : correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
 
 ## Avant chaque publication
 - Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).
@@ -72,6 +72,7 @@ Un fichier ou une fonction de plus de 200 variables locales actives ne se charge
 ## Journal court (une ligne par décision ; le détail est dans CHANGELOG.md, A-REPRENDRE, `docs/archive/HISTORIQUE-1.0-1.3.md`, IDEES-FUTUR)
 - 19/11 : 1.6.3 prête (police globale de FlareUI suivie, Lexend compris), non publiée ; déco du suivi de quêtes FlareUI écartée ; bloc FPS laissé.
 - 18/11 : 1.6.2 publiée (séparateurs) depuis `main` = `next`, dossier rangé compris (Opus 5.5).
+- 19/11 : 1.6.3 publiée (police Global de FlareUI, coût de réparation avec les sacs) ; coût par réputation abandonné, mode streamer des infobulles laissé tel quel (Opus 5.5).
 - 20/10 : rc7 publiée.
 - 21/10 : placement simplifié (rc8) ; bêta des rangées rangée ; FlareUI neutre ; cadres des interfaces connues ; dispositions toutes prêtes corrigées (Double barre en trois rangées, Chemin de ronde sans bloc masqué) ; visite rapide et devant / derrière corrigés ; rc8 publiée ; Retail pas une priorité ; galerie HD refaite (dépôt privé) ; mode démo gardé et corrigé ; fond 50 % des styles FlareUI ; cadres d'EllesmereUI, ElvUI, GW2 UI ajoutés (noms lus dans leur code) ; styles GW2 UI et Tukui notés pour la 1.1 ; pack d'icônes « forever-icons » noté.
 - 21/10 : bêta Forever fermée le 23/10 à 19 h (heure belge) ; sortie de Forever le 5/11 à minuit (heure belge), publier la 1.0.0 le 4/11 dans la journée.

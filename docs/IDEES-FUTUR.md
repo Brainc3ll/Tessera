@@ -34,7 +34,8 @@ Relevé d'après le journal des versions et le code (`Blocks/Modules*.lua`). Cho
 - **Familier** (aucun réglage) : choisir ce que le bloc écrit (humeur, bonus de dégâts).
 - **Munitions** (aucun réglage ; l'infobulle ne montre que la pile équipée) : ajouter les munitions en réserve dans les sacs, si le jeu les donne (à vérifier).
 - **Talents** (aucun réglage ; ne montre que les points libres) : points dépensés par arbre, si l'API de Forever le permet (à vérifier avec `forever_api_check.py`).
-- **Peu à gagner** : Courrier (le jeu ne donne que trois expéditeurs), Heure et Heure serveur (ont déjà source, 12/24 h, secondes), Volume, Vitesse.
+- **Volume** (remarque de Braincell1980, 19/11 : les brokers de volume populaires offrent beaucoup de réglages) : aujourd'hui canal affiché, infobulle des cinq canaux, clic = couper le son, molette = canal choisi. Pistes : changer de périphérique de sortie (`Sound_GameSystem_GetNumOutputDrivers`, `GetOutputDriverNameByIndex`, `RestartSoundSystem` : présents dans la liste d'API de Forever, à tester en jeu), une liste au survol pour régler et couper chaque canal (musique, effets, ambiance, dialogues). Ce sont les réglages du jeu, rendus accessibles depuis le bloc, pas recodés.
+- **Peu à gagner** : Courrier (le jeu ne donne que trois expéditeurs), Heure et Heure serveur (ont déjà source, 12/24 h, secondes), Vitesse.
 
 ## Règles et décisions
 

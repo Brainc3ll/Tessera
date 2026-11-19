@@ -46,6 +46,11 @@ end
 
 -- Returns "lsm:<name>" if LibSharedMedia knows this font, otherwise nil
 local function LSMFont(name)
+    -- Tessera's own shared fonts (Lexend, Atkinson...) are lent to LibSharedMedia at login, after
+    -- the profile is read: they are found by name here, so a font FlareUI took from Tessera is kept
+    for _, item in ipairs(ns.fonts or {}) do
+        if item.share and item.name == name then return item.key end
+    end
     local LSM = ns:GetLSM()
     if name and LSM and LSM:Fetch("font", name, true) then return "lsm:" .. name end
 end

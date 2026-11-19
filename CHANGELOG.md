@@ -7,7 +7,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### Fixes
 
-- FlareUI styles: when the XP bar font is set to Global in FlareUI, Tessera follows FlareUI's Global Font. In 1.6.2 it fell back to Arial.
+- FlareUI styles: when the XP bar font is set to Global in FlareUI, Tessera follows FlareUI's Global Font, including a font that Tessera lends to FlareUI (Lexend, Atkinson...). In 1.6.2 it fell back to Arial.
 
 ## 1.6.2 — 2026-11-18
 

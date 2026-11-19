@@ -1753,6 +1753,11 @@ for _, step in ipairs({
             _G.FlareUI2_DB.profiles.Perso.fonts = { global = { face = "Expressway" } }
             ns:ApplyThemeToCfg(fontCfg, "flareui2")
             assert(fontCfg.font == "lsm:Expressway", "Global font: the one picked in FlareUI (got " .. tostring(fontCfg.font) .. ")")
+            -- a font Tessera lends to FlareUI (Lexend): found before Tessera has shared it
+            ns.GetLSM = function() return { Fetch = function() return nil end } end
+            _G.FlareUI2_DB.profiles.Perso.fonts = { global = { face = "Lexend" } }
+            ns:ApplyThemeToCfg(fontCfg, "flareui2")
+            assert(fontCfg.font == "lexend", "Global font = Tessera's Lexend, before it is shared (got " .. tostring(fontCfg.font) .. ")")
             _G.FlareUI2_DB.profiles.Perso.fonts = nil
             ns.GetLSM = realLSM
         end

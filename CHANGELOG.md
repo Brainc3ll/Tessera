@@ -3,18 +3,6 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
-## 1.7.0 — 
-
-### New
-
-- Durability block: at a repair vendor, the tooltip shows the real price of Repair all and the discount the game gives you there (the checkbox Real cost at the vendor). Away from a vendor, it shows the price with no discount, as before.
-- Durability block: an optional estimate by reputation level, off by default. Tick Estimate by reputation in the tooltip settings, then the levels you want: it lists the cost with the discounts of the modern game (5, 10, 15 and 20%). Your game may give other discounts, which is why the real cost at the vendor is the figure to trust.
-- Durability block: a new setting, Reputation level of that cost, shows that estimate in the block (Normal by default, as before).
-
-### Fixes
-
-- Durability block: the repair cost counts the damaged items in your bags too, as the vendor's Repair all does. Before, it counted only the items you wear. The checkbox Count items in bags in the cost turns it off.
-
 ## 1.6.3 — 
 
 ### Fixes

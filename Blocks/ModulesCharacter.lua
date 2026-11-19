@@ -296,101 +296,33 @@ local function ShownDurability(cfg)
     return LowestDurability()
 end
 
--- Repair cost in copper of what the vendor's "Repair all" asks for, or nil when this client gives no way to
--- read it: the equipped items and the damaged items carried in the bags (the game counts both). The game
--- gives the cost with each item's tooltip: modern tooltip data first, then a hidden tooltip (older API:
--- 3rd return of SetInventoryItem, 2nd return of SetBagItem). It is the price with no reputation discount.
+-- Repair cost of the equipped items, in copper, or nil when this client gives no way to
+-- read it. The game gives the cost with each item's tooltip: modern tooltip data first,
+-- then a hidden tooltip (older API, 3rd return value of SetInventoryItem).
 local repairScanner
-local function ItemRepairCost(bag, slot)
-    local info = C_TooltipInfo
-    local read = info and (bag and info.GetBagItem or info.GetInventoryItem)
-    if read then
-        local ok, data
-        if bag then ok, data = pcall(read, bag, slot) else ok, data = pcall(read, "player", slot) end
-        if ok and type(data) == "table" and type(data.repairCost) == "number" then return data.repairCost end
-    end
-    if not repairScanner then
-        repairScanner = CreateFrame("GameTooltip", "TesseraRepairScanner", nil, "GameTooltipTemplate")
-    end
-    repairScanner:SetOwner(WorldFrame, "ANCHOR_NONE")
-    local cost
-    if bag then
-        local ok, _, c = pcall(repairScanner.SetBagItem, repairScanner, bag, slot)
-        if ok then cost = c end
-    else
-        local ok, hasItem, _, c = pcall(repairScanner.SetInventoryItem, repairScanner, "player", slot)
-        if ok and hasItem then cost = c end
-    end
-    repairScanner:Hide()
-    return type(cost) == "number" and cost or nil
-end
-
-local function RepairCost(cfg)
+local function RepairCost()
     local total, known = 0, false
     for slot = 1, 19 do
-        local cost = ItemRepairCost(nil, slot)
+        local cost
+        if C_TooltipInfo and C_TooltipInfo.GetInventoryItem then
+            local ok, data = pcall(C_TooltipInfo.GetInventoryItem, "player", slot)
+            if ok and type(data) == "table" and type(data.repairCost) == "number" then cost = data.repairCost end
+        end
+        if cost == nil then
+            if not repairScanner then
+                repairScanner = CreateFrame("GameTooltip", "TesseraRepairScanner", nil, "GameTooltipTemplate")
+            end
+            repairScanner:SetOwner(WorldFrame, "ANCHOR_NONE")
+            local ok, hasItem, _, c = pcall(repairScanner.SetInventoryItem, repairScanner, "player", slot)
+            if ok and hasItem and type(c) == "number" then cost = c end
+            repairScanner:Hide()
+        end
         if cost then
             known = true
             total = total + cost
         end
     end
-    -- damaged items in the bags: only those are read (a full bag would otherwise mean a tooltip per slot)
-    local getDurability = C_Container and C_Container.GetContainerItemDurability
-    if getDurability and On(cfg, "durabilityCostBags") then
-        for bag = 0, LastBag() do
-            local okS, slots = pcall(C_Container.GetContainerNumSlots, bag)
-            for slot = 1, (okS and tonumber(slots)) or 0 do
-                local okD, cur, max = pcall(getDurability, bag, slot)
-                if okD and type(cur) == "number" and type(max) == "number" and cur < max then
-                    local cost = ItemRepairCost(bag, slot)
-                    if cost then
-                        known = true
-                        total = total + cost
-                    end
-                end
-            end
-        end
-    end
     return known and total or nil
-end
-ns.RepairCost = RepairCost -- (read by the test commands)
-
--- Repair discounts by reputation with the vendor's faction: Friendly 5 %, Honored 10 %, Revered 15 %,
--- Exalted 20 %. "normal" is the price with no discount. standing is the game's FACTION_STANDING_LABEL<n>
--- (the game gives the name in the player's language); field is the tooltip checkbox of the level.
-local REPAIR_LEVELS = {
-    { key = "normal" },
-    { key = "friendly", standing = 5, percent = 5,  name = "Friendly", field = "durabilityTipFriendly" },
-    { key = "honored",  standing = 6, percent = 10, name = "Honored",  field = "durabilityTipHonored" },
-    { key = "revered",  standing = 7, percent = 15, name = "Revered",  field = "durabilityTipRevered" },
-    { key = "exalted",  standing = 8, percent = 20, name = "Exalted",  field = "durabilityTipExalted" },
-}
-
-local function RepairLevelName(level)
-    if not level.standing then return L.REPAIR_LEVEL_NORMAL end
-    return _G["FACTION_STANDING_LABEL" .. level.standing] or level.name
-end
-
--- The repair cost (copper) at a reputation level: whole copper, rounded down
-local function CostAtLevel(cost, level)
-    if not level or not level.percent then return cost end
-    return math.floor(cost * (100 - level.percent) / 100)
-end
-
--- The vendor's own price for Repair all, while a repair vendor is open (nil otherwise): it holds the
--- discount the game really gives you there, whatever the rules of this game version are
-local function VendorRepairCost()
-    local merchant = _G.MerchantFrame
-    if not (merchant and merchant.IsShown and merchant:IsShown() and Try(_G.CanMerchantRepair)) then return nil end
-    local cost = Try(_G.GetRepairAllCost)
-    return type(cost) == "number" and cost or nil
-end
-
-local function RepairLevelByKey(key)
-    for _, level in ipairs(REPAIR_LEVELS) do
-        if level.key == key then return level end
-    end
-    return REPAIR_LEVELS[1]
 end
 
 ns:RegisterModule("durability", {
@@ -403,50 +335,22 @@ ns:RegisterModule("durability", {
         local text = ("%d%%"):format(math.floor(pct + 0.5))
         -- repair cost next to the percentage (streamer mode hides amounts; nothing when this client gives none)
         if cfg and cfg.durabilityCost and not ns:IsStreamer("gold") then
-            local cost = RepairCost(cfg)
-            if cost and cost > 0 then
-                text = text .. " " .. ns.FormatMoney(CostAtLevel(cost, RepairLevelByKey(cfg.durabilityCostLevel)))
-            end
+            local cost = RepairCost()
+            if cost and cost > 0 then text = text .. " " .. ns.FormatMoney(cost) end
         end
         return text, DurabilityLevel(pct, cfg)
     end,
-    defaults = { durabilityMode = "lowest", durabilityCost = false, durabilityCostLevel = "normal", durabilityCostBags = true, durabilityWornOnly = false,
-                 durabilityTipEquipped = true, durabilityTipBags = true, durabilityTipCost = true,
-                 durabilityTipVendor = true, durabilityTipDiscounts = false, durabilityTipFriendly = true, durabilityTipHonored = true,
-                 durabilityTipRevered = true, durabilityTipExalted = true },
+    defaults = { durabilityMode = "lowest", durabilityCost = false, durabilityWornOnly = false,
+                 durabilityTipEquipped = true, durabilityTipBags = true, durabilityTipCost = true },
     options = {
         { kind = "dropdown", field = "durabilityMode", tab = "text", label = "DURABILITY_SHOWN", tip = "TIP_DURABILITY_SHOWN",
           values = { { key = "lowest", label = "DURABILITY_LOWEST" }, { key = "average", label = "DURABILITY_AVERAGE" } } },
         { kind = "check", field = "durabilityCost", tab = "text", label = "DURABILITY_COST", tip = "TIP_DURABILITY_COST" },
-        { kind = "check", field = "durabilityCostBags", tab = "text", label = "DURABILITY_COST_BAGS", tip = "TIP_DURABILITY_COST_BAGS" },
-        { kind = "dropdown", field = "durabilityCostLevel", tab = "text", label = "DURABILITY_COST_LEVEL", tip = "TIP_DURABILITY_COST_LEVEL",
-          shown = function(cfg) return cfg.durabilityCost end,
-          values = function()
-              local list = {}
-              for _, level in ipairs(REPAIR_LEVELS) do table.insert(list, { key = level.key, label = RepairLevelName(level) }) end
-              return list
-          end },
         { kind = "check", field = "durabilityWornOnly", section = "tooltip", tab = "text", label = "DURABILITY_WORN_ONLY", tip = "TIP_DURABILITY_WORN_ONLY" },
         { kind = "check", field = "durabilityTipEquipped", section = "tooltip", tab = "text", label = "DURABILITY_TIP_EQUIPPED",
           tip = "TIP_DURABILITY_TIP_EQUIPPED" },
         { kind = "check", field = "durabilityTipBags", section = "tooltip", tab = "text", label = "DURABILITY_TIP_BAGS", tip = "TIP_DURABILITY_TIP_BAGS" },
         { kind = "check", field = "durabilityTipCost", section = "tooltip", tab = "text", label = "DURABILITY_TIP_COST", tip = "TIP_DURABILITY_TIP_COST" },
-        { kind = "check", field = "durabilityTipVendor", section = "tooltip", tab = "text", label = "DURABILITY_TIP_VENDOR",
-          tip = "TIP_DURABILITY_TIP_VENDOR" },
-        { kind = "check", field = "durabilityTipDiscounts", section = "tooltip", tab = "text", label = "DURABILITY_TIP_DISCOUNTS",
-          tip = "TIP_DURABILITY_TIP_DISCOUNTS", shown = function(cfg) return cfg.durabilityTipCost ~= false end },
-        { kind = "check", field = "durabilityTipFriendly", section = "tooltip", tab = "text", tip = "TIP_DURABILITY_TIP_LEVEL",
-          label = function() return RepairLevelName(REPAIR_LEVELS[2]) end,
-          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts == true end },
-        { kind = "check", field = "durabilityTipHonored", section = "tooltip", tab = "text", tip = "TIP_DURABILITY_TIP_LEVEL",
-          label = function() return RepairLevelName(REPAIR_LEVELS[3]) end,
-          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts == true end },
-        { kind = "check", field = "durabilityTipRevered", section = "tooltip", tab = "text", tip = "TIP_DURABILITY_TIP_LEVEL",
-          label = function() return RepairLevelName(REPAIR_LEVELS[4]) end,
-          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts == true end },
-        { kind = "check", field = "durabilityTipExalted", section = "tooltip", tab = "text", tip = "TIP_DURABILITY_TIP_LEVEL",
-          label = function() return RepairLevelName(REPAIR_LEVELS[5]) end,
-          shown = function(cfg) return cfg.durabilityTipCost ~= false and cfg.durabilityTipDiscounts == true end },
     },
     thresholds = THRESHOLDS.durability,
     progress = function(cfg)
@@ -506,32 +410,10 @@ ns:RegisterModule("durability", {
             end
         end
         if On(cfg, "durabilityTipCost") then
-            local cost = RepairCost(cfg)
+            local cost = RepairCost()
             if cost and cost > 0 then
                 ns.TooltipGap(tt)
                 tt:AddDoubleLine(L.TT_REPAIR_COST, ns.FormatMoney(cost), 1, 1, 1, 1, 1, 1)
-                -- an estimate for each reputation level the player ticked (off by default: the discounts are
-                -- those of the modern game, and this game may give others)
-                if cfg and cfg.durabilityTipDiscounts == true then
-                    tt:AddLine(L.TT_REPAIR_ESTIMATE, 0.62, 0.62, 0.62)
-                    for _, level in ipairs(REPAIR_LEVELS) do
-                        if level.field and On(cfg, level.field) then
-                            tt:AddDoubleLine("  " .. RepairLevelName(level), ns.FormatMoney(CostAtLevel(cost, level)),
-                                0.8, 0.8, 0.8, 1, 1, 1)
-                        end
-                    end
-                end
-            end
-        end
-        -- at a repair vendor: the real price of Repair all and the discount it holds (hidden by streamer mode)
-        if On(cfg, "durabilityTipVendor") and not ns:IsStreamer("gold") then
-            local real = VendorRepairCost()
-            local base = RepairCost({})
-            if real and base and base > 0 then
-                ns.TooltipGap(tt)
-                tt:AddDoubleLine(L.TT_REPAIR_VENDOR, ns.FormatMoney(real), 1, 1, 1, 1, 1, 1)
-                local percent = math.max(0, math.floor((1 - real / base) * 100 + 0.5))
-                tt:AddDoubleLine(L.TT_REPAIR_VENDOR_DISCOUNT, ("%d%%"):format(percent), 1, 1, 1, 0.3, 1, 0.3)
             end
         end
     end,

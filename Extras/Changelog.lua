@@ -47,45 +47,6 @@ end
 
 ns.CHANGELOG = {
     {
-        version = "1.7.0",
-        date = "",
-        highlights = {
-            { en = "Durability: at a repair vendor, the tooltip shows the real repair cost and your discount.",
-              fr = "Durabilité : chez un PNJ de réparation, l'infobulle montre le coût réel et ta remise.",
-              show = { block = "durability", label = "DURABILITY_TIP_VENDOR" } },
-        },
-        sections = {
-            { kind = "new",
-              en = {
-                "Durability block: at a repair vendor, the tooltip shows the real price of Repair all and the discount the game gives you there"
-                    .. " (the checkbox Real cost at the vendor). Away from a vendor, it shows the price with no discount, as before.",
-                "Durability block: an optional estimate by reputation level, off by default. Tick Estimate by reputation in the tooltip settings,"
-                    .. " then the levels you want: it lists the cost with the discounts of the modern game (5, 10, 15 and 20%)."
-                    .. " Your game may give other discounts, which is why the real cost at the vendor is the figure to trust.",
-                "Durability block: a new setting, Reputation level of that cost, shows that estimate in the block (Normal by default, as before).",
-              },
-              fr = {
-                "Bloc Durabilité : chez un PNJ de réparation, l'infobulle montre le prix réel de « Tout réparer » et la remise que le jeu te donne là"
-                    .. " (la case Coût réel chez le PNJ). Loin d'un PNJ, elle montre le prix sans remise, comme avant.",
-                "Bloc Durabilité : une estimation facultative par niveau de réputation, décochée par défaut. Coche Estimation selon la réputation"
-                    .. " dans les réglages de l'infobulle, puis les niveaux voulus : elle liste le coût avec les remises du jeu moderne (5, 10, 15 et 20 %)."
-                    .. " Ton jeu peut donner d'autres remises : c'est pourquoi le coût réel chez le PNJ est le chiffre à croire.",
-                "Bloc Durabilité : un nouveau réglage, Niveau de réputation de ce coût, montre cette estimation dans le bloc (Normal par défaut, comme avant).",
-              },
-            },
-            { kind = "fixed",
-              en = {
-                "Durability block: the repair cost counts the damaged items in your bags too, as the vendor's Repair all does."
-                    .. " Before, it counted only the items you wear. The checkbox Count items in bags in the cost turns it off.",
-              },
-              fr = {
-                "Bloc Durabilité : le coût de réparation compte aussi les pièces abîmées dans tes sacs, comme le « Tout réparer » du vendeur."
-                    .. " Avant, il ne comptait que les pièces portées. La case Compter les pièces en sac dans le coût le désactive.",
-              },
-            },
-        },
-    },
-    {
         version = "1.6.3",
         date = "",
         sections = {

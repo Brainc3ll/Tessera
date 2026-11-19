@@ -1437,12 +1437,10 @@ for _, step in ipairs({
     function()
         -- the news counted: only versions newer than the one the player had; a test build is its version
         -- (1.6.2 and 1.6.3 only fix bugs and have no news: the 1.6.1 entry is found by its version)
-        local e161, e170
-        for _, e in ipairs(ns.CHANGELOG) do
-            if e.version == "1.6.1" then e161 = e elseif e.version == "1.7.0" then e170 = e end
-        end
+        local e161
+        for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.6.1" then e161 = e break end end
         local n161 = #ns.ChangelogHighlights(e161, "en")
-        assert(#ns.WhatsNewItems("1.6.0") == n161 + #ns.ChangelogHighlights(e170, "en"), "1.6.0 -> now: the 1.6.1 and 1.7.0 news only")
+        assert(#ns.WhatsNewItems("1.6.0") == n161, "1.6.0 -> now: the 1.6.1 news only")
         assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + 7, "a test build counts as its version")
         assert(#ns.WhatsNewItems("1.5.1") > n161, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")
@@ -2314,7 +2312,7 @@ for _, step in ipairs({
         for _, key in ipairs({ "gold", "bags", "durability", "xp" }) do
             local mod, cfg = ns.modules[key], ns.db.blocks[key]
             for _, o in ipairs(mod.options) do
-                assert((type(o.label) == "function" or ns.L[o.label]) and ns.L[o.tip], key .. ": text missing for " .. o.field)
+                assert(ns.L[o.label] and ns.L[o.tip], key .. ": text missing for " .. o.field)
                 if o.kind == "check" then
                     local saved = cfg[o.field]
                     for _, v in ipairs({ true, false }) do
@@ -2363,63 +2361,6 @@ for _, step in ipairs({
         tools.ResetSession()
         assert(tools.session.xpGained == 0 and ns.sessionMoney == (GetMoney() or 0), "reset session")
         assert(ns.modules.gold.extraAction.key == "resetSession" and ns.modules.xp.extraAction.key == "resetSession")
-    end,
-    -- Durability repair cost by reputation (1.7): the cost counts the worn items (796) and the damaged item in
-    -- the bags (33), like the vendor's Repair all (829); the tooltip lists the levels ticked, rounded down to the
-    -- copper (829 -> 787, 746, 704, 663); the block shows the level chosen; a level can be unticked
-    function()
-        local mod, cfg = ns.modules.durability, ns.db.blocks.durability
-        local savedInfo, saved = C_TooltipInfo, {}
-        for k, v in pairs(cfg) do saved[k] = v end
-        C_TooltipInfo = {
-            GetInventoryItem = function(_, slot) return slot == 1 and { repairCost = 796 } or nil end,
-            GetBagItem = function(bag, slot) return bag == 0 and slot == 1 and { repairCost = 33 } or nil end,
-        }
-        local function Lines()
-            local lines = {}
-            local tt = setmetatable({ AddLine = function() end,
-                AddDoubleLine = function(_, a, b) table.insert(lines, tostring(a) .. " | " .. tostring(b)) end },
-                { __index = GameTooltip })
-            mod.tooltip(tt, cfg)
-            return table.concat(lines, "\n")
-        end
-        cfg.durabilityTipCost, cfg.durabilityTipDiscounts = true, true
-        for _, f in ipairs({ "Friendly", "Honored", "Revered", "Exalted" }) do cfg["durabilityTip" .. f] = true end
-        local text = Lines()
-        for _, c in ipairs({ 829, 787, 746, 704, 663 }) do
-            assert(text:find(ns.FormatMoney(c), 1, true), "repair cost line for " .. c .. " copper: " .. text)
-        end
-        cfg.durabilityTipHonored = false
-        assert(not Lines():find(ns.FormatMoney(746), 1, true), "an unticked level is not listed")
-        cfg.durabilityTipDiscounts = false
-        assert(not Lines():find(ns.FormatMoney(787), 1, true) and Lines():find(ns.FormatMoney(829), 1, true),
-            "the discount lines go with their checkbox; the cost stays")
-        cfg.durabilityCost, cfg.durabilityCostLevel = true, "exalted"
-        assert(mod.update(cfg):find(ns.FormatMoney(663), 1, true), "the block shows the level chosen")
-        cfg.durabilityCostLevel = nil
-        assert(mod.update(cfg):find(ns.FormatMoney(829), 1, true), "no level chosen: the normal price")
-        cfg.durabilityCostBags = false
-        local noBags = mod.update(cfg)
-        assert(noBags:find(ns.FormatMoney(796), 1, true) and not noBags:find(ns.FormatMoney(829), 1, true),
-            "items in bags left out of the cost when the checkbox is cleared")
-        -- at a repair vendor: the real price of Repair all (746) and the discount it holds (829 -> 746 = 10%)
-        local savedMerchant, savedCan, savedAll = _G.MerchantFrame, _G.CanMerchantRepair, _G.GetRepairAllCost
-        _G.MerchantFrame = { IsShown = function() return true end }
-        _G.CanMerchantRepair = function() return true end
-        _G.GetRepairAllCost = function() return 746 end
-        cfg.durabilityTipVendor, cfg.durabilityTipCost, cfg.durabilityCostBags = true, true, true
-        local atVendor = Lines()
-        assert(atVendor:find(ns.FormatMoney(746), 1, true) and atVendor:find("10%", 1, true),
-            "vendor lines: real cost and discount: " .. atVendor)
-        cfg.durabilityTipVendor = false
-        assert(not Lines():find("10%", 1, true), "the vendor lines go with their checkbox")
-        cfg.durabilityTipVendor = true
-        _G.MerchantFrame = { IsShown = function() return false end }
-        assert(not Lines():find("10%", 1, true), "no vendor lines when no vendor is open")
-        _G.MerchantFrame, _G.CanMerchantRepair, _G.GetRepairAllCost = savedMerchant, savedCan, savedAll
-        C_TooltipInfo = savedInfo
-        for k in pairs(cfg) do cfg[k] = nil end
-        for k, v in pairs(saved) do cfg[k] = v end
     end,
     -- micro-menu block: one block; its tooltip lists the menus (Legacy locked); a click opens
     -- the list of secure rows, out of combat only

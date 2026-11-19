@@ -2362,6 +2362,33 @@ for _, step in ipairs({
         assert(tools.session.xpGained == 0 and ns.sessionMoney == (GetMoney() or 0), "reset session")
         assert(ns.modules.gold.extraAction.key == "resetSession" and ns.modules.xp.extraAction.key == "resetSession")
     end,
+    -- Durability repair cost (1.6.3): the cost counts the worn items (796) and the damaged item in the bags (33),
+    -- like the vendor's Repair all (829); the checkbox leaves the bags out
+    function()
+        local mod, cfg = ns.modules.durability, ns.db.blocks.durability
+        local savedInfo, saved = C_TooltipInfo, {}
+        for k, v in pairs(cfg) do saved[k] = v end
+        C_TooltipInfo = {
+            GetInventoryItem = function(_, slot) return slot == 1 and { repairCost = 796 } or nil end,
+            GetBagItem = function(bag, slot) return bag == 0 and slot == 1 and { repairCost = 33 } or nil end,
+        }
+        local lines = {}
+        local tt = setmetatable({ AddLine = function() end,
+            AddDoubleLine = function(_, a, b) table.insert(lines, tostring(a) .. " | " .. tostring(b)) end },
+            { __index = GameTooltip })
+        cfg.durabilityTipCost = true
+        mod.tooltip(tt, cfg)
+        assert(table.concat(lines, "\n"):find(ns.FormatMoney(829), 1, true), "tooltip cost: " .. table.concat(lines, "\n"))
+        cfg.durabilityCost = true
+        assert(mod.update(cfg):find(ns.FormatMoney(829), 1, true), "block cost with the bags: " .. tostring(mod.update(cfg)))
+        cfg.durabilityCostBags = false
+        local noBags = mod.update(cfg)
+        assert(noBags:find(ns.FormatMoney(796), 1, true) and not noBags:find(ns.FormatMoney(829), 1, true),
+            "items in bags left out of the cost when the checkbox is cleared")
+        C_TooltipInfo = savedInfo
+        for k in pairs(cfg) do cfg[k] = nil end
+        for k, v in pairs(saved) do cfg[k] = v end
+    end,
     -- micro-menu block: one block; its tooltip lists the menus (Legacy locked); a click opens
     -- the list of secure rows, out of combat only
     function()

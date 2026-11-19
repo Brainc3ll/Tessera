@@ -151,6 +151,7 @@ Remove
 Remove this block
 Repair cost
 Repair cost in the block
+Count items in bags in the cost
 Replace with...
 Reputation shown
 Reset

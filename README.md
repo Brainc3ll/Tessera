@@ -221,7 +221,7 @@ Blocks and groups tab, then turn on "Enabled".
 |---|---|---|
 | Gold *(shown at first)* | Your gold; tooltip: session gain, history of 7, 14 or 30 days, your characters' gold and their total | Open your bags |
 | Bags *(shown at first)* | Free (or used) bag slots; tooltip: junk value, profession bags apart | Open your bags |
-| Durability *(shown at first)* | Your lowest durability; tooltip: each item and the repair cost | Character sheet |
+| Durability *(shown at first)* | Your lowest durability; tooltip: each item and the repair cost (worn items and damaged ones in the bags) | Character sheet |
 | XP | XP to the next level; tooltip: rested XP, time to level, quests to hand in | |
 | Rested XP | Your rested XP | |
 | Item level | Equipped item level, best available, or both; weakest items first in the tooltip | Character sheet |

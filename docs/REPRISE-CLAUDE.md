@@ -12,6 +12,7 @@ Version en jeu : 1.6.3, publiée le 19/11 (police Global de FlareUI, coût de r�
 Un fichier ou une fonction de plus de 200 variables locales actives ne se charge pas ; le faux jeu ne la montre qu'une fois la limite dépassée. `tools/check_locals.py` échoue à 160 locales ou 50 upvalues. Un fichier proche de la limite se découpe avant d'y ajouter quoi que ce soit, sans changement visible pour les joueurs. Les blocs de données vont dans le fichier `Modules*.lua` de leur catégorie ; l'ordre des anciens blocs est `ns.MODULE_ORDER` (liste des blocs, options, place par défaut).
 
 ## Travailler avec Braincell1980
+- Toute commande de sonde ou de test (`TesseraDev.lua`) affiche son résultat dans une fenêtre à copier (`ns:ShowTextWindow`, Ctrl+C), pas seulement dans le chat ; chaque commande donnée à Braincell1980 va dans son propre bloc de code, prête à copier (règle du 20/11).
 - Dossier du jeu pour WoW Forever : `World of Warcraft/_forever_/Interface/AddOns/` (pas `_classic_`).
 - Il ne code pas : il donne les idées et teste en jeu (Linux, Fedora). Lui répondre en français, court et clair ; code, commentaires et commits en anglais.
 - Il signale les bugs avec des captures ; chaque correction part dans un zip de test numéroté (prochain numéro : voir A-REPRENDRE, « Où on en est »), qu'il teste avant tout commit de publication.

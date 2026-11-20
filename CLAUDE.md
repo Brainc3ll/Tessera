@@ -74,6 +74,7 @@ rename or reuse a key. `tools/check_docs.lua` refuses texts over 600 characters.
 - Released versions have no command a player does not need. Test and development commands
   (`/tessera test`, debug report, probes) live only in `TesseraDev.lua`, in the private
   repository `Brainc3ll/Tessera-dev` (never in this one), added to the test zips given to Braincell1980 (never pushed, never released).
+- Every probe or debug command in `TesseraDev.lua` shows its result in a window to copy (`ns:ShowTextWindow`, Ctrl+C), not only in the chat (rule of 20/11). When asking Braincell1980 to run a command, give each command in its own code block, ready to copy.
 - No trademarked operating system names in layouts.
 - From 1.3 on, every new feature prepares accessibility (bigger text, high contrast, fewer animations,
   shapes as well as colors) and gamepad navigation (focus order, visible selection, confirm / back),

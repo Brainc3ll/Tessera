@@ -2,6 +2,17 @@
 
 But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `docs/` est dans `docs/README.md`. À lire dans cet ordre : `CLAUDE.md` (les règles de Braincell1980), ce fichier, puis `docs/A-REPRENDRE.md` (l'état du projet et le calendrier). Les idées pour plus tard sont dans `docs/IDEES-FUTUR.md`.
 
+## Démarrer une session (à faire seul, sans que Braincell1980 le rappelle)
+Vérifié le 20/11/2026 (Sonnet 5.5). Une session neuve n'a rien : ni dépôts, ni outils.
+1. **Dépôts** : appeler `add_repo` avec `access: "push"` pour `Brainc3ll/Tessera` et `Brainc3ll/Tessera-dev` (privé), sans rien tester avant (`gh api` répond 403 tant que le dépôt n'est pas ajouté). Cloner un dépôt à la fois, timeout 10 min : `git clone --depth 1 -b next https://github.com/Brainc3ll/Tessera /home/claude/tessera`, puis `git clone --depth 1 https://github.com/Brainc3ll/Tessera-dev /home/claude/tessera-dev`, puis `register_repo_root` pour chacun. Pousser avec `git -c push.negotiate=true push`.
+2. **Outils** (dans cet ordre ; sans `apt-get update` d'abord, apt répond « Unable to locate package ») :
+   `apt-get update && apt-get install -y lua5.1 luarocks` (donne aussi `luac5.1`) ; `luarocks install luacheck` ; `pip install --break-system-packages forever-lint` ;
+   `mkdir -p /home/claude/luals && cd /home/claude/luals && curl -sSL https://github.com/LuaLS/lua-language-server/releases/download/3.19.2/lua-language-server-3.19.2-linux-x64.tar.gz | tar xz` (binaire : `/home/claude/luals/bin/lua-language-server`) ;
+   `git clone --depth 1 https://github.com/Ketho/vscode-wow-api /home/claude/vscode-wow-api` et `git clone --depth 1 -b forever https://github.com/Ketho/BlizzardInterfaceResources /home/claude/BlizzardInterfaceResources`.
+3. **Sources de documentation, ce qui passe et ce qui ne passe pas** (testé le 20/11) :
+   - Le terminal ne sort que vers GitHub et les dépôts de paquets. Lisibles en `git clone` ou `git ls-remote` : `Gethe/wow-ui-source` (branche `forever`), `Ketho/BlizzardInterfaceResources` (branche `forever`), `Ketho/vscode-wow-api`, `hastecraft/forever-icons`, `Stanzilla/WoWUIBugs`, `JoseArgento/forever-lint`, les dépôts de polices. `gh api` ne marche que sur les dépôts ajoutés avec `add_repo` ; pour une archive de release d'un autre dépôt, `curl -L` sur l'URL de téléchargement.
+   - Le web passe par WebSearch et WebFetch. `warcraft.wiki.gg` (pages API) : marche. `wago.tools` et `townlong-yak.com` (le bon lien pour le code de Forever : `https://www.townlong-yak.com/framexml/forever`, donné par Braincell1980 le 20/11) : WebFetch les refuse (robots), et on ne les contourne pas avec curl. Pour du code de Forever, lire plutôt `Gethe/wow-ui-source` (branche `forever`) ; pour une donnée de wago.tools ou de townlong-yak, demander à Braincell1980 de coller le résultat.
+
 ## En une phrase
 Version en jeu : 1.6.3, publiée le 19/11 (police Global de FlareUI, coût de réparation avec les sacs ; 1.6.2 du 18/11 : correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
 
@@ -45,7 +56,7 @@ Un fichier ou une fonction de plus de 200 variables locales actives ne se charge
 ## Limites de cet environnement
 - GitHub : pas de suppression de branche, pas de réglages du dépôt (description « About »...), pas de GraphQL : Braincell1980 le fait.
 - Ne jamais toucher aux secrets `CF_API_KEY` et `WAGO_API_TOKEN`.
-- Le réseau du terminal ne sort que vers GitHub et les dépôts de paquets ; le web passe par WebSearch / WebFetch.
+- Le réseau du terminal ne sort que vers GitHub et les dépôts de paquets ; le web passe par WebSearch / WebFetch. Détail et installation : section « Démarrer une session » en haut de ce fichier.
 
 ## Décisions déjà prises (ne pas les reproposer)
 - 12/11 : style **Aurore** pour DaylightUI (API publique : `Skin`, `Font`, `Accent`, jamais son code ; imitation sans l'addon). DaylightUI n'est **pas** dans la liste des addons d'affichage du mode DataBroker : il l'activerait seul et cacherait tous les blocs. Une note explique le partage et le mode.

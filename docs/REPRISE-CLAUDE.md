@@ -5,6 +5,9 @@ But : reprendre le travail sans relire toute l'histoire. Le plan du dossier `doc
 ## En une phrase
 Version en jeu : 1.6.3, publiée le 19/11 (police Global de FlareUI, coût de réparation avec les sacs ; 1.6.2 du 18/11 : correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
 
+## Journal court
+- 20/11 : 1.7.0 sur `next`, Talents et Héritage refondus et poussés ; suite : FPS, Latence, Temps joué, Pierre de foyer, Honneur, Familier, Munitions.
+
 ## Avant chaque publication
 - Traductions : depuis la 1.1.0 (décision du 6/11), toutes les langues sont dans `Locales/` ; plus d'outil CurseForge. Avant de publier, Claude traduit les textes nouveaux ou changés (de, es, mx, pt) directement dans ces fichiers et les vérifie (`tools/check_translation.py`). Les traducteurs envoient une PR ou une issue « Translation » (`docs/TRANSLATING.md`).
 

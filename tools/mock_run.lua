@@ -2340,6 +2340,15 @@ for _, step in ipairs({
         assert(ns.Traits.SpecMacro():find("^/"), "spec macro")
         UnitCharacterPoints, C_ClassTalents, C_Traits = oldU, oldCT, oldT
     end,
+    -- 1.7.0: an old profile with no middle click on the Talents block gets the spec change once
+    function()
+        local p = { blocks = { talents = { middleClick = "none" } } }
+        ns:PrepareProfile(p)
+        assert(p.blocks.talents.middleClick == "switchSpec", "old profile: middle click changes spec")
+        p.blocks.talents.middleClick = "none"
+        ns:PrepareProfile(p)
+        assert(p.blocks.talents.middleClick == "none", "a later choice stays")
+    end,
     -- every value of every block's display choices gives a value without error, and the
     -- default of each choice is the block's former display
     function()

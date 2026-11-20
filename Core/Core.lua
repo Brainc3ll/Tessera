@@ -1334,6 +1334,12 @@ function ns:PrepareProfile(p)
     for key, cfg in pairs(p.blocks) do
         if ns.IsLauncherKey(key) or ns.IsBrokerKey(key) or ns.IsSpacerKey(key) then CopyDefaults(self:GetBlockDefaults(key), cfg) end
     end
+    -- 1.7.0: the Talents block's middle click changes spec; a profile saved before keeps "none" for it,
+    -- so it moves to the new action once (a choice made since stays)
+    if not p.talentsSpecClick and p.blocks.talents then
+        p.talentsSpecClick = true
+        if p.blocks.talents.middleClick == "none" then p.blocks.talents.middleClick = "switchSpec" end
+    end
     if fresh then
         self:ApplyBaseLayout(p, p.pendingPreset)
         p.pendingPreset = nil

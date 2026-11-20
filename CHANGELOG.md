@@ -3,6 +3,19 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
+## 1.7.0 — 2026-11-20
+
+### New
+
+- Talents block: the Shown choice offers unspent points, points per tree (for example 31/20/0), your main tree and your active spec. The tooltip lists the points of each tree, your specs and the next milestone. Each line has its own box.
+- Talents block: a middle click changes your spec with the game's own spell, out of combat. You can move this action to Shift + click in the block's settings.
+- Legacy block: the Shown choice offers your available points. The tooltip adds the points spent out of the total of each Legacy tree.
+
+### Improvements
+
+- The Talent points and Legacy points blocks are now called Talents and Héritage in French.
+- Legacy block: "Hide when empty" hides the block when no point is left to spend.
+
 ## 1.6.3 — 2026-11-19
 
 ### Fixes

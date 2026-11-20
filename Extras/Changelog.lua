@@ -47,6 +47,52 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.7.0",
+        date = "2026-11-20",
+        highlights = {
+            { en = "Talents block: show your unspent points, the points per tree, your main tree or your active spec.",
+              fr = "Bloc Talents : affiche tes points à dépenser, les points par arbre, ton arbre principal ou ta spé active.",
+              show = { block = "talents", label = "TALENTS_SHOWN" } },
+            { en = "Talents block: a middle click changes your spec out of combat.",
+              fr = "Bloc Talents : un clic du milieu change ta spé hors combat." },
+            { en = "Legacy block: show your available points, with the points spent in each tree in its tooltip.",
+              fr = "Bloc Héritage : affiche tes points disponibles, avec les points dépensés dans chaque arbre en infobulle.",
+              show = { block = "legacy", label = "LEGACY_SHOWN" } },
+        },
+        sections = {
+            { kind = "new",
+              en = {
+                "Talents block: the Shown choice offers unspent points, points per tree (for example 31/20/0),"
+                    .. " your main tree and your active spec. The tooltip lists the points of each tree, your specs"
+                    .. " and the next milestone. Each line has its own box.",
+                "Talents block: a middle click changes your spec with the game's own spell, out of combat."
+                    .. " You can move this action to Shift + click in the block's settings.",
+                "Legacy block: the Shown choice offers your available points."
+                    .. " The tooltip adds the points spent out of the total of each Legacy tree.",
+              },
+              fr = {
+                "Bloc Talents : le choix Affichage propose les points à dépenser, les points par arbre (par exemple 31/20/0),"
+                    .. " ton arbre principal et ta spé active. L'infobulle liste les points de chaque arbre, tes spés"
+                    .. " et le prochain palier. Chaque ligne a sa case.",
+                "Bloc Talents : un clic du milieu change ta spé avec le sort du jeu, hors combat."
+                    .. " Tu peux déplacer cette action sur Maj + clic dans les réglages du bloc.",
+                "Bloc Héritage : le choix Affichage propose tes points disponibles."
+                    .. " L'infobulle ajoute les points dépensés sur le total de chaque arbre d'Héritage.",
+              },
+            },
+            { kind = "improved",
+              en = {
+                "The Talent points and Legacy points blocks are now called Talents and Héritage in French.",
+                "Legacy block: \"Hide when empty\" hides the block when no point is left to spend.",
+              },
+              fr = {
+                "Les blocs Points de talent et Points d'héritage s'appellent maintenant Talents et Héritage.",
+                "Bloc Héritage : « Masquer si vide » cache le bloc quand il ne reste aucun point à dépenser.",
+              },
+            },
+        },
+    },
+    {
         version = "1.6.3",
         date = "2026-11-19",
         sections = {

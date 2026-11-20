@@ -712,6 +712,8 @@ function ns:HandleLockedClick(key, button, frame)
         -- "open" on a block with a secure overlay is run by the overlay itself
         local mod = self:GetModule(key)
         if cfg.middleClick == "open" and mod and mod.secureMacro then return true end
+        -- the block's extra action done by its secure overlay (Talents: change spec)
+        if mod and mod.secureExtra and mod.extraAction and cfg.middleClick == mod.extraAction.key then return true end
         GameTooltip:Hide()
         self:RunClickAction(key, cfg.middleClick or "none", frame)
         return true

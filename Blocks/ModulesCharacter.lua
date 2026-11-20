@@ -827,45 +827,74 @@ ns:RegisterModule("stats", {
 })
 
 ---------------------------------------------------------------------------
--- Unspent talent points (shows only when some are left)
+-- Talents: points to spend, split between the trees, main tree or active spec
 ---------------------------------------------------------------------------
 -- UnitCharacterPoints on classic clients; WoW Forever uses the modern talent trees
--- (C_ClassTalents / C_Traits): the points left are the currencies of the active tree
-local function FreeTalentPoints()
+-- (C_ClassTalents / C_Traits), read in Blocks/TraitsData.lua
+local function TalentData()
     local classic = _G["UnitCharacterPoints"]
-    if classic then return Try(classic, "player") or 0 end
-    local CT, T = C_ClassTalents, C_Traits
-    if not (CT and T and CT.GetActiveConfigID and T.GetConfigInfo and T.GetTreeCurrencyInfo) then return 0 end
-    local configID = Try(CT.GetActiveConfigID)
-    local info = configID and Try(T.GetConfigInfo, configID)
-    local treeID = type(info) == "table" and type(info.treeIDs) == "table" and info.treeIDs[1]
-    local currencies = treeID and Try(T.GetTreeCurrencyInfo, configID, treeID, false)
-    local points = 0
-    for _, c in ipairs(type(currencies) == "table" and currencies or {}) do
-        points = points + (tonumber(c.quantity) or 0)
+    if classic then return { free = Try(classic, "player") or 0, spent = 0, total = 0, trees = {} } end
+    return ns.Traits.Talents() or { free = 0, spent = 0, total = 0, trees = {} }
+end
+
+local function TalentText(cfg)
+    local data, shown = TalentData(), cfg and cfg.talentsShown or "free"
+    if shown == "split" and #data.trees > 0 then
+        local parts = {}
+        for i, t in ipairs(data.trees) do parts[i] = tostring(t.points) end
+        return table.concat(parts, "/"), data.free > 0 and WARN or GOOD
+    elseif shown == "main" then
+        local main = ns.Traits.MainTree(data)
+        if main then return ("%s %d"):format(main.name, main.points), data.free > 0 and WARN or GOOD end
+    elseif shown == "spec" then
+        return ns.Traits.SpecName((ns.Traits.SpecGroups())), data.free > 0 and WARN or GOOD
     end
-    if points == 0 and CT.HasUnspentTalentPoints and Try(CT.HasUnspentTalentPoints) then points = 1 end
-    return points
+    return tostring(data.free), data.free > 0 and WARN or GOOD
 end
 
 ns:RegisterModule("talents", {
     label = "TALENTS",
     icon = "Interface\\Icons\\Ability_Marksmanship",
     events = { "CHARACTER_POINTS_CHANGED", "PLAYER_LEVEL_UP", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_UPDATED",
-               "TRAIT_TREE_CURRENCY_INFO_UPDATED" },
+               "TRAIT_TREE_CURRENCY_INFO_UPDATED", "ACTIVE_TALENT_GROUP_CHANGED" },
     defaultEnabled = false,
     alertOnShow = true,
-    isEmpty = function() return FreeTalentPoints() <= 0 end,
-    update = function()
-        local points = FreeTalentPoints()
-        return tostring(points), points > 0 and WARN or GOOD
-    end,
-    tooltip = function(tt)
-        tt:AddDoubleLine(L.TT_FREE_TALENTS, tostring(FreeTalentPoints()), 1, 1, 1, 1, 1, 1)
+    isEmpty = function() return TalentData().free <= 0 end,
+    update = TalentText,
+    defaults = { talentsShown = "free", talentsTipTrees = true, talentsTipSpecs = true, talentsTipNext = true,
+                 middleClick = "switchSpec" },
+    options = {
+        { kind = "dropdown", field = "talentsShown", tab = "text", label = "TALENTS_SHOWN", tip = "TIP_TALENTS_SHOWN",
+          values = { { key = "free", label = "TALENTS_FREE" }, { key = "split", label = "TALENTS_SPLIT" },
+                     { key = "main", label = "TALENTS_MAIN" }, { key = "spec", label = "TALENTS_SPEC" } } },
+        { kind = "check", field = "talentsTipTrees", section = "tooltip", tab = "text", label = "TALENTS_TIP_TREES", tip = "TIP_TALENTS_TIP_TREES" },
+        { kind = "check", field = "talentsTipSpecs", section = "tooltip", tab = "text", label = "TALENTS_TIP_SPECS", tip = "TIP_TALENTS_TIP_SPECS" },
+        { kind = "check", field = "talentsTipNext", section = "tooltip", tab = "text", label = "TALENTS_TIP_NEXT", tip = "TIP_TALENTS_TIP_NEXT" },
+    },
+    tooltip = function(tt, cfg)
+        local data = TalentData()
+        tt:AddDoubleLine(L.TT_FREE_TALENTS, tostring(data.free), 1, 1, 1, 1, 1, 1)
+        if not cfg or cfg.talentsTipTrees ~= false then
+            for _, t in ipairs(data.trees) do tt:AddDoubleLine(t.name, tostring(t.points), 0.8, 0.8, 0.8, 1, 1, 1) end
+        end
+        if not cfg or cfg.talentsTipSpecs ~= false then
+            local active, count = ns.Traits.SpecGroups()
+            for group = 1, math.max(1, count) do
+                local mark = group == active and "|cff4dff4d" or "|cff999999"
+                tt:AddDoubleLine(ns.Traits.SpecName(group), mark .. (group == active and L.TALENTS_ACTIVE or "") .. "|r", 0.8, 0.8, 0.8)
+            end
+        end
+        if not cfg or cfg.talentsTipNext ~= false then
+            local nextStep = ns.Traits.NextMilestone(data.total)
+            if nextStep then tt:AddLine(L.TT_TALENTS_NEXT:format(nextStep.at, nextStep.left), 1, 0.82, 0, true) end
+        end
     end,
     secureMacro = function()
         return MicroButtonMacro("TalentMicroButton", "/run if ToggleTalentFrame then ToggleTalentFrame() end")
     end,
+    -- changes the spec with the game's own spell (out of combat): run by the secure overlay
+    secureExtra = function() return ns.Traits.SpecMacro() end,
+    extraAction = { key = "switchSpec", label = "TALENTS_SWITCH_SPEC", run = function() end },
     clickHint = L.HINT_TALENTS,
 })
 

@@ -42,6 +42,19 @@ local function MacroText(key)
     return macro
 end
 
+-- Macro of the block's own extra action (e.g. Talents: change spec) when the player chose that
+-- action for the click ("shiftClick" or "middleClick"); nil otherwise
+local function ExtraMacro(key, cfg, field)
+    local mod = ns.modules[key]
+    if not (mod.secureExtra and mod.extraAction and cfg and cfg[field] == mod.extraAction.key) then return nil end
+    local macro = mod.secureExtra
+    if type(macro) == "function" then
+        local ok, text = pcall(macro, cfg)
+        return ok and text or "/stopmacro"
+    end
+    return macro
+end
+
 local function GetOverlay(key)
     if overlays[key] then return overlays[key] end
     if InCombatLockdown() then return nil end
@@ -98,12 +111,16 @@ function ns:SyncClickOverlays()
                         o:SetAttribute("macrotext", macro)
                         o:SetAttribute("macrotext3", macro)
                     end
+                    -- the block's own extra action, when chosen for Shift + click or middle click
+                    local shiftMacro, middleMacro = ExtraMacro(key, cfg, "shiftClick"), ExtraMacro(key, cfg, "middleClick")
+                    o:SetAttribute("shift-macrotext1", shiftMacro or "/stopmacro")
+                    o:SetAttribute("macrotext3", middleMacro or macro)
                     -- the block may have its own scale: place the button in UIParent units
                     local l, b, r, t = ns:GetRectUI(f)
                     o:ClearAllPoints()
                     o:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", l, t)
                     o:SetSize(r - l, t - b)
-                    if cfg.middleClick == "open" then
+                    if cfg.middleClick == "open" or middleMacro then
                         o:RegisterForClicks("LeftButtonUp", "MiddleButtonUp")
                     else
                         o:RegisterForClicks("LeftButtonUp")

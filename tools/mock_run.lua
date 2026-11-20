@@ -1439,10 +1439,13 @@ for _, step in ipairs({
         -- (1.6.2 and 1.6.3 only fix bugs and have no news: the 1.6.1 entry is found by its version)
         local e161
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.6.1" then e161 = e break end end
+        local e170
+        for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.7.0" then e170 = e break end end
         local n161 = #ns.ChangelogHighlights(e161, "en")
-        assert(#ns.WhatsNewItems("1.6.0") == n161, "1.6.0 -> now: the 1.6.1 news only")
-        assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + 7, "a test build counts as its version")
-        assert(#ns.WhatsNewItems("1.5.1") > n161, "1.5.1 -> 1.6.1: the 1.6.0 news too")
+        local n170 = #ns.ChangelogHighlights(e170, "en")
+        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1 and 1.7.0 news")
+        assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + n170 + 7, "a test build counts as its version")
+        assert(#ns.WhatsNewItems("1.5.1") > n161 + n170, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")
         ns:ShowWhatsNewWindow("9.9.9", "1.0.0")
         local w = _G["TesseraWhatsNew"]
@@ -2281,6 +2284,60 @@ for _, step in ipairs({
         C_Traits.GetTreeCurrencyInfo = function() return { { quantity = 0 } } end
         C_ClassTalents.HasUnspentTalentPoints = function() return false end
         assert(t.isEmpty(), "no point left: the block hides")
+        UnitCharacterPoints, C_ClassTalents, C_Traits = oldU, oldCT, oldT
+    end,
+    -- talents 1.7.0: points per tree (by column, then by the game's groups), main tree, milestone, legacy points
+    function()
+        local oldU, oldCT, oldT = UnitCharacterPoints, C_ClassTalents, C_Traits
+        UnitCharacterPoints = nil
+        C_ClassTalents = { GetActiveConfigID = function() return 7 end, HasUnspentTalentPoints = function() return false end }
+        local nodes = { [1] = { 1020, 5 }, [2] = { 1620, 11 }, [3] = { 5020, 0 }, [4] = { 9080, 0 } }
+        C_Traits = {
+            GetConfigInfo = function() return { treeIDs = { 42 } } end,
+            GetTreeCurrencyInfo = function() return { { traitCurrencyID = 3820, quantity = 2, spent = 16 } } end,
+            GetTreeNodes = function() return { 1, 2, 3, 4 } end,
+            GetNodeInfo = function(_, id) return { posX = nodes[id][1], currentRank = nodes[id][2], maxRanks = 5, groupIDs = {} } end,
+        }
+        local data = ns.Traits.Talents()
+        assert(data.free == 2 and data.spent == 16 and data.total == 18, "talent currency")
+        assert(#data.trees == 3 and data.trees[1].points == 16 and data.trees[2].points == 0, "trees by column")
+        local cfg = { talentsShown = "split" }
+        assert(ns.modules.talents.update(cfg) == "16/0/0", "split text: " .. tostring(ns.modules.talents.update(cfg)))
+        cfg.talentsShown = "main"
+        assert(ns.modules.talents.update(cfg):find("16"), "main tree text")
+        assert(ns.Traits.NextMilestone(18).at == 21 and ns.Traits.NextMilestone(18).left == 3, "next milestone")
+        assert(ns.Traits.NextMilestone(60) == nil, "no milestone left")
+        -- the game's groups, when it gives them
+        C_Traits.GetGroupDisplayInfoByTreeID = function()
+            return { { groupID = 11, displayName = "Arcane", orderIndex = 0 }, { groupID = 12, displayName = "Fire", orderIndex = 1 },
+                     { groupID = 13, displayName = "Frost", orderIndex = 2 } }
+        end
+        C_Traits.GetNodeInfo = function(_, id)
+            return { posX = nodes[id][1], currentRank = nodes[id][2], maxRanks = 5, groupIDs = { id == 4 and 13 or (id == 3 and 12 or 11) } }
+        end
+        local named = ns.Traits.Talents()
+        assert(named.trees[1].name == "Arcane" and named.trees[1].points == 16, "trees by group")
+        -- the tooltip runs with every line on, and with every line off
+        local lines = {}
+        local tt = setmetatable({}, { __index = function() return function() lines[#lines + 1] = true end end })
+        ns.modules.talents.tooltip(tt, {})
+        ns.modules.talents.tooltip(tt, { talentsTipTrees = false, talentsTipSpecs = false, talentsTipNext = false })
+        assert(#lines >= 4, "talents tooltip")
+        -- legacy points: one config of type Generic, three trees, one shared currency, an empty tree
+        local legacy = { [1187] = { 3, 9 }, [1188] = { 0, 9 }, [1189] = { 1, 9 }, [1118] = { 0, 0 } }
+        C_Traits = {
+            GetConfigsByType = function() return { 99 } end,
+            GetConfigInfo = function() return { treeIDs = { 1187, 1188, 1189, 1118 } } end,
+            GetTreeCurrencyInfo = function() return { { traitCurrencyID = 4225, quantity = 1, spent = 4 } } end,
+            GetTreeNodes = function(treeID) return { treeID } end,
+            GetNodeInfo = function(_, id) return { posX = 0, currentRank = legacy[id][1], maxRanks = legacy[id][2], groupIDs = {} } end,
+        }
+        local points = ns.Traits.Legacy()
+        assert(points and points.free == 1 and points.spent == 4, "legacy currency counted once")
+        assert(#points.trees == 3 and points.trees[1].ranks == 3 and points.trees[1].max == 9, "legacy trees")
+        C_Traits = nil
+        assert(ns.Traits.Legacy() == nil and ns.Traits.Talents() == nil, "no trait API: nothing, no error")
+        assert(ns.Traits.SpecMacro():find("^/"), "spec macro")
         UnitCharacterPoints, C_ClassTalents, C_Traits = oldU, oldCT, oldT
     end,
     -- every value of every block's display choices gives a value without error, and the

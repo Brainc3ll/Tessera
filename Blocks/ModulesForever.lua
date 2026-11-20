@@ -185,10 +185,19 @@ if C_MajorFactions and (_G["ToggleLegacySystemUI"] or _G["LegacySystemFrame_Load
 ns:RegisterModule("legacy", {
     label = "LEGACY",
     icon = LEGACY_ICON,
-    events = { "MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "MAJOR_FACTION_UNLOCKED", "UPDATE_FACTION" },
+    events = { "MAJOR_FACTION_RENOWN_LEVEL_CHANGED", "MAJOR_FACTION_UNLOCKED", "UPDATE_FACTION",
+               "TRAIT_CONFIG_UPDATED", "TRAIT_TREE_CURRENCY_INFO_UPDATED" },
     interval = 60, -- in case the renown events are not sent for this track
     defaultEnabled = false,
+    isEmpty = function()
+        local points = ns.Traits.Legacy()
+        return not points or points.free <= 0
+    end,
     update = function(cfg)
+        if not cfg or cfg.legacyShown == "free" then
+            local points = ns.Traits.Legacy()
+            if points then return tostring(points.free), points.free > 0 and Tools.WARN or GOOD end
+        end
         local data = LegacyData()
         if not data then return L.NA end
         if cfg and cfg.legacyShown == "next" then
@@ -197,10 +206,13 @@ ns:RegisterModule("legacy", {
         end
         return tostring(data.renownLevel)
     end,
-    defaults = { legacyShown = "points" },
+    defaults = { legacyShown = "free", legacyTipFree = true, legacyTipTrees = true },
     options = {
         { kind = "dropdown", field = "legacyShown", tab = "text", label = "LEGACY_SHOWN", tip = "TIP_LEGACY_SHOWN",
-          values = { { key = "points", label = "LEGACY_POINTS" }, { key = "next", label = "LEGACY_NEXT" } } },
+          values = { { key = "free", label = "LEGACY_FREE" }, { key = "points", label = "LEGACY_POINTS" },
+                     { key = "next", label = "LEGACY_NEXT" } } },
+        { kind = "check", field = "legacyTipFree", section = "tooltip", tab = "text", label = "LEGACY_TIP_FREE", tip = "TIP_LEGACY_TIP_FREE" },
+        { kind = "check", field = "legacyTipTrees", section = "tooltip", tab = "text", label = "LEGACY_TIP_TREES", tip = "TIP_LEGACY_TIP_TREES" },
     },
     -- progress toward the next reward
     progress = function()
@@ -213,10 +225,20 @@ ns:RegisterModule("legacy", {
         if not nextReward then return 1 end
         return (data.renownLevel - previous) / math.max(1, nextReward.level - previous)
     end,
-    tooltip = function(tt)
+    tooltip = function(tt, cfg)
         local data = LegacyData()
+        local points = ns.Traits.Legacy()
+        if points and (not cfg or cfg.legacyTipFree ~= false) then
+            WHITE(tt, L.TT_LEGACY_FREE, tostring(points.free))
+        end
+        if points and (not cfg or cfg.legacyTipTrees ~= false) then
+            for _, t in ipairs(points.trees) do
+                tt:AddDoubleLine(t.name, ("%d / %d"):format(t.ranks, t.max), 0.8, 0.8, 0.8, 1, 1, 1)
+            end
+        end
+        if points and data then ns.TooltipGap(tt) end
         if not data then
-            tt:AddLine(L.NA, 0.8, 0.8, 0.8)
+            if not points then tt:AddLine(L.NA, 0.8, 0.8, 0.8) end
             return
         end
         WHITE(tt, L.LEGACY, tostring(data.renownLevel))

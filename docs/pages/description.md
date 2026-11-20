@@ -7,7 +7,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 ## At a glance
 
 - Over 50 blocks: gold, bags, durability, FPS and latency, time, XP, quests, reputation, professions and more. Most let you choose what they show, in the block and in its tooltip.
-- Made for WoW Forever, with blocks for its own systems: Legacy points, Comprehension, camping, honor, weapon skills.
+- Made for WoW Forever, with blocks for its own systems: Legacy points, talents (points per tree, change spec), Comprehension, camping, honor, weapon skills.
 - 27 styles to match your UI: Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, or fantasy looks made from the game's own frames.
 - Place a bar to the exact pixel with the arrow keys. Style a whole bar at once.
 - DataBroker both ways: your Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).

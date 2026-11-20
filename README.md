@@ -141,8 +141,9 @@ Help tab inside the game explains everything.
   interface, for screenshots. Your layout comes back afterwards.
 - **Blocks made for WoW Forever's own systems**, which can also be shared with DataBroker
   display addons (Titan Panel, Arcana (formerly ChocolateBar), Bazooka...):
-  - Legacy points: your points, the next reward, every reward of the track and your Legacy
-    challenges completed per category; a click opens the Legacy panel;
+  - Legacy points: your available points, your points, the next reward, every reward of the track,
+    the points spent in each Legacy tree and your Legacy challenges completed per category; a click
+    opens the Legacy panel;
   - Comprehension: your scroll-reading skill and the scrolls in your bags; a click casts Scroll
     Comprehension;
   - Camping: time left on your camp buffs, or your campfire kit's cooldown; a click lights a
@@ -227,7 +228,7 @@ Blocks and groups tab, then turn on "Enabled".
 | Item level | Equipped item level, best available, or both; weakest items first in the tooltip | Character sheet |
 | Character stats | The stat of your choice, and a second one | Character sheet |
 | Mana regeneration | Your mana per 5 seconds | Character sheet |
-| Talent points *(shown at first)* | Unspent talent points | Open the talents |
+| Talents *(shown at first)* | Unspent points, points per tree, main tree or active spec; the tooltip adds your specs and the next milestone | Open the talents; middle click changes spec |
 | Hunter pet | Your pet's happiness | |
 | Weapon enchant | Time left on your poison or sharpening stone | |
 | Long buffs | Your long buffs and the time left on them | |
@@ -287,7 +288,7 @@ Blocks and groups tab, then turn on "Enabled".
 
 | Block | What it shows | Click |
 |---|---|---|
-| Legacy points | Your points, the next reward, the whole track and your challenges | Open the Legacy panel |
+| Legacy points | Your available points, your points, the next reward, the whole track, the points per tree and your challenges | Open the Legacy panel |
 | Comprehension | Your scroll-reading skill and the scrolls in your bags | Cast Scroll Comprehension |
 | Camping | Time left on your camp buffs, or the kit's cooldown | Light a campfire with the kit |
 | Honor | Your honor points | |
@@ -378,6 +379,7 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Core/SecureClicks.lua` | Invisible secure buttons over blocks, so clicks open Blizzard windows without tainting them. |
 | `Extras/Changelog.lua` | Version history for the in-game About tab (What's new topic: each entry's `highlights`, one short line per new thing with an optional `show` target; Changelog topic), sorted by kind since 1.0.0 (new, improvements, fixes), in English and French only (`lua5.1 tools/changelog_md.lua > CHANGELOG.md` regenerates `CHANGELOG.md`). |
 | `Blocks/Modules.lua` | Tools shared by the data blocks (thresholds, durations, money, item counts; `ns.BlockTools`), the order of the blocks (`ns.MODULE_ORDER`) and the guide to adding a block. |
+| `Blocks/TraitsData.lua` | Reads the talent tree and the Legacy trees (points, trees, specs) for the Talents and Legacy blocks. |
 | `Blocks/ModulesCharacter.lua` | Data blocks about your character: gold, bags, durability, experience, rested, stats, regeneration, speed, talents, item level, pet, buffs, corpse. **Add a block in the file of its category.** |
 | `Blocks/ModulesSocial.lua` | Data blocks about other players: friends, guild, group, whispers, mail, loot. |
 | `Lists/WhisperList.lua` | The Whispers block's history, shown under the mouse in place of the tooltip: the last players who whispered you, a click replies. |
@@ -499,9 +501,17 @@ WoWUIDev Discord. What Tessera found, with those sources and the development pro
   `LegacySystemFrame_LoadUI`) exists. **Legacy challenges are achievements**: the achievement
   categories are the challenge categories (Classes, Crafting, PvP, Dungeons, Raids, Adventure,
   with sub-categories); the tooltip adds up `GetCategoryNumAchievements` per main category
-  (parent `-1`). Not found yet as an API: the unspent points of the Legacy tree and the
-  "Legacy points: 16/81" total, which only exist as texts of the Legacy panel
+  (parent `-1`). **Available points and trees** (`Blocks/TraitsData.lua`): the Legacy tree is the trait
+  config of type Generic (`C_Traits.GetConfigsByType`), trees 1187 (professions), 1188 (adventure) and
+  1189 (progression), one shared currency (4225: quantity = available points, spent). Points per tree
+  are the ranks of its nodes (`GetTreeNodes`, `GetNodeInfo`). Not found yet as an API: the "Legacy
+  points: 1/65" total of the Legacy panel
   (`ChallengesPage.LegacyChallengePointSummary.PointsBar`, `TreePage.LegacyTreePointSummary`).
+- **Talents** (`talents` block, `Blocks/ModulesCharacter.lua`): one trait tree of the active config
+  (`C_ClassTalents.GetActiveConfigID`), currency 3820. The three trees come from the node groups
+  (`C_Traits.GetGroupDisplayInfoByTreeID`), else from the X position of the nodes. Change spec: the
+  secure overlay casts spell 63645 / 63644 (Activate Primary / Secondary Spec) out of combat
+  (`secureExtra` in `Core/SecureClicks.lua`).
 - **Comprehension** (`comprehension` block): a secondary skill, `skillID` `3012` in
   `C_SkillInfo` (category `9`, learned from level 6); its spell is `1296017`. Scrolls in the
   bags are consumables of subclass `4`, or items whose name holds the localized word "scroll"

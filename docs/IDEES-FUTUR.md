@@ -107,6 +107,9 @@ Que personne ne se sente oublié, au-delà de l'accessibilité. Règle ajoutée 
 - Fait (25/10, pour la 1.0.0) : mode streamer (noms des autres, rerolls, royaume, nom de guilde et or en ***), option de l'onglet Général, raccourci clavier et bloc Mode streamer. Idées proposées le même jour, pas encore retenues : infobulles qui expliquent le jargon pour les débutants, alertes jamais seulement sonores, disposition « Grand confort », textes alternatifs sur les images des pages.
 - Règle de Braincell1980 (25/10) : Tessera reste gratuit et open source, libre d'utilisation et de modification. Jamais de version premium, de fonction réservée aux donateurs ni de contenu payant. Un lien « offre-moi un café », sans contrepartie, reste possible un jour (pas une priorité), seulement sur la page CurseForge : les règles de Blizzard interdisent de demander des dons dans le jeu.
 
+### Bouton de la minicarte (retour de ReiceG, CurseForge, 21 novembre 2026)
+Il demande une option pour retirer le bouton de la minicarte, et dit que SexyMap ne voit pas ce bouton. L'option existe depuis la 1.0.0 : case « Afficher le bouton de la minicarte » (onglet Général, section Minicarte) et commande `/tessera minimap` ; il a trouvé la commande seul. Piste pour SexyMap : Tessera dessine son propre bouton (`TesseraMinimapButton`, `Core/Core.lua`) et n'utilise pas LibDBIcon, ce qui explique probablement qu'il ne le voie pas (non testé avec SexyMap). Rien de décidé : l'enregistrer aussi par LibDBIcon demanderait la bibliothèque, classée « bof » le 24/10.
+
 ## Nouveaux blocs
 
 ### Nouveaux blocs grâce à la doc de l'API de WoW Forever (22 octobre 2026, validé pour la 1.1)

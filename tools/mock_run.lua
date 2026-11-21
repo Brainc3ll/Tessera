@@ -1292,7 +1292,12 @@ for _, step in ipairs({
         ns:SyncAutoTheme()
         assert(ns.db.autoThemeMissing == "flareui2" and ns.db.theme == nil, "missing style not remembered")
         local notice = ns.pendingStyleNotice
-        assert(notice and notice:find("FlareUI", 1, true) and notice:find("1", 1, true), "the fallback window: interface and locked count")
+        assert(notice and notice.text:find("FlareUI", 1, true) and #notice.locked == 1 and notice.locked[1] == "bags",
+            "the fallback window: interface and locked blocks")
+        ns:ShowStyleNotice(notice)
+        local nw = _G["TesseraStyleNotice"]
+        assert(nw and nw:IsShown() and nw.names:GetText():find(ns:GetBlockName("bags"), 1, true), "the window names the locked block")
+        nw:Hide()
         assert(bags.iconSize == 27 and bags.bg == false, "a locked block was restyled by the fallback")
         ns.pendingStyleNotice = nil
         ns:SyncAutoTheme()
@@ -1302,7 +1307,7 @@ for _, step in ipairs({
         assert(ns.db.autoThemeMissing == nil and ns:GetTheme() == "flareui2", "style not given back")
         assert(math.abs(ns.db.blocks.gold.borderColor.r - 0.80) < 0.01, "blocks not restyled back")
         assert(bags.iconSize == 27 and bags.bg == false, "a locked block was restyled when the interface came back")
-        assert(ns.pendingStyleNotice and ns.pendingStyleNotice:find("FlareUI", 1, true), "no window when the interface comes back")
+        assert(ns.pendingStyleNotice and ns.pendingStyleNotice.text:find("FlareUI", 1, true), "no window when the interface comes back")
         ns.pendingStyleNotice = nil
         -- the Look tab leaves it too; "Apply this style to" changes it
         ns:ApplyTheme("blizzard")

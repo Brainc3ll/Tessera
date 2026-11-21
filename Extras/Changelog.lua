@@ -54,10 +54,14 @@ ns.CHANGELOG = {
               en = {
                 "In DataBroker mode, the minimap button's tooltip names the DataBroker tab, where you can hide the button."
                     .. " The tab it named before is hidden in that mode.",
+                "Tessera's entry in the addon compartment (and in FlareUI's button bag) shows the same tooltip as the minimap"
+                    .. " button, and a right-click on it locks or unlocks the blocks, as on the button.",
               },
               fr = {
                 "En mode DataBroker, l'infobulle du bouton de la minicarte nomme l'onglet DataBroker, où tu peux masquer le bouton."
                     .. " L'onglet nommé avant est caché dans ce mode.",
+                "L'entrée de Tessera dans le menu des addons (et dans le sac de boutons de FlareUI) montre la même infobulle"
+                    .. " que le bouton de la minicarte, et un clic droit dessus verrouille ou déverrouille les blocs, comme sur le bouton.",
               },
             },
         },

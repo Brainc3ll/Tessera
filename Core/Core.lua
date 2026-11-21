@@ -3843,6 +3843,27 @@ local function PlaceMinimapButton()
     minimapButton:SetPoint("CENTER", Minimap, "CENTER", math.cos(angle) * radius, math.sin(angle) * radius)
 end
 
+-- Click on the round button or on the compartment entry: options, or lock / unlock
+local function ButtonClick(button)
+    if button == "RightButton" then
+        ns:SetLocked(not ns.db.locked)
+    else
+        Tessera_OnAddonCompartmentClick()
+    end
+end
+
+-- Tooltip of the round button and of the compartment entry (Blizzard's menu, FlareUI's bag)
+local function ShowButtonTooltip(owner, draggable)
+    GameTooltip:SetOwner(owner, "ANCHOR_LEFT")
+    GameTooltip:AddLine("Tessera", 1, 0.82, 0)
+    GameTooltip:AddLine(L.MINIMAP_TT_LEFT, 1, 1, 1)
+    GameTooltip:AddLine(ns:IsLocked() and L.MINIMAP_TT_RIGHT_UNLOCK or L.MINIMAP_TT_RIGHT_LOCK, 1, 1, 1)
+    if draggable then GameTooltip:AddLine(L.MINIMAP_TT_DRAG, 0.7, 0.7, 0.7) end
+    -- DataBroker mode hides the "Placement and more" tab: name the tab the player can open
+    GameTooltip:AddLine(ns.brokerModeActive and L.MINIMAP_TT_HIDE_BROKER or L.MINIMAP_TT_HIDE, 0.7, 0.7, 0.7)
+    GameTooltip:Show()
+end
+
 local function CreateMinimapButton()
     local b = CreateFrame("Button", "TesseraMinimapButton", Minimap)
     b:SetSize(31, 31)
@@ -3863,13 +3884,7 @@ local function CreateMinimapButton()
     border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
     border:SetSize(50, 50)
     border:SetPoint("TOPLEFT")
-    b:SetScript("OnClick", function(_, button)
-        if button == "RightButton" then
-            ns:SetLocked(not ns.db.locked)
-        else
-            Tessera_OnAddonCompartmentClick()
-        end
-    end)
+    b:SetScript("OnClick", function(_, button) ButtonClick(button) end)
     -- dragging moves the button around the minimap
     b:SetScript("OnDragStart", function(self)
         self:SetScript("OnUpdate", function()
@@ -3881,16 +3896,7 @@ local function CreateMinimapButton()
         end)
     end)
     b:SetScript("OnDragStop", function(self) self:SetScript("OnUpdate", nil) end)
-    b:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:AddLine("Tessera", 1, 0.82, 0)
-        GameTooltip:AddLine(L.MINIMAP_TT_LEFT, 1, 1, 1)
-        GameTooltip:AddLine(ns:IsLocked() and L.MINIMAP_TT_RIGHT_UNLOCK or L.MINIMAP_TT_RIGHT_LOCK, 1, 1, 1)
-        GameTooltip:AddLine(L.MINIMAP_TT_DRAG, 0.7, 0.7, 0.7)
-        -- DataBroker mode hides the "Placement and more" tab: name the tab the player can open
-        GameTooltip:AddLine(ns.brokerModeActive and L.MINIMAP_TT_HIDE_BROKER or L.MINIMAP_TT_HIDE, 0.7, 0.7, 0.7)
-        GameTooltip:Show()
-    end)
+    b:SetScript("OnEnter", function(self) ShowButtonTooltip(self, true) end)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
     return b
 end
@@ -3933,7 +3939,10 @@ function ns:UpdateMinimapButton()
             icon = "Interface\\AddOns\\Tessera\\Media\\Icon.png",
             notCheckable = true,
             registerForAnyClick = true,
-            func = function() Tessera_OnAddonCompartmentClick() end,
+            -- menu callback: (data, inputData, menu); inputData.buttonName is the mouse button
+            func = function(_, input) ButtonClick(type(input) == "table" and input.buttonName or nil) end,
+            funcOnEnter = function(owner) ShowButtonTooltip(owner, false) end,
+            funcOnLeave = function() GameTooltip:Hide() end,
         }
         pcall(frame.RegisterAddon, frame, compartmentInfo)
     elseif not wanted and index then

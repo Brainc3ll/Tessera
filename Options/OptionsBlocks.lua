@@ -192,6 +192,36 @@ local function BuildModuleOptions(keys, route, condition)
 end
 
 
+-- Applies a style to some blocks and says what it needs (the warning about locked blocks is asked before)
+function ns:ApplyStyleToBlocksNow(keys, style)
+    if self:ApplyThemeToBlocks(keys, style) then
+        local note = self:GetThemeNote(style)
+        if note then self.Print(note) end
+    end
+    self:RefreshOptions()
+end
+
+StaticPopupDialogs["TESSERA_STYLE_LOCKED_APPLY"] = {
+    text = L.STYLE_LOCKED_APPLY,
+    button1 = YES,
+    button2 = NO,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function(_, data) ns:ApplyStyleToBlocksNow(data.keys, data.style) end,
+}
+
+-- Unlocking a block's style: follow the profile's style now, or keep the current look
+StaticPopupDialogs["TESSERA_STYLE_UNLOCK"] = {
+    text = L.STYLE_UNLOCK_FOLLOW,
+    button1 = YES,
+    button2 = NO,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function(_, keys) ns:ApplyStyleToBlocksNow(keys, ns:GetTheme()) end,
+}
+
 -- "Apply this style to": this block, its group, every block (1.3, an action: the style
 -- is written into their settings, Ctrl + Z undoes it). For a group selection, "Its
 -- group" is that group; "All blocks" and "All launchers" only offer every block.
@@ -208,11 +238,17 @@ local function CreateStyleTargets(parent, getStyle)
         return { S.selected }
     end
     local function Apply(target)
-        if ns:ApplyThemeToBlocks(Keys(target), getStyle()) then
-            local note = ns:GetThemeNote(getStyle())
-            if note then ns.Print(note) end
+        local keys, style = Keys(target), getStyle()
+        local locked = 0
+        for _, key in ipairs(keys) do
+            if ns.db.blocks[key] and ns.db.blocks[key].styleLocked then locked = locked + 1 end
         end
-        ns:RefreshOptions()
+        -- a block whose style is locked takes the style only after a warning (it stays locked)
+        if locked > 0 then
+            StaticPopup_Show("TESSERA_STYLE_LOCKED_APPLY", locked, nil, { keys = keys, style = style })
+            return
+        end
+        ns:ApplyStyleToBlocksNow(keys, style)
     end
     local function Single() return not IsGroup() and ns.db.blocks[S.selected] ~= nil end
     local buttons = {}
@@ -431,6 +467,14 @@ local function BuildBlockPage(page)
         self:SetAlpha(off and 0.45 or 1)
     end
     valueBox.Add(CreateStyleTargets(c, function() return pickStyle or ns:GetTheme() end))
+    -- locked: a style change for the whole profile (Look tab, an interface missing or back) leaves it as it is
+    local getLock = Field("styleLocked")
+    local lockCheck = valueBox.Add(CreateCheck(c, L.STYLE_LOCK, getLock, function(v)
+        local keys = Tools.Targets()
+        SetField("styleLocked", v and true or nil)
+        if not v then StaticPopup_Show("TESSERA_STYLE_UNLOCK", nil, nil, keys) end
+    end, nil, L.TIP_STYLE_LOCK))
+    lockCheck.field = "styleLocked"
 
     local tipBox = C.Box(L.SECTION_TOOLTIP, { reset = true })
     local showTip = tipBox.Add(Check(c, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP))

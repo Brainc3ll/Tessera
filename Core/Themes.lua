@@ -865,8 +865,10 @@ local function RestyleProfile(self, key, restyle)
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end
+    -- a block whose style the player locked (1.7.1) keeps its look: only "Apply this style to" changes it
     for _, blockKey in ipairs(self:GetBlockKeys()) do
-        if self.db.blocks[blockKey] then self:ApplyThemeToCfg(self.db.blocks[blockKey], key) end
+        local cfg = self.db.blocks[blockKey]
+        if cfg and not cfg.styleLocked then self:ApplyThemeToCfg(cfg, key) end
     end
     -- every block drawn again, heads first after clearing every anchor: applying the
     -- blocks one by one could anchor a block to one still anchored to it from before
@@ -939,6 +941,24 @@ function ns:PickStyleChoice(v)
     return self:ApplyTheme(v)
 end
 
+-- Number of blocks whose style the player locked (1.7.1)
+function ns:CountStyleLocked()
+    local n = 0
+    for _, blockKey in ipairs(self:GetBlockKeys()) do
+        local cfg = self.db.blocks[blockKey]
+        if cfg and cfg.styleLocked then n = n + 1 end
+    end
+    return n
+end
+
+-- Text of the window shown once the blocks are drawn (ns:ShowStyleNoticeIfNeeded, OptionsTour.lua),
+-- when the automatic style follows an interface that went missing or came back
+local function QueueStyleNotice(self, text)
+    local locked = self:CountStyleLocked()
+    if locked > 0 then text = text .. "\n\n" .. L.STYLE_NOTICE_LOCKED:format(locked) end
+    self.pendingStyleNotice = text
+end
+
 -- The automatic style (no style picked by the player) is the one of the installed UI.
 -- Tessera never changes the look of existing blocks without asking: when the automatic
 -- style changes (e.g. FlareUI 1.x updated to 2.x, or a UI installed later), the current
@@ -959,6 +979,7 @@ function ns:SyncAutoTheme()
         if db.autoThemeMissing == key then
             RestyleProfile(self, key, false)
             db.autoTheme, db.autoThemeMissing = key, nil
+            if byKey[key] then QueueStyleNotice(self, L.STYLE_BACK_NOTICE:format(self:GetUIName(key))) end
             return
         end
     end
@@ -982,8 +1003,8 @@ function ns:SyncAutoTheme()
         local first = not db.autoThemeMissing
         db.autoThemeMissing = db.autoThemeMissing or applied
         -- said once, when it happens (not at every login while the interface stays away)
-        if first and ns.Print and byKey[key] then
-            ns.Print(L.THEME_FALLBACK:format(self:GetUIName(applied), byKey[key].name))
+        if first and byKey[key] then
+            QueueStyleNotice(self, L.THEME_FALLBACK:format(self:GetUIName(applied), byKey[key].name))
         end
     end
 end

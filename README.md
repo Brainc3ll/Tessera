@@ -28,7 +28,7 @@ LibDataBroker to exchange data with DataBroker addons.
 - **You pick what each block shows.** Played time this level or in total, honor out of its cap, the next Legacy reward, XP per hour or the time to your next level, the total gold of your characters, the repair cost, the parts of a tooltip: most blocks give you a choice, grouped under folding titles (Display, Tooltip).
 - **Pin a tooltip, rename a block.** Keep a block's tooltip open next to it, updated every second, and give any block a name of your own.
 - **A micro-menu that grows with you.** Blizzard's micro menu in one block: its tooltip lists the menus, a click opens them; a menu you have not unlocked yet stays grey until you reach it.
-- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, Bronze and Bronze and gold (FlareUI), Elven (ElvUI), Emerald (EllesmereUI), Aurora (DaylightUI), or fantasy styles built from the game's own frames.
+- **One look for everything.** Every block shares the same tooltips and the same style: Blizzard's look, Bronze and Bronze and gold (FlareUI), Elven (ElvUI), Emerald (EllesmereUI), Aurora (DaylightUI), or fantasy styles built from the game's own frames. Lock a block's style and it keeps its look when you change the profile's style or an interface goes missing.
 - **In your language.** English and French from day one, plus German, Spanish and Brazilian Portuguese.
 - **Looked after.** Each version is tested in game, and your layouts carry over from one version to the next.
 - **Ready to stream.** Streamer mode hides other players' names, your other characters, your guild's name and your gold in one click.

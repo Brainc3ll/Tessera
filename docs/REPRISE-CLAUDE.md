@@ -18,9 +18,10 @@ Vérifié le 20/11/2026 (Sonnet 5.5). Une session neuve n'a rien : ni dépôts, 
 4. **Nouveautés de Forever, à vérifier régulièrement** (demande de Braincell1980, 20/11) : au début de chaque session Tessera, `git ls-remote https://github.com/BigWigsMods/WoWUI.git forever`. Dernier état vu : commit `2291b25`, build `1.60.1.70959` (17/11). Si le commit a changé, le build a changé : cloner (`--depth 1 -b forever`), comparer avec l'ancien clone (`git diff --stat` si les deux historiques sont là, sinon les listes de fichiers), repérer ce qui touche les blocs de Tessera (API, événements, textes) et le dire en deux lignes à Braincell1980. Puis mettre à jour le commit et le build dans cette ligne.
 
 ## En une phrase
-Version en jeu : 1.7.1, publiée le 21/11 (verrou du style par bloc, fenêtre de repli d'interface ; 1.7.0 du même jour : Talents et Héritage refondus ; 1.6.3 du 19/11 : police Global de FlareUI, coût de réparation avec les sacs ; 1.6.2 du 18/11 : correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
+Version en jeu : 1.7.2, publiée le 21/11 (correctif : un bloc au style verrouillé reste intact sur les pages à plusieurs blocs, les copies de style demandent d'abord ; 1.7.1 du même jour : verrou du style par bloc, fenêtre de repli d'interface ; 1.7.0 du même jour : Talents et Héritage refondus ; 1.6.3 du 19/11 : police Global de FlareUI, coût de réparation avec les sacs ; 1.6.2 du 18/11 : correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
 
 ## Journal court
+- 21/11 : 1.7.2 publiée (correctif du verrou du style sur les pages à plusieurs blocs ; copies de style avec avertissement).
 - 21/11 : 1.7.1 publiée (verrou du style par bloc, fenêtre de repli, infobulle du bouton en mode DataBroker et dans le tiroir de FlareUI).
 - 21/11 : 1.7.0 publiée (Talents et Héritage refondus, bouton de la minicarte) ; revamp de blocs remis à zéro, au cas par cas.
 - 20/11 : 1.7.0 sur `next`, Talents et Héritage refondus et poussés ; suite : FPS, Latence, Temps joué, Pierre de foyer, Honneur, Familier, Munitions.
@@ -46,8 +47,8 @@ Un fichier ou une fonction de plus de 200 variables locales actives ne se charge
 `tessera-checks`, `tessera-test-zip`, `tessera-release`, `tessera-bug-fix`, `tessera-ui-addon-study`, `tessera-wrap-up`, `tessera-report-triage` (retours des joueurs), `tessera-refactor` (nettoyage de la 1.1), `tessera-gate2` (changements risqués T2 : sauvegarde, profils, export) : les utiliser plutôt que de relire les commandes ci-dessous. Les skills génériques « Lua » publiques (ex. Mindrally) ne conviennent pas à WoW (snake_case, `require`) : ne pas les installer.
 
 ## Outils et commandes
-- Textes du jeu : modifier `tools/gen/*.py` (une clé par ligne ; une ligne ajoutée = une nouvelle clé), puis, sur `main` :
-  `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 tools/gen/build.py`
+- Textes du jeu : modifier `tools/gen/*.py` (une clé par ligne ; une ligne ajoutée = une nouvelle clé), puis :
+  `python3 tools/gen/build.py` (les textes de la bêta des rangées, `ROWS_`, `MENU_ROW_ALIGN`, `ROW_ALIGN_`, sont exclus par défaut depuis le 21/11)
   puis `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua` (et `frFR`).
 - Vérifications (toutes, à chaque changement) :
   `luacheck .` ; `lua5.1 tools/mock_run.lua . enUS` (et `frFR`, `"frFR broker"`) en cherchant **`ERROR` dans toute la sortie** (pas seulement la dernière ligne) ; `lua5.1 tools/fuzz_blocks.lua .` ; `lua5.1 tools/check_docs.lua .` (`release` avant une publication) ; `python3 tools/api_audit.py <lua-language-server> <vscode-wow-api>` ; `python3 tools/forever_api_check.py <BlizzardInterfaceResources, branche forever>`.

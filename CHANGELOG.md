@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
-## 1.7.0 — 2026-11-20
+## 1.7.0 — 2026-11-21
 
 ### New
 
@@ -15,7 +15,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 - The Talent points and Legacy points blocks are now called Talents and Héritage in French.
 - Legacy block: "Hide when empty" hides the block when no point is left to spend.
-- The minimap button's tooltip says how to hide it, and the DataBroker tab has the same "Show the minimap button" box as the General tab.
+- The minimap button's tooltip says how to hide it, and the DataBroker tab has the same "Show the minimap button" box as the Placement and more tab.
 
 ## 1.6.3 — 2026-11-19
 

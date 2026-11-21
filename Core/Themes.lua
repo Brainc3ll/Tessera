@@ -1002,7 +1002,8 @@ function ns:SyncAutoTheme()
         db.autoThemeMissing = db.autoThemeMissing or applied
         -- said once, when it happens (not at every login while the interface stays away)
         if first and byKey[key] then
-            QueueStyleNotice(self, L.THEME_FALLBACK:format(self:GetUIName(applied), byKey[key].name))
+            local ui = self:GetUIName(applied)
+            QueueStyleNotice(self, L.THEME_FALLBACK:format(ui, byKey[key].name, ui))
         end
     end
 end

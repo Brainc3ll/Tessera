@@ -8,6 +8,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - In DataBroker mode, the minimap button's tooltip names the DataBroker tab, where you can hide the button. The tab it named before is hidden in that mode.
+- Tessera's entry in the addon compartment (and in FlareUI's button bag) shows the same tooltip as the minimap button, and a right-click on it locks or unlocks the blocks, as on the button.
 
 ## 1.7.0 — 2026-11-21
 

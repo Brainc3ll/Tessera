@@ -629,6 +629,17 @@ end
 
 -- Offers the style of a newly detected interface (not in DataBroker mode: Tessera then
 -- shows no block of its own; not in combat: retried a bit later)
+-- The automatic style changed because an interface went missing or came back (1.7.1): said
+-- in a window with OK, once, then the styles to offer (if any) come after it
+StaticPopupDialogs["TESSERA_STYLE_NOTICE"] = {
+    text = "%s",
+    button1 = OKAY,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnHide = function() C_Timer.After(0.5, function() ns:OfferStylesIfNeeded() end) end,
+}
+
 function ns:OfferStylesIfNeeded()
     if not self.built or self.brokerModeActive then return end
     if offer and offer:IsShown() then return end
@@ -637,6 +648,12 @@ function ns:OfferStylesIfNeeded()
         or StaticPopup_Visible("TESSERA_BROKER_MODE") or (ns.WhatsNewShown and ns.WhatsNewShown()))
     if InCombatLockdown() or busy or self:OtherUIBusy() then
         C_Timer.After(10, function() ns:OfferStylesIfNeeded() end)
+        return
+    end
+    if self.pendingStyleNotice then
+        local text = self.pendingStyleNotice
+        self.pendingStyleNotice = nil
+        StaticPopup_Show("TESSERA_STYLE_NOTICE", text)
         return
     end
     local list = self:GetStylesToOffer()

@@ -1284,18 +1284,34 @@ for _, step in ipairs({
         local has = ns.HasFlareUIMedia
         ns.db.theme, ns.db.autoTheme, ns.db.autoThemeMissing = nil, "flareui2", nil
         ns.HasFlareUIMedia = function() return false end
-        local said, print0 = {}, ns.Print
-        ns.Print = function(msg) table.insert(said, msg) end
+        -- a block whose style is locked keeps its own settings through the fallback and back (1.7.1)
+        local bags = ns.db.blocks.bags
+        local bagsIcon, bagsBg = bags.iconSize, bags.bg
+        bags.styleLocked, bags.iconSize, bags.bg = true, 27, false
+        ns.pendingStyleNotice = nil
         ns:SyncAutoTheme()
         assert(ns.db.autoThemeMissing == "flareui2" and ns.db.theme == nil, "missing style not remembered")
-        assert(#said == 1 and said[1]:find("FlareUI", 1, true), "the fallback says so in the chat, once")
+        local notice = ns.pendingStyleNotice
+        assert(notice and notice:find("FlareUI", 1, true) and notice:find("1", 1, true), "the fallback window: interface and locked count")
+        assert(bags.iconSize == 27 and bags.bg == false, "a locked block was restyled by the fallback")
+        ns.pendingStyleNotice = nil
         ns:SyncAutoTheme()
-        assert(#said == 1, "the fallback message repeats at every sync")
-        ns.Print = print0
+        assert(ns.pendingStyleNotice == nil, "the fallback window comes back at every sync")
         ns.HasFlareUIMedia = function() return true end
         ns:SyncAutoTheme()
         assert(ns.db.autoThemeMissing == nil and ns:GetTheme() == "flareui2", "style not given back")
         assert(math.abs(ns.db.blocks.gold.borderColor.r - 0.80) < 0.01, "blocks not restyled back")
+        assert(bags.iconSize == 27 and bags.bg == false, "a locked block was restyled when the interface came back")
+        assert(ns.pendingStyleNotice and ns.pendingStyleNotice:find("FlareUI", 1, true), "no window when the interface comes back")
+        ns.pendingStyleNotice = nil
+        -- the Look tab leaves it too; "Apply this style to" changes it
+        ns:ApplyTheme("blizzard")
+        assert(bags.iconSize == 27, "the Look tab restyled a locked block")
+        ns:ApplyThemeToBlocks({ "bags" }, "blizzard")
+        assert(bags.iconSize ~= 27 and bags.styleLocked, "Apply this style to: not applied, or the lock was lost")
+        ns:ApplyTheme("flareui2")
+        ns.db.theme = nil
+        bags.styleLocked, bags.iconSize, bags.bg = nil, bagsIcon, bagsBg
         ns.HasFlareUIMedia = has
     end,
     -- placing: empty blocks ("Hide when empty") stay shown unless the player hides them (V)
@@ -1377,7 +1393,8 @@ for _, step in ipairs({
         ns.Print = function(msg) table.insert(said, msg) end
         ns.HasFlareUIMedia = function() return false end
         ns:SyncAutoTheme()
-        assert(ns.db.autoThemeMissing == "flareui6" and #said == 1, "Automatic follows the interface when it goes missing")
+        assert(ns.db.autoThemeMissing == "flareui6" and ns.pendingStyleNotice, "Automatic follows the interface when it goes missing")
+        ns.pendingStyleNotice = nil
         ns.Print = print0
         -- a fixed style stays as it is when its interface is missing (no fallback by hand)
         ns.HasFlareUIMedia = function() return true end
@@ -1441,9 +1458,11 @@ for _, step in ipairs({
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.6.1" then e161 = e break end end
         local e170
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.7.0" then e170 = e break end end
+        local e171
+        for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.7.1" then e171 = e break end end
         local n161 = #ns.ChangelogHighlights(e161, "en")
-        local n170 = #ns.ChangelogHighlights(e170, "en")
-        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1 and 1.7.0 news")
+        local n170 = #ns.ChangelogHighlights(e170, "en") + (e171 and #ns.ChangelogHighlights(e171, "en") or 0)
+        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0 and 1.7.1 news")
         assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + n170 + 7, "a test build counts as its version")
         assert(#ns.WhatsNewItems("1.5.1") > n161 + n170, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")

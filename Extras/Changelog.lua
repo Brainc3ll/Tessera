@@ -49,7 +49,35 @@ ns.CHANGELOG = {
     {
         version = "1.7.1",
         date = "2026-11-21",
+        highlights = {
+            { en = "Lock a block's style: it keeps its look when you change the profile's style or when an interface goes missing.",
+              fr = "Verrouille le style d'un bloc : il garde son allure quand tu changes le style du profil ou qu'une interface disparaît.",
+              show = { block = "gold", label = "STYLE_LOCK" } },
+        },
         sections = {
+            { kind = "new",
+              en = {
+                "\"Lock this block's style\" (Blocks and groups tab, Value section): a style change for the whole profile"
+                    .. " leaves the block as it is, also when FlareUI, ElvUI or another interface goes missing or comes back."
+                    .. " \"Apply this style to\" still changes it, after a warning. Unlocking asks whether the block takes the profile's style.",
+              },
+              fr = {
+                "« Verrouiller le style de ce bloc » (onglet Blocs et groupes, section Valeur) : un changement de style pour tout le profil"
+                    .. " laisse le bloc tel quel, même quand FlareUI, ElvUI ou une autre interface disparaît ou revient."
+                    .. " « Appliquer ce style à » le change quand même, après un avertissement."
+                    .. " Au déverrouillage, Tessera demande si le bloc prend le style du profil.",
+              },
+            },
+            { kind = "improved",
+              en = {
+                "When the interface your automatic style follows goes missing or comes back, a window with OK says so"
+                    .. " (instead of a chat line) and counts the locked blocks. Your settings and profiles keep working as before.",
+              },
+              fr = {
+                "Quand l'interface que suit ton style automatique disparaît ou revient, une fenêtre avec OK le dit"
+                    .. " (au lieu d'une ligne dans la discussion) et compte les blocs verrouillés. Tes réglages et profils marchent comme avant.",
+              },
+            },
             { kind = "fixed",
               en = {
                 "In DataBroker mode, the minimap button's tooltip names the DataBroker tab, where you can hide the button."

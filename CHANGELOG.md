@@ -3,6 +3,12 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
+## 1.7.1 — 2026-11-21
+
+### Fixes
+
+- In DataBroker mode, the minimap button's tooltip names the DataBroker tab, where you can hide the button. The tab it named before is hidden in that mode.
+
 ## 1.7.0 — 2026-11-21
 
 ### New

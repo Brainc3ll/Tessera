@@ -1667,3 +1667,4 @@ L["TIP_TALENTS_TIP_SPECS"] = "Listet deine Spezialisierungen auf und markiert di
 L["TIP_TALENTS_TIP_TREES"] = "Listet die Punkte auf, die du in jedem Baum ausgegeben hast."
 L["TT_TALENTS_NEXT"] = "Nächster Meilenstein: %d Punkte (noch %d)"
 L["MINIMAP_TT_HIDE"] = "Zum Ausblenden: Optionen, Reiter Platzierung und mehr, Minikarte."
+L["MINIMAP_TT_HIDE_BROKER"] = "Zum Ausblenden: Optionen, Reiter DataBroker, Minikarte."

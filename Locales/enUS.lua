@@ -931,6 +931,7 @@ local L = {
     MINIMAP_TT_RIGHT_LOCK = "Right-click: lock the blocks",
     MINIMAP_TT_DRAG = "Drag: move this button around the minimap",
     MINIMAP_TT_HIDE = "To hide it: Options, Placement and more tab, Minimap.",
+    MINIMAP_TT_HIDE_BROKER = "To hide it: Options, DataBroker tab, Minimap.",
     EDITMODE_REVERT = "Back to my layout",
     EDITMODE_LEGACY = "Tessera no longer moves Blizzard's frames: it puts its blocks in front of them or behind them. Your active Edit Mode layout is a copy made by an older test version of Tessera. Go back to your layout \"%s\"?",
     EDITMODE_KEEP_LAYOUT = "Keep this one",

@@ -47,6 +47,22 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.7.1",
+        date = "2026-11-21",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "In DataBroker mode, the minimap button's tooltip names the DataBroker tab, where you can hide the button."
+                    .. " The tab it named before is hidden in that mode.",
+              },
+              fr = {
+                "En mode DataBroker, l'infobulle du bouton de la minicarte nomme l'onglet DataBroker, où tu peux masquer le bouton."
+                    .. " L'onglet nommé avant est caché dans ce mode.",
+              },
+            },
+        },
+    },
+    {
         version = "1.7.0",
         date = "2026-11-21",
         highlights = {

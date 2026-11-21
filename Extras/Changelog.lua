@@ -84,10 +84,14 @@ ns.CHANGELOG = {
               en = {
                 "The Talent points and Legacy points blocks are now called Talents and Héritage in French.",
                 "Legacy block: \"Hide when empty\" hides the block when no point is left to spend.",
+                "The minimap button's tooltip says how to hide it, and the DataBroker tab has the same"
+                    .. " \"Show the minimap button\" box as the General tab.",
               },
               fr = {
                 "Les blocs Points de talent et Points d'héritage s'appellent maintenant Talents et Héritage.",
                 "Bloc Héritage : « Masquer si vide » cache le bloc quand il ne reste aucun point à dépenser.",
+                "L'infobulle du bouton de la minicarte dit comment le masquer, et l'onglet DataBroker a la même case"
+                    .. " « Afficher le bouton de la minicarte » que l'onglet Général.",
               },
             },
         },

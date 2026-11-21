@@ -414,6 +414,11 @@ local function BuildBrokerPage(tabPage, showBlockPage)
         local key = SelectedModuleKey()
         return sharing() and not (key and hasOptions[key])
     end
+    -- the same switch as in the General tab (one saved setting), for players who use a broker display
+    local minimap = F.Box(L.SECTION_MINIMAP, { reset = true })
+    minimap.Add(CreateCheck(page, L.SHOW_MINIMAP_BUTTON,
+        function() return not ns.sv.hideMinimapButton end,
+        function(v) ns:SetMinimapButtonShown(v) end, nil, L.TIP_MINIMAP_BUTTON), { default = true })
 end
 
 ---------------------------------------------------------------------------

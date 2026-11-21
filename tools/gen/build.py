@@ -1,8 +1,8 @@
 """Builds Locales/enUS.lua and Locales/frFR.lua from the texts in this folder.
 
 Run from the addon folder:   python3 tools/gen/build.py
-On main, leave out the strings of the rows beta branch:
-    TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 tools/gen/build.py
+The strings of the archived rows beta (ROWS_, MENU_ROW_ALIGN, ROW_ALIGN_) stay in this folder but are left
+out of every build by default. TESSERA_EXCLUDE="PREFIX1,PREFIX2" replaces that list ("" keeps everything).
 Then: lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua (and frFR).
 
 Files: en.py (base strings), fr.py (their French), tips.py (option tooltips, EN and FR),
@@ -35,7 +35,7 @@ for layout in (HELP, HELP_BROKER):
                 HELP_FR_KEYS[k] = b
 base = list(EN) + list(TIPS_EN.items()) + NEW_EN + HELP_EN_KEYS
 # keys left out of a build (TESSERA_EXCLUDE="PREFIX1,PREFIX2"): strings of a beta branch kept out of main
-excl = [p for p in os.environ.get("TESSERA_EXCLUDE", "").split(",") if p]
+excl = [p for p in os.environ.get("TESSERA_EXCLUDE", "ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_").split(",") if p]
 if excl:
     base = [(k, v) for k, v in base if not any(k.startswith(p) for p in excl)]
 keys = [k for k, _ in base]

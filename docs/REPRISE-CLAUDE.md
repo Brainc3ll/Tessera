@@ -46,8 +46,8 @@ Un fichier ou une fonction de plus de 200 variables locales actives ne se charge
 `tessera-checks`, `tessera-test-zip`, `tessera-release`, `tessera-bug-fix`, `tessera-ui-addon-study`, `tessera-wrap-up`, `tessera-report-triage` (retours des joueurs), `tessera-refactor` (nettoyage de la 1.1), `tessera-gate2` (changements risqués T2 : sauvegarde, profils, export) : les utiliser plutôt que de relire les commandes ci-dessous. Les skills génériques « Lua » publiques (ex. Mindrally) ne conviennent pas à WoW (snake_case, `require`) : ne pas les installer.
 
 ## Outils et commandes
-- Textes du jeu : modifier `tools/gen/*.py` (une clé par ligne ; une ligne ajoutée = une nouvelle clé), puis, sur `main` :
-  `TESSERA_EXCLUDE="ROWS_,MENU_ROW_ALIGN,ROW_ALIGN_" python3 tools/gen/build.py`
+- Textes du jeu : modifier `tools/gen/*.py` (une clé par ligne ; une ligne ajoutée = une nouvelle clé), puis :
+  `python3 tools/gen/build.py` (les textes de la bêta des rangées, `ROWS_`, `MENU_ROW_ALIGN`, `ROW_ALIGN_`, sont exclus par défaut depuis le 21/11)
   puis `lua5.1 tools/export_locales.lua . enUS docs/localization/enUS.lua` (et `frFR`).
 - Vérifications (toutes, à chaque changement) :
   `luacheck .` ; `lua5.1 tools/mock_run.lua . enUS` (et `frFR`, `"frFR broker"`) en cherchant **`ERROR` dans toute la sortie** (pas seulement la dernière ligne) ; `lua5.1 tools/fuzz_blocks.lua .` ; `lua5.1 tools/check_docs.lua .` (`release` avant une publication) ; `python3 tools/api_audit.py <lua-language-server> <vscode-wow-api>` ; `python3 tools/forever_api_check.py <BlizzardInterfaceResources, branche forever>`.

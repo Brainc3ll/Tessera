@@ -130,6 +130,20 @@ local function Targets()
     return { S.selected }
 end
 
+-- Blocks a setting is written to: on a page with several blocks (All blocks, All launchers, a group)
+-- a block whose style is locked is left alone, whatever the setting. The lock itself is the one
+-- setting that still reaches it (so a group can be unlocked). A single block stays editable.
+local function WriteTargets(name)
+    local keys = Targets()
+    if not IsGroup() or name == "styleLocked" then return keys end
+    local out = {}
+    for _, key in ipairs(keys) do
+        local cfg = ns.db.blocks[key]
+        if not (cfg and cfg.styleLocked) then table.insert(out, key) end
+    end
+    return out
+end
+
 -- Block whose values are displayed (the first one of the selection)
 local function Cfg()
     local key = Targets()[1]
@@ -444,6 +458,7 @@ ns.OptionsTools = {
     SPACING = SPACING,
     TOPBAR_RIGHT = TOPBAR_RIGHT,
     Targets = Targets,
+    WriteTargets = WriteTargets,
     ValidateSelection = ValidateSelection,
     pages = pages,
     tabs = tabs,

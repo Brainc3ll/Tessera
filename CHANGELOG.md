@@ -3,6 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
+## 1.7.2 — 2026-11-21
+
+### Fixes
+
+- Style lock: on a page with several blocks (All blocks, All launchers, a group), no setting reaches a block whose style is locked. That covers every setting, the "Enabled" switch and Reset. In 1.7.1 a change such as the border also changed locked blocks.
+- "Copy style to all" and "Copy style to group" ask first when a locked block is among the targets. The block takes the style after you say yes and stays locked.
+
 ## 1.7.1 — 2026-11-21
 
 - Quick update: a few things that should have been in 1.7.0. I need a coffee. ;)

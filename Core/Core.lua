@@ -2915,10 +2915,28 @@ function ns:ResetBlock(key)
     self:ApplyStyle(key)
 end
 
--- Copies the appearance settings (STYLE_KEYS) of one block to all others
-function ns:CopyStyleToAll(sourceKey)
+-- Blocks (other than the source) whose style is locked, among some keys
+local function CountLocked(self, keys, sourceKey)
+    local n = 0
+    for _, key in ipairs(keys) do
+        local cfg = self.db.blocks[key]
+        if key ~= sourceKey and cfg and cfg.styleLocked then n = n + 1 end
+    end
+    return n
+end
+
+-- Copies the appearance settings (STYLE_KEYS) of one block to all others. A locked block takes
+-- the style only after a warning (it stays locked); confirmed = true once the player said yes.
+function ns:CopyStyleToAll(sourceKey, confirmed)
     local src = self.db.blocks[sourceKey]
     if not src then return end
+    if not confirmed then
+        local locked = CountLocked(self, self:GetBlockKeys(), sourceKey)
+        if locked > 0 and StaticPopup_Show then
+            StaticPopup_Show("TESSERA_STYLE_LOCKED_COPY", locked, nil, { source = sourceKey })
+            return
+        end
+    end
     if self.PushUndo then self:PushUndo(true) end -- Undo brings the old looks back
     for _, key in ipairs(self:GetBlockKeys()) do
         if key ~= sourceKey then
@@ -2931,10 +2949,17 @@ end
 
 -- Same, limited to the block's group (GetStyleGroup: the bar and its rows, spacers
 -- included so they keep blending in). Returns false when the block is alone.
-function ns:CopyStyleToGroup(sourceKey)
+function ns:CopyStyleToGroup(sourceKey, confirmed)
     local src = self.db.blocks[sourceKey]
     local members = self:GetStyleGroup(sourceKey)
     if not src or #members < 2 then return false end
+    if not confirmed then
+        local locked = CountLocked(self, members, sourceKey)
+        if locked > 0 and StaticPopup_Show then
+            StaticPopup_Show("TESSERA_STYLE_LOCKED_COPY", locked, nil, { source = sourceKey, group = true })
+            return true
+        end
+    end
     if self.PushUndo then self:PushUndo(true) end
     for _, key in ipairs(members) do
         if key ~= sourceKey then

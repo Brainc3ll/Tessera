@@ -1319,6 +1319,64 @@ for _, step in ipairs({
         bags.styleLocked, bags.iconSize, bags.bg = nil, bagsIcon, bagsBg
         ns.HasFlareUIMedia = has
     end,
+    -- a block whose style is locked is left alone by the pages with several blocks (All blocks, a group) (1.7.2)
+    function()
+        local Tools = ns.OptionsTools
+        local bags, gold = ns.db.blocks.bags, ns.db.blocks.gold
+        local sLock, sFont, sEnabled, sIcon, gFont, gIcon = bags.styleLocked, bags.fontSize, bags.enabled, bags.iconSize, gold.fontSize, gold.iconSize
+        bags.styleLocked, bags.fontSize, bags.iconSize = true, 13, 31
+        gold.fontSize, gold.iconSize = 13, 16
+        local selected = Tools.S.selected
+        Tools.S.selected = Tools.ALL
+        Tools.SetField("fontSize", 21)
+        assert(gold.fontSize == 21, "All blocks: an unlocked block takes the setting")
+        assert(bags.fontSize == 13, "All blocks: a locked block was changed by a setting")
+        bags.enabled = false
+        Tools.SetField("enabled", true)
+        assert(bags.enabled == false, "All blocks: the On screen switch reached a locked block")
+        -- the page of the block itself stays editable; the lock setting still reaches a locked block of a page
+        Tools.S.selected = "bags"
+        Tools.SetField("fontSize", 17)
+        assert(bags.fontSize == 17, "a locked block is no longer editable on its own page")
+        Tools.S.selected = Tools.ALL
+        Tools.SetField("styleLocked", nil)
+        assert(bags.styleLocked == nil, "All blocks: the lock cannot be removed")
+        bags.styleLocked, bags.fontSize = true, 13
+        -- copy style: it asks first, then copies and the block stays locked
+        local asked = {}
+        local realShow = StaticPopup_Show
+        StaticPopup_Show = function(which, a, b, data) table.insert(asked, { which = which, n = a, data = data }) end
+        gold.iconSize = 44
+        ns:CopyStyleToAll("gold")
+        assert(#asked == 1 and asked[1].which == "TESSERA_STYLE_LOCKED_COPY" and asked[1].n >= 1, "Copy style to all: no question about the locked block")
+        assert(bags.iconSize == 31, "Copy style to all: a locked block changed before the answer")
+        StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnAccept(nil, asked[1].data)
+        assert(bags.iconSize == 44 and bags.styleLocked, "Copy style to all: not copied after yes, or the lock was lost")
+        bags.iconSize = 31
+        local members = ns:GetStyleGroup("bags")
+        local src
+        for _, k in ipairs(members) do if k ~= "bags" and not ns.IsSpacerKey(k) then src = k break end end
+        assert(src, "the test needs a group with the Bags block")
+        local before = ns.db.blocks[src].iconSize
+        ns.db.blocks[src].iconSize = 45
+        asked = {}
+        ns:CopyStyleToGroup(src)
+        assert(#asked == 1 and asked[1].data.group and bags.iconSize == 31, "Copy style to the group: no question, or changed before the answer")
+        StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnAccept(nil, asked[1].data)
+        assert(bags.iconSize == 45 and bags.styleLocked, "Copy style to the group: not copied after yes, or the lock was lost")
+        ns.db.blocks[src].iconSize = before
+        StaticPopup_Show = realShow
+        -- no locked block: no question
+        bags.styleLocked, bags.iconSize = nil, 31
+        asked = {}
+        StaticPopup_Show = function(which, a, b, data) table.insert(asked, { which = which }) end
+        ns:CopyStyleToAll("gold")
+        StaticPopup_Show = realShow
+        assert(#asked == 0 and bags.iconSize == 44, "Copy style to all: asked with no locked block")
+        Tools.S.selected = selected
+        bags.styleLocked, bags.fontSize, bags.enabled, bags.iconSize, gold.fontSize, gold.iconSize = sLock, sFont, sEnabled, sIcon, gFont, gIcon
+        ns:ApplyStyle("bags") ns:ApplyStyle("gold")
+    end,
     -- placing: empty blocks ("Hide when empty") stay shown unless the player hides them (V)
     function()
         local key = "whispers"
@@ -4250,6 +4308,24 @@ do
         if rf and ns.CanResetOptionsBox(rf.box) then print("STEP ERROR: Reset stays usable after a reset") end
         ns:Undo()
         if cfg.fontSize ~= before + 7 then print("STEP ERROR: Ctrl + Z does not undo a box reset") end
+        -- on All blocks, Reset leaves a block whose style is locked as it is (1.7.2)
+        do
+            local Tools = ns.OptionsTools
+            local sel, bags = Tools.S.selected, ns.db.blocks.bags
+            local bagsFont, bagsLock, goldFont = bags.fontSize, bags.styleLocked, cfg.fontSize
+            Tools.S.selected = Tools.ALL
+            ns:RefreshOptions()
+            local _, rfAll = Find(L.FONT_SIZE)
+            bags.styleLocked, bags.fontSize, cfg.fontSize = true, 29, 31
+            ns:RefreshOptions()
+            if not rfAll then print("STEP ERROR: no Text box on the All blocks page") else
+                ns.ResetOptionsBox(rfAll.box)
+                if bags.fontSize ~= 29 then print("STEP ERROR: Reset on All blocks changed a locked block") end
+                if cfg.fontSize == 31 then print("STEP ERROR: Reset on All blocks left an unlocked block") end
+            end
+            Tools.S.selected, bags.styleLocked, bags.fontSize, cfg.fontSize = sel, bagsLock, bagsFont, goldFont
+            ns:RefreshOptions()
+        end
         cfg.fontSize = before
     end
     MOCK_GEOMETRY = nil

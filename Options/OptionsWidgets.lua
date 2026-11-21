@@ -7,7 +7,7 @@ local Tools = ns.OptionsTools
 local S = Tools.S
 local ALL, COL_W, COL_X, Cfg = Tools.ALL, Tools.COL_W, Tools.COL_X, Tools.Cfg
 local FULL_W, GroupHead, IsGroup, LAUNCHERS = Tools.FULL_W, Tools.GroupHead, Tools.IsGroup, Tools.LAUNCHERS
-local PER_BLOCK_FIELDS, SPACER_SHARED_FIELDS, SPACING, Targets = Tools.PER_BLOCK_FIELDS, Tools.SPACER_SHARED_FIELDS, Tools.SPACING, Tools.Targets
+local PER_BLOCK_FIELDS, SPACER_SHARED_FIELDS, SPACING, WriteTargets = Tools.PER_BLOCK_FIELDS, Tools.SPACER_SHARED_FIELDS, Tools.SPACING, Tools.WriteTargets
 local widgets = Tools.widgets
 
 -- Settings of the lines between merged blocks: they are drawn by the layout pass (ns:UpdateSeams), not by ApplyStyle
@@ -15,14 +15,14 @@ local SEPARATOR_FIELDS = { separators = true, separatorColor = true, classColorS
 
 local function SetField(name, value)
     if name == "enabled" then
-        local keys = Targets()
+        local keys = WriteTargets(name)
         if not value and #keys > 1 then
             StaticPopup_Show("TESSERA_REMOVE_BLOCKS", #keys, nil, keys)
             return
         end
         ns:SetBlocksOnScreen(keys, value and true or false)
     else
-        for _, key in ipairs(Targets()) do
+        for _, key in ipairs(WriteTargets(name)) do
             ns.db.blocks[key][name] = ns.DeepCopy(value)
             ns:ApplyStyle(key)
         end
@@ -31,7 +31,7 @@ local function SetField(name, value)
     if (S.selected == ALL or GroupHead()) and SPACER_SHARED_FIELDS[name] then
         local all = GroupHead() and ns:GetStyleGroup(GroupHead()) or ns:GetBlockKeys()
         for _, key in ipairs(all) do
-            if ns.IsSpacerKey(key) then
+            if ns.IsSpacerKey(key) and not ns.db.blocks[key].styleLocked then
                 ns.db.blocks[key][name] = ns.DeepCopy(value)
                 ns:ApplyStyle(key)
             end

@@ -47,6 +47,29 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.7.2",
+        date = "2026-11-21",
+        sections = {
+            { kind = "fixed",
+              en = {
+                "Style lock: on a page with several blocks (All blocks, All launchers, a group), no setting reaches a block whose style is locked."
+                    .. " That covers every setting, the \"Enabled\" switch and Reset."
+                    .. " In 1.7.1 a change such as the border also changed locked blocks.",
+                "\"Copy style to all\" and \"Copy style to group\" ask first when a locked block is among the targets."
+                    .. " The block takes the style after you say yes and stays locked.",
+              },
+              fr = {
+                "Verrou du style : sur une page à plusieurs blocs (Tous les blocs, Tous les lanceurs, un groupe),"
+                    .. " aucun réglage n'atteint un bloc au style verrouillé."
+                    .. " Cela couvre tous les réglages, l'interrupteur « Activé » et Réinitialiser."
+                    .. " En 1.7.1, un changement comme la bordure modifiait aussi les blocs verrouillés.",
+                "« Copier sur tous » et « Copier sur le groupe » demandent d'abord confirmation quand un bloc verrouillé fait partie des cibles."
+                    .. " Le bloc prend le style après ton accord et reste verrouillé.",
+              },
+            },
+        },
+    },
+    {
         version = "1.7.1",
         date = "2026-11-21",
         highlights = {

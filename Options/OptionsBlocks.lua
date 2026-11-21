@@ -211,6 +211,21 @@ StaticPopupDialogs["TESSERA_STYLE_LOCKED_APPLY"] = {
     OnAccept = function(_, data) ns:ApplyStyleToBlocksNow(data.keys, data.style) end,
 }
 
+-- "Copy style to all" / "Copy this style to the group" with locked blocks among the targets: asks first,
+-- then copies (they stay locked)
+StaticPopupDialogs["TESSERA_STYLE_LOCKED_COPY"] = {
+    text = L.STYLE_LOCKED_APPLY,
+    button1 = YES,
+    button2 = NO,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function(_, data)
+        if data.group then ns:CopyStyleToGroup(data.source, true) else ns:CopyStyleToAll(data.source, true) end
+        ns:RefreshOptions()
+    end,
+}
+
 -- Unlocking a block's style: follow the profile's style now, or keep the current look
 StaticPopupDialogs["TESSERA_STYLE_UNLOCK"] = {
     text = L.STYLE_UNLOCK_FOLLOW,

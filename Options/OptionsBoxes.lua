@@ -109,7 +109,7 @@ local function ResetBox(box)
                 db.launcherDefaults[f] = ns.DeepCopy(ns.PROFILE_DEFAULTS.launcherDefaults[f])
             end
         end
-        for _, key in ipairs(Targets()) do
+        for _, key in ipairs(Tools.WriteTargets()) do -- a locked block is left as it is on a page with several blocks
             local cfg = db.blocks[key]
             if cfg then
                 local def = ns:GetBlockDefaults(key)

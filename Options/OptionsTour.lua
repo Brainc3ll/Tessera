@@ -629,16 +629,70 @@ end
 
 -- Offers the style of a newly detected interface (not in DataBroker mode: Tessera then
 -- shows no block of its own; not in combat: retried a bit later)
--- The automatic style changed because an interface went missing or came back (1.7.1): said
--- in a window with OK, once, then the styles to offer (if any) come after it
-StaticPopupDialogs["TESSERA_STYLE_NOTICE"] = {
-    text = "%s",
-    button1 = OKAY,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnHide = function() C_Timer.After(0.5, function() ns:OfferStylesIfNeeded() end) end,
-}
+-- The automatic style changed because an interface went missing or came back (1.7.1): said once
+-- in a window in Tessera's look, naming the blocks whose style is locked; the styles to offer
+-- (if any) come after it
+local notice
+local NOTICE_W, NOTICE_MAX_NAMES = 400, 12
+local function BuildNotice()
+    local f = CreateFrame("Frame", "TesseraStyleNotice", UIParent, "BackdropTemplate")
+    f:SetWidth(NOTICE_W)
+    f:SetPoint("CENTER", 0, 120)
+    f:SetFrameStrata("DIALOG")
+    f:SetToplevel(true)
+    f:SetClampedToScreen(true)
+    f:EnableMouse(true)
+    f:SetMovable(true)
+    f:RegisterForDrag("LeftButton")
+    f:SetScript("OnDragStart", f.StartMoving)
+    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    table.insert(UISpecialFrames, f:GetName()) -- Escape closes it, like OK
+    f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    f.title:SetPoint("TOP", 0, -18)
+    f.title:SetText("Tessera")
+    f.text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    f.text:SetPoint("TOP", f.title, "BOTTOM", 0, -12)
+    f.text:SetWidth(NOTICE_W - 40)
+    f.text:SetSpacing(2)
+    f.lockedTitle = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    f.lockedTitle:SetPoint("TOP", f.text, "BOTTOM", 0, -16)
+    f.lockedTitle:SetText(L.STYLE_NOTICE_LOCKED_TITLE)
+    f.names = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    f.names:SetPoint("TOP", f.lockedTitle, "BOTTOM", 0, -6)
+    f.names:SetWidth(NOTICE_W - 60)
+    f.names:SetSpacing(3)
+    local ok = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    ok:SetSize(120, 24)
+    ok:SetPoint("BOTTOM", 0, 18)
+    ok:SetText(OKAY)
+    ok:SetScript("OnClick", function() f:Hide() end)
+    f.ok = ok
+    f:SetScript("OnHide", function() C_Timer.After(0.5, function() ns:OfferStylesIfNeeded() end) end)
+    f:Hide()
+    return f
+end
+
+function ns:ShowStyleNotice(data)
+    if not notice then notice = BuildNotice() end
+    self:SkinWindow(notice, notice.title)
+    notice.text:SetText(data.text)
+    local names = {}
+    for i, key in ipairs(data.locked or {}) do
+        if i > NOTICE_MAX_NAMES then
+            table.insert(names, L.STYLE_NOTICE_MORE:format(#data.locked - NOTICE_MAX_NAMES))
+            break
+        end
+        table.insert(names, "|cffffd100•|r " .. self:GetBlockName(key))
+    end
+    local hasLocked = #names > 0
+    notice.lockedTitle:SetShown(hasLocked)
+    notice.names:SetShown(hasLocked)
+    notice.names:SetText(table.concat(names, "\n"))
+    local h = 18 + notice.title:GetStringHeight() + 12 + notice.text:GetStringHeight()
+    if hasLocked then h = h + 16 + notice.lockedTitle:GetStringHeight() + 6 + notice.names:GetStringHeight() end
+    notice:SetHeight(math.floor(h + 24 + 24 + 18 + 0.5))
+    self:ShowSideWindow(notice)
+end
 
 function ns:OfferStylesIfNeeded()
     if not self.built or self.brokerModeActive then return end
@@ -651,9 +705,9 @@ function ns:OfferStylesIfNeeded()
         return
     end
     if self.pendingStyleNotice then
-        local text = self.pendingStyleNotice
+        local data = self.pendingStyleNotice
         self.pendingStyleNotice = nil
-        StaticPopup_Show("TESSERA_STYLE_NOTICE", text)
+        self:ShowStyleNotice(data)
         return
     end
     local list = self:GetStylesToOffer()

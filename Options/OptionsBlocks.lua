@@ -467,14 +467,6 @@ local function BuildBlockPage(page)
         self:SetAlpha(off and 0.45 or 1)
     end
     valueBox.Add(CreateStyleTargets(c, function() return pickStyle or ns:GetTheme() end))
-    -- locked: a style change for the whole profile (Look tab, an interface missing or back) leaves it as it is
-    local getLock = Field("styleLocked")
-    local lockCheck = valueBox.Add(CreateCheck(c, L.STYLE_LOCK, getLock, function(v)
-        local keys = Tools.Targets()
-        SetField("styleLocked", v and true or nil)
-        if not v then StaticPopup_Show("TESSERA_STYLE_UNLOCK", nil, nil, keys) end
-    end, nil, L.TIP_STYLE_LOCK))
-    lockCheck.field = "styleLocked"
 
     local tipBox = C.Box(L.SECTION_TOOLTIP, { reset = true })
     local showTip = tipBox.Add(Check(c, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP))
@@ -493,6 +485,16 @@ local function BuildBlockPage(page)
 
     -- 2. Appearance: size, text, background, icon, border, separators, opacity and layer,
     -- colors by level and progress bar
+    -- locked: a style change for the whole profile (Look tab, an interface missing or back) leaves it
+    -- as it is. Its own section at the top of Appearance, so it is seen before the settings it protects
+    local lockBox = A.Box(L.SECTION_STYLE_LOCK)
+    local lockCheck = lockBox.Add(CreateCheck(a, L.STYLE_LOCK, Field("styleLocked"), function(v)
+        local keys = Tools.Targets()
+        SetField("styleLocked", v and true or nil)
+        if not v then StaticPopup_Show("TESSERA_STYLE_UNLOCK", nil, nil, keys) end
+    end, nil, L.TIP_STYLE_LOCK))
+    lockCheck.field = "styleLocked"
+
     local sizeBox = A.Box(L.SECTION_SIZE, { reset = true })
     sizeBox.Add(Check(a, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP))
     -- a group selection shows the note in place of the sliders

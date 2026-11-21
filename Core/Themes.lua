@@ -941,22 +941,20 @@ function ns:PickStyleChoice(v)
     return self:ApplyTheme(v)
 end
 
--- Number of blocks whose style the player locked (1.7.1)
-function ns:CountStyleLocked()
-    local n = 0
+-- Keys of the blocks whose style the player locked (1.7.1)
+function ns:GetStyleLockedKeys()
+    local list = {}
     for _, blockKey in ipairs(self:GetBlockKeys()) do
         local cfg = self.db.blocks[blockKey]
-        if cfg and cfg.styleLocked then n = n + 1 end
+        if cfg and cfg.styleLocked then table.insert(list, blockKey) end
     end
-    return n
+    return list
 end
 
--- Text of the window shown once the blocks are drawn (ns:ShowStyleNoticeIfNeeded, OptionsTour.lua),
--- when the automatic style follows an interface that went missing or came back
+-- What the window says once the blocks are drawn (ns:ShowStyleNotice, OptionsTour.lua), when the
+-- automatic style follows an interface that went missing or came back: the text and the locked blocks
 local function QueueStyleNotice(self, text)
-    local locked = self:CountStyleLocked()
-    if locked > 0 then text = text .. "\n\n" .. L.STYLE_NOTICE_LOCKED:format(locked) end
-    self.pendingStyleNotice = text
+    self.pendingStyleNotice = { text = text, locked = self:GetStyleLockedKeys() }
 end
 
 -- The automatic style (no style picked by the player) is the one of the installed UI.

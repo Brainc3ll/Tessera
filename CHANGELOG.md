@@ -5,17 +5,19 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 1.7.1 — 2026-11-21
 
+- Quick update: a few things that should have been in 1.7.0. I need a coffee. ;)
+
 ### New
 
-- "Lock this block's style" (Blocks and groups tab, Value section): a style change for the whole profile leaves the block as it is, also when FlareUI, ElvUI or another interface goes missing or comes back. "Apply this style to" still changes it, after a warning. Unlocking asks whether the block takes the profile's style.
+- "Lock this block's style" (Blocks and groups tab, Appearance, Style lock): a style change for the whole profile leaves the block as it is, also when FlareUI, ElvUI or another interface addon is removed or comes back. "Apply this style to" still changes it, after a warning. Unlocking asks whether the block takes the profile's style.
 
 ### Improvements
 
-- When the interface your automatic style follows goes missing or comes back, a window with OK says so (instead of a chat line) and counts the locked blocks. Your settings and profiles keep working as before.
+- When the interface addon your automatic style follows is removed or comes back, a window says so (instead of a chat line) and names the blocks whose style is locked. Your settings and profiles keep working as before.
 
 ### Fixes
 
-- In DataBroker mode, the minimap button's tooltip names the DataBroker tab, where you can hide the button. The tab it named before is hidden in that mode.
+- In DataBroker mode, the minimap button's tooltip names the DataBroker tab, where you can hide the button. The tab it named before is hidden in that mode. Thanks to ReiceG on CurseForge for pointing it out.
 - Tessera's entry in the addon compartment (and in FlareUI's button bag) shows the same tooltip as the minimap button, and a right-click on it locks or unlocks the blocks, as on the button.
 
 ## 1.7.0 — 2026-11-21

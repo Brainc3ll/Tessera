@@ -18,9 +18,10 @@ Vérifié le 20/11/2026 (Sonnet 5.5). Une session neuve n'a rien : ni dépôts, 
 4. **Nouveautés de Forever, à vérifier régulièrement** (demande de Braincell1980, 20/11) : au début de chaque session Tessera, `git ls-remote https://github.com/BigWigsMods/WoWUI.git forever`. Dernier état vu : commit `2291b25`, build `1.60.1.70959` (17/11). Si le commit a changé, le build a changé : cloner (`--depth 1 -b forever`), comparer avec l'ancien clone (`git diff --stat` si les deux historiques sont là, sinon les listes de fichiers), repérer ce qui touche les blocs de Tessera (API, événements, textes) et le dire en deux lignes à Braincell1980. Puis mettre à jour le commit et le build dans cette ligne.
 
 ## En une phrase
-Version en jeu : 1.6.3, publiée le 19/11 (police Global de FlareUI, coût de réparation avec les sacs ; 1.6.2 du 18/11 : correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
+Version en jeu : 1.7.0, publiée le 21/11 (Talents et Héritage refondus, bouton de la minicarte ; 1.6.3 du 19/11 : police Global de FlareUI, coût de réparation avec les sacs ; 1.6.2 du 18/11 : correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
 
 ## Journal court
+- 21/11 : 1.7.0 publiée (Talents et Héritage refondus, bouton de la minicarte) ; revamp de blocs remis à zéro, au cas par cas.
 - 20/11 : 1.7.0 sur `next`, Talents et Héritage refondus et poussés ; suite : FPS, Latence, Temps joué, Pierre de foyer, Honneur, Familier, Munitions.
 
 ## Avant chaque publication

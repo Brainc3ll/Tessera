@@ -21,6 +21,7 @@ Vérifié le 20/11/2026 (Sonnet 5.5). Une session neuve n'a rien : ni dépôts, 
 Version en jeu : 1.7.2, publiée le 21/11 (correctif : un bloc au style verrouillé reste intact sur les pages à plusieurs blocs, les copies de style demandent d'abord ; 1.7.1 du même jour : verrou du style par bloc, fenêtre de repli d'interface ; 1.7.0 du même jour : Talents et Héritage refondus ; 1.6.3 du 19/11 : police Global de FlareUI, coût de réparation avec les sacs ; 1.6.2 du 18/11 : correctifs des séparateurs, dossier rangé en `Core/`, `Blocks/`, `Lists/`, `Options/`, `Extras/` ; listes au survol depuis la 1.6.0 du 17/11). Deux branches : `main` = version en jeu (correctifs seulement, tags `vX.Y.Z`), `next` = versions suivantes, synchronisées après chaque publication. L'historique des versions est dans `docs/archive/` et dans `Extras/Changelog.lua`.
 
 ## Journal court
+- 23/11 : bug noté, fenêtre d'options à 65 % d'échelle d'interface (cadres coupés, lignes en double) : correctif 1.7.3 à faire sur `main` (voir A-REPRENDRE).
 - 21/11 : 1.7.2 publiée (correctif du verrou du style sur les pages à plusieurs blocs ; copies de style avec avertissement).
 - 21/11 : 1.7.1 publiée (verrou du style par bloc, fenêtre de repli, infobulle du bouton en mode DataBroker et dans le tiroir de FlareUI).
 - 21/11 : 1.7.0 publiée (Talents et Héritage refondus, bouton de la minicarte) ; revamp de blocs remis à zéro, au cas par cas.

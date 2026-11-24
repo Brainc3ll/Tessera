@@ -645,4 +645,4 @@ the name tags, tooltip settings, back to the player's profile) and the developme
 
 ## License
 
-MIT — see `LICENSE`. The `Licenses` folder, shipped in the zip, holds a copy of it and the licenses of the six fonts (see its `README.txt`).
+MIT, see `LICENSE`. The `Licenses` folder, shipped in the zip, holds a copy of it and the licenses of the six fonts (see its `README.txt`).

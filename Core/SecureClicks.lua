@@ -109,7 +109,6 @@ function ns:SyncClickOverlays()
                     local macro = MacroText(key)
                     if o:GetAttribute("macrotext") ~= macro then
                         o:SetAttribute("macrotext", macro)
-                        o:SetAttribute("macrotext3", macro)
                     end
                     -- the block's own extra action, when chosen for Shift + click or middle click
                     local shiftMacro, middleMacro = ExtraMacro(key, cfg, "shiftClick"), ExtraMacro(key, cfg, "middleClick")

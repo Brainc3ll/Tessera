@@ -23,6 +23,14 @@ Pistes notées par Braincell1980 après la 1.3.1 ; aucune n'est choisie ni daté
 - **[Fait, 1.5.0, test132, validé en jeu le 14/11 (test135 à 137)] Réglages propres des blocs en sections repliables** (Affichage, Infobulle ; maquette A) : voir `docs/etudes/PLAN-modernisation-blocs.md`.
 - **Vol et bateaux** : écarté pour le moment (14/11) ; voir « Idées de blocs du 7/11 » pour les autres idées vérifiées avec forever-lint.
 
+## Pistes classées du 24/11 (Sonnet 5.5, rien codé)
+Classement fait avec Braincell1980 d'après les notes ; coûts = estimation de Claude ; faisabilité sur Forever = d'après les notes, à confirmer par sonde.
+- **1.8 (choisie)** : textes longs qui tiennent ; sélecteur de langue. Voir « Une interface qui s'adapte » et « Choisir la langue de Tessera » plus bas.
+- **1.9** : listes au survol Quêtes et Réputations (puis Monnaies, Instances) ; blocs à clic Ensembles d'équipement, Titres, Difficulté (fonctions vues le 10/11, pas d'échange d'équipement en combat) ; nouveaux blocs chrono de combat, file d'attente, calendrier (forever-lint OK le 7/11).
+- **2.0** : échelle pixel perfect (risque élevé : nouveau champ de profil, T2) ; accessibilité, suite (alertes sonores à sonder, lecture vocale : API inconnue sur Forever, formes en plus des couleurs à vérifier dans le code ; avis de joueurs d'abord) ; Alts et Timers (nouvelles données de compte, en ajout seulement).
+- **Sans priorité** : « Montre-moi » élargi ; LibDBIcon pour SexyMap (« bof » le 24/10).
+- **Silence des joueurs (24/11)** : la dernière version compte environ 111 téléchargements, sans commentaire, sans retour, sans demande (dit par Braincell1980). Ce silence ne prouve ni la satisfaction ni le contraire. Piste : une question précise aux joueurs (CurseForge, Discord) avant la 2.0, pour ne pas bâtir sur les seules idées de Braincell1980 et de Claude. Garde-fou : plus de 50 blocs, chaque ajout coûte quatre langues.
+
 ## Revue des blocs (19 novembre 2026, Sonnet 5.5)
 Relevé d'après le journal des versions et le code (`Blocks/Modules*.lua`). **Remis à zéro le 21/11 (Braincell1980) : aucun lot de blocs n'est planifié ; il choisira au cas par cas les blocs à retoucher.** Ce qui suit sont des idées, pas un plan. Pistes déjà discutées (20/11, non codées) : FPS, cases d'infobulle seulement (le texte du bloc resterait le FPS actuel) ; Munitions, sonder d'abord si Forever donne la réserve des sacs ; Latence, Temps joué, Pierre de foyer, Honneur, Familier : voir les lignes plus bas. Talents et Héritage sont faits (1.7.0).
 - **Modifiés récemment (1.5.0 à 1.7.0)** : Or, Sacs, Durabilité, XP (lot Personnage, 1.5.0 ; Durabilité : objets des sacs en 1.6.3, coût par réputation abandonné) ; Guilde, Amis, Groupe, Chuchotements (listes au survol 1.6.0, nom de guilde 1.6.1) ; Quêtes, Réputation, Monnaies, Objectif, XP par heure, Composants ; Mémoire, Instances, Niveau d'objet, Stats, Enchantement d'arme, Buffs longs ; Streamer (1.6.1).

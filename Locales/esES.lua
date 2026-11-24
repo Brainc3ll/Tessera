@@ -1684,4 +1684,11 @@ L["TIP_LANGUAGE"] = "Idioma de los textos de Tessera. «Como el juego» sigue tu
 L["LANGUAGE_RELOAD"] = "Tessera cambia de idioma tras recargar la interfaz. ¿Recargar ahora?"
 L["LANGUAGE_LATER"] = "Más tarde"
 L["HELP_GENERAL_8"] = "- Idioma: el idioma de los textos de Tessera. «Como el juego» es la opción por defecto; un cambio se aplica tras recargar la interfaz."
+L["BLOCK_COUNT"] = "%d de %d bloques en pantalla"
+L["SEE_ALL_BLOCKS"] = "Ver todos"
+L["TIP_SEE_ALL_BLOCKS"] = "Abre todos los bloques en una ventana. Un punto verde marca los bloques de tu pantalla. Haz clic en un bloque para elegirlo, o escribe para buscar."
+L["BLOCK_PICKER_TITLE"] = "Elegir un bloque"
+L["BLOCK_PICKER_SEARCH"] = "Buscar un bloque"
+L["BLOCK_PICKER_NONE"] = "No se encontró ningún bloque"
+L["HELP_BLOCKS_39"] = "- «Ver todos», bajo la lista, abre todos los bloques en una ventana, con el número de bloques de tu pantalla. Un punto verde los marca; haz clic en un bloque para elegirlo, o escribe para buscar (Intro elige el primero)."
 end)

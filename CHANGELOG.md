@@ -7,6 +7,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### New
 
+- "See all" under the block list (Blocks tab): one window with every block, a green dot on the ones on your screen, a search box and the count ("12 of 54 blocks on screen"). Click a block to select it.
 - Language list in the General tab. "As the game" is the default. Pick English, French, German, Spanish (Spain or Mexico) or Portuguese (Brazil), then reload the interface. The choice covers your whole account, not one profile.
 - Names that come from the game, such as classes, zones and items, stay in the game's language. The changelog exists in English and French only.
 

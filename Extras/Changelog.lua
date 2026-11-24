@@ -53,16 +53,23 @@ ns.CHANGELOG = {
             { en = "Language list in the General tab: pick the language of Tessera's texts, whatever your game language.",
               fr = "Liste Langue dans l'onglet Général : choisis la langue des textes de Tessera, quelle que soit celle du jeu.",
               show = { page = "PAGE_GENERAL", label = "LANGUAGE" } },
+            { en = "See all: every block in one window, with the count of blocks on your screen.",
+              fr = "Tout voir : tous les blocs dans une fenêtre, avec le nombre de blocs à l'écran.",
+              show = { block = "gold", label = "SEE_ALL_BLOCKS" } },
         },
         sections = {
             { kind = "new",
               en = {
+                "\"See all\" under the block list (Blocks tab): one window with every block, a green dot on the ones on your screen,"
+                    .. " a search box and the count (\"12 of 54 blocks on screen\"). Click a block to select it.",
                 "Language list in the General tab. \"As the game\" is the default. Pick English, French, German, Spanish (Spain or Mexico)"
                     .. " or Portuguese (Brazil), then reload the interface. The choice covers your whole account, not one profile.",
                 "Names that come from the game, such as classes, zones and items, stay in the game's language."
                     .. " The changelog exists in English and French only.",
               },
               fr = {
+                "« Tout voir » sous la liste des blocs (onglet Blocs) : une fenêtre avec tous les blocs, un point vert sur ceux de ton écran,"
+                    .. " une recherche et le nombre (« 12 blocs à l'écran sur 54 »). Clique sur un bloc pour le choisir.",
                 "Liste Langue dans l'onglet Général. « Comme le jeu » est le choix par défaut. Choisis l'anglais, le français, l'allemand,"
                     .. " l'espagnol (Espagne ou Mexique) ou le portugais (Brésil), puis recharge l'interface."
                     .. " Le choix vaut pour tout ton compte, pas pour un seul profil.",

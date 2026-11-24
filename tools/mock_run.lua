@@ -4518,6 +4518,35 @@ do
     ns.sv.reduceMotion = nil
     for _, fn in ipairs(__timers) do pcall(fn) end
 end
+-- "See all" window of the Blocks tab (1.8): counter, every block in one window, search, a click selects
+do
+    local tools = ns.OptionsTools
+    local shown, total = tools.CountBlocks()
+    if not (total >= 50 and shown >= 0 and shown <= total) then print("STEP ERROR: block count " .. shown .. " / " .. total) end
+    ns.seeAllButton:Refresh()
+    ns:ShowBlockPicker()
+    local picker = ns.BlockPicker()
+    if not picker:IsShown() then print("STEP ERROR: the See all window does not open") end
+    local visible = 0
+    for _, b in ipairs(picker.buttons) do if b:IsShown() then visible = visible + 1 end end
+    if visible < total then print("STEP ERROR: See all shows " .. visible .. " buttons for " .. total .. " blocks") end
+    -- search: only the blocks whose name holds the text
+    local name = ns:GetBlockName("gold")
+    picker.search:SetText(name:sub(1, 3))
+    picker.search.__scripts.OnTextChanged(picker.search)
+    local found = 0
+    for _, b in ipairs(picker.buttons) do if b:IsShown() then found = found + 1 end end
+    if found < 1 or found >= visible then print("STEP ERROR: See all search found " .. found .. " of " .. visible) end
+    -- a click selects the block and closes the window
+    local key
+    for _, b in ipairs(picker.buttons) do if b:IsShown() and b.entryKey then key = b.entryKey b.__scripts.OnClick(b) break end end
+    if picker:IsShown() or ns.OptionsTools.S.selected ~= key then print("STEP ERROR: a click in See all does not select the block") end
+    ns:ShowBlockPicker()
+    picker.search:SetText("zzzzzz")
+    picker.search.__scripts.OnTextChanged(picker.search)
+    if not picker.empty:IsShown() then print("STEP ERROR: See all shows no message when nothing matches") end
+    picker:Hide()
+end
 -- Language list (1.8): the choice is saved, a change offers the reload, "as the game" does not
 do
     local asked = {}

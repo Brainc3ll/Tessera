@@ -25,9 +25,11 @@ local ScrollArea, SetField = Tools.ScrollArea, Tools.SetField
 local SortKey = ns.SortKey
 
 local function SelectionOptions()
-    local list = { { key = ALL, name = L.ALL_BLOCKS } }
+    -- plain: the name without markup (the "See all" window searches it); block: a real block
+    -- (counted in "x of y blocks on screen"), shown: on the screen
+    local list = { { key = ALL, name = L.ALL_BLOCKS, plain = L.ALL_BLOCKS } }
     if #LauncherKeys() > 0 then
-        table.insert(list, { key = LAUNCHERS, name = L.ALL_LAUNCHERS })
+        table.insert(list, { key = LAUNCHERS, name = L.ALL_LAUNCHERS, plain = L.ALL_LAUNCHERS })
     end
     -- groups (a bar and its rows), named after their first block that is not a spacer;
     -- a green dot when one of their blocks is shown
@@ -50,7 +52,7 @@ local function SelectionOptions()
             else
                 name = "|cff8c8c8c" .. name .. "|r"
             end
-            table.insert(list, { key = g.key, name = name })
+            table.insert(list, { key = g.key, name = name, plain = L.GROUP_ENTRY:format(g.label) })
         end
     end
     -- then every block in two parts (1.3): those on the screen (a green dot), then those
@@ -82,7 +84,7 @@ local function SelectionOptions()
                 else
                     name = "|cff8c8c8c" .. name .. "|r"
                 end
-                table.insert(list, { key = key, name = name })
+                table.insert(list, { key = key, name = name, plain = ns:GetBlockName(key), block = true, shown = on })
             end
         end
     end
@@ -420,6 +422,12 @@ local function BuildBlockPage(page)
             and not InCombatLockdown() and true or false)
     end
     ns.placeButton = place -- (tools/mock_run.lua)
+    -- "See all": a window with every block at once, and how many are on screen (1.8)
+    local seeAll = top.Place(CreateButton(page, L.SEE_ALL_BLOCKS, function() ns:ShowBlockPicker() end, nil, 130, L.TIP_SEE_ALL_BLOCKS), 1)
+    local count = page:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    count:SetPoint("LEFT", seeAll, "RIGHT", 10, 0)
+    seeAll.Refresh = function() count:SetText(L.BLOCK_COUNT:format(Tools.CountBlocks())) end
+    ns.seeAllButton = seeAll -- (tools/mock_run.lua)
     top.Gap(1, 4)
 
     -- The tabs, then one page per tab that scrolls (only when it has to)
@@ -811,5 +819,6 @@ end
 Tools.BuildBlockPage = BuildBlockPage
 Tools.BuildModuleOptions = BuildModuleOptions
 Tools.SelectedModuleKey = SelectedModuleKey
+Tools.SelectionOptions = SelectionOptions
 Tools.SortKey = SortKey
 

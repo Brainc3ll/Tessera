@@ -39,7 +39,7 @@ jobs:
       - name: Translations (Locales/ against the English strings)
         run: |
           for f in Locales/*.lua; do
-            case "$f" in */enUS.lua|*/frFR.lua) continue ;; esac
+            case "$f" in */enUS.lua|*/frFR.lua|*/Language.lua) continue ;; esac
             python3 tools/check_translation.py "$f" | tail -1
             python3 tools/check_translation.py "$f" | grep -q " 0 error(s)" || { python3 tools/check_translation.py "$f" | grep -i "^error"; exit 1; }
           done

@@ -3,8 +3,7 @@ local _, ns = ...
 -- Brazilian Portuguese translation. Translations live in this file: send a new or corrected one as a GitHub
 -- pull request, or paste it in a "Translation" issue (see docs/TRANSLATING.md). A text missing
 -- here shows in English. Check a file with: python3 tools/check_translation.py <file>
-if GetLocale() ~= "ptBR" then return end
-local L = ns.L
+ns.RegisterLocale("ptBR", "Português (Brasil)", function(L)
 
 L["ABOUT_AI"] = "Ideia, design, escolhas e muitos testes no jogo: eu, Braincell1980. Nunca consegui aprender a programar; graças à IA, finalmente posso dar vida às minhas ideias de addons, aprendendo pelo caminho como funcionam o GitHub, o CurseForge e os addons de WoW. Código, textos e ferramentas: Claude (uma IA da Anthropic), seguindo minhas instruções. Não revisado linha por linha por um programador humano: relate erros com /tessera bug."
 L["ABOUT_AUTHOR"] = "Autor"
@@ -1678,3 +1677,11 @@ L["SECTION_STYLE_LOCK"] = "Trava do estilo"
 L["STYLE_NOTICE_LOCKED_TITLE"] = "Estes blocos mantêm a aparência (estilo travado):"
 L["STYLE_NOTICE_MORE"] = "... e mais %d"
 L["HELP_BMODE_BROKER_6"] = "- Botão do minimapa: mostrado ou ocultado na seção Minimapa, no fim desta aba."
+L["SECTION_LANGUAGE"] = "Idioma"
+L["LANGUAGE"] = "Idioma de Tessera"
+L["LANGUAGE_AUTO"] = "Como o jogo"
+L["TIP_LANGUAGE"] = "Idioma dos textos de Tessera. «Como o jogo» segue o cliente do jogo. Uma mudança vale depois de recarregar a interface. Os nomes que vêm do jogo, como classes, zonas e itens, ficam no idioma do jogo. O registro de mudanças existe apenas em inglês e francês."
+L["LANGUAGE_RELOAD"] = "Tessera muda de idioma depois de recarregar a interface. Recarregar agora?"
+L["LANGUAGE_LATER"] = "Depois"
+L["HELP_GENERAL_8"] = "- Idioma: o idioma dos textos de Tessera. «Como o jogo» é o padrão; uma mudança vale depois de recarregar a interface."
+end)

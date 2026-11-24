@@ -157,7 +157,7 @@ function ns.IsFlareTheme(key) return FLARE_KEYS[key] == true end
 ns.themes = {
     {
         key = "flareui2",
-        name = L.THEME_BRONZE, -- (FlareUI 2 to 5)
+        nameKey = "THEME_BRONZE", -- (FlareUI 2 to 5)
         uiName = "FlareUI",
         installed = function() return ns:HasFlareUIMedia() end,
         available = function() return true end,
@@ -191,7 +191,7 @@ ns.themes = {
     },
     {
         key = "flareui", -- key kept from earlier versions: saved profiles refer to it
-        name = L.THEME_BRONZE_OLD, -- (FlareUI 1.x)
+        nameKey = "THEME_BRONZE_OLD", -- (FlareUI 1.x)
         uiName = "FlareUI",
         installed = function() return ns:HasFlareUIMedia() end,
         -- listed again from 1.3.1: under its own name (Bronze (old)) it no longer looks like a duplicate
@@ -225,7 +225,7 @@ ns.themes = {
         -- text (0.91, 0.77, 0.42), natural rock under a brown wash (0.05, 0.038, 0.026 at 35%).
         -- Its XP bar did not change in 6.0: the blocks take its frames' bronze and the window's gold
         key = "flareui6",
-        name = L.THEME_BRONZE_GOLD,
+        nameKey = "THEME_BRONZE_GOLD",
         uiName = "FlareUI",
         installed = function() return ns:HasFlareUIMedia() end,
         available = function() return true end,
@@ -266,7 +266,7 @@ ns.themes = {
     },
     {
         key = "ellesmere",
-        name = L.THEME_EMERALD,
+        nameKey = "THEME_EMERALD",
         uiName = "EllesmereUI",
         installed = function() return type(_G["EllesmereUI"]) == "table" end,
         available = function() return true end,
@@ -290,7 +290,7 @@ ns.themes = {
     },
     {
         key = "elvui",
-        name = L.THEME_ELVEN,
+        nameKey = "THEME_ELVEN",
         uiName = "ElvUI",
         installed = function()
             local E = ElvEngine()
@@ -330,7 +330,7 @@ ns.themes = {
         -- border, background) in the player's DaylightUI settings, and the font is theirs. Without
         -- it: a plain imitation (dark background, thin dark border), values rounded on purpose
         key = "aurore",
-        name = L.THEME_AURORA,
+        nameKey = "THEME_AURORA",
         uiName = "DaylightUI",
         installed = function() return ns:GetDaylightAPI() ~= nil end,
         available = function() return true end,
@@ -374,7 +374,7 @@ ns.themes = {
     -- gold (Retail's silver art tinted gold). Tints to check in game.
     {
         key = "blizzardModern",
-        name = L.THEME_BLIZZARD_MODERN,
+        nameKey = "THEME_BLIZZARD_MODERN",
         available = function() return NineSliceUtil ~= nil and NineSliceUtil.ApplyLayoutByName ~= nil end,
         block = function(cfg)
             cfg.bg = "tooltip"           -- shows the center of the atlas
@@ -394,7 +394,7 @@ ns.themes = {
     },
     {
         key = "blizzardForever",
-        name = L.THEME_BLIZZARD_FOREVER,
+        nameKey = "THEME_BLIZZARD_FOREVER",
         available = function() return NineSliceUtil ~= nil and NineSliceUtil.ApplyLayoutByName ~= nil end,
         block = function(cfg)
             cfg.bg = "tooltip"
@@ -414,7 +414,7 @@ ns.themes = {
     },
     {
         key = "blizzard",
-        name = L.THEME_BLIZZARD_CLASSIC,
+        nameKey = "THEME_BLIZZARD_CLASSIC",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "tooltip"
@@ -438,7 +438,7 @@ ns.themes = {
     -- and a thin line between merged blocks (the look of Tessera's banners)
     {
         key = "flareSquare",
-        name = L.THEME_FLARE_SQUARE,
+        nameKey = "THEME_FLARE_SQUARE",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -457,7 +457,7 @@ ns.themes = {
     {
         -- silver, like Blizzard modern
         key = "modernSquare",
-        name = L.THEME_MODERN_SQUARE,
+        nameKey = "THEME_MODERN_SQUARE",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -476,7 +476,7 @@ ns.themes = {
     {
         -- gold, like Blizzard Forever (Blizzard modern square's look until 1.0.1)
         key = "foreverSquare",
-        name = L.THEME_FOREVER_SQUARE,
+        nameKey = "THEME_FOREVER_SQUARE",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -494,7 +494,7 @@ ns.themes = {
     },
     {
         key = "classicSquare",
-        name = L.THEME_CLASSIC_SQUARE,
+        nameKey = "THEME_CLASSIC_SQUARE",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -513,7 +513,7 @@ ns.themes = {
     },
     {
         key = "flat",
-        name = L.THEME_FLAT,
+        nameKey = "THEME_FLAT",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -531,7 +531,7 @@ ns.themes = {
         -- Transparent: no background and no border, only the text and icons, outlined so
         -- they stay readable over the game world. The options window keeps a flat frame.
         key = "transparent",
-        name = L.THEME_TRANSPARENT,
+        nameKey = "THEME_TRANSPARENT",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "none"
@@ -552,7 +552,7 @@ ns.themes = {
         -- Runestone: black and white, text only: white letters on deep black, a thin
         -- silver line around the blocks and between them; launchers keep a grey icon
         key = "runestone",
-        name = L.THEME_RUNESTONE,
+        nameKey = "THEME_RUNESTONE",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -572,7 +572,7 @@ ns.themes = {
     {
         -- Grimoire: an old spell book: dark leather, gold edges and golden letters
         key = "grimoire",
-        name = L.THEME_GRIMOIRE,
+        nameKey = "THEME_GRIMOIRE",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -594,7 +594,7 @@ ns.themes = {
         -- Parchment: light parchment, dark brown ink, a copper edge. The options window
         -- stays dark (its texts are light)
         key = "parchment",
-        name = L.THEME_PARCHMENT,
+        nameKey = "THEME_PARCHMENT",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -615,7 +615,7 @@ ns.themes = {
     {
         -- Arcane: the mages of Dalaran: deep violet, a violet edge, pale glowing blue letters
         key = "arcane",
-        name = L.THEME_ARCANE,
+        nameKey = "THEME_ARCANE",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -638,7 +638,7 @@ ns.themes = {
     {
         -- Royal Seal: a Stormwind charter: the gold dialog border on dark marble, golden letters
         key = "royalSeal",
-        name = L.THEME_ROYAL_SEAL,
+        nameKey = "THEME_ROYAL_SEAL",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "marble"
@@ -663,7 +663,7 @@ ns.themes = {
     {
         -- Ironforge: the stone dialog border on rock, warm white letters
         key = "ironforge",
-        name = L.THEME_IRONFORGE,
+        nameKey = "THEME_IRONFORGE",
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "rock"
@@ -689,10 +689,10 @@ ns.themes = {
 
 -- Three more styles with the game's tooltip border, tinted: they only differ by their
 -- colors (background, border, text)
-local function TooltipStyle(key, name, bg, edge, text)
+local function TooltipStyle(key, nameKey, bg, edge, text)
     return {
         key = key,
-        name = name,
+        nameKey = nameKey,
         available = function() return true end,
         block = function(cfg)
             cfg.bg = "solid"
@@ -717,19 +717,19 @@ local function TooltipStyle(key, name, bg, edge, text)
 end
 -- Runeblade: icy blue (death knights, Northrend); Ember: fire and forge; Sylvan: night elves, druids;
 -- Tessera (below)
-table.insert(ns.themes, TooltipStyle("runeblade", L.THEME_RUNEBLADE, { 0.03, 0.05, 0.09 }, { 0.55, 0.8, 1 }, { 0.75, 0.9, 1 }))
-table.insert(ns.themes, TooltipStyle("ember", L.THEME_EMBER, { 0.1, 0.04, 0.02 }, { 1, 0.45, 0.15 }, { 1, 0.72, 0.4 }))
-table.insert(ns.themes, TooltipStyle("sylvan", L.THEME_SYLVAN, { 0.03, 0.08, 0.04 }, { 0.45, 0.8, 0.4 }, { 0.75, 1, 0.7 }))
+table.insert(ns.themes, TooltipStyle("runeblade", "THEME_RUNEBLADE", { 0.03, 0.05, 0.09 }, { 0.55, 0.8, 1 }, { 0.75, 0.9, 1 }))
+table.insert(ns.themes, TooltipStyle("ember", "THEME_EMBER", { 0.1, 0.04, 0.02 }, { 1, 0.45, 0.15 }, { 1, 0.72, 0.4 }))
+table.insert(ns.themes, TooltipStyle("sylvan", "THEME_SYLVAN", { 0.03, 0.08, 0.04 }, { 0.45, 0.8, 0.4 }, { 0.75, 1, 0.7 }))
 -- Tessera: the addon's own colors (logo): turquoise #1fb3a3 on dark slate #16222a, cream letters
-table.insert(ns.themes, TooltipStyle("tessera", L.THEME_TESSERA, { 0.086, 0.133, 0.165 }, { 0.122, 0.702, 0.639 },
+table.insert(ns.themes, TooltipStyle("tessera", "THEME_TESSERA", { 0.086, 0.133, 0.165 }, { 0.122, 0.702, 0.639 },
     { 0.957, 0.945, 0.918 }))
 
 -- Worldsoul Saga: the frames Blizzard draws for The War Within and Midnight (atlases also in
 -- the WoW Forever client) on the options window; blocks in their colors, which are a first
 -- guess from the expansions' art (The War Within: stone, bronze and gold; Midnight: void
 -- purple and the Sunwell's light). The Last Titan: once its art is in the game.
-local function ExpansionStyle(key, name, kit, bg, edge, text)
-    local style = TooltipStyle(key, name, bg, edge, text)
+local function ExpansionStyle(key, nameKey, kit, bg, edge, text)
+    local style = TooltipStyle(key, nameKey, bg, edge, text)
     local plain = style.window
     style.window = function()
         local t = plain()
@@ -744,10 +744,11 @@ local function ExpansionStyle(key, name, kit, bg, edge, text)
     end
     return style
 end
-table.insert(ns.themes, ExpansionStyle("warWithin", L.THEME_WAR_WITHIN, "thewarwithin", { 0.09, 0.065, 0.045 },
+table.insert(ns.themes, ExpansionStyle("warWithin", "THEME_WAR_WITHIN", "thewarwithin", { 0.09, 0.065, 0.045 },
     { 0.85, 0.62, 0.28 }, { 1, 0.86, 0.55 }))
-table.insert(ns.themes, ExpansionStyle("midnight", L.THEME_MIDNIGHT, "midnight", { 0.07, 0.045, 0.12 },
+table.insert(ns.themes, ExpansionStyle("midnight", "THEME_MIDNIGHT", "midnight", { 0.07, 0.045, 0.12 },
     { 0.62, 0.45, 0.95 }, { 1, 0.92, 0.75 }))
+ns.LocalizeList(ns.themes, "name") -- the names come from keys (nameKey), see Locales/Language.lua
 
 -- The center of modern tooltips is a white texture that the game tints with
 -- TOOLTIP_DEFAULT_BACKGROUND_COLOR (SharedTooltipTemplates.lua); we do the same

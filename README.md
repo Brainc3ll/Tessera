@@ -117,7 +117,7 @@ I can't promise how many years I'll keep this up. Today, this is how I run it.
 ## At a glance
 
 - Interface: `16001` (WoW Forever)
-- Languages: English and French; German, Spanish (Spain and Mexico) and Brazilian Portuguese made by Claude, not reviewed yet; other languages welcome as a pull request or a "Translation" issue (see `docs/TRANSLATING.md`)
+- Languages: English and French; German, Spanish (Spain and Mexico) and Brazilian Portuguese made by Claude, not reviewed yet. A Language list in the General tab picks the language of Tessera's texts (default: as the game; applied after a reload). Other languages welcome as a pull request or a "Translation" issue (see `docs/TRANSLATING.md`)
 - Saved variables: `TesseraDB`
 - Optional addons it adapts to: FlareUI, EllesmereUI, ElvUI and DaylightUI (a matching style is
   offered; blocks snap to the XP bar of FlareUI, ElvUI and GW2 UI, and Tessera warns when they
@@ -368,7 +368,8 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | File | Role |
 |---|---|
 | `Locales/enUS.lua` | English strings: the base table `ns.L`. Every key must exist here. |
-| `Locales/frFR.lua` | French strings, override `ns.L` keys when the game is in French. |
+| `Locales/Language.lua` | The language in use: `ns.RegisterLocale` (each language file hands its texts to it), the saved choice (`ns:ApplySavedLanguage`, read when the saved variables exist), `ns.OnLanguage` for texts read while the files load. |
+| `Locales/frFR.lua` | French strings, override `ns.L` keys when the language is French. |
 | `Locales/deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`... | The other languages, sent by pull request or issue; a missing text shows in English. |
 | `Core/Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
 | `Core/Themes.lua` | The styles (Bronze, Bronze and gold and Bronze (old) for FlareUI, Emerald for EllesmereUI, Elven for ElvUI, Aurora for DaylightUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames), the style offered when an interface is installed. |
@@ -456,7 +457,10 @@ ns:RegisterModule("level", {
 ```
 
 Then add `LEVEL = "Level"` to `Locales/enUS.lua` and `L.LEVEL = "Niveau"` to
-`Locales/frFR.lua`. Never rename a block key once released: it is stored in players' saved
+`Locales/frFR.lua`. A text read while the files load (a table at the top of a file, a popup)
+stays in the language of the game: read it later, or put the definition in `ns.OnLanguage(function() ... end)`;
+`ns.LocalizeList` fills `name` or `clickHint` from a key (`nameKey`, `clickHintKey`).
+`TESSERA_EARLY=1 lua5.1 tools/mock_run.lua . enUS` lists such reads. Never rename a block key once released: it is stored in players' saved
 variables. The block appears automatically in the options.
 
 To open a Blizzard window on click, use `secureMacro` (a macro run by a secure button) rather

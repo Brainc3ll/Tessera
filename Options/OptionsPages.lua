@@ -94,7 +94,30 @@ local function BuildGeneralPage(page)
     minimap.Add(CreateCheck(page, L.SHOW_MINIMAP_BUTTON,
         function() return not ns.sv.hideMinimapButton end,
         function(v) ns:SetMinimapButtonShown(v) end, nil, L.TIP_MINIMAP_BUTTON), { default = true })
+
+    -- account-wide, like the two boxes above; applied after a reload of the interface
+    local language = F.Box(L.SECTION_LANGUAGE, { reset = true })
+    local languages = { { key = "auto", name = L.LANGUAGE_AUTO } }
+    for _, entry in ipairs(ns.LANGUAGES) do languages[#languages + 1] = entry end
+    language.Add(CreateDropdown(page, L.LANGUAGE, languages,
+        function() return ns.GetLanguageChoice() or "auto" end,
+        function(v) ns:SetLanguageChoice(v ~= "auto" and v or nil) end, nil, nil, L.TIP_LANGUAGE),
+        { default = "auto" })
 end
+
+-- Offered when the language changes: the new language applies after a reload
+-- (the texts are read again once the language is known, see Locales/Language.lua)
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_LANGUAGE_RELOAD"] = {
+        text = L.LANGUAGE_RELOAD,
+        button1 = L.RELOAD_SHORT,
+        button2 = L.LANGUAGE_LATER,
+        OnAccept = function() ReloadUI() end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+    }
+end)
 
 ---------------------------------------------------------------------------
 -- "Accessibility" tab (1.3): what Tessera adds to the game's own accessibility settings
@@ -425,25 +448,27 @@ end
 -- "Profiles" tab
 ---------------------------------------------------------------------------
 -- Popup asking for a new profile name
-StaticPopupDialogs["TESSERA_NEW_PROFILE"] = {
-    text = L.NEW_PROFILE_PROMPT,
-    button1 = ACCEPT,
-    button2 = CANCEL,
-    hasEditBox = true,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function(self)
-        local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
-        local name = box and box:GetText() or ""
-        if not ns:CreateProfile(name) then ns.Print(L.PROFILE_EXISTS) end
-    end,
-    EditBoxOnEnterPressed = function(self)
-        local parent = self:GetParent()
-        StaticPopupDialogs["TESSERA_NEW_PROFILE"].OnAccept(parent)
-        parent:Hide()
-    end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_NEW_PROFILE"] = {
+        text = L.NEW_PROFILE_PROMPT,
+        button1 = ACCEPT,
+        button2 = CANCEL,
+        hasEditBox = true,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function(self)
+            local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
+            local name = box and box:GetText() or ""
+            if not ns:CreateProfile(name) then ns.Print(L.PROFILE_EXISTS) end
+        end,
+        EditBoxOnEnterPressed = function(self)
+            local parent = self:GetParent()
+            StaticPopupDialogs["TESSERA_NEW_PROFILE"].OnAccept(parent)
+            parent:Hide()
+        end,
+    }
+end)
 
 -- Same popup shape for "duplicate" and "name of the imported profile"
 local function NamePopup(text, onName)
@@ -468,18 +493,22 @@ local function NamePopup(text, onName)
     return dialog
 end
 
-StaticPopupDialogs["TESSERA_DUPLICATE_PROFILE"] = NamePopup(L.DUPLICATE_PROFILE_PROMPT, function(name)
-    if not ns:DuplicateProfile(name) then ns.Print(L.PROFILE_EXISTS) end
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_DUPLICATE_PROFILE"] = NamePopup(L.DUPLICATE_PROFILE_PROMPT, function(name)
+        if not ns:DuplicateProfile(name) then ns.Print(L.PROFILE_EXISTS) end
+    end)
 end)
 
-StaticPopupDialogs["TESSERA_IMPORT_PROFILE"] = NamePopup(L.IMPORT_PROFILE_PROMPT, function(name, text)
-    local ok, err = ns:ImportProfile(text, name)
-    if ok then
-        ns.Print(L.IMPORT_DONE:format(strtrim(name)))
-    else
-        ns.Print(err)
-        ns:OpenImportWindow(text) -- give the text back to try another name
-    end
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_IMPORT_PROFILE"] = NamePopup(L.IMPORT_PROFILE_PROMPT, function(name, text)
+        local ok, err = ns:ImportProfile(text, name)
+        if ok then
+            ns.Print(L.IMPORT_DONE:format(strtrim(name)))
+        else
+            ns.Print(err)
+            ns:OpenImportWindow(text) -- give the text back to try another name
+        end
+    end)
 end)
 
 -- Confirmation before an import: what the text needs and this computer lacks,
@@ -536,26 +565,30 @@ function ns:OpenImportWindow(prefill)
 end
 
 -- Confirmation before applying a ready-made layout (replaces the current profile)
-StaticPopupDialogs["TESSERA_APPLY_PRESET"] = {
-    text = L.PRESET_CONFIRM,
-    button1 = YES,
-    button2 = NO,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function(_, preset) ns:ResetProfile(preset) end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_APPLY_PRESET"] = {
+        text = L.PRESET_CONFIRM,
+        button1 = YES,
+        button2 = NO,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function(_, preset) ns:ResetProfile(preset) end,
+    }
+end)
 
 -- Confirmation popup before resetting everything (all saved data, then reload)
-StaticPopupDialogs["TESSERA_RESET_PROFILE"] = {
-    text = L.RESET_PROFILE_CONFIRM,
-    button1 = YES,
-    button2 = NO,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function() ns:ResetEverything() end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_RESET_PROFILE"] = {
+        text = L.RESET_PROFILE_CONFIRM,
+        button1 = YES,
+        button2 = NO,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function() ns:ResetEverything() end,
+    }
+end)
 
 ---------------------------------------------------------------------------
 -- "Look" tab: style of the blocks, how groups look, ready-made layouts, screen edges

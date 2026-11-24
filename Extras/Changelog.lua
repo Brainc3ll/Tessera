@@ -47,6 +47,32 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.8.0",
+        date = "2026-11-24",
+        highlights = {
+            { en = "Language list in the General tab: pick the language of Tessera's texts, whatever your game language.",
+              fr = "Liste Langue dans l'onglet Général : choisis la langue des textes de Tessera, quelle que soit celle du jeu.",
+              show = { page = "PAGE_GENERAL", label = "LANGUAGE" } },
+        },
+        sections = {
+            { kind = "new",
+              en = {
+                "Language list in the General tab. \"As the game\" is the default. Pick English, French, German, Spanish (Spain or Mexico)"
+                    .. " or Portuguese (Brazil), then reload the interface. The choice covers your whole account, not one profile.",
+                "Names that come from the game, such as classes, zones and items, stay in the game's language."
+                    .. " The changelog exists in English and French only.",
+              },
+              fr = {
+                "Liste Langue dans l'onglet Général. « Comme le jeu » est le choix par défaut. Choisis l'anglais, le français, l'allemand,"
+                    .. " l'espagnol (Espagne ou Mexique) ou le portugais (Brésil), puis recharge l'interface."
+                    .. " Le choix vaut pour tout ton compte, pas pour un seul profil.",
+                "Les noms qui viennent du jeu, comme les classes, les zones et les objets, restent dans la langue du jeu."
+                    .. " Le journal des changements existe seulement en anglais et en français.",
+              },
+            },
+        },
+    },
+    {
         version = "1.7.2",
         date = "2026-11-21",
         sections = {

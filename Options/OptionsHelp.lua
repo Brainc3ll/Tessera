@@ -389,7 +389,7 @@ local CHANGELOG_TOPIC = 3
 
 -- "What's new": each version and its short lines, with a "Show me" button when the line has a place
 local function WhatsNewRows()
-    local lang = GetLocale() == "frFR" and "fr" or "en"
+    local lang = ns.TextLanguage()
     local rows = {}
     for _, entry in ipairs(ns.CHANGELOG or {}) do
         local lines = ns.ChangelogHighlights(entry, lang)
@@ -402,7 +402,7 @@ local function WhatsNewRows()
 end
 
 local function ChangelogText()
-    local lang = GetLocale() == "frFR" and "fr" or "en"
+    local lang = ns.TextLanguage()
     local lines = {}
     for _, entry in ipairs(ns.CHANGELOG or {}) do
         -- an empty line after the version title and between changes, for more air

@@ -397,8 +397,24 @@ for line in toc:gmatch("[^\r\n]+") do
         local chunk = assert(loadfile(path))
         local ok, err = pcall(chunk, "Tessera", ns)
         if not ok then print("LOAD ERROR " .. line .. ": " .. tostring(err)) os.exit(1) end
+        -- TESSERA_EARLY=1: lists every text read while the files load (before the saved language is
+        -- applied, Locales/Language.lua); such a text would stay in the language of the game
+        if line:match("Language%.lua$") and os.getenv("TESSERA_EARLY") then
+            local real = ns.L
+            ns.L = setmetatable({}, {
+                __index = function(_, key)
+                    if ns.__loading ~= false then
+                        local info = debug.getinfo(2, "Sl")
+                        print(("EARLY READ %s:%d %s"):format(info.short_src:gsub("^.*/", ""), info.currentline, tostring(key)))
+                    end
+                    return real[key]
+                end,
+                __newindex = function(_, key, value) real[key] = value end,
+            })
+        end
     end
 end
+ns.__loading = false
 -- a test build's extra file (test and development commands, never released), if given:
 -- TESSERA_DEV=/path/to/TesseraDev.lua lua5.1 tools/mock_run.lua . enUS
 local devFile = os.getenv("TESSERA_DEV")
@@ -1523,9 +1539,12 @@ for _, step in ipairs({
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.7.0" then e170 = e break end end
         local e171
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.7.1" then e171 = e break end end
+        local e180
+        for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.8.0" then e180 = e break end end
         local n161 = #ns.ChangelogHighlights(e161, "en")
         local n170 = #ns.ChangelogHighlights(e170, "en") + (e171 and #ns.ChangelogHighlights(e171, "en") or 0)
-        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0 and 1.7.1 news")
+            + (e180 and #ns.ChangelogHighlights(e180, "en") or 0)
+        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0, 1.7.1 and 1.8.0 news")
         assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + n170 + 7, "a test build counts as its version")
         assert(#ns.WhatsNewItems("1.5.1") > n161 + n170, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")
@@ -4498,6 +4517,27 @@ do
     if not ok then print("STEP ERROR: fewer animations: " .. tostring(err)) end
     ns.sv.reduceMotion = nil
     for _, fn in ipairs(__timers) do pcall(fn) end
+end
+-- Language list (1.8): the choice is saved, a change offers the reload, "as the game" does not
+do
+    local asked = {}
+    local realShow = StaticPopup_Show
+    StaticPopup_Show = function(which) asked[#asked + 1] = which end
+    -- the list holds the languages that have texts (a file registers itself), not the empty ones
+    local listed = {}
+    for _, entry in ipairs(ns.LANGUAGES) do listed[#listed + 1] = entry.key end
+    if table.concat(listed, " ") ~= "enUS frFR deDE esES esMX ptBR" then print("STEP ERROR: languages listed: " .. table.concat(listed, " ")) end
+    local other = ns.GetLanguage() == "deDE" and "ptBR" or "deDE"
+    ns:SetLanguageChoice(other)
+    if ns.sv.language ~= other or ns.GetLanguageChoice() ~= other then print("STEP ERROR: the language choice is not saved") end
+    if asked[1] ~= "TESSERA_LANGUAGE_RELOAD" then print("STEP ERROR: a language change does not offer the reload") end
+    local popup = StaticPopupDialogs["TESSERA_LANGUAGE_RELOAD"]
+    if not (popup and popup.text == ns.L.LANGUAGE_RELOAD) then print("STEP ERROR: the language reload window has no text") end
+    asked = {}
+    ns:SetLanguageChoice(nil)
+    if ns.sv.language ~= nil or #asked > 0 then print("STEP ERROR: \"As the game\" must save nothing and ask nothing") end
+    if ns.TextLanguage() ~= (GetLocale() == "frFR" and "fr" or "en") then print("STEP ERROR: text language of the changelog") end
+    StaticPopup_Show = realShow
 end
 -- Options that must never get lost (rule: a rework takes nothing away). Dump with
 -- MOCK_WRITE_OPTIONS=1 on a version known good; then every run (enUS only) checks that each

@@ -409,19 +409,21 @@ function ns:SetBlocksOnScreen(keys, on)
 end
 
 -- Taking several blocks off the screen at once (a group, "All blocks") asks first
-StaticPopupDialogs["TESSERA_REMOVE_BLOCKS"] = {
-    text = L.REMOVE_BLOCKS_CONFIRM,
-    button1 = YES,
-    button2 = NO,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function(_, keys)
-        ns:SetBlocksOnScreen(keys, false)
-        if ns.RefreshOptions then ns:RefreshOptions() end
-    end,
-    OnCancel = function() if ns.RefreshOptions then ns:RefreshOptions() end end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_REMOVE_BLOCKS"] = {
+        text = L.REMOVE_BLOCKS_CONFIRM,
+        button1 = YES,
+        button2 = NO,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function(_, keys)
+            ns:SetBlocksOnScreen(keys, false)
+            if ns.RefreshOptions then ns:RefreshOptions() end
+        end,
+        OnCancel = function() if ns.RefreshOptions then ns:RefreshOptions() end end,
+    }
+end)
 
 -- Everything the other Options*.lua files import (they are loaded after this one)
 ns.OptionsTools = {

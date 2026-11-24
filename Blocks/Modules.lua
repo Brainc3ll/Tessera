@@ -38,7 +38,8 @@ local L = ns.L
 --                   not need a secure button. Right-click is reserved for block settings.
 --   onWheel(delta, cfg)  Optional. Mouse wheel handler (delta > 0 = wheel up). Only
 --                   active while blocks are locked.
---   clickHint       Optional. Line shown at the bottom of the tooltip ("Click: ...").
+--   clickHintKey    Optional. Text key (L) of the line shown at the bottom of the tooltip ("Click: ...");
+--                   ns:RegisterModule and ns.LocalizeList turn it into `clickHint`, in the language in use.
 --   request()       Optional. Asks the server for fresh data (e.g. guild roster).
 --                   Called 5 s after login, then every `requestInterval` seconds
 --                   (default 60), only while the block is enabled. The answer comes back

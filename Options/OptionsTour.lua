@@ -12,17 +12,19 @@ local PAGE_ABOUT, PAGE_ACCESS, PAGE_LOOK = Tools.PAGE_ABOUT, Tools.PAGE_ACCESS, 
 ---------------------------------------------------------------------------
 -- Welcome popup on first launch
 ---------------------------------------------------------------------------
-StaticPopupDialogs["TESSERA_WELCOME"] = {
-    text = L.WELCOME_TEXT,
-    button1 = L.TUTORIAL_START,
-    button2 = L.WELCOME_LATER,
-    button3 = L.DEMO_BUTTON,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function() ns:StartTutorial() end,
-    OnAlt = function() ns:StartDemo() end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_WELCOME"] = {
+        text = L.WELCOME_TEXT,
+        button1 = L.TUTORIAL_START,
+        button2 = L.WELCOME_LATER,
+        button3 = L.DEMO_BUTTON,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function() ns:StartTutorial() end,
+        OnAlt = function() ns:StartDemo() end,
+    }
+end)
 
 ---------------------------------------------------------------------------
 -- Quick tour: a few short steps in a small window (first launch, or the button
@@ -33,11 +35,11 @@ local function NewsKey()
     return ns.db.blocks.gold and "gold" or ns.order[1]
 end
 -- a widget of the Blocks tab head (the "On screen" switch, "Place by pixel")
-local function ShowHeadWidget(getWidget, label, tip)
+local function ShowHeadWidget(getWidget, labelKey, tipKey)
     return function()
         ns:OpenOptionsFor(NewsKey())
         ns:RefreshOptions()
-        ns:ShowOptionHelp(label, tip)
+        ns:ShowOptionHelp(L[labelKey], L[tipKey])
         C_Timer.After(0, function()
             local w = getWidget()
             if w and w:IsShown() then Blink(w, true) end
@@ -45,11 +47,11 @@ local function ShowHeadWidget(getWidget, label, tip)
     end
 end
 -- a setting row, found by its label (the first one: they are the same for every block)
-local function ShowRow(page, label, selectBlock)
+local function ShowRow(page, labelKey, selectBlock)
     return function()
         if selectBlock then ns:OpenOptionsFor(NewsKey()) end
         for _, r in ipairs(ns.optionRows) do
-            if r.label == label and r.page == page then
+            if r.label == L[labelKey] and r.page == page then
                 ns.GoToOption(r, ns.ShowOptionsPage)
                 return
             end
@@ -61,15 +63,15 @@ local TUTORIAL_STEPS = {
     { text = "TUTORIAL_1" },
     { text = "TUTORIAL_8", layouts = true, action = "TUTORIAL_DO_KEEP", run = function() ns:KeepTourLayout() end },
     { text = "TUTORIAL_9", action = "TUTORIAL_DO_BLOCK",
-      run = ShowHeadWidget(function() return ns.blockSwitch end, L.ENABLED, L.TIP_ENABLED) },
+      run = ShowHeadWidget(function() return ns.blockSwitch end, "ENABLED", "TIP_ENABLED") },
     { text = "TUTORIAL_11", action = "TUTORIAL_DO_BLOCK",
-      run = ShowHeadWidget(function() return ns.placeButton end, L.PLACE_BLOCK, L.TIP_PLACE_BLOCK) },
+      run = ShowHeadWidget(function() return ns.placeButton end, "PLACE_BLOCK", "TIP_PLACE_BLOCK") },
     { text = "TUTORIAL_2", action = "TUTORIAL_DO_UNLOCK", run = function() ns:SetLocked(false) end },
     { text = "TUTORIAL_3" },
     { text = "TUTORIAL_4" },
     { text = "TUTORIAL_5" },
     { text = "TUTORIAL_6", action = "TUTORIAL_DO_LOOK", run = function() ns:OpenOptions(PAGE_LOOK) end },
-    { text = "TUTORIAL_12", action = "TUTORIAL_DO_ACCESS", run = ShowRow(PAGE_ACCESS, L.HIGH_CONTRAST) },
+    { text = "TUTORIAL_12", action = "TUTORIAL_DO_ACCESS", run = ShowRow(PAGE_ACCESS, "HIGH_CONTRAST") },
     { text = "TUTORIAL_7", action = "TUTORIAL_DO_LOCK", run = function() ns:SetLocked(true) end },
 }
 local tutorial
@@ -340,7 +342,7 @@ end
 ns.WhatsNewIsNewer = IsNewer -- (tools/mock_run.lua)
 
 local function WhatsNewItems(since)
-    local lang = GetLocale() == "frFR" and "fr" or "en"
+    local lang = ns.TextLanguage()
     local items = {}
     -- only the versions newer than the one the player had (none known: the fallback below)
     for _, entry in ipairs(ns.CHANGELOG or {}) do
@@ -471,20 +473,22 @@ end
 
 -- Shown once, the first time DataBroker mode turns itself on: explains it and offers
 -- to turn it off at once (no Escape: the player has to choose)
-StaticPopupDialogs["TESSERA_BROKER_MODE"] = {
-    text = L.BROKER_POPUP_TEXT,
-    button1 = L.BROKER_POPUP_KEEP,
-    button2 = L.BROKER_MODE_OFF_BUTTON,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = false,
-    OnShow = function()
-        if ns.brokerDisplay and ns.sv.brokerNotified then ns.sv.brokerNotified[ns.brokerDisplay] = true end
-    end,
-    OnCancel = function(_, _, reason)
-        if reason == nil or reason == "clicked" then ns:SetBrokerMode(false) end
-    end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_BROKER_MODE"] = {
+        text = L.BROKER_POPUP_TEXT,
+        button1 = L.BROKER_POPUP_KEEP,
+        button2 = L.BROKER_MODE_OFF_BUTTON,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = false,
+        OnShow = function()
+            if ns.brokerDisplay and ns.sv.brokerNotified then ns.sv.brokerNotified[ns.brokerDisplay] = true end
+        end,
+        OnCancel = function(_, _, reason)
+            if reason == nil or reason == "clicked" then ns:SetBrokerMode(false) end
+        end,
+    }
+end)
 
 ---------------------------------------------------------------------------
 -- Style offer: when an interface with a matching style is installed (FlareUI,
@@ -784,7 +788,7 @@ function ns:BugReport()
     local function Add(fmt, ...) table.insert(lines, fmt:format(...)) end
     local version = C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(ADDON, "Version")
     local _, build, _, interface = GetBuildInfo()
-    Add("Tessera %s - client %s (build %s) - %s", tostring(version), tostring(interface), tostring(build), GetLocale())
+    Add("Tessera %s - client %s (build %s) - %s", tostring(version), tostring(interface), tostring(build), GetLocale() .. ", Tessera " .. ns.GetLanguage())
     Add("Theme: %s - profile: %s - locked: %s - scale: %s - in combat: %s", tostring(ns:GetTheme()),
         tostring(ns.profileName), tostring(ns.db.locked), tostring(ns.db.scale or 1), tostring(ns.state.inCombat))
     -- DataBroker: library, display addon, mode, sharing, DataBroker blocks

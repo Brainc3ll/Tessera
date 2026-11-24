@@ -1,10 +1,7 @@
 local _, ns = ...
 
 -- French translation; missing keys fall back to English.
-local locale = GetLocale()
-if locale ~= "frFR" then return end
-
-local L = ns.L
+ns.RegisterLocale("frFR", "Français", function(L)
 L.GOLD = "Or"
 L.BAGS = "Sacs"
 L.DURABILITY = "Durabilité"
@@ -296,6 +293,12 @@ L.HINT_VOLUME = "Clic : couper / remettre le son · Molette : volume général"
 L.SECTION_CHAT = "Discussion"
 L.QUIET = "Silencieux dans la discussion"
 L.TIP_QUIET = "Tessera n'écrit plus rien dans la discussion, sauf en réponse à une commande que tu tapes (/tessera …). S'applique à tous tes personnages."
+L.SECTION_LANGUAGE = "Langue"
+L.LANGUAGE = "Langue de Tessera"
+L.LANGUAGE_AUTO = "Comme le jeu"
+L.TIP_LANGUAGE = "Langue des textes de Tessera. « Comme le jeu » suit ton client. Un changement s'applique après un rechargement de l'interface. Les noms qui viennent du jeu, comme les classes, les zones et les objets, restent dans la langue du jeu. Le journal des changements existe seulement en anglais et en français."
+L.LANGUAGE_RELOAD = "Tessera change de langue après un rechargement de l'interface. Recharger maintenant ?"
+L.LANGUAGE_LATER = "Plus tard"
 L.SECTION_MINIMAP = "Minicarte"
 L.SHOW_MINIMAP_BUTTON = "Afficher le bouton de la minicarte"
 L.TIP_MINIMAP_BUTTON = "Le bouton rond de Tessera au bord de la minicarte (glisse-le autour de la minicarte), et son entrée dans le compartiment d'addons. Une fois masqué, tape /tessera minimap pour le réafficher."
@@ -1620,6 +1623,7 @@ L.HELP_GENERAL_1 = "- Placement : verrouillage, aimantation aux blocs et aux cad
 L.HELP_GENERAL_2 = "- Infobulles : aide des clics, espaces, infobulles en combat, seulement en tenant Alt, taille des infobulles."
 L.HELP_GENERAL_3 = "- Combat : blocs figés en combat."
 L.HELP_GENERAL_4 = "- Discussion et minicarte : discussion silencieuse, bouton de la minicarte."
+L.HELP_GENERAL_8 = "- Langue : la langue des textes de Tessera. « Comme le jeu » est le choix par défaut ; un changement s'applique après un rechargement de l'interface."
 L.HELP_GENERAL_6 = "- Mode streamer : pour les streams et les vidéos, remplace par *** les noms des autres joueurs, tes autres personnages, le nom de ta guilde et ton or. Aussi un raccourci clavier et un bloc Mode streamer (masqué au départ)."
 L.HELP_GENERAL_7 = "- Dans les réglages propres au bloc Streamer, quatre cases choisissent ce que le mode cache : les noms des autres joueurs, tes autres personnages, le nom de guilde, ton or. Les quatre sont cochées au départ."
 L.HELP_T_ACCESS = "Onglet Accessibilité"
@@ -1678,3 +1682,4 @@ L.HELP_T_BMODE_COMMANDS = "Commandes"
 L.HELP_BMODE_COMMANDS_1 = "/tessera ou /tes : options"
 L.HELP_BMODE_COMMANDS_2 = "/tessera broker : activer ou désactiver le mode DataBroker"
 L.HELP_BMODE_COMMANDS_3 = "/tessera bug : rapport à copier dans un signalement de bug"
+end)

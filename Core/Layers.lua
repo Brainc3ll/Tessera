@@ -297,31 +297,35 @@ function ns:ShowEditModeLayerButton(show)
     end
 end
 
-StaticPopupDialogs["TESSERA_LAYER_ALL"] = {
-    text = L.LAYER_ASK_ALL,
-    button1 = L.LAYER_FRONT,
-    button2 = L.LAYER_BEHIND,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = false,
-    OnAccept = function() ns:SetLayer("front") end,
-    OnCancel = function(_, _, reason)
-        if reason == "clicked" then ns:SetLayer("behind") end
-    end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_LAYER_ALL"] = {
+        text = L.LAYER_ASK_ALL,
+        button1 = L.LAYER_FRONT,
+        button2 = L.LAYER_BEHIND,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = false,
+        OnAccept = function() ns:SetLayer("front") end,
+        OnCancel = function(_, _, reason)
+            if reason == "clicked" then ns:SetLayer("behind") end
+        end,
+    }
+end)
 
-StaticPopupDialogs["TESSERA_LAYER"] = {
-    text = L.LAYER_ASK,
-    button1 = L.LAYER_FRONT,
-    button2 = L.LAYER_BEHIND,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = false, -- a real choice: one of the two buttons
-    OnAccept = function(_, covering) ns:SetLayer("front", covering) end,
-    OnCancel = function(_, covering, reason)
-        if reason == "clicked" then ns:SetLayer("behind", covering) end
-    end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_LAYER"] = {
+        text = L.LAYER_ASK,
+        button1 = L.LAYER_FRONT,
+        button2 = L.LAYER_BEHIND,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = false, -- a real choice: one of the two buttons
+        OnAccept = function(_, covering) ns:SetLayer("front", covering) end,
+        OnCancel = function(_, covering, reason)
+            if reason == "clicked" then ns:SetLayer("behind", covering) end
+        end,
+    }
+end)
 
 ---------------------------------------------------------------------------
 -- Edit Mode copies made by older test versions
@@ -413,21 +417,23 @@ function ns:LeaveEditModeCopy()
     end)
 end
 
-StaticPopupDialogs["TESSERA_EDITMODE_LEGACY"] = {
-    text = L.EDITMODE_LEGACY,
-    button1 = L.EDITMODE_REVERT,
-    button2 = L.EDITMODE_KEEP_LAYOUT,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = false,
-    OnAccept = function() ns:LeaveEditModeCopy() end,
-    OnCancel = function(_, _, reason)
-        if reason == "clicked" then
-            DeleteCopies()
-            ForgetCopies()
-        end
-    end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_EDITMODE_LEGACY"] = {
+        text = L.EDITMODE_LEGACY,
+        button1 = L.EDITMODE_REVERT,
+        button2 = L.EDITMODE_KEEP_LAYOUT,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = false,
+        OnAccept = function() ns:LeaveEditModeCopy() end,
+        OnCancel = function(_, _, reason)
+            if reason == "clicked" then
+                DeleteCopies()
+                ForgetCopies()
+            end
+        end,
+    }
+end)
 
 -- At login: copies left by an older test version. On a copy: offer to go back to
 -- the player's layout. Copies not in use are deleted (unchanged ones only).

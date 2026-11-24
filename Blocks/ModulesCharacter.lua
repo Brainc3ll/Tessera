@@ -139,7 +139,7 @@ ns:RegisterModule("gold", {
         end
     end,
     secureMacro = "/run ToggleAllBags()",
-    clickHint = L.HINT_BAGS,
+    clickHintKey = "HINT_BAGS",
 })
 
 ---------------------------------------------------------------------------
@@ -255,7 +255,7 @@ ns:RegisterModule("bags", {
         end
     end,
     secureMacro = "/run ToggleAllBags()",
-    clickHint = L.HINT_BAGS,
+    clickHintKey = "HINT_BAGS",
 })
 
 ---------------------------------------------------------------------------
@@ -448,7 +448,7 @@ ns:RegisterModule("durability", {
         end
     end,
     secureMacro = "/click CharacterMicroButton",
-    clickHint = L.HINT_CHARACTER,
+    clickHintKey = "HINT_CHARACTER",
 })
 
 -- XP of the quests that are done but not handed in yet (nil when this client cannot say)
@@ -617,7 +617,7 @@ if GetAverageItemLevel then
             end
         end,
         secureMacro = "/click CharacterMicroButton",
-        clickHint = L.HINT_CHARACTER,
+        clickHintKey = "HINT_CHARACTER",
     })
 end
 
@@ -709,7 +709,7 @@ ns:RegisterModule("regen", {
         tt:AddLine(L.TT_REGEN_NOTE, 0.8, 0.8, 0.8, true)
     end,
     secureMacro = "/click CharacterMicroButton",
-    clickHint = L.HINT_CHARACTER,
+    clickHintKey = "HINT_CHARACTER",
 })
 
 ---------------------------------------------------------------------------
@@ -823,7 +823,7 @@ ns:RegisterModule("stats", {
         end
     end,
     secureMacro = "/click CharacterMicroButton",
-    clickHint = L.HINT_CHARACTER,
+    clickHintKey = "HINT_CHARACTER",
 })
 
 ---------------------------------------------------------------------------
@@ -895,7 +895,7 @@ ns:RegisterModule("talents", {
     -- changes the spec with the game's own spell (out of combat): run by the secure overlay
     secureExtra = function() return ns.Traits.SpecMacro() end,
     extraAction = { key = "switchSpec", label = "TALENTS_SWITCH_SPEC", run = function() end },
-    clickHint = L.HINT_TALENTS,
+    clickHintKey = "HINT_TALENTS",
 })
 
 ---------------------------------------------------------------------------
@@ -1169,7 +1169,7 @@ ns:RegisterModule("corpse", {
         pcall(C_Map.SetUserWaypoint, UiMapPoint.CreateFromVector2D(info.mapID, info.corpse))
         if C_SuperTrack and C_SuperTrack.SetSuperTrackedUserWaypoint then pcall(C_SuperTrack.SetSuperTrackedUserWaypoint, true) end
     end,
-    clickHint = L.HINT_CORPSE,
+    clickHintKey = "HINT_CORPSE",
 })
 
 -- Sample values for the demo and the preview mode

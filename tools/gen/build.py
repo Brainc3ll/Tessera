@@ -60,10 +60,10 @@ if missing or extra or bad:
 
 out = os.path.join(HERE, "..", "..", "Locales")
 with open(os.path.join(out, "enUS.lua"), "w") as f:
-    f.write("local _, ns = ...\n\n-- Base English strings; every key here must exist. Other languages override keys and fall back to English.\nlocal L = {\n")
+    f.write("local _, ns = ...\n\n-- Base English strings; every key here must exist. Other languages override keys and fall back to English.\nlocal function BuildEnglish()\nreturn {\n")
     for k, v in base:
         f.write(f"    {k} = {lua(v)},\n")
-    f.write("}\n\nns.L = L\n")
+    f.write("}\nend\n\n-- Kept until the saved language is read (Locales/Language.lua), to put English back first\nns.BuildEnglish = BuildEnglish\nns.L = BuildEnglish()\n")
 
     # order of the help: topics (title key) and their lines (keys, "" = empty line)
     def layout_lua(name, layout):
@@ -78,8 +78,8 @@ with open(os.path.join(out, "enUS.lua"), "w") as f:
     f.write(layout_lua("HELP_LAYOUT", HELP) + "\n")
     f.write(layout_lua("HELP_LAYOUT_BROKER", HELP_BROKER) + "\n")
 with open(os.path.join(out, "frFR.lua"), "w") as f:
-    f.write('local _, ns = ...\n\n-- French translation; missing keys fall back to English.\nlocal locale = GetLocale()\n'
-            'if locale ~= "frFR" then return end\n\nlocal L = ns.L\n')
+    f.write('local _, ns = ...\n\n-- French translation; missing keys fall back to English.\nns.RegisterLocale("frFR", "Français", function(L)\n')
     for k in keys:
         f.write(f"L.{k} = {lua(fr[k])}\n")
+    f.write("end)\n")
 print("generated", len(keys), "strings (enUS, frFR)")

@@ -850,17 +850,19 @@ function ns:OpenReplaceMenu(key, owner)
 end
 
 -- Asks before replacing (or swapping) a block
-StaticPopupDialogs["TESSERA_REPLACE_BLOCK"] = {
-    text = L.REPLACE_CONFIRM,
-    button1 = YES,
-    button2 = NO,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function(_, data)
-        if data and ns:ReplaceBlock(data.old, data.new) and ns.RefreshOptions then ns:RefreshOptions() end
-    end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_REPLACE_BLOCK"] = {
+        text = L.REPLACE_CONFIRM,
+        button1 = YES,
+        button2 = NO,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function(_, data)
+            if data and ns:ReplaceBlock(data.old, data.new) and ns.RefreshOptions then ns:RefreshOptions() end
+        end,
+    }
+end)
 
 function ns:AskReplaceBlock(oldKey, newKey)
     if InCombatLockdown() then
@@ -875,10 +877,12 @@ end
 -- Key bindings (see Bindings.xml)
 ---------------------------------------------------------------------------
 BINDING_HEADER_TESSERA = "Tessera"
-BINDING_NAME_TESSERA_TOGGLE = L.BINDING_TOGGLE
-BINDING_NAME_TESSERA_LOCK = L.BINDING_LOCK
-BINDING_NAME_TESSERA_OPTIONS = L.BINDING_OPTIONS
-BINDING_NAME_TESSERA_STREAMER = L.BINDING_STREAMER
+ns.OnLanguage(function()
+    BINDING_NAME_TESSERA_TOGGLE = L.BINDING_TOGGLE
+    BINDING_NAME_TESSERA_LOCK = L.BINDING_LOCK
+    BINDING_NAME_TESSERA_OPTIONS = L.BINDING_OPTIONS
+    BINDING_NAME_TESSERA_STREAMER = L.BINDING_STREAMER
+end)
 
 -- Streamer mode on / off
 function Tessera_ToggleStreamer()

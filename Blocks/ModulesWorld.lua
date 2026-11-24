@@ -87,7 +87,7 @@ ns:RegisterModule("time", {
     defaults = { showSeconds = false },
     tooltip = TimeTooltip,
     secureMacro = "/run if ToggleCalendar then ToggleCalendar() end",
-    clickHint = L.HINT_CALENDAR,
+    clickHintKey = "HINT_CALENDAR",
 })
 
 ns:RegisterModule("serverTime", {
@@ -100,7 +100,7 @@ ns:RegisterModule("serverTime", {
     defaults = { showSeconds = false },
     tooltip = TimeTooltip,
     secureMacro = "/run if ToggleCalendar then ToggleCalendar() end",
-    clickHint = L.HINT_CALENDAR,
+    clickHintKey = "HINT_CALENDAR",
 })
 
 ---------------------------------------------------------------------------
@@ -118,7 +118,8 @@ local function ShortNames(list)
     for name in (list or ""):gmatch("[^,]+") do table.insert(names, name) end
     return names
 end
-local SHORT_DAYS, SHORT_MONTHS = ShortNames(L.DATE_DAYS_SHORT), ShortNames(L.DATE_MONTHS_SHORT)
+local SHORT_DAYS, SHORT_MONTHS = {}, {}
+ns.OnLanguage(function() SHORT_DAYS, SHORT_MONTHS = ShortNames(L.DATE_DAYS_SHORT), ShortNames(L.DATE_MONTHS_SHORT) end)
 
 local function TitleCase(s)
     return (s:gsub("^%l", string.upper))
@@ -187,7 +188,7 @@ ns:RegisterModule("date", {
         end
     end,
     secureMacro = "/run if ToggleCalendar then ToggleCalendar() end",
-    clickHint = L.HINT_CALENDAR,
+    clickHintKey = "HINT_CALENDAR",
 })
 
 ---------------------------------------------------------------------------
@@ -221,7 +222,7 @@ ns:RegisterModule("coords", {
         if sub and sub ~= "" then tt:AddDoubleLine(L.TT_SUBZONE, sub, 0.8, 0.8, 0.8, 1, 1, 1) end
     end,
     secureMacro = "/run ToggleWorldMap()",
-    clickHint = L.HINT_MAP,
+    clickHintKey = "HINT_MAP",
     -- "Zone (x, y)" for Shift + click "copy to chat"
     chatText = function()
         local mapID = C_Map.GetBestMapForUnit("player")
@@ -275,7 +276,7 @@ ns:RegisterModule("zone", {
     },
     tooltip = ZoneTooltip,
     secureMacro = "/run ToggleWorldMap()",
-    clickHint = L.HINT_MAP,
+    clickHintKey = "HINT_MAP",
 })
 
 ns:RegisterModule("subzone", {
@@ -292,7 +293,7 @@ ns:RegisterModule("subzone", {
     end,
     tooltip = ZoneTooltip,
     secureMacro = "/run ToggleWorldMap()",
-    clickHint = L.HINT_MAP,
+    clickHintKey = "HINT_MAP",
 })
 
 ---------------------------------------------------------------------------
@@ -339,7 +340,7 @@ ns:RegisterModule("hearthstone", {
         end
     end,
     secureMacro = "/use item:" .. HEARTHSTONE,
-    clickHint = L.HINT_HEARTH,
+    clickHintKey = "HINT_HEARTH",
 })
 
 ---------------------------------------------------------------------------

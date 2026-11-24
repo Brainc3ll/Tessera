@@ -19,6 +19,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 - Whispers history: the last 5, 10 or 20 whispers with the start of each message, in a list you can click to reply. Right-click pins a whisper so you do not forget a request.
 - Streamer mode hides, as you choose, other players' names, your other characters, your guild and your gold.
 - Accessibility: high contrast, fewer animations, a minimum text size and six reading fonts.
+- Language list: Tessera follows your game language, or you pick English, French, German, Spanish or Portuguese.
 - An options window with a search and a help panel for each setting. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
 - Your layouts and profiles carry over between versions.
 
@@ -56,7 +57,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - Historique des chuchotements : Ctrl + clic supprime un chuchotement, un bouton Vider retire tous les non épinglés.
 - Historique des chuchotements : les 5, 10 ou 20 derniers chuchotements avec le début de chaque message, dans une liste sur laquelle cliquer pour répondre. Un clic droit épingle un chuchotement pour ne pas oublier une demande.
 - Le mode streamer cache, au choix, les noms des autres joueurs, tes personnages, ta guilde et ton or.
-- Accessibilité : contraste élevé, moins d'animations, taille de texte minimale et six polices de lecture.
+- Accessibilité : contraste élevé, moins d'animations, texte minimal, six polices. Langue au choix.
 - Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.
 - Tes dispositions et tes profils passent d'une version à l'autre.
 

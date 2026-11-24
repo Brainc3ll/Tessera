@@ -176,6 +176,6 @@ ns:RegisterModule("microMenu", {
         if button ~= "LeftButton" then return end
         ns:ToggleMicroMenuList(self)
     end,
-    clickHint = L.HINT_MICRO,
+    clickHintKey = "HINT_MICRO",
 })
 end

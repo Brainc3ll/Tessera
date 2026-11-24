@@ -3,8 +3,7 @@ local _, ns = ...
 -- German translation. Translations live in this file: send a new or corrected one as a GitHub
 -- pull request, or paste it in a "Translation" issue (see docs/TRANSLATING.md). A text missing
 -- here shows in English. Check a file with: python3 tools/check_translation.py <file>
-if GetLocale() ~= "deDE" then return end
-local L = ns.L
+ns.RegisterLocale("deDE", "Deutsch", function(L)
 
 L["ABOUT_AI"] = "Idee, Gestaltung, Entscheidungen und viele Tests im Spiel: ich, Braincell1980. Programmieren konnte ich nie lernen; dank KI kann ich meine Addon-Ideen endlich umsetzen und lerne nebenbei, wie GitHub, CurseForge und WoW-Addons funktionieren. Code, Texte und Werkzeuge: Claude (eine KI von Anthropic), nach meinen Anweisungen. Nicht Zeile für Zeile von einem menschlichen Programmierer geprüft: Bitte melde Fehler mit /tessera bug."
 L["ABOUT_AUTHOR"] = "Autor"
@@ -1678,3 +1677,11 @@ L["SECTION_STYLE_LOCK"] = "Stilsperre"
 L["STYLE_NOTICE_LOCKED_TITLE"] = "Diese Blöcke behalten ihr Aussehen (Stil gesperrt):"
 L["STYLE_NOTICE_MORE"] = "... und %d weitere"
 L["HELP_BMODE_BROKER_6"] = "- Minikarten-Schaltfläche: im Abschnitt Minikarte unten in diesem Reiter ein- oder ausblenden."
+L["SECTION_LANGUAGE"] = "Sprache"
+L["LANGUAGE"] = "Sprache von Tessera"
+L["LANGUAGE_AUTO"] = "Wie das Spiel"
+L["TIP_LANGUAGE"] = "Sprache der Tessera-Texte. „Wie das Spiel“ folgt deinem Spielclient. Eine Änderung gilt nach einem Neuladen der Oberfläche. Namen aus dem Spiel, etwa Klassen, Gebiete und Gegenstände, bleiben in der Sprache des Spiels. Das Änderungsprotokoll gibt es nur auf Englisch und Französisch."
+L["LANGUAGE_RELOAD"] = "Tessera wechselt die Sprache nach einem Neuladen der Oberfläche. Jetzt neu laden?"
+L["LANGUAGE_LATER"] = "Später"
+L["HELP_GENERAL_8"] = "- Sprache: die Sprache der Tessera-Texte. „Wie das Spiel“ ist die Vorgabe; eine Änderung gilt nach einem Neuladen der Oberfläche."
+end)

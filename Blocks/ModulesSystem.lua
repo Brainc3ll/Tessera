@@ -331,7 +331,7 @@ ns:RegisterModule("volume", {
             WHITE(tt, L[v[2]], ("%d%%"):format(math.floor(CVarNumber(v[1]) * 100 + 0.5)))
         end
     end,
-    clickHint = L.HINT_VOLUME,
+    clickHintKey = "HINT_VOLUME",
     onClick = function(_, button)
         if button ~= "LeftButton" then return end
         local enabled = Try(GetCVar, "Sound_EnableAllSound") ~= "0"
@@ -439,7 +439,7 @@ ns:RegisterModule("streamer", {
     tooltip = function(tt)
         tt:AddLine(ns:IsStreamer() and L.TT_STREAMER_ON or L.TT_STREAMER_OFF, 1, 1, 1, true)
     end,
-    clickHint = L.HINT_STREAMER,
+    clickHintKey = "HINT_STREAMER",
     onClick = function(_, button)
         if button ~= "LeftButton" then return end
         ns:SetStreamerMode(not ns:IsStreamer())

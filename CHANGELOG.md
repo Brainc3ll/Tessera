@@ -3,6 +3,13 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
+## 1.8.0 — 2026-11-24
+
+### New
+
+- Language list in the General tab. "As the game" is the default. Pick English, French, German, Spanish (Spain or Mexico) or Portuguese (Brazil), then reload the interface. The choice covers your whole account, not one profile.
+- Names that come from the game, such as classes, zones and items, stay in the game's language. The changelog exists in English and French only.
+
 ## 1.7.2 — 2026-11-21
 
 ### Fixes

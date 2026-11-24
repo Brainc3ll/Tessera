@@ -128,15 +128,17 @@ local function ResetBox(box)
 end
 
 -- asks first: a box can hold many settings
-StaticPopupDialogs["TESSERA_RESET_BOX"] = {
-    text = L.RESET_BOX_CONFIRM,
-    button1 = YES,
-    button2 = NO,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function(_, box) if box then ResetBox(box) end end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_RESET_BOX"] = {
+        text = L.RESET_BOX_CONFIRM,
+        button1 = YES,
+        button2 = NO,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function(_, box) if box then ResetBox(box) end end,
+    }
+end)
 ns.ResetOptionsBox = ResetBox -- (tools/mock_run.lua)
 ns.CanResetOptionsBox = CanReset
 

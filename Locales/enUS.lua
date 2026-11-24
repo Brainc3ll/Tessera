@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- Base English strings; every key here must exist. Other languages override keys and fall back to English.
-local L = {
+local function BuildEnglish()
+return {
     GOLD = "Gold",
     BAGS = "Bags",
     DURABILITY = "Durability",
@@ -293,6 +294,12 @@ local L = {
     SECTION_CHAT = "Chat",
     QUIET = "Quiet in chat",
     TIP_QUIET = "Tessera writes nothing in the chat any more, except in reply to a command you type (/tessera …). Applies to all your characters.",
+    SECTION_LANGUAGE = "Language",
+    LANGUAGE = "Tessera language",
+    LANGUAGE_AUTO = "As the game",
+    TIP_LANGUAGE = "Language of Tessera's texts. \"As the game\" follows your game client. A change applies after a reload of the interface. Names that come from the game, such as classes, zones and items, stay in the game's language. The changelog exists in English and French only.",
+    LANGUAGE_RELOAD = "Tessera changes language after a reload of the interface. Reload now?",
+    LANGUAGE_LATER = "Later",
     SECTION_MINIMAP = "Minimap",
     SHOW_MINIMAP_BUTTON = "Show the minimap button",
     TIP_MINIMAP_BUTTON = "Tessera's round button on the edge of the minimap (drag it around the minimap), and its entry in the addon compartment. Once hidden, type /tessera minimap to show it again.",
@@ -1617,6 +1624,7 @@ local L = {
     HELP_GENERAL_2 = "- Tooltips: click help, space between parts, tooltips in combat, only while holding Alt, tooltip size.",
     HELP_GENERAL_3 = "- Combat: blocks frozen in combat.",
     HELP_GENERAL_4 = "- Chat and minimap: quiet chat, minimap button.",
+    HELP_GENERAL_8 = "- Language: the language of Tessera's texts. \"As the game\" is the default; a change applies after a reload of the interface.",
     HELP_GENERAL_6 = "- Streamer mode: for streams and videos, hides as *** the names of other players, your other characters, your guild's name and your gold. Also a key binding and a Streamer mode block (hidden by default).",
     HELP_GENERAL_7 = "- In the Streamer block's own settings, four checkboxes choose what the mode hides: other players' names, your other characters, the guild name, your gold. All four are on at first.",
     HELP_T_ACCESS = "Accessibility tab",
@@ -1676,8 +1684,11 @@ local L = {
     HELP_BMODE_COMMANDS_2 = "/tessera broker: DataBroker mode on or off",
     HELP_BMODE_COMMANDS_3 = "/tessera bug: report to copy into a bug report",
 }
+end
 
-ns.L = L
+-- Kept until the saved language is read (Locales/Language.lua), to put English back first
+ns.BuildEnglish = BuildEnglish
+ns.L = BuildEnglish()
 
 -- Help topics in display order (Options.lua joins the lines). One key per line, so a
 -- change to one line only asks translators to redo that line.
@@ -1690,7 +1701,7 @@ ns.HELP_LAYOUT = {
     { title = "HELP_T_EDITMODE", lines = { "HELP_EDITMODE_1", "HELP_EDITMODE_2", "HELP_EDITMODE_3", "HELP_EDITMODE_4" } },
     { title = "HELP_T_BLOCKS", lines = { "HELP_BLOCKS_1", "HELP_BLOCKS_19", "HELP_BLOCKS_8", "HELP_BLOCKS_18", "HELP_BLOCKS_16", "HELP_BLOCKS_17", "HELP_BLOCKS_2", "HELP_BLOCKS_20", "HELP_BLOCKS_3", "HELP_BLOCKS_21", "HELP_BLOCKS_4", "HELP_BLOCKS_5", "HELP_BLOCKS_7", "HELP_BLOCKS_9", "HELP_BLOCKS_10", "HELP_BLOCKS_11", "HELP_BLOCKS_12", "HELP_BLOCKS_13", "HELP_BLOCKS_14", "HELP_BLOCKS_15", "HELP_BLOCKS_22", "HELP_BLOCKS_23", "HELP_BLOCKS_24", "HELP_BLOCKS_31", "HELP_BLOCKS_32", "HELP_BLOCKS_33", "HELP_BLOCKS_34", "HELP_BLOCKS_35", "HELP_BLOCKS_36", "HELP_BLOCKS_37", "HELP_BLOCKS_38", "HELP_BLOCKS_25", "HELP_BLOCKS_27", "HELP_BLOCKS_28", "HELP_BLOCKS_29", "HELP_BLOCKS_30", "HELP_BLOCKS_26", "HELP_BLOCKS_6" } },
     { title = "HELP_T_LOOK", lines = { "HELP_LOOK_1", "HELP_LOOK_12", "HELP_LOOK_13", "HELP_LOOK_14", "HELP_LOOK_8", "HELP_LOOK_11", "HELP_LOOK_16", "HELP_LOOK_17", "HELP_LOOK_21", "HELP_LOOK_18", "HELP_LOOK_19", "HELP_LOOK_20", "HELP_LOOK_10", "HELP_LOOK_9", "HELP_LOOK_15", "HELP_LOOK_2", "HELP_LOOK_3", "HELP_LOOK_4", "HELP_LOOK_7", "HELP_LOOK_5", "HELP_LOOK_6" } },
-    { title = "HELP_T_GENERAL", lines = { "HELP_GENERAL_1", "HELP_GENERAL_2", "HELP_GENERAL_3", "HELP_GENERAL_4", "HELP_GENERAL_6", "HELP_GENERAL_7" } },
+    { title = "HELP_T_GENERAL", lines = { "HELP_GENERAL_1", "HELP_GENERAL_2", "HELP_GENERAL_3", "HELP_GENERAL_4", "HELP_GENERAL_8", "HELP_GENERAL_6", "HELP_GENERAL_7" } },
     { title = "HELP_T_ACCESS", lines = { "HELP_ACCESS_1", "HELP_ACCESS_2", "HELP_ACCESS_3", "HELP_ACCESS_4", "HELP_ACCESS_5" } },
     { title = "HELP_T_PROFILES", lines = { "HELP_PROFILES_1", "HELP_PROFILES_2", "HELP_PROFILES_3", "HELP_PROFILES_4" } },
     { title = "HELP_T_LAUNCHERS", lines = { "HELP_LAUNCHERS_1" } },

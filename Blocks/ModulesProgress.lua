@@ -118,7 +118,7 @@ ns:RegisterModule("quests", {
         if #list == 0 then tt:AddLine(L.NONE, 0.8, 0.8, 0.8) end
     end,
     secureMacro = "/run if ToggleQuestLog then ToggleQuestLog() end",
-    clickHint = L.HINT_QUESTS,
+    clickHintKey = "HINT_QUESTS",
 })
 
 ---------------------------------------------------------------------------
@@ -238,7 +238,7 @@ ns:RegisterModule("reputation", {
         end
     end,
     secureMacro = "/run if ToggleCharacter then ToggleCharacter('ReputationFrame') end",
-    clickHint = L.HINT_REPUTATION,
+    clickHintKey = "HINT_REPUTATION",
 })
 
 ---------------------------------------------------------------------------
@@ -432,7 +432,7 @@ ns:RegisterModule("currency", {
         { kind = "check", field = "currencyTipSession", section = "tooltip", tab = "text", label = "CURRENCY_TIP_SESSION", tip = "TIP_CURRENCY_TIP_SESSION" },
     },
     secureMacro = "/run if ToggleCharacter then ToggleCharacter('TokenFrame') end",
-    clickHint = L.HINT_CURRENCY,
+    clickHintKey = "HINT_CURRENCY",
 })
 
 ---------------------------------------------------------------------------
@@ -604,7 +604,7 @@ for _, def in ipairs(PROFESSION_BLOCKS) do
             end
             return MicroButtonMacro("ProfessionMicroButton", SKILL_FRAME_MACRO)
         end,
-        clickHint = L.HINT_PROFESSION,
+        clickHintKey = "HINT_PROFESSION",
     })
 end
 
@@ -753,30 +753,32 @@ function ns:RemoveGoalItem(key, id)
 end
 
 -- "How many?" box, then the item goes in the list
-StaticPopupDialogs["TESSERA_GOAL_COUNT"] = {
-    text = L.GOAL_HOW_MANY,
-    button1 = ACCEPT,
-    button2 = CANCEL,
-    hasEditBox = true,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnShow = function(self, data)
-        local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
-        if box and data then box:SetText(tostring(data.count or 20)); box:HighlightText() end
-    end,
-    OnAccept = function(self, data)
-        local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
-        -- (no SetNumeric: the game shares these boxes with every popup, other addons' too)
-        local count = box and tonumber((box:GetText():gsub("%s", "")))
-        if data and count then ns:AddGoalItem(data.key, data.id, count) end
-    end,
-    EditBoxOnEnterPressed = function(self, data)
-        local parent = self:GetParent()
-        StaticPopupDialogs["TESSERA_GOAL_COUNT"].OnAccept(parent, data or parent.data)
-        parent:Hide()
-    end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_GOAL_COUNT"] = {
+        text = L.GOAL_HOW_MANY,
+        button1 = ACCEPT,
+        button2 = CANCEL,
+        hasEditBox = true,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnShow = function(self, data)
+            local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
+            if box and data then box:SetText(tostring(data.count or 20)); box:HighlightText() end
+        end,
+        OnAccept = function(self, data)
+            local box = self.editBox or self.EditBox or (self.GetEditBox and self:GetEditBox())
+            -- (no SetNumeric: the game shares these boxes with every popup, other addons' too)
+            local count = box and tonumber((box:GetText():gsub("%s", "")))
+            if data and count then ns:AddGoalItem(data.key, data.id, count) end
+        end,
+        EditBoxOnEnterPressed = function(self, data)
+            local parent = self:GetParent()
+            StaticPopupDialogs["TESSERA_GOAL_COUNT"].OnAccept(parent, data or parent.data)
+            parent:Hide()
+        end,
+    }
+end)
 function ns:AskGoalCount(key, id, current)
     if not StaticPopup_Show then return self:AddGoalItem(key, id, current or 20) end
     StaticPopup_Show("TESSERA_GOAL_COUNT", ItemName(id), nil, { key = key, id = id, count = current })
@@ -917,7 +919,7 @@ ns:RegisterModule("goal", {
     end,
     -- an item dropped on the block (from the bags) is added
     onItemDrop = function(id) ns:AskGoalCount("goal", id) end,
-    clickHint = L.HINT_GOAL,
+    clickHintKey = "HINT_GOAL",
 })
 
 ---------------------------------------------------------------------------

@@ -201,6 +201,7 @@ Style of blocks and window
 Style to apply
 Switch to DataBroker mode
 Target (gold or level)
+Tessera language
 Text alignment
 Text color
 Text in class color

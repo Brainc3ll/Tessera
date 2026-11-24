@@ -262,7 +262,10 @@ end
 local NUDGE_DELAY, NUDGE_RATE = 0.5, 10
 local NUDGE_KEYS = { UP = { 0, 1 }, DOWN = { 0, -1 }, LEFT = { -1, 0 }, RIGHT = { 1, 0 } }
 local PAD_BUTTON = 30
-local NUDGE_NAMES = { UP = L.NUDGE_UP, DOWN = L.NUDGE_DOWN, LEFT = L.NUDGE_LEFT, RIGHT = L.NUDGE_RIGHT }
+-- read when used: the language is known after the files load (Locales/Language.lua)
+local function NudgeName(dir)
+    return ({ UP = L.NUDGE_UP, DOWN = L.NUDGE_DOWN, LEFT = L.NUDGE_LEFT, RIGHT = L.NUDGE_RIGHT })[dir]
+end
 
 local function NudgeOnce(dir, big)
     local n = ns.nudge
@@ -304,7 +307,7 @@ local function PadArrow(pad, name, texture, rotation)
     btn:SetScript("OnMouseDown", function() StartHold(pad, name, IsShiftKeyDown()) end)
     btn:SetScript("OnMouseUp", function() StopHold(pad, name) end)
     btn:SetScript("OnHide", function() StopHold(pad, name) end)
-    AttachTip(btn, NUDGE_NAMES[name], L.TIP_NUDGE_ARROW)
+    AttachTip(btn, NudgeName(name), L.TIP_NUDGE_ARROW)
     pad.arrows[name] = btn
     return btn
 end

@@ -396,7 +396,7 @@ ns:RegisterModule("friends", {
         if shown == 0 then tt:AddLine(L.TT_NO_FRIEND, 0.8, 0.8, 0.8) end
     end,
     secureMacro = "/run ToggleFriendsFrame(1)",
-    clickHint = L.HINT_FRIENDS,
+    clickHintKey = "HINT_FRIENDS",
     -- "Friends list": a clickable list under the mouse in place of the tooltip (FriendsList.lua)
     hoverList = function(frame, cfg)
         if cfg and cfg.friendsShow ~= "tooltip" and ns.ShowFriendsList then
@@ -510,7 +510,7 @@ ns:RegisterModule("guild", {
         end
     end,
     secureMacro = "/click GuildMicroButton",
-    clickHint = L.HINT_GUILD,
+    clickHintKey = "HINT_GUILD",
     -- "Member list": a clickable list under the mouse in place of the tooltip (GuildList.lua)
     hoverList = function(frame, cfg)
         if cfg and cfg.guildShow == "list" and (ns.previewMode or IsInGuild()) and ns.ShowGuildList then
@@ -620,7 +620,7 @@ ns:RegisterModule("loot", {
         if quality then WHITE(tt, L.TT_LOOT_THRESHOLD, quality) end
         if master then WHITE(tt, L.TT_LOOT_MASTER, Masked(master)) end
     end,
-    clickHint = L.HINT_ROLL,
+    clickHintKey = "HINT_ROLL",
     onClick = function(_, button)
         if button ~= "LeftButton" then return end
         if RandomRoll then RandomRoll(1, 100) end
@@ -1035,7 +1035,7 @@ ns:RegisterModule("whispers", {
             end
         end
     end,
-    clickHint = L.HINT_WHISPER,
+    clickHintKey = "HINT_WHISPER",
     -- left click: reply to the most recent unread whisper (else the last one)
     onClick = function(_, button)
         if button ~= "LeftButton" then return end

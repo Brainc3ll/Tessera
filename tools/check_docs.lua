@@ -59,6 +59,7 @@ local function loadLocale(code)
     local ns = {}
     _G.GetLocale = function() return code end
     assert(loadfile(dir .. "/Locales/enUS.lua"))("Tessera", ns)
+    assert(loadfile(dir .. "/Locales/Language.lua"))("Tessera", ns) -- ns.RegisterLocale: applies the language of GetLocale()
     if code ~= "enUS" then assert(loadfile(dir .. "/Locales/" .. code .. ".lua"))("Tessera", ns) end
     ns.L.HELP_TEXT = helpText(ns.L, ns.HELP_LAYOUT) -- for the checks below only
     return ns.L, ns

@@ -101,7 +101,7 @@ ns:RegisterModule("weaponSkills", {
     end,
     tooltip = function(tt) SkillTooltip(tt, SkillLines().weapons) end,
     secureMacro = SKILLS_MACRO,
-    clickHint = L.HINT_SKILLS,
+    clickHintKey = "HINT_SKILLS",
 })
 end
 
@@ -271,7 +271,7 @@ ns:RegisterModule("legacy", {
     secureMacro = function()
         return MicroButtonMacro("LegacyMicroButton", "/run if ToggleLegacySystemUI then ToggleLegacySystemUI() end")
     end,
-    clickHint = L.HINT_LEGACY,
+    clickHintKey = "HINT_LEGACY",
 })
 end
 
@@ -439,7 +439,7 @@ ns:RegisterModule("comprehension", {
         if name and ComprehensionSkill() then return "/cast " .. name end
         return SKILLS_MACRO
     end,
-    clickHint = L.HINT_COMPREHENSION,
+    clickHintKey = "HINT_COMPREHENSION",
 })
 
 ns:RegisterModule("camping", {
@@ -495,7 +495,7 @@ ns:RegisterModule("camping", {
     end,
     -- click: light a campfire with the kit
     secureMacro = "/use item:" .. CAMP_KIT,
-    clickHint = L.HINT_CAMPING,
+    clickHintKey = "HINT_CAMPING",
 })
 
 ns:RegisterModule("honor", {

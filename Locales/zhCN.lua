@@ -1,7 +1,10 @@
-local _, ns = ...
-
 -- Simplified Chinese translation. Translations live in this file: send a new or corrected one as a GitHub
 -- pull request, or paste it in a "Translation" issue (see docs/TRANSLATING.md). A text missing
 -- here shows in English. Check a file with: python3 tools/check_translation.py <file>
-if GetLocale() ~= "zhCN" then return end
-local L = ns.L -- luacheck: ignore 211 (no translation yet)
+-- No translation yet, so this language is not in the Language list. To add one, remove the
+-- first "--" of the next lines and put the translated lines between them: the language then
+-- appears in the list by itself (General tab).
+-- local _, ns = ...
+-- ns.RegisterLocale("zhCN", "简体中文", function(L)
+-- L["BAGS"] = "..."
+-- end)

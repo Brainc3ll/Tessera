@@ -11,12 +11,15 @@ for line in io.lines(dir .. "/docs/localization/enUS.lua") do
 end
 local ns = {}
 assert(loadfile(dir .. "/Locales/enUS.lua"))("Tessera", ns)
+assert(loadfile(dir .. "/Locales/Language.lua"))("Tessera", ns)
 local en = {} for k, v in pairs(ns.L) do en[k] = v end
 -- record which keys the locale file sets
 local set = {}
 setmetatable(ns.L, nil)
 local proxy = setmetatable({}, { __index = ns.L, __newindex = function(t, k, v) set[k] = v end })
-if loc ~= "enUS" then ns.L = proxy; assert(loadfile(dir .. "/Locales/" .. loc .. ".lua"))("Tessera", ns) else set = en end
+-- a language file hands its texts to ns.RegisterLocale: give it the recording proxy
+ns.RegisterLocale = function(code, _, fill) if code == loc then fill(proxy) end end
+if loc ~= "enUS" then assert(loadfile(dir .. "/Locales/" .. loc .. ".lua"))("Tessera", ns) else set = en end
 local seen = {}
 for _, k in ipairs(order) do seen[k] = true end
 local extra = {} for k in pairs(en) do if not seen[k] then extra[#extra + 1] = k end end

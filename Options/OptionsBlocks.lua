@@ -201,41 +201,47 @@ function ns:ApplyStyleToBlocksNow(keys, style)
     self:RefreshOptions()
 end
 
-StaticPopupDialogs["TESSERA_STYLE_LOCKED_APPLY"] = {
-    text = L.STYLE_LOCKED_APPLY,
-    button1 = YES,
-    button2 = NO,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function(_, data) ns:ApplyStyleToBlocksNow(data.keys, data.style) end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_STYLE_LOCKED_APPLY"] = {
+        text = L.STYLE_LOCKED_APPLY,
+        button1 = YES,
+        button2 = NO,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function(_, data) ns:ApplyStyleToBlocksNow(data.keys, data.style) end,
+    }
+end)
 
 -- "Copy style to all" / "Copy this style to the group" with locked blocks among the targets: asks first,
 -- then copies (they stay locked)
-StaticPopupDialogs["TESSERA_STYLE_LOCKED_COPY"] = {
-    text = L.STYLE_LOCKED_APPLY,
-    button1 = YES,
-    button2 = NO,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function(_, data)
-        if data.group then ns:CopyStyleToGroup(data.source, true) else ns:CopyStyleToAll(data.source, true) end
-        ns:RefreshOptions()
-    end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_STYLE_LOCKED_COPY"] = {
+        text = L.STYLE_LOCKED_APPLY,
+        button1 = YES,
+        button2 = NO,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function(_, data)
+            if data.group then ns:CopyStyleToGroup(data.source, true) else ns:CopyStyleToAll(data.source, true) end
+            ns:RefreshOptions()
+        end,
+    }
+end)
 
 -- Unlocking a block's style: follow the profile's style now, or keep the current look
-StaticPopupDialogs["TESSERA_STYLE_UNLOCK"] = {
-    text = L.STYLE_UNLOCK_FOLLOW,
-    button1 = YES,
-    button2 = NO,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function(_, keys) ns:ApplyStyleToBlocksNow(keys, ns:GetTheme()) end,
-}
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_STYLE_UNLOCK"] = {
+        text = L.STYLE_UNLOCK_FOLLOW,
+        button1 = YES,
+        button2 = NO,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+        OnAccept = function(_, keys) ns:ApplyStyleToBlocksNow(keys, ns:GetTheme()) end,
+    }
+end)
 
 -- "Apply this style to": this block, its group, every block (1.3, an action: the style
 -- is written into their settings, Ctrl + Z undoes it). For a group selection, "Its

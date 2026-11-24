@@ -356,10 +356,13 @@ Décidé avec Braincell1980 :
 But : ne plus avoir peur qu'un texte dépasse, quelle que soit la langue ou la taille du texte.
 - **Aujourd'hui** : les boutons ont une largeur fixe ; un texte trop long passe en petite police, puis il est coupé par « ... » (`FitButtonText` dans `Options/Options.lua`), l'infobulle garde le texte entier. C'est un filet de sécurité, pas une solution.
 - **À faire** : chaque bouton mesure son texte et s'élargit jusqu'à la place disponible dans sa colonne ; au-delà, le texte passe sur deux lignes et le bouton grandit en hauteur. Les rangées de boutons côte à côte passent l'une sous l'autre quand elles ne tiennent plus. Même chose pour les cases à cocher, les listes déroulantes et les onglets : la mise en page se calcule à partir des textes, pas l'inverse.
+- **Blocs aux textes coupés (Braincell1980, 24/11)** : à la largeur par défaut, le texte de certains blocs est coupé sans retouche (exemple : Cadavre), il faut agrandir le bloc pour le voir. Pas tous les blocs. À vérifier bloc par bloc dans l'étape « textes longs » de la 1.8.
 - **Pourquoi c'est la même chose que l'accessibilité** : le test « texte deux fois plus grand » de la feuille de route 1.3 pose exactement ce problème. Un seul chantier règle les deux ; à faire avec la 1.3, en commençant par les fenêtres les plus visibles (barre d'onglets, bandeau de placement, visite rapide).
 - En attendant, les traductions gardent les libellés de boutons courts (outil `tools/check_translation.py`, avertissement sur les textes courts qui s'allongent).
 
 ### Choisir la langue de Tessera (idée de Braincell1980, 25 octobre 2026)
+
+**Fait sur `next` le 24/11 (1.8, Sonnet 5.5), à tester en jeu** : voir `docs/A-REPRENDRE.md`. Le texte ci-dessous est l'analyse de départ.
 
 Une liste « Langue » (onglet Général) : « Comme le jeu » par défaut, puis chaque langue livrée. Un choix de plus pour le joueur (un francophone qui joue avec un client anglais, par exemple), et un moyen de tester toutes les traductions sans changer la langue du client.
 - **Faisable** : toutes les langues sont déjà dans le zip (`Locales/*.lua`, remplies par CurseForge à la publication). Aujourd'hui chaque fichier sort tout de suite si `GetLocale()` n'est pas sa langue ; il faudrait qu'il range ses textes dans une table par langue, et que Tessera choisisse.

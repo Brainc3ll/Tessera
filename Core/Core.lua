@@ -39,6 +39,7 @@ local L = ns.L
 
 ns.modules = {}
 ns.order = {}
+ns.LocalizeList(ns.modules, "clickHint") -- clickHintKey -> clickHint, see Locales/Language.lua
 ns.frames = {}
 ns.errors = {}
 ns.state = { inCombat = false, inInstance = false }
@@ -117,13 +118,13 @@ end
 -- Media shipped with the game
 ---------------------------------------------------------------------------
 ns.backgrounds = {
-    { key = "none",       name = L.MEDIA_NONE },
-    { key = "solid",      name = L.MEDIA_SOLID,       file = "Interface\\Buttons\\WHITE8X8" },
-    { key = "tooltip",    name = L.MEDIA_TOOLTIP,     file = "Interface\\Tooltips\\UI-Tooltip-Background" },
-    { key = "dialog",     name = L.MEDIA_DIALOG,      file = "Interface\\DialogFrame\\UI-DialogBox-Background" },
-    { key = "dialogDark", name = L.MEDIA_DIALOG_DARK, file = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark" },
-    { key = "marble",     name = L.MEDIA_MARBLE,      file = "Interface\\FrameGeneral\\UI-Background-Marble", tile = true },
-    { key = "rock",       name = L.MEDIA_ROCK,        file = "Interface\\FrameGeneral\\UI-Background-Rock", tile = true },
+    { key = "none",       nameKey = "MEDIA_NONE" },
+    { key = "solid",      nameKey = "MEDIA_SOLID",       file = "Interface\\Buttons\\WHITE8X8" },
+    { key = "tooltip",    nameKey = "MEDIA_TOOLTIP",     file = "Interface\\Tooltips\\UI-Tooltip-Background" },
+    { key = "dialog",     nameKey = "MEDIA_DIALOG",      file = "Interface\\DialogFrame\\UI-DialogBox-Background" },
+    { key = "dialogDark", nameKey = "MEDIA_DIALOG_DARK", file = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark" },
+    { key = "marble",     nameKey = "MEDIA_MARBLE",      file = "Interface\\FrameGeneral\\UI-Background-Marble", tile = true },
+    { key = "rock",       nameKey = "MEDIA_ROCK",        file = "Interface\\FrameGeneral\\UI-Background-Rock", tile = true },
 }
 
 -- Border fields:
@@ -131,18 +132,21 @@ ns.backgrounds = {
 --   reach: length of the seam patch at inner corners of merged blocks (Merge.lua).
 --   size: native border thickness in pixels.
 ns.borders = {
-    { key = "none",    name = L.MEDIA_NONE },
-    { key = "solid",   name = L.MEDIA_SOLID,   file = "Interface\\Buttons\\WHITE8X8", insetRatio = 1, reach = 1, size = 1 },
-    { key = "tooltip", name = L.MEDIA_TOOLTIP, file = "Interface\\Tooltips\\UI-Tooltip-Border", insetRatio = 0.25, reach = 0.15, size = 16 },
-    { key = "dialog",  name = L.MEDIA_DIALOG,  file = "Interface\\DialogFrame\\UI-DialogBox-Border", insetRatio = 0.35, reach = 0.23, size = 32 },
-    { key = "gold",    name = L.MEDIA_GOLD,    file = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", insetRatio = 0.35, reach = 0.2, size = 32 },
+    { key = "none",    nameKey = "MEDIA_NONE" },
+    { key = "solid",   nameKey = "MEDIA_SOLID",   file = "Interface\\Buttons\\WHITE8X8", insetRatio = 1, reach = 1, size = 1 },
+    { key = "tooltip", nameKey = "MEDIA_TOOLTIP", file = "Interface\\Tooltips\\UI-Tooltip-Border", insetRatio = 0.25, reach = 0.15, size = 16 },
+    { key = "dialog",  nameKey = "MEDIA_DIALOG",  file = "Interface\\DialogFrame\\UI-DialogBox-Border", insetRatio = 0.35, reach = 0.23, size = 32 },
+    { key = "gold",    nameKey = "MEDIA_GOLD",    file = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border", insetRatio = 0.35, reach = 0.2, size = 32 },
     -- Modern tooltip (Retail and Forever): Blizzard's atlas-based nine-slice frame
     -- The game's own art: gold on WoW Forever, silver on Retail
-    { key = "modernTooltip", name = L.MEDIA_MODERN_TOOLTIP, nineSlice = "TooltipDefaultLayout", reach = 0.33, size = 16 },
+    { key = "modernTooltip", nameKey = "MEDIA_MODERN_TOOLTIP", nineSlice = "TooltipDefaultLayout", reach = 0.33, size = 16 },
     -- The same frame without its color (grey), tinted by the border color: silver on WoW Forever
-    { key = "modernTooltipGrey", name = L.MEDIA_MODERN_TOOLTIP_GREY, nineSlice = "TooltipDefaultLayout", desaturate = true,
+    { key = "modernTooltipGrey", nameKey = "MEDIA_MODERN_TOOLTIP_GREY", nineSlice = "TooltipDefaultLayout", desaturate = true,
       reach = 0.33, size = 16 },
 }
+
+ns.LocalizeList(ns.backgrounds, "name")
+ns.LocalizeList(ns.borders, "name")
 
 ns.fonts = {
     { key = "friz",     name = "Friz Quadrata", file = "Fonts\\FRIZQT__.TTF" },
@@ -1215,6 +1219,7 @@ local function InitDB()
     sv.chars = sv.chars or {}
 
     ns.sv = sv
+    ns:ApplySavedLanguage() -- the saved language of Tessera (Locales/Language.lua)
     ns.charKey = ns.CharacterKey()
     ns:MigrateCharacterKey(ns.RealmCharacterKey())
     ns:MigrateCharacterKey(ns.LegacyCharacterKey())

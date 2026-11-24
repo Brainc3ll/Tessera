@@ -26,6 +26,13 @@ Keep texts short: a label or a button has little room.
 1. **Pull request**: change the file in `Locales/` and open a pull request.
 2. **Issue**: open a "Translation" issue and paste your lines. We add them for you.
 
+## A new language
+
+Copy `Locales/deDE.lua`, rename it with the game's code for your language, and change the
+code and the name on the line `ns.RegisterLocale("deDE", "Deutsch", function(L)` (the name is
+the language written in itself). Add the file to `Tessera.toc`. The language then appears by
+itself in the Language list of the General tab. A file with no texts is not listed.
+
 Before a pull request, you can check your file:
 
 ```sh

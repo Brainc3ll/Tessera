@@ -21,13 +21,14 @@ TEXTURE = re.compile(r'\|T[^|]*\|t')
 
 
 LONG = re.compile(r'^L\["([^"]+)"\]\s*=\s*\[(=*)\[(.*)$')
-HEADER = re.compile(r'^(local |if GetLocale\(\)|end$)')
+HEADER = re.compile(r'^(local |if GetLocale\(\)|ns\.RegisterLocale\(|end$|end\)$)')
 
 
 def read(path):
     """Reads `L["KEY"] = "text"` lines and `L["KEY"] = [=[ ... ]=]` texts over several lines
     (the locale files of Locales/); a real line break counts as \n. The file's few header
-    lines (local ..., if GetLocale() ...) are skipped."""
+    lines (local ..., ns.RegisterLocale(...) and its closing end) are skipped (an older file, with
+    if GetLocale() ..., is read too)."""
     strings, bad = {}, []
     long_key, long_end, long_text = None, None, []
     with open(path, encoding="utf-8") as f:

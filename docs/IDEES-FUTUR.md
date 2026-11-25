@@ -429,6 +429,15 @@ Maquette : https://claude.ai/artifact/6bYLHvVXo2fmWGsxFNnASk (Sonnet 5.5 ; appro
 - **Décidé le 25/11 (Braincell1980)** : si cet habillage est codé, ce sera pour la 2.0, sur une branche à elle (en plus de `next`, qui porte la 1.9), qui reçoit les mises à jour de `main` à chaque publication. Cela change la règle « pas de branche par version » pour la 2.0. Branche `2.0` créée le 25/11 depuis `next`.
 - À garder : couleurs par style, contraste élevé (sans décor), texte × 2, forme en plus de la couleur, focus visible pour la manette ; aucun réglage perdu.
 
+### Aperçu en jeu (25/11, Sonnet 5.5, zip test221, pas encore vu en jeu)
+- Commande de développement `/tes debug habillage` (Tessera-dev : `SkinPreview.lua`, dessins `DevMedia/` faits par `gen_skin_media.py`). La vraie fenêtre ne change pas, rien n'est enregistré, rien dans ce dépôt ne change le jeu.
+- Choix de Braincell1980 : page Blocs avec réglages factices, onglets cliquables, tous les styles, contraste élevé, texte × 2, petite fenêtre et bandeau de placement.
+- Couleurs par style (fond, bord, titre) : table `STYLE_COLORS`, une proposition de Claude à juger en jeu, Parchemin en clair. Elle ne reprend pas les cadres de The War Within, Midnight ni des interfaces (« B partout »).
+- Dessins : rectangle arrondi (rayons 8 et 14), cadres fin et épais, ombre, losange, coche, croix, flèches, neuf icônes de page. Étirés avec `SetTextureSliceMargins` (listé dans la doc d'API de Forever ; le bouton « Rapport » dit s'il manque).
+- Texte × 2 : fenêtre plus large (1360 × 880 au lieu de 1160 × 780), page du milieu défilante, puis réduite pour tenir à l'écran.
+- Contrôle fait : faux jeu (la commande ouverte et fermée), rendus hors jeu approximatifs. Pas testés en jeu : découpe des images, dégradés, largeur des textes.
+- À trancher après l'essai : couleurs de chaque style, tailles, ce que deviennent les petites fenêtres et le bandeau, découpage du vrai chantier (conseil : Opus 5.5).
+
 ## Fenêtre d'options 1.3 (maquette du 11/11) [Fait dans la 1.3.0, sauf l'échelle pixel perfect]
 Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, le rare est replié. Tous les réglages actuels restent (une refonte n'enlève rien) ; seule leur place change. Commandes sur le modèle des réglages du jeu (◄ valeur ►, curseurs à losange, cases jaunes), pilotables à la manette (D-pad, A, B, LT / RT pour les onglets). Texte × 2 et contraste élevé testés dès le dessin.
 - Barre du haut : titre, recherche d'un réglage, ▲ réduire, ✕ fermer.

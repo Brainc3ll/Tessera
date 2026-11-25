@@ -20,7 +20,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 - Streamer mode hides, as you choose, other players' names, your other characters, your guild and your gold.
 - Accessibility: high contrast, fewer animations, a minimum text size and six reading fonts.
 - Language list: Tessera follows your game language, or you pick English, French, German, Spanish or Portuguese.
-- An options window with a search and a help panel for each setting. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
+- An options window in stone and metal, the game's rock and the metal of its dialogs in your style's colors, with a search and a help panel for each setting. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
 - Your layouts and profiles carry over between versions.
 
 Type **/tessera** for the options, or **/tessera demo** to see every block at once. The [README on GitHub](https://github.com/Brainc3ll/Tessera#readme) lists every block, command and setting.
@@ -58,7 +58,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - Historique des chuchotements : les 5, 10 ou 20 derniers dans une liste pour répondre. Clic droit épingle, Ctrl + clic supprime, Vider retire les autres.
 - Le mode streamer cache, au choix, les noms des autres joueurs, tes personnages, ta guilde et ton or.
 - Accessibilité : contraste élevé, moins d'animations, texte minimal, six polices. Langue au choix.
-- Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.
+- Une fenêtre d'options en pierre et métal, la roche du jeu et le métal de ses dialogues aux couleurs de ton style, avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.
 - Tes dispositions et tes profils passent d'une version à l'autre.
 
 Tape **/tessera** pour les options, ou **/tessera demo** pour voir tous les blocs d'un coup. Le [README sur GitHub](https://github.com/Brainc3ll/Tessera#readme) liste chaque bloc, commande et réglage.

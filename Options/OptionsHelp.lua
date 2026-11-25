@@ -26,10 +26,11 @@ end
 -- Skins a Tessera window with the chosen theme (options window, placement banner, ...)
 function ns:SkinWindow(frame, title)
     self:FollowWindowSize(frame) -- Shift + mouse wheel: the size of Tessera's windows
-    -- 2.0: a window marked useStoneSkin takes "stone and metal" in the style's colors
-    -- (OptionsSkin.lua); its parts repaint themselves when the style changes
-    if frame.useStoneSkin then
-        ns.Skin.Window(frame)
+    -- 2.0: Tessera's windows take "stone and metal" in the style's colors (OptionsSkin.lua);
+    -- their parts repaint themselves when the style changes. The lists under the mouse
+    -- (keepThemeSkin) keep the style's own window, like the blocks.
+    if not frame.keepThemeSkin then
+        ns.Skin.Window(frame, title)
         return
     end
     local t = self:GetThemeInfo(self:GetTheme()).window()
@@ -361,7 +362,7 @@ local function BuildHelpPage(page)
         return wanted, cache[wanted]
     end, 26) -- room for the three buttons below the topics
     -- the quick tour can be started again from here (not in DataBroker mode: no blocks)
-    local tour = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
+    local tour = ns.Skin.Button(CreateFrame("Button", nil, page, "UIPanelButtonTemplate"))
     tour:SetSize(TOPIC_W, 22)
     tour:SetPoint("BOTTOMLEFT", page, "BOTTOMLEFT", COL_X[1] - 12, 14)
     tour:SetText(L.TUTORIAL_START)
@@ -370,7 +371,7 @@ local function BuildHelpPage(page)
     tour.Refresh = function() end
     Register(tour, function() return not ns.brokerModeActive end)
     -- demo mode: every block, by category, with sample values (Demo.lua)
-    local demo = CreateFrame("Button", nil, page, "UIPanelButtonTemplate")
+    local demo = ns.Skin.Button(CreateFrame("Button", nil, page, "UIPanelButtonTemplate"))
     demo:SetSize(TOPIC_W, 22)
     demo:SetPoint("BOTTOMLEFT", tour, "TOPLEFT", 0, 4)
     demo:SetText(L.DEMO_BUTTON)
@@ -482,7 +483,7 @@ local ABOUT_LINKS = {
 
 -- A copy box: shows a link, selected on focus; typing changes nothing
 local function CopyBox(parent, width, getText)
-    local box = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
+    local box = ns.Skin.Field(CreateFrame("EditBox", nil, parent, "InputBoxTemplate"))
     box:SetSize(width, 20)
     box:SetAutoFocus(false)
     box:SetScript("OnTextChanged", function(self, userInput)

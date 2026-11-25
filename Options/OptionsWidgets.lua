@@ -120,6 +120,11 @@ local DEFAULT_ACCENTS = {
     hover = { 1, 1, 1, 0.1 }, lit = { 1, 0.82, 0, 1 }, line = { 1, 0.82, 0, 0.4 },
 }
 function ns:WindowAccents()
+    -- 2.0: Tessera's windows are in stone and metal, in the style's colors (OptionsSkin.lua)
+    if ns.Skin then
+        local p = ns.Skin.Palette()
+        return { hover = p.hover, lit = p.bar, line = p.line, text = p.title, ink = p.ink, soft = p.soft }
+    end
     local info = self.GetThemeInfo and self:GetThemeInfo(self:GetTheme())
     local w = info and info.window and info.window()
     local a = w and w.accents
@@ -158,17 +163,18 @@ end
 local function NewRow(parent, frameType)
     local row = CreateFrame(frameType or "Frame", nil, parent)
     row:SetSize(FULL_W, 28)
-    row.hover = row:CreateTexture(nil, "BACKGROUND")
+    -- the row under the mouse: the quest log's soft light (flat in high contrast) and a bar on
+    -- its left (a shape, not only a color)
+    row.hover, row.light = ns.Skin.Glow(row)
+    row.hover:ClearAllPoints()
     row.hover:SetPoint("TOPLEFT", -6, 0)
     row.hover:SetPoint("BOTTOMRIGHT", 4, 0)
-    row.hover:SetColorTexture(1, 1, 1, 0.1)
     row.hover:Hide()
-    -- high contrast: a bar on the left of the row under the mouse
     row.mark = row:CreateTexture(nil, "ARTWORK")
-    row.mark:SetPoint("TOPLEFT", -6, 0)
-    row.mark:SetPoint("BOTTOMLEFT", -6, 0)
+    row.mark:SetPoint("TOPLEFT", -6, -4)
+    row.mark:SetPoint("BOTTOMLEFT", -6, 4)
     row.mark:SetWidth(3)
-    row.mark:SetColorTexture(1, 0.82, 0, 1)
+    row.mark:SetColorTexture(1, 1, 1, 1)
     row.mark:Hide()
     return row
 end
@@ -176,13 +182,11 @@ end
 -- The row lights up while the mouse is over it or over one of its controls
 local function RowHover(row, ...)
     local function Enter()
-        local strong = ns.sv and ns.sv.highContrast
-        local a = ns:WindowAccents()
-        row.hover:SetColorTexture(unpack(a.hover))
-        row.mark:SetColorTexture(unpack(a.lit))
-        row.hover:SetAlpha(strong and 2.5 or 1)
+        local p = ns.Skin.Palette()
+        row.light(p, p.hover)
+        ns.Skin.Tint(row.mark, p.bar, 1)
         row.hover:Show()
-        row.mark:SetShown(strong and true or false)
+        row.mark:Show()
     end
     local function Leave()
         if row:IsMouseOver() then return end -- moved onto one of its controls
@@ -225,7 +229,7 @@ end
 -- Section header: gold text with a thin line underneath
 local function CreateHeader(parent, text)
     local holder = CreateFrame("Frame", nil, parent)
-    local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local fs = holder:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge") -- 2.0: bigger titles
     fs:SetPoint("BOTTOMLEFT", 0, 4)
     fs:SetText(text)
     -- room above the text: sections stand apart (more with bigger text)
@@ -324,10 +328,8 @@ local function CreateSwitch(parent, label, getter, setter, isShown, tip, width)
     b.Refresh = function(self)
         local on = getter() and true or false
         self.on = on
-        local info = ns.GetThemeInfo and ns:GetThemeInfo(ns:GetTheme())
-        local w = info and info.window and info.window()
-        local c = w and w.title or { 1, 0.82, 0 }
-        local r, g, bl = c[1] or c.r or 1, c[2] or c.g or 0.82, c[3] or c.b or 0
+        local c = ns.Skin.Palette().title -- the window's title color (OptionsSkin.lua)
+        local r, g, bl = c[1], c[2], c[3]
         if ns.sv and ns.sv.highContrast then
             edge:SetColorTexture(1, 1, 1, 1)
         else
@@ -362,7 +364,7 @@ local function CreateSlider(parent, label, minV, maxV, step, getter, setter, isS
     local holder = NewRow(parent)
     RowLabel(holder, label)
 
-    local slider = CreateFrame("Frame", nil, holder, "MinimalSliderWithSteppersTemplate")
+    local slider = ns.Skin.Slider(CreateFrame("Frame", nil, holder, "MinimalSliderWithSteppersTemplate"))
     slider:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
     slider:SetWidth(ROW_CONTROL_W - 50) -- room for the value on the right
     slider:Init(getter() or minV, minV, maxV, (maxV - minV) / step, {
@@ -440,7 +442,7 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
         holder = CreateFrame("Frame", nil, parent)
         holder:SetSize(width, 44)
         local title = AddTitle(holder, label)
-        dd = CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate")
+        dd = ns.Skin.Dropdown(CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate"))
         dd:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
         dd:SetWidth(width - 12)
         if tip then holder:EnableMouse(true) end
@@ -457,7 +459,7 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
             arrows:SetSize(ROW_CONTROL_W - 10, 30)
             arrows:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
             if arrows.Label then arrows.Label:Hide() end -- our label is on the left
-            dd = arrows.Dropdown
+            dd = ns.Skin.Dropdown(arrows.Dropdown)
             dd:SetWidth(ROW_CONTROL_W - 70)
             holder.arrows = arrows
             holder.Step = function(_, dir)
@@ -465,7 +467,7 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
             end
             RowHover(holder, dd, arrows.IncrementButton, arrows.DecrementButton)
         else
-            dd = CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate")
+            dd = ns.Skin.Dropdown(CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate"))
             dd:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
             dd:SetWidth(ROW_CONTROL_W - 10)
             RowHover(holder, dd)
@@ -488,7 +490,7 @@ local function CreateActionDropdown(parent, label, buildEntries, emptyText, tip)
     local holder = NewRow(parent)
     RowLabel(holder, label)
 
-    local dd = CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate")
+    local dd = ns.Skin.Dropdown(CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate"))
     dd:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
     dd:SetWidth(ROW_CONTROL_W - 10)
     if dd.SetDefaultText then dd:SetDefaultText(L.CHOOSE) end
@@ -573,7 +575,7 @@ end
 local function CreateEditBox(parent, label, getter, setter, isShown, tip, numeric)
     local holder = NewRow(parent)
     RowLabel(holder, label)
-    local box = CreateFrame("EditBox", nil, holder, "InputBoxTemplate")
+    local box = ns.Skin.Field(CreateFrame("EditBox", nil, holder, "InputBoxTemplate"))
     box:SetSize(ROW_CONTROL_W - 20, 20)
     box:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X + 6, 0)
     box:SetAutoFocus(false)
@@ -616,9 +618,13 @@ local function FitButtonText(b)
     local w = b:GetWidth()
     if not (fs and w and w > 0) then return end
     if fs:GetStringWidth() > w - 14 then
-        b:SetNormalFontObject("GameFontNormalSmall")
-        b:SetHighlightFontObject("GameFontHighlightSmall")
-        b:SetDisabledFontObject("GameFontDisableSmall")
+        if b.stoneButton then
+            ns.Skin.ButtonFonts(b, true) -- the same smaller fonts, in the style's colors
+        else
+            b:SetNormalFontObject("GameFontNormalSmall")
+            b:SetHighlightFontObject("GameFontHighlightSmall")
+            b:SetDisabledFontObject("GameFontDisableSmall")
+        end
         fs = b:GetFontString() or fs
         fs:SetWidth(w - 10)
         if fs.SetWordWrap then fs:SetWordWrap(false) end
@@ -627,7 +633,7 @@ end
 ns.FitButtonText = FitButtonText
 
 local function CreateButton(parent, text, onClick, isShown, width, tip)
-    local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    local b = ns.Skin.Button(CreateFrame("Button", nil, parent, "UIPanelButtonTemplate"))
     b:SetSize(width or COL_W, 24)
     b:SetText(text)
     FitButtonText(b)

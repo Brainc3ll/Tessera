@@ -205,6 +205,11 @@ EditModeManagerFrame = { IsEditModeActive = function() return false end,
     GetRegisteredSystemFrame = function(_, system, index)
         return EM_FRAMES[tostring(system) .. (index and ("." .. index) or "")]
     end }
+-- a font object (the 2.0 skin makes its button fonts with it)
+CreateFont = function(name)
+    local f = NewObject("Font"); if name then _G[name] = f end
+    return f
+end
 -- MOCK_FRAMES: every frame made, so a test can find an options widget by its text
 MOCK_FRAMES = {}
 CreateFrame = function(kind, name, _, template)
@@ -1438,9 +1443,10 @@ for _, step in ipairs({
         ns.db.theme = nil
         assert(ns:GetTheme() == "flareui6", "FlareUI 6: new profiles not on Bronze and gold")
         assert(ns:GetUIName("flareui6") == "FlareUI 6.0.1", "UI name of Bronze and gold")
-        assert(ns:WindowAccents().lit[2] == 0.84, "Bronze and gold window accents")
+        -- 2.0: the window accents come from the stone and metal palette of the style
+        assert(ns:WindowAccents().lit == ns.Skin.Palette().bar, "Bronze and gold window accents")
         ns.db.theme = "flareui2"
-        assert(ns:WindowAccents().lit[2] == 0.82, "default accents changed for other styles")
+        assert(ns:WindowAccents().text == ns.Skin.Palette().title, "window accents follow the style")
         assert(ns:GetUIName("elvui") == "ElvUI" and ns:GetUIName("ellesmere") == "EllesmereUI", "UI names after renaming")
         for _, t in ipairs(ns:GetAvailableThemes()) do
             if t.key == "elvui" then assert(t.name:find("ElvUI", 1, true), "imitation does not name its addon: " .. t.name) end
@@ -1543,10 +1549,13 @@ for _, step in ipairs({
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.8.0" then e180 = e break end end
         local e190
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.9.0" then e190 = e break end end
+        local e200
+        for _, e in ipairs(ns.CHANGELOG) do if e.version == "2.0.0" then e200 = e break end end
         local n161 = #ns.ChangelogHighlights(e161, "en")
         local n170 = #ns.ChangelogHighlights(e170, "en") + (e171 and #ns.ChangelogHighlights(e171, "en") or 0)
             + (e180 and #ns.ChangelogHighlights(e180, "en") or 0) + (e190 and #ns.ChangelogHighlights(e190, "en") or 0)
-        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0, 1.7.1, 1.8.0 and 1.9.0 news")
+            + (e200 and #ns.ChangelogHighlights(e200, "en") or 0)
+        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0, 1.7.1, 1.8.0, 1.9.0 and 2.0.0 news")
         assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + n170 + 7, "a test build counts as its version")
         assert(#ns.WhatsNewItems("1.5.1") > n161 + n170, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")
@@ -2867,10 +2876,12 @@ for _, step in ipairs({
         ns.db.theme = "warWithin"
         local big = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
         big:SetSize(800, 600)
+        big.keepThemeSkin = true -- (a list under the mouse: the style's own window)
         ns:SkinWindow(big)
         assert(big.skinKind == "atlas" and big.tesseraArtBase, "large window: art frame with a solid base")
         local small = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
         small:SetSize(500, 110)
+        small.keepThemeSkin = true
         ns:SkinWindow(small)
         assert(small.skinKind ~= "atlas", "small window: plain frame (" .. tostring(small.skinKind) .. ")")
         -- ...in the style's dark color, not the art's white tint (the banner came out white)

@@ -208,7 +208,7 @@ local function CreateBanner(self)
     b.sub:SetText(L.DEMO_SUBTITLE)
 
     local function Button(text, w, onClick)
-        local btn = CreateFrame("Button", nil, b, "UIPanelButtonTemplate")
+        local btn = ns.Skin.Button(CreateFrame("Button", nil, b, "UIPanelButtonTemplate"))
         btn:SetSize(w, 22)
         btn:SetText(text)
         btn:SetScript("OnClick", onClick)

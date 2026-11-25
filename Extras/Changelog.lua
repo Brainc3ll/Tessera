@@ -47,6 +47,36 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "2.0.0",
+        date = "2026-11-25",
+        highlights = {
+            { en = "Tessera's windows in stone and metal, in your style's colors.",
+              fr = "Les fenêtres de Tessera en pierre et métal, aux couleurs de ton style." },
+        },
+        sections = {
+            { kind = "new",
+              en = {
+                "Stone and metal: Tessera draws its windows (options, placement banner, See all, What's new, copy boxes) with the game's rock,"
+                    .. " the metal frame of its dialogs and a soft shadow, in your style's colors. Blocks and the lists under the mouse keep their style.",
+                "Options window: an icon for each page, the quest log's soft light under the mouse and on the open page, bigger titles,"
+                    .. " and the version beside the name.",
+                "Buttons, text fields, lists and sliders take rounded shapes in your style's colors; sliders use the classic knob and the spell book's arrows.",
+                "High contrast draws these windows plain black with a thick white edge, without rock or shadow.",
+              },
+              fr = {
+                "Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?, boîtes de copie)"
+                    .. " avec la roche du jeu, le cadre de métal de ses dialogues et une ombre douce, aux couleurs de ton style."
+                    .. " Les blocs et les listes au survol gardent leur style.",
+                "Fenêtre d'options : une icône pour chaque page, la lumière douce du journal de quêtes sous la souris et sur la page ouverte,"
+                    .. " des titres plus grands et la version à côté du nom.",
+                "Les boutons, champs de texte, listes et curseurs prennent des formes arrondies aux couleurs de ton style ;"
+                    .. " les curseurs reprennent le bouton classique et les flèches du grimoire.",
+                "Le contraste renforcé dessine ces fenêtres en noir uni avec un bord blanc épais, sans roche ni ombre.",
+              },
+            },
+        },
+    },
+    {
         version = "1.9.0",
         date = "2026-11-25",
         highlights = {

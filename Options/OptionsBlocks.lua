@@ -293,7 +293,7 @@ local function CreateStyleTargets(parent, getStyle)
         { "all", L.ALL_BLOCKS, L.TIP_STYLE_TO_ALL, function() return S.selected ~= ALL end },
     }
     for i, spec in ipairs(specs) do
-        local b = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+        local b = ns.Skin.Button(CreateFrame("Button", nil, row, "UIPanelButtonTemplate"))
         b:SetSize(w, 24)
         b:SetPoint("LEFT", row, "LEFT", ROW_CONTROL_X + (i - 1) * (w + 6), 0)
         b:SetText(spec[2])
@@ -306,7 +306,7 @@ local function CreateStyleTargets(parent, getStyle)
     -- "All blocks" page: the three buttons give way to one that opens the Look tab, where
     -- the style of every block (and of this window) is picked; a style applied here would
     -- not show in that tab
-    local goLook = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+    local goLook = ns.Skin.Button(CreateFrame("Button", nil, row, "UIPanelButtonTemplate"))
     goLook:SetSize(ROW_CONTROL_W - 10, 24)
     goLook:SetPoint("LEFT", row, "LEFT", ROW_CONTROL_X, 0)
     goLook:SetText(L.STYLE_OPEN_LOOK)
@@ -617,7 +617,7 @@ local function BuildBlockPage(page)
             local bd = CurrentBorder()
             if bd then ns:SetBorderReach(bd, v / 100) end
         end, HasCorners, L.TIP_CORNER_JOIN)
-    local default = CreateFrame("Button", nil, corner, "UIPanelButtonTemplate")
+    local default = ns.Skin.Button(CreateFrame("Button", nil, corner, "UIPanelButtonTemplate"))
     default:SetSize(64, 18)
     default:SetPoint("RIGHT", corner.slider, "LEFT", -8, 0) -- between the label and the slider
     corner.labelW = ROW_LABEL_W - 80

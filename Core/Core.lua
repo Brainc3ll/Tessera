@@ -1833,6 +1833,7 @@ end
 function ns.ApplyListLook(frame, window)
     if window then
         frame.tesseraTipNine = nil -- (the window skin resets the pieces: skinKind is "tooltip")
+        frame.keepThemeSkin = true -- a list keeps the style's own window, like the blocks
         if ns.SkinWindow then ns:SkinWindow(frame) end
     else
         if frame.skinKind and frame.skinKind ~= "tooltip" then

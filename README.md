@@ -132,6 +132,9 @@ Help tab inside the game explains everything.
 
 **Highlights**
 
+- **Stone and metal windows (2.0):** the options window, the placement banner and Tessera's other
+  windows use the game's rock and the metal frame of its dialogs, in the colors of your style;
+  high contrast draws them plain black with a thick white edge.
 - **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every
   direction: a bar, a column, a corner, an L shape... Stick a bar to a screen edge and stretch it
   over the whole width, or start from a ready-made layout (among them "Double

@@ -422,6 +422,7 @@ end
 local function BuildSearch(showPage)
     local ok, box = pcall(CreateFrame, "EditBox", nil, S.panel, "SearchBoxTemplate")
     if not ok then box = CreateFrame("EditBox", nil, S.panel, "InputBoxTemplate") end
+    ns.Skin.Field(box)
     box:SetSize(SEARCH_W, 20)
     box:SetPoint("TOPRIGHT", S.panel, "TOPRIGHT", -(TOPBAR_RIGHT + 170 + 12), -21)
     box:SetAutoFocus(false)
@@ -601,7 +602,6 @@ local function BuildPanel()
     S.panelW = PANEL_W + (S.navW - NAV_W)
 
     S.panel = CreateFrame("Frame", "TesseraOptions", UIParent, "BackdropTemplate")
-    S.panel.useStoneSkin = true -- 2.0: stone and metal in the style's colors (OptionsSkin.lua)
     S.panel:SetSize(S.panelW, PANEL_H)
     S.panel:SetPoint("CENTER")
     S.panel:SetFrameStrata("DIALOG")
@@ -650,7 +650,7 @@ local function BuildPanel()
     logo:SetPoint("TOPLEFT", 18, -16)
     logo:SetTexture("Interface\\AddOns\\Tessera\\Media\\Icon.png")
     S.panel.logo = logo
-    S.panel.title = S.panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    S.panel.title = S.panel:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge") -- 2.0: bigger title
     S.panel.title:SetPoint("LEFT", logo, "RIGHT", 8, 0)
     S.panel.title:SetText(L.OPTIONS_TITLE)
     -- the version, on the title's line: bottoms anchored together, raised by the difference
@@ -681,7 +681,7 @@ local function BuildPanel()
     local close = CreateFrame("Button", nil, S.panel, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -8, -8)
 
-    local lockButton = CreateFrame("Button", nil, S.panel, "UIPanelButtonTemplate")
+    local lockButton = ns.Skin.Button(CreateFrame("Button", nil, S.panel, "UIPanelButtonTemplate"))
     lockButton:SetSize(170, 22)
     lockButton:SetPoint("TOPRIGHT", S.panel, "TOPRIGHT", -TOPBAR_RIGHT, -20)
     lockButton:SetScript("OnClick", function() ns:SetLocked(not ns.db.locked) end)

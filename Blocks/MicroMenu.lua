@@ -104,6 +104,7 @@ local function RefreshList(owner)
         row.text:SetText(unlocked and name or ("|cff808080" .. name .. "|r"))
         row:SetAttribute("type", unlocked and "macro" or nil)
     end
+    list.keepThemeSkin = true -- a list keeps the style's own window, like the blocks
     if ns.SkinWindow then ns:SkinWindow(list) end
     list:ClearAllPoints()
     local _, y = owner:GetCenter()

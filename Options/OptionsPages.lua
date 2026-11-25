@@ -259,7 +259,7 @@ local function BuildBrokerPlugins(page, showBlockPage)
         if add then add:Refresh() end
     end)
     -- small button that empties the search
-    local clear = CreateFrame("Button", nil, search, "UIPanelButtonTemplate")
+    local clear = ns.Skin.Button(CreateFrame("Button", nil, search, "UIPanelButtonTemplate"))
     clear:SetSize(22, 20)
     clear:SetPoint("LEFT", search.box, "RIGHT", 4, 0)
     clear:SetText("x")

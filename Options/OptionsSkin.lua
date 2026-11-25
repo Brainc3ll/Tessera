@@ -17,6 +17,7 @@ local HIGHLIGHT = "Interface\\QuestFrame\\UI-QuestTitleHighlight"
 -- how bright the rock is, how much of the style's background covers it, how much of the
 -- style's edge color the metal takes (values judged in game on the preview, test222)
 local ROCK_LIGHT, ROCK_WASH, METAL_TINT = 0.80, 0.40, 0.35
+local SMALL_WINDOW = 220 -- shorter windows take a thinner metal frame
 local WHITE, BLACK = { 1, 1, 1 }, { 0, 0, 0 }
 Skin.MEDIA = MEDIA
 
@@ -46,7 +47,8 @@ local STYLE_COLORS = {
     transparent = { { 0.050, 0.055, 0.060 }, { 0.45, 0.50, 0.55 }, { 0.95, 0.97, 1.00 } },
     runestone = { { 0.070, 0.070, 0.075 }, { 0.75, 0.76, 0.80 }, { 0.95, 0.95, 0.98 } },
     grimoire = GOLD,
-    parchment = { { 0.85, 0.76, 0.58 }, { 0.42, 0.27, 0.12 }, { 0.26, 0.14, 0.04 }, light = true },
+    -- dark, as its former window: the game's texts are white or gold (decided 25/11)
+    parchment = { { 0.16, 0.11, 0.06 }, { 0.62, 0.42, 0.20 }, { 0.93, 0.83, 0.62 } },
     arcane = { { 0.065, 0.035, 0.115 }, { 0.62, 0.42, 0.92 }, { 0.78, 0.86, 1.00 } },
     royalSeal = GOLD,
     ironforge = { { 0.095, 0.085, 0.080 }, { 0.66, 0.60, 0.52 }, { 1.00, 0.80, 0.52 } },
@@ -219,11 +221,25 @@ function Skin.EdgeLine(f, y, side)
     end
 end
 
--- The window itself (f needs BackdropTemplate): soft shadow, rock washed in the style's
--- background, a darker top, the metal frame. Built once; later calls only repaint.
-function Skin.Window(f)
+-- Gives a frame made without BackdropTemplate the backdrop functions
+local function EnsureBackdrop(f)
+    if f.SetBackdrop then return end
+    local mixin = _G["BackdropTemplateMixin"]
+    if not (mixin and Mixin) then return end
+    Mixin(f, mixin)
+    f:HookScript("OnSizeChanged", f.OnBackdropSizeChanged)
+end
+Skin.EnsureBackdrop = EnsureBackdrop
+
+-- The window itself: soft shadow, rock washed in the style's background, a darker top, the
+-- metal frame; title (a font string, optional) in the style's title color. Built once; later
+-- calls only repaint.
+function Skin.Window(f, title)
+    f.stoneTitle = title or f.stoneTitle
     if f.stoneSkin then return end
     f.stoneSkin = true
+    EnsureBackdrop(f)
+    if not f.SetBackdrop then return end
     local shade = Sliced(f, "BACKGROUND", "shadow", 24, -8)
     shade:ClearAllPoints()
     shade:SetPoint("TOPLEFT", f, "TOPLEFT", -30, 28)
@@ -264,14 +280,172 @@ function Skin.Window(f)
                 depth:Hide()
             end
         end
-        if f.skinMode ~= (decor and "decor" or "contrast") then
-            f.skinMode = decor and "decor" or "contrast"
-            f:SetBackdrop(decor and { edgeFile = METAL, edgeSize = 32,
-                insets = { left = 11, right = 11, top = 11, bottom = 11 } } or nil)
+        -- a small window (a banner, a dialog) takes a thinner metal: it keeps room for its text
+        local small = (f:GetHeight() or 0) < SMALL_WINDOW
+        local mode = decor and (small and "small" or "decor") or "contrast"
+        if f.skinMode ~= mode then
+            f.skinMode = mode
+            local inset = small and 8 or 11
+            f:SetBackdrop(decor and { edgeFile = METAL, edgeSize = small and 24 or 32,
+                insets = { left = inset, right = inset, top = inset, bottom = inset } } or nil)
         end
         if decor then
             local c = Mix(WHITE, p.edge, METAL_TINT)
             f:SetBackdropBorderColor(c[1], c[2], c[3], 1)
         end
+        if f.stoneTitle then Skin.TextColor(f.stoneTitle, p.title) end
     end)
+end
+
+---------------------------------------------------------------------------
+-- Controls: the game's own buttons, fields, lists and sliders keep their behavior; only
+-- their drawings change (the template's textures turn see-through, ours go under the text)
+---------------------------------------------------------------------------
+-- Button texts in the style's colors: copies of the game's fonts (they follow its sizes)
+local buttonFonts
+local function ButtonFonts()
+    if buttonFonts then return buttonFonts end
+    buttonFonts = {}
+    for key, parent in pairs({ normal = "GameFontNormal", high = "GameFontHighlight", off = "GameFontDisable",
+        normalSmall = "GameFontNormalSmall", highSmall = "GameFontHighlightSmall", offSmall = "GameFontDisableSmall" }) do
+        local f = CreateFont("TesseraSkinFont_" .. key)
+        if _G[parent] then f:SetFontObject(_G[parent]) end
+        buttonFonts[key] = f
+    end
+    Skin.Paint(function(p)
+        local high = p.contrast and WHITE or Mix(p.title, WHITE, 0.35)
+        local off = p.contrast and { 0.6, 0.6, 0.6 } or Mix(p.soft, BLACK, 0.25)
+        for _, size in ipairs({ "", "Small" }) do
+            buttonFonts["normal" .. size]:SetTextColor(p.title[1], p.title[2], p.title[3], 1)
+            buttonFonts["high" .. size]:SetTextColor(high[1], high[2], high[3], 1)
+            buttonFonts["off" .. size]:SetTextColor(off[1], off[2], off[3], 1)
+        end
+    end)
+    return buttonFonts
+end
+
+-- Puts a button's text in the style's colors (small: the smaller fonts, for long texts)
+function Skin.ButtonFonts(b, small)
+    local fonts, size = ButtonFonts(), small and "Small" or ""
+    b:SetNormalFontObject(fonts["normal" .. size])
+    b:SetHighlightFontObject(fonts["high" .. size])
+    b:SetDisabledFontObject(fonts["off" .. size])
+end
+
+-- The template's own drawings turn see-through (they change texture, never alpha)
+local function HideTemplate(f, keys)
+    for _, k in ipairs(keys) do
+        local t = f[k]
+        if type(t) == "table" and t.SetAlpha then t:SetAlpha(0) end
+    end
+end
+
+-- A rounded control that lights up under the mouse and darkens when pressed or off
+local function Pressable(b, base)
+    local over, down = false, false
+    local function Fill(p)
+        local c = base(p)
+        if b.IsEnabled and not b:IsEnabled() then return Alpha(c, 0.45) end
+        if down then return Mix(c, p.edge, 0.40) end
+        if over then return Mix(c, p.edge, 0.22) end
+        return c
+    end
+    local setFill = Skin.Surface(b, 8, Fill, function(p) return p.line end)
+    local function Update() setFill(Skin.Palette(), Fill(Skin.Palette())) end
+    b:HookScript("OnEnter", function() over = true Update() end)
+    b:HookScript("OnLeave", function() over, down = false, false Update() end)
+    b:HookScript("OnMouseDown", function() down = true Update() end)
+    b:HookScript("OnMouseUp", function() down = false Update() end)
+    b:HookScript("OnEnable", Update)
+    b:HookScript("OnDisable", Update)
+    b:HookScript("OnShow", Update)
+end
+
+-- A game button (UIPanelButtonTemplate) in stone and metal. Returns the button.
+function Skin.Button(b)
+    if not b or b.stoneButton then return b end
+    b.stoneButton = true
+    HideTemplate(b, { "Left", "Middle", "Right" })
+    for _, get in ipairs({ "GetNormalTexture", "GetPushedTexture", "GetHighlightTexture", "GetDisabledTexture" }) do
+        local t = b[get] and b[get](b)
+        if t then t:SetAlpha(0) end
+    end
+    local small = b.GetNormalFontObject and _G.GameFontNormalSmall and b:GetNormalFontObject() == _G.GameFontNormalSmall
+    Skin.ButtonFonts(b, small)
+    EnsureBackdrop(b)
+    if b.SetBackdrop then Pressable(b, function(p) return p.button end) end
+    return b
+end
+
+-- A text field (InputBoxTemplate, SearchBoxTemplate): a darker rounded box. Returns it.
+function Skin.Field(box)
+    if not box or box.stoneField then return box end
+    box.stoneField = true
+    HideTemplate(box, { "Left", "Middle", "Right" })
+    EnsureBackdrop(box)
+    if not box.SetBackdrop then return box end
+    Skin.Surface(box, 8, function(p) return p.field end, function(p) return p.line end)
+    -- the template drew its edge outside the box: the text keeps clear of ours
+    local left, right, top, bottom = 0, 0, 0, 0
+    if box.GetTextInsets then left, right, top, bottom = box:GetTextInsets() end
+    box:SetTextInsets(math.max(left or 0, 6), math.max(right or 0, 6), top or 0, bottom or 0)
+    return box
+end
+
+-- A list button (WowStyle1 / WowStyle2 DropdownTemplate): a rounded button; the game's
+-- arrow and texts stay. Returns it.
+function Skin.Dropdown(dd)
+    if not dd or dd.stoneDropdown then return dd end
+    dd.stoneDropdown = true
+    HideTemplate(dd, { "Background" })
+    EnsureBackdrop(dd)
+    if dd.SetBackdrop then Pressable(dd, function(p) return p.button end) end
+    return dd
+end
+
+-- The game's slider with arrows (MinimalSliderWithSteppersTemplate): a thin track in the
+-- style's line color, the classic knob, the spell book's arrows; in high contrast a diamond
+-- and plain arrows. Returns it.
+local function StepArrow(b, forward)
+    if type(b) ~= "table" then return end
+    local t = b.GetRegions and b:GetRegions()
+    if not (t and t.SetTexture) then return end
+    b:SetSize(20, 20)
+    t:ClearAllPoints()
+    t:SetAllPoints(b)
+    Skin.Paint(function(p)
+        if p.contrast then
+            t:SetTexture(MEDIA .. (forward and "right" or "left"))
+            Tint(t, p.title, 1)
+        else
+            t:SetTexture("Interface\\Buttons\\UI-SpellbookIcon-" .. (forward and "NextPage" or "PrevPage") .. "-Up")
+            Tint(t, WHITE, 1)
+        end
+    end)
+end
+function Skin.Slider(sl)
+    if not sl or sl.stoneSlider then return sl end
+    sl.stoneSlider = true
+    local bar = sl.Slider
+    if type(bar) == "table" then
+        HideTemplate(bar, { "Left", "Middle", "Right" })
+        local track = bar:CreateTexture(nil, "BACKGROUND")
+        track:SetHeight(4)
+        track:SetPoint("LEFT", bar, "LEFT", 0, 0)
+        track:SetPoint("RIGHT", bar, "RIGHT", 0, 0)
+        track:SetColorTexture(1, 1, 1, 1)
+        local thumb = bar.GetThumbTexture and bar:GetThumbTexture()
+        Skin.Paint(function(p)
+            Tint(track, p.line, 1)
+            if thumb then
+                thumb:SetTexture(p.contrast and (MEDIA .. "diamond") or "Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
+                thumb:SetSize(p.contrast and 16 or 28, p.contrast and 16 or 28)
+                Tint(thumb, p.contrast and p.title or WHITE, 1)
+            end
+        end)
+    end
+    StepArrow(sl.Back, false)
+    StepArrow(sl.Forward, true)
+    if type(sl.RightText) == "table" then Skin.Paint(function(p) Skin.TextColor(sl.RightText, p.title) end) end
+    return sl
 end

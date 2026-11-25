@@ -235,7 +235,7 @@ end
 ---------------------------------------------------------------------------
 local function PaintBox(box)
     local a = ns:WindowAccents()
-    if box.frame.SetBackdropColor then
+    if box.frame.SetBackdropColor and not box.stone then
         box.frame:SetBackdropColor(0, 0, 0, ns.sv and ns.sv.highContrast and 0.45 or 0.25)
         local l = a.line
         box.frame:SetBackdropBorderColor(l[1], l[2], l[3], math.min(1, (l[4] or 0.4) + 0.2))
@@ -247,9 +247,10 @@ end
 
 -- The Reset button of a box: gold text, white under the mouse, grey when nothing differs
 local function PaintReset(b)
+    local a = ns:WindowAccents()
     if not b:IsEnabled() then b.label:SetTextColor(0.5, 0.48, 0.42)
     elseif b.hovered then b.label:SetTextColor(1, 1, 1)
-    else b.label:SetTextColor(1, 0.82, 0) end
+    else b.label:SetTextColor(unpack(a.text or { 1, 0.82, 0 })) end
 end
 
 local function NewBox(flow, title, opts)
@@ -258,14 +259,18 @@ local function NewBox(flow, title, opts)
     local box = { flow = flow, content = content, title = title, rows = {}, isShown = opts.isShown }
     box.frame = CreateFrame("Frame", nil, content, "BackdropTemplate")
     box.frame:SetFrameLevel(math.max(0, content:GetFrameLevel() or 0)) -- under its rows
-    if box.frame.SetBackdrop then
+    -- 2.0: a rounded box with the tooltip border, in the style's colors (OptionsSkin.lua)
+    if ns.Skin and box.frame.SetBackdrop then
+        ns.Skin.Box(box.frame)
+        box.stone = true
+    elseif box.frame.SetBackdrop then
         box.frame:SetBackdrop({ bgFile = WHITE, edgeFile = WHITE, edgeSize = 1 })
     end
     box.framed = title ~= nil
     if title then
         local head = CreateFrame("Frame", nil, content)
         head:SetSize(INNER_W, 22)
-        local fs = head:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        local fs = head:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge") -- 2.0: bigger titles
         fs:SetPoint("TOPLEFT", head, "TOPLEFT", 0, -7)
         fs:SetJustifyH("LEFT")
         if fs.SetWordWrap then fs:SetWordWrap(true) end
@@ -490,7 +495,8 @@ local function CreateTabs(parent, names, tips, onSelect)
             b.light:SetColorTexture(a.lit[1], a.lit[2], a.lit[3], on and 0.18 or 0.04)
             b.edge:SetColorTexture(unpack(a.lit))
             b.edge:SetShown(on)
-            b.label:SetTextColor(on and 1 or 0.88, on and 1 or 0.84, on and 1 or 0.75)
+            local c = on and a.text or a.ink
+            if c then b.label:SetTextColor(c[1], c[2], c[3]) else b.label:SetTextColor(on and 1 or 0.88, on and 1 or 0.84, on and 1 or 0.75) end
         end
     end
     function bar.Select(i)

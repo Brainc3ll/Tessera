@@ -150,6 +150,7 @@ local function OnAccents(fn)
     fn()
 end
 function ns:RepaintAccents()
+    if ns.Skin then ns.Skin.Repaint() end -- the stone and metal windows (OptionsSkin.lua)
     for _, e in ipairs(accentLines) do PaintAccent(e.line, e.fs) end
     for _, fn in ipairs(accentHooks) do fn() end
 end

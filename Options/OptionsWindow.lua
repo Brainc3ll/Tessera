@@ -97,7 +97,7 @@ end
 local ZOOM_DEFAULT = 1.15
 local SIDE_ROOM = 200 -- UI units kept free on each side
 local NAV_MAX_GROW = 120 -- the left list may grow by this much for a long name
-local NAV_TEXT_ROOM = 52 -- px around a name: bar, margins
+local NAV_TEXT_ROOM = 78 -- px around a name: bar, icon, margins
 local function FitPanelToScreen()
     local w, h = UIParent:GetWidth(), UIParent:GetHeight()
     if not (w and h and w > 0 and h > 0) then return end
@@ -119,13 +119,14 @@ local ZOOM_MIN, ZOOM_MAX, ZOOM_STEP = 0.7, 1.3, 0.05
 -- and two hints. Tooltips still show on hover.
 local function BuildHelpPanel()
     local help = CreateFrame("Frame", nil, S.panel)
-    local line = help:CreateTexture(nil, "ARTWORK")
-    line:SetColorTexture(1, 0.82, 0, 0.25)
     help:SetPoint("TOPLEFT", S.panel, "TOPLEFT", S.panelW - HELP_W, PAGE_TOP)
     help:SetPoint("BOTTOMRIGHT", S.panel, "BOTTOMRIGHT", -16, 16)
-    line:SetWidth(1)
-    line:SetPoint("TOPLEFT", -10, 0)
-    line:SetPoint("BOTTOMLEFT", -10, 0)
+    -- its box, a little wider than the text on the left (the page ends 10 px before it)
+    local box = CreateFrame("Frame", nil, help, "BackdropTemplate")
+    box:SetPoint("TOPLEFT", help, "TOPLEFT", -8, 0)
+    box:SetPoint("BOTTOMRIGHT", help, "BOTTOMRIGHT", 0, 0)
+    box:SetFrameLevel(math.max(0, help:GetFrameLevel() - 1))
+    ns.Skin.Box(box)
     local textW = HELP_W - 32
     local logo = help:CreateTexture(nil, "ARTWORK")
     logo:SetSize(96, 96)
@@ -141,6 +142,10 @@ local function BuildHelpPanel()
     body:SetJustifyH("LEFT")
     if body.SetSpacing then body:SetSpacing(3) end
     help.title, help.body = title, body
+    ns.Skin.Paint(function(p)
+        ns.Skin.TextColor(title, p.title)
+        ns.Skin.TextColor(body, p.ink)
+    end)
     -- true when the panel shows it (owner, if given, must be in the unfolded window)
     function ns:ShowOptionHelp(name, tip, owner)
         if owner then
@@ -152,7 +157,7 @@ local function BuildHelpPanel()
         title:ClearAllPoints()
         if name and tip then
             logo:Hide()
-            title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -6)
+            title:SetPoint("TOPLEFT", help, "TOPLEFT", 0, -12)
             title:SetText(name)
             body:SetText(tip)
         else
@@ -183,6 +188,7 @@ local function SetFolded(on)
     end
     S.panel.nav:SetShown(not on)
     S.panel.help:SetShown(not on)
+    if S.panel.showTopLine then S.panel.showTopLine(not on) end -- folded: it would cross the frame
     for i, p in ipairs(pages) do p:SetShown(not on and i == S.currentPage) end
     if on and S.panel.results then S.panel.results:Hide() end
     S.panel.fold:Refresh()
@@ -595,6 +601,7 @@ local function BuildPanel()
     S.panelW = PANEL_W + (S.navW - NAV_W)
 
     S.panel = CreateFrame("Frame", "TesseraOptions", UIParent, "BackdropTemplate")
+    S.panel.useStoneSkin = true -- 2.0: stone and metal in the style's colors (OptionsSkin.lua)
     S.panel:SetSize(S.panelW, PANEL_H)
     S.panel:SetPoint("CENTER")
     S.panel:SetFrameStrata("DIALOG")
@@ -646,14 +653,30 @@ local function BuildPanel()
     S.panel.title = S.panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     S.panel.title:SetPoint("LEFT", logo, "RIGHT", 8, 0)
     S.panel.title:SetText(L.OPTIONS_TITLE)
+    -- the version, on the title's line: bottoms anchored together, raised by the difference
+    -- of the two fonts' descents (a fifth of their sizes), so both sit on one baseline
+    local version = S.panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    version:SetText(C_AddOns and C_AddOns.GetAddOnMetadata and C_AddOns.GetAddOnMetadata(ADDON, "Version") or "")
+    local _, titleSize = S.panel.title:GetFont()
+    local _, versionSize = version:GetFont()
+    local rise = math.floor(((titleSize or 0) - (versionSize or 0)) * 0.2 + 0.5)
+    version:SetPoint("BOTTOMLEFT", S.panel.title, "BOTTOMRIGHT", 6, math.max(0, rise))
+    S.panel.version = version
+    -- the page's sentence starts after the list on the left, or after the version if longer
+    local headerRight = 58 + (S.panel.title:GetStringWidth() or 0) + 6 + (version:GetStringWidth() or 0) + 16
+    S.panel.showTopLine = ns.Skin.EdgeLine(S.panel, -PAGE_TOP - 6) -- under the top bar
     -- one plain sentence on what the open page is for, next to the title
     S.panel.hint = S.panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    S.panel.hint:SetPoint("TOPLEFT", S.panel, "TOPLEFT", S.navW, -20)
+    S.panel.hint:SetPoint("TOPLEFT", S.panel, "TOPLEFT", math.max(S.navW, math.ceil(headerRight)), -20)
     S.panel.hint:SetPoint("RIGHT", S.panel, "RIGHT", -(SEARCH_W + 170 + TOPBAR_RIGHT + 16), 0)
     S.panel.hint:SetHeight(30)
     S.panel.hint:SetJustifyH("LEFT")
     S.panel.hint:SetJustifyV("MIDDLE")
-    S.panel.hint:SetTextColor(0.85, 0.8, 0.68)
+    ns.Skin.Paint(function(p)
+        ns.Skin.TextColor(S.panel.title, p.title)
+        ns.Skin.TextColor(version, p.soft)
+        ns.Skin.TextColor(S.panel.hint, p.soft)
+    end)
 
     local close = CreateFrame("Button", nil, S.panel, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -8, -8)
@@ -683,44 +706,51 @@ local function BuildPanel()
         ns:RefreshOptions()
     end
 
-    -- the navigation list: a thin frame, one line per page, the open one marked by a gold
-    -- bar and white text (also a shape, not only a color: the bar)
+    -- the navigation list: a box, one line per page with its icon, the open one lit and
+    -- marked by a bar in the style's color (also a shape, not only a color: the bar)
     local nav = CreateFrame("Frame", nil, S.panel, "BackdropTemplate")
     nav:SetPoint("TOPLEFT", S.panel, "TOPLEFT", 16, PAGE_TOP)
     nav:SetPoint("BOTTOMLEFT", S.panel, "BOTTOMLEFT", 16, 16)
     nav:SetWidth(S.navW - 24)
-    if nav.SetBackdrop then
-        nav:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1 })
-        nav:SetBackdropColor(1, 1, 1, 0.03)
-        nav:SetBackdropBorderColor(0.55, 0.43, 0.2, 0.6)
-    end
+    ns.Skin.Box(nav)
     S.panel.nav = nav
-    local NAV_LINE = 32
+    local NAV_LINE, NAV_ICON = 32, 18
+    local icons = { [PAGE_BLOCKS] = "i_blocks", [PAGE_LOOK] = "i_style", [PAGE_GENERAL] = "i_place",
+        [PAGE_ACCESS] = "i_access", [PAGE_LAUNCHERS] = "i_launch", [PAGE_BROKER] = "i_broker",
+        [PAGE_PROFILES] = "i_profiles", [PAGE_HELP] = "i_help", [PAGE_ABOUT] = "i_about" }
     for i, text in ipairs(names) do
         local tab = CreateFrame("Button", nil, nav)
         tab:SetSize(S.navW - 32, NAV_LINE - 4)
-        tab.bar = tab:CreateTexture(nil, "BACKGROUND")
-        tab.bar:SetAllPoints()
-        tab.bar:SetColorTexture(1, 0.82, 0, 0.18)
+        local lit, light = ns.Skin.Glow(tab) -- the open page
+        local hover, lightHover = ns.Skin.Glow(tab, "HIGHLIGHT") -- shown by the game while hovered
         tab.edge = tab:CreateTexture(nil, "ARTWORK")
-        tab.edge:SetPoint("TOPLEFT"); tab.edge:SetPoint("BOTTOMLEFT")
-        tab.edge:SetWidth(3)
-        tab.edge:SetColorTexture(1, 0.82, 0, 1)
-        local hover = tab:CreateTexture(nil, "HIGHLIGHT") -- shown by the game while hovered
-        hover:SetAllPoints()
-        hover:SetColorTexture(1, 1, 1, 0.07)
+        tab.edge:SetPoint("TOPLEFT", 2, -5); tab.edge:SetPoint("BOTTOMLEFT", 2, 5)
+        tab.edge:SetWidth(4)
+        tab.edge:SetColorTexture(1, 1, 1, 1)
+        tab.icon = ns.Skin.Image(tab, icons[i] or "i_blocks", NAV_ICON)
+        tab.icon:SetPoint("LEFT", 12, 0)
         tab.label = tab:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        tab.label:SetPoint("LEFT", 14, 0)
+        tab.label:SetPoint("LEFT", tab.icon, "RIGHT", 8, 0)
         tab.label:SetPoint("RIGHT", -4, 0)
         tab.label:SetJustifyH("LEFT")
         tab.label:SetWordWrap(false)
         tab.label:SetText(text)
-        function tab:SetSelected(on)
-            self.bar:SetShown(on)
-            self.edge:SetShown(on)
-            self.label:SetTextColor(on and 1 or 0.88, on and 1 or 0.84, on and 1 or 0.75)
+        local function Look(p)
+            local on = tab.selected
+            light(p, p.select)
+            lightHover(p, p.hover)
+            lit:SetShown(on)
+            hover:SetAlpha(on and 0 or 1) -- the open page is lit already
+            ns.Skin.Tint(tab.edge, p.bar, 1)
+            tab.edge:SetShown(on)
+            ns.Skin.Tint(tab.icon, on and p.title or p.soft)
+            ns.Skin.TextColor(tab.label, on and p.title or p.ink)
         end
-        tab:SetSelected(false)
+        function tab:SetSelected(on)
+            self.selected = on and true or false
+            Look(ns.Skin.Palette())
+        end
+        ns.Skin.Paint(Look)
         tab:SetScript("OnClick", function() ShowPage(i) end)
         tabs[i] = tab
 

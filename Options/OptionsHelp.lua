@@ -26,6 +26,12 @@ end
 -- Skins a Tessera window with the chosen theme (options window, placement banner, ...)
 function ns:SkinWindow(frame, title)
     self:FollowWindowSize(frame) -- Shift + mouse wheel: the size of Tessera's windows
+    -- 2.0: a window marked useStoneSkin takes "stone and metal" in the style's colors
+    -- (OptionsSkin.lua); its parts repaint themselves when the style changes
+    if frame.useStoneSkin then
+        ns.Skin.Window(frame)
+        return
+    end
     local t = self:GetThemeInfo(self:GetTheme()).window()
     if title then title:SetTextColor(unpack(t.title)) end
     -- the expansion frames (The War Within, Midnight) are drawn for large windows: on a small

@@ -49,6 +49,7 @@ Blocks\Launchers.lua
 Blocks\Spacers.lua
 Extras\Broker.lua
 Options\Options.lua
+Options\OptionsSkin.lua
 Options\OptionsWidgets.lua
 Options\OptionsBoxes.lua
 Options\OptionsBlocks.lua

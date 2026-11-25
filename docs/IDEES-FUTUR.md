@@ -444,6 +444,11 @@ Maquette : https://claude.ai/artifact/6bYLHvVXo2fmWGsxFNnASk (Sonnet 5.5 ; appro
 - Aussi : bordure d'infobulle sur les boîtes et boutons, lumière de la liste des quêtes au survol, cases, flèches, plus/moins, curseur et croix du jeu, icône `INV_Misc_Coin_01`, un seul or plus chaud pour tous les styles dorés (`GOLD`). Contraste élevé : inchangé, sans décor.
 - À juger en jeu : teinte et répétition des matières, coins du cadre de bois en miroir, lisibilité. Idée non faite : titres en police Morpheus.
 
+### Matière choisie (25/11, après l'essai en jeu de test222)
+- **Décidé par Braincell1980 : « Pierre et métal »** (« incroyable »). « Cuir et grimoire » et « Bois et fer » sont écartés.
+- Pas encore dit : son avis sur l'or, les autres styles, le contraste élevé, le texte × 2, la petite fenêtre et le bandeau avec cette matière.
+- La vraie fenêtre n'est pas commencée.
+
 ## Fenêtre d'options 1.3 (maquette du 11/11) [Fait dans la 1.3.0, sauf l'échelle pixel perfect]
 Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, le rare est replié. Tous les réglages actuels restent (une refonte n'enlève rien) ; seule leur place change. Commandes sur le modèle des réglages du jeu (◄ valeur ►, curseurs à losange, cases jaunes), pilotables à la manette (D-pad, A, B, LT / RT pour les onglets). Texte × 2 et contraste élevé testés dès le dessin.
 - Barre du haut : titre, recherche d'un réglage, ▲ réduire, ✕ fermer.

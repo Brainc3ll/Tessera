@@ -446,7 +446,9 @@ Maquette : https://claude.ai/artifact/6bYLHvVXo2fmWGsxFNnASk (Sonnet 5.5 ; appro
 
 ### Matière choisie (25/11, après l'essai en jeu de test222)
 - **Décidé par Braincell1980 : « Pierre et métal »** (« incroyable »). « Cuir et grimoire » et « Bois et fer » sont écartés.
-- Pas encore dit : son avis sur l'or, les autres styles, le contraste élevé, le texte × 2, la petite fenêtre et le bandeau avec cette matière.
+- Après d'autres essais (25/11) : « j'ai tout testé c'est excellent, ça passe parfait ».
+- Seul défaut signalé (capture) : le « 2.0 » tombe plus bas que « Tessera ». Cause : décalage fixe calculé sur la taille des lettres (`BuildHeader`) ; dans la vraie fenêtre, accrocher la version au titre pour les poser sur la même ligne.
+- Ce qui a été validé est la version test222 de `SkinPreview.lua` (Tessera-dev) : la prendre comme référence.
 - La vraie fenêtre n'est pas commencée.
 
 ## Fenêtre d'options 1.3 (maquette du 11/11) [Fait dans la 1.3.0, sauf l'échelle pixel perfect]

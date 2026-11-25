@@ -388,7 +388,7 @@ end
 if IS_FOREVER then
 ns:RegisterModule("comprehension", {
     label = "COMPREHENSION",
-    icon = "Interface\\Icons\\INV_Scroll_03",
+    icon = "Interface\\Icons\\Spell_Holy_MagicalSentry",
     events = { "SKILL_LINES_CHANGED", "CHAT_MSG_SKILL", "BAG_UPDATE_DELAYED" },
     defaultEnabled = false,
     isEmpty = function() return ComprehensionSkill() == nil end,

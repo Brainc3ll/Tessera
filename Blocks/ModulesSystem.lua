@@ -136,7 +136,7 @@ end
 ---------------------------------------------------------------------------
 ns:RegisterModule("fps", {
     label = "FPS",
-    icon = "Interface\\Icons\\Ability_Rogue_Sprint",
+    icon = "Interface\\Icons\\INV_Misc_Spyglass_03",
     interval = 1,
     update = function(cfg)
         local fps = GetFramerate() or 0
@@ -172,7 +172,7 @@ end
 
 ns:RegisterModule("latency", {
     label = "LATENCY",
-    icon = "Interface\\Icons\\Spell_Nature_Lightning",
+    icon = "Interface\\Icons\\Spell_Nature_StormReach",
     interval = 5,
     update = function(cfg)
         local _, _, home, world = GetNetStats()
@@ -243,7 +243,7 @@ end
 
 ns:RegisterModule("memory", {
     label = "MEMORY",
-    icon = "Interface\\Icons\\INV_Misc_Gear_01",
+    icon = "Interface\\Icons\\INV_Gizmo_01",
     interval = 30,
     defaultEnabled = false,
     update = function(cfg)
@@ -343,7 +343,7 @@ end
 
 ns:RegisterModule("volume", {
     label = "VOLUME",
-    icon = "Interface\\Icons\\INV_Misc_Drum_01",
+    icon = "Interface\\Icons\\INV_Misc_Ear_Human_01",
     events = { "CVAR_UPDATE" },
     interval = 5,
     defaultEnabled = false,
@@ -448,7 +448,7 @@ end
 
 ns:RegisterModule("played", {
     label = "PLAYED",
-    icon = "Interface\\Icons\\INV_Misc_PocketWatch_03",
+    icon = "Interface\\Icons\\Spell_Holy_BorrowedTime",
     interval = 30,
     defaultEnabled = false,
     request = RequestPlayed,

@@ -51,7 +51,7 @@ end
 
 ns:RegisterModule("quests", {
     label = "QUESTS",
-    icon = "Interface\\Icons\\INV_Misc_Book_09",
+    icon = "Interface\\Icons\\Achievement_Quests_Completed_01",
     events = { "QUEST_LOG_UPDATE" },
     defaultEnabled = false,
     update = function(cfg)
@@ -174,7 +174,7 @@ end
 
 ns:RegisterModule("reputation", {
     label = "REPUTATION",
-    icon = "Interface\\Icons\\INV_BannerPVP_02",
+    icon = "Interface\\Icons\\Achievement_reputation_04",
     events = { "UPDATE_FACTION" },
     isEmpty = function() return WatchedFaction() == nil end,
     defaults = { progressBar = true, repFormat = "standingPercent", repLeft = false, repTipName = true,
@@ -345,7 +345,7 @@ end
 
 ns:RegisterModule("currency", {
     label = "CURRENCY",
-    icon = "Interface\\Icons\\INV_Misc_Coin_01",
+    icon = "Interface\\Icons\\Wow_token02",
     events = { "CURRENCY_DISPLAY_UPDATE" },
     isEmpty = function(cfg) return #ShownCurrencies(cfg) == 0 end,
     update = function(cfg)

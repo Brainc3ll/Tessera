@@ -634,7 +634,7 @@ end
 
 ns:RegisterModule("speed", {
     label = "SPEED",
-    icon = "Interface\\Icons\\Spell_Nature_Swiftness",
+    icon = "Interface\\Icons\\Ability_Druid_Dash",
     interval = 0.5,
     defaultEnabled = false,
     update = function(cfg)
@@ -854,7 +854,7 @@ end
 
 ns:RegisterModule("talents", {
     label = "TALENTS",
-    icon = "Interface\\Icons\\Ability_Marksmanship",
+    icon = "Interface\\Icons\\INV_Misc_Book_11",
     events = { "CHARACTER_POINTS_CHANGED", "PLAYER_LEVEL_UP", "PLAYER_TALENT_UPDATE", "TRAIT_CONFIG_UPDATED",
                "TRAIT_TREE_CURRENCY_INFO_UPDATED", "ACTIVE_TALENT_GROUP_CHANGED" },
     defaultEnabled = false,

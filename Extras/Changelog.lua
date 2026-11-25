@@ -81,6 +81,16 @@ ns.CHANGELOG = {
                     .. " sans passer la souris sur le bloc.",
               },
             },
+            { kind = "improved",
+              en = {
+                "Eleven blocks have a new icon: FPS, Latency, Addon memory, Quests, Reputation, Currencies, Speed, Volume, Talents,"
+                    .. " Time played and Comprehension. Time played no longer looks like the two other clocks.",
+              },
+              fr = {
+                "Onze blocs ont une nouvelle icône : FPS, Latence, Mémoire des addons, Quêtes, Réputation, Monnaies, Vitesse, Volume,"
+                    .. " Talents, Temps de jeu et Compréhension. Le Temps de jeu ne ressemble plus aux deux autres horloges.",
+              },
+            },
         },
     },
     {

@@ -13,6 +13,10 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - "Block text" can show the name of the preset in use, with the volume or alone. It shows only while the sound matches a preset exactly.
 - Presets are shared by all your characters. Create, name and delete them in the Volume block's settings too, without the mouse over the block.
 
+### Improvements
+
+- Eleven blocks have a new icon: FPS, Latency, Addon memory, Quests, Reputation, Currencies, Speed, Volume, Talents, Time played and Comprehension. Time played no longer looks like the two other clocks.
+
 ## 1.8.0 — 2026-11-25
 
 ### New

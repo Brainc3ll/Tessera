@@ -22,6 +22,7 @@ Version en jeu : 1.7.2, publiée le 21/11 (correctif : un bloc au style verrouil
 
 ## Journal court
 - 24/11 : 1.7.3 abandonnée. La fenêtre d'options à 65 % d'échelle d'interface n'est pas un bug (une unité d'interface fait moins d'un pixel), rien à corriger ; voir A-REPRENDRE. Choix de la suite : 1.8 « Textes qui tiennent » (Sonnet 5.5).
+- 25/11 : 1.8.0 publiée (sélecteur de langue, « Tout voir », textes chargés au bon moment ; tag `v1.8.0`, Sonnet 5.5). Audit des textes coupés : aucun cas. Idée suivante à étudier avec Braincell1980 : bloc Volume (canaux dans l'infobulle, préréglages nommés), voir IDEES-FUTUR.
 - 21/11 : 1.7.2 publiée (correctif du verrou du style sur les pages à plusieurs blocs ; copies de style avec avertissement).
 - 21/11 : 1.7.1 publiée (verrou du style par bloc, fenêtre de repli, infobulle du bouton en mode DataBroker et dans le tiroir de FlareUI).
 - 21/11 : 1.7.0 publiée (Talents et Héritage refondus, bouton de la minicarte) ; revamp de blocs remis à zéro, au cas par cas.

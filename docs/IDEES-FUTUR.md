@@ -420,6 +420,15 @@ Broker_Everything 5.0.0 est sous GPL v3 et Tessera sous MIT : on reprend seuleme
 - **Réglage « nombre seul »** : afficher seulement le nombre, sans texte (« Shorter Broker »).
 - **Clic réglable** : actions de clic configurables par bloc (Tessera a déjà Maj + clic ; clic simple, droit et Ctrl à vérifier).
 
+## Habillage de la fenêtre d'options (étude du 25/11, pour la 2.0, rien de codé)
+Maquette : https://claude.ai/artifact/6bYLHvVXo2fmWGsxFNnASk (Sonnet 5.5 ; approximation HTML, pas un rendu du jeu). Détail technique : `docs/etudes/SOURCES.md`, FlareUI 7.0.16.
+- A « Pierre et bronze » : art du jeu (pierre, cadre de bronze), proche de FlareUI.
+- B (préférée de Braincell1980, 25/11, « magnifique ») : fenêtre aux couleurs du style choisi (exemples Tessera, Braise, Sylvestre), sans aucun décor de tesselles (coins et frise refusés : « déjà vus mille fois »). Dessins restants, blancs et teintés : rectangle arrondi, ombre douce, cadre fin, icônes des pages.
+- **B partout** (25/11) : la fenêtre d'options prend l'habillage B avec les couleurs de chaque style, y compris The War Within, Midnight et les styles d'interfaces, dont le cadre propre n'est plus utilisé sur cette fenêtre. Les blocs ne changent pas. À préciser avant de coder : le bandeau de placement et les petites fenêtres.
+- **Pas d'aperçu du bloc** dans la colonne de droite (Braincell1980, 25/11 : ce serait trop copier FlareUI).
+- **Décidé le 25/11 (Braincell1980)** : si cet habillage est codé, ce sera pour la 2.0, sur une branche à elle (en plus de `next`, qui porte la 1.9), qui reçoit les mises à jour de `main` à chaque publication. Cela change la règle « pas de branche par version » pour la 2.0. Branche pas encore créée.
+- À garder : couleurs par style, contraste élevé (sans décor), texte × 2, forme en plus de la couleur, focus visible pour la manette ; aucun réglage perdu.
+
 ## Fenêtre d'options 1.3 (maquette du 11/11) [Fait dans la 1.3.0, sauf l'échelle pixel perfect]
 Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, le rare est replié. Tous les réglages actuels restent (une refonte n'enlève rien) ; seule leur place change. Commandes sur le modèle des réglages du jeu (◄ valeur ►, curseurs à losange, cases jaunes), pilotables à la manette (D-pad, A, B, LT / RT pour les onglets). Texte × 2 et contraste élevé testés dès le dessin.
 - Barre du haut : titre, recherche d'un réglage, ▲ réduire, ✕ fermer.

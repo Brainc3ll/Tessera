@@ -168,6 +168,20 @@ Serveur des créateurs d'addons (WowAce, WoWInterface) ; Braincell1980 y est. No
 ### FlareUI 6.5.1 (14 novembre 2026)
 - Fenêtre de réglages (`Settings/Panel.lua`, `Settings/Registry.lua`) : onglets par module, chaque section dans son cadre avec Réinitialiser, lignes « half » deux par ligne, lignes enfants indentées. Modèle de la réorganisation des options de Tessera 1.5.0 (`docs/etudes/PLAN-reorganisation-options.md`).
 
+### FlareUI 7.0.16 : comment la fenêtre de réglages obtient son rendu (25 novembre 2026, Sonnet 5.5)
+Zip envoyé par Braincell1980. TOC 16001, licence MIT. Code lu : `Settings/Panel.lua`, `Preview.lua`, `Dialog.lua` (début). Aucun code ni image repris ; rien testé en jeu.
+- **Fond** : texture de pierre du jeu répétée (`Interface\FrameGeneral\UI-Background-Rock`), réglage actuel « naturelle » (sans teinte), dégradé noir 50 % sur le bas (300 px).
+- **Cadre** : atlas `heavybronze-frame-basic` étiré 9 px / 15 px hors fenêtre, deux coins à rivets (`heavybronze-horz-cornerbracket-TL` / `BR`) ; repli sur la bordure d'infobulle si `C_Texture.GetAtlasInfo` ne le connaît pas.
+- **Boîtes** : noir 28 à 40 % et bordure maison « FlareUI Thin » (8 px) bronze #A67D45.
+- **Contrôles** : art du jeu par atlas (`checkbox-minimal`, `checkmark-minimal`, `common-dropdown-c-button` pour boutons et onglets, `MinimalSliderWithSteppersTemplate`) ; listes : bordure « Thick », dégradé brun, chevron maison.
+- **Petits dessins blancs teintés** (`Media/Panel`) : cercle, anneau, ombre douce, rectangle arrondi étiré en neuf tranches (`SetTextureSliceMargins`), chevron, icônes 32 px. Un fichier sert à plusieurs couleurs.
+- **Icônes rondes** : masque et anneau des talents (`talents-node-circle-mask` / `-gray`).
+- **Police** : Friz Quadrata (la sienne, `CreateFontFamily`), titres jaunes, ombre 1 px.
+- **Mise en page** : 1180 × 730, trois colonnes (200 / page / 280), lignes de 36 px, survol arrondi doré à 26 %, sélection à gauche = dégradé horizontal + barre dorée de 3 px, sections repliables.
+- **Colonne de droite** : aperçu vivant fait de cadres ordinaires avec des données d'exemple (`PreviewSamples.lua`, environ 1 475 lignes), puis titre, description, astuce.
+- **Animations** : éclair doré sur le réglage trouvé par la recherche.
+- `FlareUI Thin / Thick / Frames` et `FlareUI Forever` sont toujours nommés dans son code ; `FlareUI_Tour` et `FlareUI_Welcome` aussi (les autres cadres de `KNOWN_UI_FRAMES` pas revérifiés un à un).
+
 ### Barres d'infos sur Forever (25 novembre 2026)
 Recherche web du 25/11 (voir aussi `docs/etudes/ADDONS-FOREVER.md`, non modifié). Quatre addons absents de cette liste :
 - **ForeverInfoBar** : barre avec FPS, latence, royaume, durabilité, sacs, or, XP, horloge, et boutons Recharger l'interface et Réglages. [CurseForge](https://www.curseforge.com/wow/addons/foreverinfobar)

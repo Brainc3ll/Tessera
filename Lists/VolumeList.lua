@@ -39,6 +39,33 @@ local function Snap(v)
     return math.max(0, math.min(1, math.floor(v * 20 + 0.5) / 20))
 end
 
+-- Some devices come named in Latin-1, not UTF-8 ("St\233r\233o"): shown as they are, they break text boxes and
+-- the chat, and a name kept in the saved variables would be damaged. A name that is not valid UTF-8 is converted.
+local function ValidUtf8(text)
+    local i, n = 1, #text
+    while i <= n do
+        local c = text:byte(i)
+        local len = (c < 0x80 and 1) or (c >= 0xC2 and c <= 0xDF and 2) or (c >= 0xE0 and c <= 0xEF and 3)
+            or (c >= 0xF0 and c <= 0xF4 and 4) or 0
+        if len == 0 or i + len - 1 > n then return false end
+        for k = 1, len - 1 do
+            local b = text:byte(i + k)
+            if b < 0x80 or b > 0xBF then return false end
+        end
+        i = i + len
+    end
+    return true
+end
+
+local function Utf8Fix(text)
+    if ValidUtf8(text) then return text end
+    return (text:gsub("[\128-\255]", function(ch)
+        local b = ch:byte()
+        return string.char(0xC0 + math.floor(b / 64), 0x80 + b % 64)
+    end))
+end
+P.Utf8Fix = Utf8Fix
+
 -- The sound output devices, as the game's own sound options list them (indexes 0 to count - 1, chosen
 -- through the Sound_OutputDriverIndex setting). WoW Forever's functions are read through _G.
 local function Devices()
@@ -49,7 +76,7 @@ local function Devices()
     if not ok or type(n) ~= "number" then return out end
     for i = 0, n - 1 do
         local okName, name = pcall(nameAt, i)
-        if okName and type(name) == "string" then out[#out + 1] = { index = i, name = name } end
+        if okName and type(name) == "string" then out[#out + 1] = { index = i, name = Utf8Fix(name) } end
     end
     return out
 end

@@ -3353,6 +3353,9 @@ for _, step in ipairs({
             -- two output devices, numbered from 0 like the game's own sound options do
             local oldNum, oldName = Sound_GameSystem_GetNumOutputDrivers, Sound_GameSystem_GetOutputDriverNameByIndex
             local drivers = { [0] = "Primary Sound Driver", [1] = "Headset" }
+            -- a device named in Latin-1 (one byte per accent) is converted to UTF-8
+            assert(ns.VolumePresets.Utf8Fix("St\233r\233o num\233rique") == "St\195\169r\195\169o num\195\169rique", "volume: Latin-1 names are converted")
+            assert(ns.VolumePresets.Utf8Fix("St\195\169r\195\169o") == "St\195\169r\195\169o", "volume: UTF-8 names stay as they are")
             Sound_GameSystem_GetNumOutputDrivers = function() return 2 end
             Sound_GameSystem_GetOutputDriverNameByIndex = function(i) return drivers[i] end
             cvars.Sound_OutputDriverIndex = "0"

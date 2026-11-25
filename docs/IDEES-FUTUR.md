@@ -426,7 +426,7 @@ Maquette : https://claude.ai/artifact/6bYLHvVXo2fmWGsxFNnASk (Sonnet 5.5 ; appro
 - B (préférée de Braincell1980, 25/11, « magnifique ») : fenêtre aux couleurs du style choisi (exemples Tessera, Braise, Sylvestre), sans aucun décor de tesselles (coins et frise refusés : « déjà vus mille fois »). Dessins restants, blancs et teintés : rectangle arrondi, ombre douce, cadre fin, icônes des pages.
 - **B partout** (25/11) : la fenêtre d'options prend l'habillage B avec les couleurs de chaque style, y compris The War Within, Midnight et les styles d'interfaces, dont le cadre propre n'est plus utilisé sur cette fenêtre. Les blocs ne changent pas. À préciser avant de coder : le bandeau de placement et les petites fenêtres.
 - **Pas d'aperçu du bloc** dans la colonne de droite (Braincell1980, 25/11 : ce serait trop copier FlareUI).
-- **Décidé le 25/11 (Braincell1980)** : si cet habillage est codé, ce sera pour la 2.0, sur une branche à elle (en plus de `next`, qui porte la 1.9), qui reçoit les mises à jour de `main` à chaque publication. Cela change la règle « pas de branche par version » pour la 2.0. Branche pas encore créée.
+- **Décidé le 25/11 (Braincell1980)** : si cet habillage est codé, ce sera pour la 2.0, sur une branche à elle (en plus de `next`, qui porte la 1.9), qui reçoit les mises à jour de `main` à chaque publication. Cela change la règle « pas de branche par version » pour la 2.0. Branche `2.0` créée le 25/11 depuis `next`.
 - À garder : couleurs par style, contraste élevé (sans décor), texte × 2, forme en plus de la couleur, focus visible pour la manette ; aucun réglage perdu.
 
 ## Fenêtre d'options 1.3 (maquette du 11/11) [Fait dans la 1.3.0, sauf l'échelle pixel perfect]

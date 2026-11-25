@@ -351,12 +351,14 @@ ns:RegisterModule("volume", {
         if Try(GetCVar, "Sound_EnableAllSound") == "0" then return L.MUTED, BAD end
         return ("%d%%"):format(math.floor(CVarNumber(cfg and cfg.volumeChannel or "Sound_MasterVolume") * 100 + 0.5))
     end,
-    defaults = { volumeChannel = "Sound_MasterVolume", volumeShow = "tooltip" },
+    defaults = { volumeChannel = "Sound_MasterVolume", volumeShow = "list", volumeClick = "mute" },
     options = {
         { kind = "dropdown", field = "volumeChannel", tab = "text", label = "VOLUME_SHOWN", tip = "TIP_VOLUME_SHOWN",
           values = { { key = "Sound_MasterVolume", label = "TT_MASTER" }, { key = "Sound_MusicVolume", label = "TT_MUSIC" },
                      { key = "Sound_SFXVolume", label = "TT_EFFECTS" }, { key = "Sound_AmbienceVolume", label = "TT_AMBIENCE" },
                      { key = "Sound_DialogVolume", label = "TT_DIALOG" } } },
+        { kind = "dropdown", field = "volumeClick", tab = "text", label = "VOLUME_CLICK", tip = "TIP_VOLUME_CLICK",
+          values = { { key = "mute", label = "VOLUME_CLICK_MUTE" }, { key = "next", label = "VOLUME_CLICK_NEXT" } } },
         { kind = "dropdown", field = "volumeShow", tab = "text", label = "VOLUME_SHOW", tip = "TIP_VOLUME_SHOW",
           values = { { key = "tooltip", label = "VOLUME_SHOW_TOOLTIP" }, { key = "list", label = "VOLUME_SHOW_LIST" } } },
     },
@@ -372,8 +374,16 @@ ns:RegisterModule("volume", {
         end
     end,
     clickHintKey = "HINT_VOLUME",
-    onClick = function(_, button)
+    -- "Click on the block": mute or restore (default), or the next preset (a click with no preset still mutes)
+    clickHintFor = function(cfg)
+        if cfg and cfg.volumeClick == "next" and ns.VolumePresets and ns.VolumePresets.Count() > 0 then
+            return L.HINT_VOLUME_NEXT
+        end
+        return nil
+    end,
+    onClick = function(_, button, cfg)
         if button ~= "LeftButton" then return end
+        if cfg and cfg.volumeClick == "next" and ns.VolumePresets and ns.VolumePresets.Next() then return end
         local enabled = Try(GetCVar, "Sound_EnableAllSound") ~= "0"
         SetCVar("Sound_EnableAllSound", enabled and "0" or "1")
     end,

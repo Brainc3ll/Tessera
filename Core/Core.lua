@@ -1851,7 +1851,9 @@ function ns:BlockHints(key, cfg)
     local lines = {}
     local mod = ns:GetModule(key)
     if not mod or ns.db.tooltipHints == false then return lines end
-    if mod.clickHint then lines[#lines + 1] = mod.clickHint end
+    -- a block whose click depends on its settings gives its hint as a function of them
+    local hint = mod.clickHintFor and mod.clickHintFor(cfg) or mod.clickHint
+    if hint then lines[#lines + 1] = hint end
     if not ns.IsForwardingKey(key) then
         local shift = ns:GetActionName(key, cfg.shiftClick)
         if shift then lines[#lines + 1] = L.HINT_SHIFT_ACTION:format(shift) end
@@ -1905,7 +1907,7 @@ local function OnEnter(self)
         local ok, shown = pcall(mod.hoverList, self, cfg)
         if ok and shown then return end
     end
-    if not mod.tooltip and not mod.clickHint then return end
+    if not mod.tooltip and not mod.clickHint and not mod.clickHintFor then return end
     ns.AnchorTooltip(self)
     GameTooltip:AddLine(ns:GetBlockName(key), 1, 0.82, 0)
     local bodyEmpty = false

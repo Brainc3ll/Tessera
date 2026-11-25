@@ -21,7 +21,6 @@ local CHANNELS = {
 }
 local MAX_PRESETS, NAME_MAX = 4, 14
 local AWAY = 0.3 -- seconds the mouse may stay off the block and the list before the list closes
-local MAX_ROWS = MAX_PRESETS + 1 + 1 + #CHANNELS -- presets, "save", mute, channels
 
 ---------------------------------------------------------------------------
 -- Presets (saved variables: TesseraDB.volumePresets[1..4] = { name, vol = {5 numbers}, muted })
@@ -38,6 +37,40 @@ end
 -- volumes move in steps of 5 %, like the block's mouse wheel
 local function Snap(v)
     return math.max(0, math.min(1, math.floor(v * 20 + 0.5) / 20))
+end
+
+-- The sound output devices, as the game's own sound options list them (indexes 0 to count - 1, chosen
+-- through the Sound_OutputDriverIndex setting). WoW Forever's functions are read through _G.
+local function Devices()
+    local out = {}
+    local count, nameAt = _G["Sound_GameSystem_GetNumOutputDrivers"], _G["Sound_GameSystem_GetOutputDriverNameByIndex"]
+    if type(count) ~= "function" or type(nameAt) ~= "function" then return out end
+    local ok, n = pcall(count)
+    if not ok or type(n) ~= "number" then return out end
+    for i = 0, n - 1 do
+        local okName, name = pcall(nameAt, i)
+        if okName and type(name) == "string" then out[#out + 1] = { index = i, name = name } end
+    end
+    return out
+end
+
+local function DeviceName(list, index)
+    for _, d in ipairs(list) do
+        if d.index == index then return d.name end
+    end
+    return nil
+end
+
+-- the output device in use: its index and name (nil when the game lists none)
+local function CurrentDevice()
+    local list = Devices()
+    local ok, v = pcall(GetCVar, "Sound_OutputDriverIndex")
+    local index = ok and tonumber(v) or nil
+    return index, index and DeviceName(list, index) or nil
+end
+
+local function SetDevice(index)
+    SetCVar("Sound_OutputDriverIndex", tostring(index))
 end
 
 local function IsMuted()
@@ -98,7 +131,8 @@ function P.Save(i, name)
     local clipped = name and Clip(name) or ""
     if clipped == "" then clipped = old and old.name or P.DefaultName(i) end
     ns.sv.volumePresets = ns.sv.volumePresets or {}
-    ns.sv.volumePresets[i] = { name = clipped, vol = vol, muted = IsMuted() }
+    local _, device = CurrentDevice()
+    ns.sv.volumePresets[i] = { name = clipped, vol = vol, muted = IsMuted(), device = device }
 end
 
 function P.Rename(i, name)
@@ -124,7 +158,33 @@ function P.Apply(i)
         if v then SetCVar(c.cvar, tostring(Snap(v))) end
     end
     SetCVar("Sound_EnableAllSound", p.muted and "0" or "1")
+    -- the output device too, when the preset kept one that is still there and is not the one in use
+    if type(p.device) == "string" then
+        local _, now = CurrentDevice()
+        if now ~= p.device then
+            for _, d in ipairs(Devices()) do
+                if d.name == p.device then SetDevice(d.index) break end
+            end
+        end
+    end
     if ns.UpdateBlock then ns:UpdateBlock("volume") end
+end
+
+-- Applies the next preset after the one in use (the first when none matches); returns its slot,
+-- or nil when no preset is saved
+function P.Next()
+    local current = 0
+    for i = 1, MAX_PRESETS do
+        if P.Matches(i) then current = i break end
+    end
+    for step = 1, MAX_PRESETS do
+        local i = ((current - 1 + step) % MAX_PRESETS) + 1
+        if P.Get(i) then
+            P.Apply(i)
+            return i
+        end
+    end
+    return nil
 end
 
 -- true when the game's sound settings are exactly this preset's
@@ -132,6 +192,15 @@ function P.Matches(i)
     local p = P.Get(i)
     if not p then return false end
     if (p.muted and true or false) ~= IsMuted() then return false end
+    if type(p.device) == "string" then
+        local _, now = CurrentDevice()
+        if now ~= nil and now ~= p.device and DeviceName(Devices(), 0) ~= nil then
+            -- a device that is gone does not stop a preset from matching
+            for _, dv in ipairs(Devices()) do
+                if dv.name == p.device then return false end
+            end
+        end
+    end
     for k, c in ipairs(CHANNELS) do
         if math.abs((tonumber(p.vol[k]) or 0) - CVarNumber(c.cvar)) > 0.01 then return false end
     end
@@ -143,8 +212,7 @@ end
 ---------------------------------------------------------------------------
 local list, owner, cfgNow
 local away = 0
-local rows = {}
-local items = {}
+local rows, btns = {}, {} -- channel rows and buttons (made once, then reused)
 
 local function Metrics()
     local font = _G["GameTooltipText"] or _G["GameFontHighlight"]
@@ -169,16 +237,19 @@ end
 
 local Refresh
 
+-- Puts the name box over a preset's button; the button's own text steps aside (the box has no background)
 local function StartRename(slot)
     local p = P.Get(slot)
     if not (p and list) then return end
-    for _, row in ipairs(rows) do
-        if row:IsShown() and row.item and row.item.kind == "preset" and row.item.slot == slot then
+    for _, b in ipairs(btns) do
+        if b:IsShown() and b.item and b.item.kind == "preset" and b.item.slot == slot then
             local box = list.rename
             box.slot = slot
+            b:SetText("")
+            b.check:Hide()
             box:ClearAllPoints()
-            box:SetPoint("TOPLEFT", row, "TOPLEFT", row.labelX or 20, -1)
-            box:SetPoint("BOTTOMRIGHT", row, "BOTTOMRIGHT", -4, 1)
+            box:SetPoint("TOPLEFT", b, "TOPLEFT", 8, -1)
+            box:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -6, 1)
             box:SetText(p.name)
             box:Show()
             box:SetFocus()
@@ -188,13 +259,13 @@ local function StartRename(slot)
     end
 end
 
-local function RowMenu(row)
-    local item = row.item
+local function PresetMenu(button)
+    local item = button.item
     if not item or item.kind ~= "preset" or not MenuUtil or not MenuUtil.CreateContextMenu then return end
     local slot = item.slot
     -- the menu opens in a lower strata than the list: the list steps back so the menu stays visible
     list:SetFrameStrata("DIALOG")
-    MenuUtil.CreateContextMenu(row, function(_, root)
+    MenuUtil.CreateContextMenu(button, function(_, root)
         root:CreateTitle(Plain(item.name))
         root:CreateButton(L.VOLUMELIST_RENAME, function() StartRename(slot) end)
         root:CreateButton(L.VOLUMELIST_OVERWRITE, function()
@@ -208,12 +279,29 @@ local function RowMenu(row)
     end)
 end
 
-local function RowClick(row, button)
-    local item = row.item
+-- the choice of output device: a menu with the devices the game lists, the one in use ticked
+local function DeviceMenu(button)
+    if not MenuUtil or not MenuUtil.CreateContextMenu then return end
+    list:SetFrameStrata("DIALOG")
+    MenuUtil.CreateContextMenu(button, function(_, root)
+        root:CreateTitle(L.VOLUMELIST_DEVICE)
+        for _, d in ipairs(Devices()) do
+            local index = d.index
+            root:CreateRadio(Plain(d.name), function() return (CurrentDevice()) == index end,
+                function()
+                    SetDevice(index)
+                    Refresh()
+                end)
+        end
+    end)
+end
+
+local function ButtonClick(button, mouse)
+    local item = button.item
     if not item then return end
     if item.kind == "preset" then
-        if button == "RightButton" or IsShiftKeyDown() then
-            RowMenu(row)
+        if mouse == "RightButton" or IsShiftKeyDown() then
+            PresetMenu(button)
         else
             P.Apply(item.slot)
             Refresh()
@@ -227,12 +315,18 @@ local function RowClick(row, button)
     elseif item.kind == "mute" then
         SetCVar("Sound_EnableAllSound", IsMuted() and "1" or "0")
         Refresh()
-    elseif item.kind == "channel" then
-        local f = CursorFraction(row.track)
-        if f then
-            SetChannel(item.cvar, f)
-            Refresh()
-        end
+    elseif item.kind == "device" then
+        DeviceMenu(button)
+    end
+end
+
+local function RowClick(row)
+    local item = row.item
+    if not item or item.kind ~= "channel" then return end
+    local f = CursorFraction(row.track)
+    if f then
+        SetChannel(item.cvar, f)
+        Refresh()
     end
 end
 
@@ -243,18 +337,29 @@ local function RowWheel(row, delta)
     Refresh()
 end
 
+-- A button of the list (preset, save, mute, device): the game's own button look
+local function MakeButton(i)
+    local b = CreateFrame("Button", nil, list, "UIPanelButtonTemplate")
+    b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    b:SetScript("OnClick", ButtonClick)
+    -- the check mark: the preset or state in use (a shape, not only a color)
+    b.check = b:CreateTexture(nil, "OVERLAY")
+    b.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
+    b.check:SetPoint("LEFT", 4, 0)
+    btns[i] = b
+    return b
+end
+
+-- One channel: its name, a bar (click to set) and its value
 local function MakeRow(i)
     local row = CreateFrame("Button", nil, list)
-    row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    row:RegisterForClicks("LeftButtonUp")
     row:EnableMouseWheel(true)
     row:SetScript("OnClick", RowClick)
     row:SetScript("OnMouseWheel", RowWheel)
     local hl = row:CreateTexture(nil, "HIGHLIGHT")
     hl:SetAllPoints()
     hl:SetColorTexture(1, 1, 1, 0.12)
-    -- the check mark: the preset in use (a shape, not only a color)
-    row.check = row:CreateTexture(nil, "ARTWORK")
-    row.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
     row.label = row:CreateFontString(nil, "OVERLAY", "GameTooltipText")
     row.label:SetJustifyH("LEFT")
     row.label:SetWordWrap(false)
@@ -268,99 +373,107 @@ local function MakeRow(i)
     return row
 end
 
-local function BuildItems()
-    wipe(items)
-    for i = 1, MAX_PRESETS do
-        local p = P.Get(i)
-        if p then items[#items + 1] = { kind = "preset", slot = i, name = p.name } end
-    end
-    if P.FreeSlot() then items[#items + 1] = { kind = "save" } end
-    items[#items + 1] = { kind = "gap" }
-    items[#items + 1] = { kind = "mute" }
-    items[#items + 1] = { kind = "gap" }
-    for k, c in ipairs(CHANNELS) do
-        items[#items + 1] = { kind = "channel", index = k, cvar = c.cvar, name = L[c.key] }
-    end
-end
-
 local function HintText()
     return ns:ListHintText({ L.VOLUMELIST_ROW_APPLY, L.VOLUMELIST_ROW_BAR, L.VOLUMELIST_ROW_MENU },
         owner and owner.key, cfgNow)
 end
 
--- Draws the list: the rows it needs, their texts, bars and size
+-- Places a button at (x, y) with a width, and says what it shows
+local function PlaceButton(n, item, x, y, w, h, text, checked)
+    local b = btns[n] or MakeButton(n)
+    b.item = item
+    b:SetSize(w, h)
+    b:ClearAllPoints()
+    b:SetPoint("TOPLEFT", x, -y)
+    b:SetText(text)
+    if ns.FitButtonText then ns.FitButtonText(b) end
+    b.check:SetSize(math.max(12, h - 8), math.max(12, h - 8))
+    b.check:SetShown(checked and true or false)
+    if checked then b:LockHighlight() else b:UnlockHighlight() end
+    b:Show()
+end
+
+-- Draws the list: the buttons and channels it needs, their texts, bars and size
 function Refresh()
     if not list then return end
     local m = Metrics()
     local width = math.floor(300 * m.k)
+    local inner = width - 16
+    local gap = 6
     local labelW = math.floor(96 * m.k)
     local valueW = math.floor(44 * m.k)
     local muted = IsMuted()
-    BuildItems()
-    local y = 8 + m.row + 4 -- the title
-    for i = 1, MAX_ROWS do
-        local row = rows[i] or MakeRow(i)
-        row.item = nil
-        row:Hide()
+    local btnH = m.row + 2
+    for _, b in ipairs(btns) do
+        b.item = nil
+        b:Hide()
     end
-    local used = 0
-    for _, item in ipairs(items) do
-        -- a gap is not a row: it only adds space
-        if item.kind == "gap" then
-            y = y + 6
-        else
-            used = used + 1
-            local row = rows[used] or MakeRow(used)
-            row.item = item
-            row:SetSize(width - 16, m.row)
-            row:ClearAllPoints()
-            row:SetPoint("TOPLEFT", 8, -y)
-            row.check:SetSize(m.check, m.check)
-            row.check:ClearAllPoints()
-            row.check:SetPoint("LEFT", 2, 0)
-            row.labelX = m.check + 6
-            row.label:ClearAllPoints()
-            row.label:SetPoint("LEFT", row.labelX, 0)
-            row.check:Hide()
-            row.track:Hide()
-            row.fill:Hide()
-            row.value:SetText("")
-            if item.kind == "preset" then
-                row.label:SetWidth(width - 16 - row.labelX - 4)
-                row.label:SetText(Plain(item.name))
-                row.check:SetShown(P.Matches(item.slot))
-            elseif item.kind == "save" then
-                row.label:SetWidth(width - 16 - row.labelX - 4)
-                row.label:SetText(L.VOLUMELIST_SAVE)
-            elseif item.kind == "mute" then
-                row.label:SetWidth(width - 16 - row.labelX - 4)
-                row.label:SetText(muted and L.VOLUMELIST_UNMUTE or L.VOLUMELIST_MUTE)
-                row.check:SetShown(muted)
-            else
-                local v = CVarNumber(item.cvar)
-                row.label:SetWidth(labelW)
-                row.label:SetText(item.name)
-                row.value:ClearAllPoints()
-                row.value:SetPoint("RIGHT", -4, 0)
-                row.value:SetWidth(valueW)
-                row.value:SetText(("%d%%"):format(math.floor(v * 100 + 0.5)))
-                row.track:ClearAllPoints()
-                row.track:SetPoint("LEFT", row.labelX + labelW + 4, 0)
-                row.track:SetPoint("RIGHT", row.value, "LEFT", -6, 0)
-                row.track:SetHeight(math.max(6, math.floor(m.row / 3)))
-                row.track:Show()
-                row.fill:ClearAllPoints()
-                row.fill:SetPoint("TOPLEFT", row.track, "TOPLEFT")
-                row.fill:SetPoint("BOTTOMLEFT", row.track, "BOTTOMLEFT")
-                local trackW = row.track:GetWidth() or 0
-                row.fill:SetWidth(math.max(1, trackW * math.max(0, math.min(1, v))))
-                row.fill:SetShown(v > 0)
-                if muted then row.label:SetTextColor(0.6, 0.6, 0.6) else row.label:SetTextColor(1, 1, 1) end
-            end
-            if item.kind ~= "channel" then row.label:SetTextColor(1, 1, 1) end
-            row:Show()
-            y = y + m.row
+    for _, r in ipairs(rows) do
+        r.item = nil
+        r:Hide()
+    end
+    local y = 8 + m.row + 4 -- the title
+    local nb = 0
+    -- the presets, two to a line
+    local half = math.floor((inner - gap) / 2)
+    local shownPresets = 0
+    for i = 1, MAX_PRESETS do
+        local p = P.Get(i)
+        if p then
+            nb = nb + 1
+            local col = shownPresets % 2
+            PlaceButton(nb, { kind = "preset", slot = i, name = p.name }, 8 + col * (half + gap), y, half, btnH,
+                Plain(p.name), P.Matches(i))
+            shownPresets = shownPresets + 1
+            if col == 1 then y = y + btnH + gap end
         end
+    end
+    if shownPresets % 2 == 1 then y = y + btnH + gap end
+    if P.FreeSlot() then
+        nb = nb + 1
+        PlaceButton(nb, { kind = "save" }, 8, y, inner, btnH, L.VOLUMELIST_SAVE, false)
+        y = y + btnH + gap
+    end
+    nb = nb + 1
+    PlaceButton(nb, { kind = "mute" }, 8, y, inner, btnH, muted and L.VOLUMELIST_UNMUTE or L.VOLUMELIST_MUTE, muted)
+    y = y + btnH + gap
+    -- the output device: only when the game lists more than one
+    local devices = Devices()
+    if #devices > 1 then
+        local _, name = CurrentDevice()
+        nb = nb + 1
+        PlaceButton(nb, { kind = "device" }, 8, y, inner, btnH, L.VOLUMELIST_DEVICE_NOW:format(Plain(name or "?")), false)
+        y = y + btnH + gap
+    end
+    y = y + 2
+    for k, c in ipairs(CHANNELS) do
+        local row = rows[k] or MakeRow(k)
+        local v = CVarNumber(c.cvar)
+        row.item = { kind = "channel", index = k, cvar = c.cvar }
+        row:SetSize(inner, m.row)
+        row:ClearAllPoints()
+        row:SetPoint("TOPLEFT", 8, -y)
+        row.label:ClearAllPoints()
+        row.label:SetPoint("LEFT", 4, 0)
+        row.label:SetWidth(labelW)
+        row.label:SetText(L[c.key])
+        row.label:SetTextColor(muted and 0.6 or 1, muted and 0.6 or 1, muted and 0.6 or 1)
+        row.value:ClearAllPoints()
+        row.value:SetPoint("RIGHT", -4, 0)
+        row.value:SetWidth(valueW)
+        row.value:SetText(("%d%%"):format(math.floor(v * 100 + 0.5)))
+        row.track:ClearAllPoints()
+        row.track:SetPoint("LEFT", row.label, "RIGHT", 4, 0)
+        row.track:SetPoint("RIGHT", row.value, "LEFT", -6, 0)
+        row.track:SetHeight(math.max(6, math.floor(m.row / 3)))
+        row.fill:ClearAllPoints()
+        row.fill:SetPoint("TOPLEFT", row.track, "TOPLEFT")
+        row.fill:SetPoint("BOTTOMLEFT", row.track, "BOTTOMLEFT")
+        local trackW = row.track:GetWidth() or 0
+        row.fill:SetWidth(math.max(1, trackW * math.max(0, math.min(1, v))))
+        row.fill:SetShown(v > 0)
+        row:Show()
+        y = y + m.row
     end
     local hintText = HintText()
     list.hint:SetWidth(width - 20)
@@ -402,6 +515,7 @@ local function Build()
         self.slot = nil
         self:ClearFocus()
         self:Hide()
+        Refresh()
     end)
     list.rename = box
 

@@ -3350,6 +3350,12 @@ for _, step in ipairs({
             local oldGet, oldSet = GetCVar, SetCVar
             GetCVar = function(n) return cvars[n] end
             SetCVar = function(n, v) cvars[n] = tostring(v) end
+            -- two output devices, numbered from 0 like the game's own sound options do
+            local oldNum, oldName = Sound_GameSystem_GetNumOutputDrivers, Sound_GameSystem_GetOutputDriverNameByIndex
+            local drivers = { [0] = "Primary Sound Driver", [1] = "Headset" }
+            Sound_GameSystem_GetNumOutputDrivers = function() return 2 end
+            Sound_GameSystem_GetOutputDriverNameByIndex = function(i) return drivers[i] end
+            cvars.Sound_OutputDriverIndex = "0"
             local P = ns.VolumePresets
             ns.sv.volumePresets = nil
             assert(P and P.Count() == 0 and P.FreeSlot() == 1, "volume presets: none at first")
@@ -3360,6 +3366,12 @@ for _, step in ipairs({
             assert(not P.Matches(1), "volume presets: a changed volume no longer matches")
             P.Apply(1)
             assert(cvars.Sound_MusicVolume == "0.4" and cvars.Sound_MasterVolume == "0.7" and cvars.Sound_EnableAllSound == "1", "volume presets: apply restores the volumes")
+            assert(P.Get(1).device == "Primary Sound Driver", "volume presets: the output device is kept")
+            cvars.Sound_OutputDriverIndex = "1"
+            assert(not P.Matches(1), "volume presets: another output device no longer matches")
+            P.Apply(1)
+            assert(cvars.Sound_OutputDriverIndex == "0", "volume presets: apply switches the output device back")
+            cvars.Sound_MasterVolume = "0.35"
             P.Save(2, "Éééééééééééééééé") -- 16 accented letters: cut to 14 letters, not bytes
             local letters = 0
             for _ in P.Get(2).name:gmatch("[%z\1-\127\194-\244][\128-\191]*") do letters = letters + 1 end
@@ -3378,8 +3390,20 @@ for _, step in ipairs({
             assert(P.Get(1).name == ns.L.VOLUME_PRESET_DEFAULT:format(1), "volume presets: an empty name gets the default")
             -- the block: the tooltip is kept unless the list is chosen, the options reach the presets
             local vol = ns.modules.volume
-            assert(not vol.hoverList(block, { volumeShow = "tooltip" }), "volume: the tooltip stays the default")
-            assert(vol.defaults.volumeShow == "tooltip", "volume: the default is the tooltip")
+            assert(not vol.hoverList(block, { volumeShow = "tooltip" }), "volume: the tooltip is still a choice")
+            assert(vol.defaults.volumeShow == "list", "volume: the default is the list")
+            -- "Click on the block": the next preset, or mute (also when no preset exists)
+            P.Apply(1)
+            vol.onClick(nil, "LeftButton", { volumeClick = "next" })
+            assert(cvars.Sound_MasterVolume == "0.35", "volume click: the next preset is applied")
+            vol.onClick(nil, "LeftButton", { volumeClick = "next" })
+            assert(cvars.Sound_EnableAllSound == "0", "volume click: then the next one (muted)")
+            cvars.Sound_EnableAllSound = "1"
+            vol.onClick(nil, "LeftButton", { volumeClick = "mute" })
+            assert(cvars.Sound_EnableAllSound == "0", "volume click: the default mutes")
+            cvars.Sound_EnableAllSound = "1"
+            assert(vol.clickHintFor({ volumeClick = "next" }) == ns.L.HINT_VOLUME_NEXT and vol.clickHintFor({}) == nil,
+                "volume click: the hint follows the setting")
             assert(vol.hoverList(block, { volumeShow = "list" }), "volume: the list opens")
             local vlist = _G["TesseraVolumeList"]
             assert(vlist and vlist:IsShown(), "volume: the list is shown")
@@ -3397,6 +3421,10 @@ for _, step in ipairs({
             assert(P.Get(1).name == "Stream" and nameOpt.get() == "Stream", "volume options: a name renames the preset")
             P.Delete(1) P.Delete(2) P.Delete(3) P.Delete(4)
             assert(P.Count() == 0 and ns.sv.volumePresets == nil, "volume presets: deleting them all leaves nothing saved")
+            vol.onClick(nil, "LeftButton", { volumeClick = "next" })
+            assert(cvars.Sound_EnableAllSound == "0", "volume click: no preset, a click still mutes")
+            cvars.Sound_EnableAllSound = "1"
+            assert(vol.clickHintFor({ volumeClick = "next" }) == nil, "volume click: no preset, the mute hint stays")
             nameOpt.set("Fresh")
             assert(P.Get(1) and P.Get(1).name == "Fresh", "volume options: a name on an empty slot saves the current volumes")
             -- damaged saved data does not break the list
@@ -3406,6 +3434,7 @@ for _, step in ipairs({
             ns:HideVolumeList()
             ns.sv.volumePresets = nil
             GetCVar, SetCVar = oldGet, oldSet
+            Sound_GameSystem_GetNumOutputDrivers, Sound_GameSystem_GetOutputDriverNameByIndex = oldNum, oldName
         end
         ns.previewMode = nil
         C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet = oldFL, oldBN, oldInfo, oldC

@@ -24,6 +24,7 @@ Version en jeu : 1.7.2, publiée le 21/11 (correctif : un bloc au style verrouil
 - 24/11 : 1.7.3 abandonnée. La fenêtre d'options à 65 % d'échelle d'interface n'est pas un bug (une unité d'interface fait moins d'un pixel), rien à corriger ; voir A-REPRENDRE. Choix de la suite : 1.8 « Textes qui tiennent » (Sonnet 5.5).
 - 25/11 : bloc Volume de la 1.9.0 codé sur `next` et testé en jeu (liste cliquable, 4 préréglages nommés, sortie audio, clic sur le bloc, texte du bloc ; Sonnet 5.5, zip test218). `main` reste en 1.8.0 pour les correctifs ; la 1.9.0 sort après quelques jours.
 - 25/11 : 1.8.0 publiée (sélecteur de langue, « Tout voir », textes chargés au bon moment ; tag `v1.8.0`, Sonnet 5.5). Audit des textes coupés : aucun cas. Idée suivante à étudier avec Braincell1980 : bloc Volume (canaux dans l'infobulle, préréglages nommés), voir IDEES-FUTUR.
+- 25/11 : icônes de 11 blocs changées sur `next` (outil de choix en jeu `/tes debug icones`, dans Tessera-dev) ; comparaison avec la concurrence sur Forever faite (voir `docs/etudes/SOURCES.md`, 25/11) ; « petit plus » de la 1.9.0 pas encore choisi (Sonnet 5.5).
 - 21/11 : 1.7.2 publiée (correctif du verrou du style sur les pages à plusieurs blocs ; copies de style avec avertissement).
 - 21/11 : 1.7.1 publiée (verrou du style par bloc, fenêtre de repli, infobulle du bouton en mode DataBroker et dans le tiroir de FlareUI).
 - 21/11 : 1.7.0 publiée (Talents et Héritage refondus, bouton de la minicarte) ; revamp de blocs remis à zéro, au cas par cas.
@@ -86,6 +87,7 @@ Un fichier ou une fonction de plus de 200 variables locales actives ne se charge
 
 ## Pièges déjà rencontrés
 - **Noms de périphériques audio en Latin-1 (25/11)** : sous Wine ou Proton, le jeu peut nommer une sortie audio avec des octets non UTF-8 (« St\233r\233o »). Mis tels quels dans une boîte de texte ou le chat, ils vident les fenêtres à copier, même celle de FlareUI, jusqu'au `/reload`. `ns.VolumePresets.Utf8Fix` les convertit ; toute sonde qui affiche des noms donnés par le jeu double les `|` et écrit les octets hors ASCII en hexadécimal.
+- **Ne pas proposer une fonction de Retail sans la sonder (25/11)** : j'ai proposé un bloc Difficulté de donjon et de raid, repris d'un addon Retail et de nos notes du 10/11 ; Forever n'a pas cette difficulté (Braincell1980). Les « fonctions vues le 10/11 » ne sont pas une preuve : sonder en jeu avant de promettre un bloc, et dire d'où vient chaque idée (Retail ou Forever).
 - Export : ne jamais casser la lecture des anciens textes (`TESSERA1:`, `TESSERA2:`) ; `tools/fixtures/` contient de vrais textes de la rc9 que le simulateur doit toujours importer.
 - Ne jamais ajouter une ligne à une entrée du changelog déjà publiée : ouvrir l'entrée suivante.
 - Les tests : lire toute la sortie (une erreur de `mock_run` s'affichait avant la dernière ligne).

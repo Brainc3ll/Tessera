@@ -167,3 +167,13 @@ Serveur des créateurs d'addons (WowAce, WoWInterface) ; Braincell1980 y est. No
 
 ### FlareUI 6.5.1 (14 novembre 2026)
 - Fenêtre de réglages (`Settings/Panel.lua`, `Settings/Registry.lua`) : onglets par module, chaque section dans son cadre avec Réinitialiser, lignes « half » deux par ligne, lignes enfants indentées. Modèle de la réorganisation des options de Tessera 1.5.0 (`docs/etudes/PLAN-reorganisation-options.md`).
+
+### Barres d'infos sur Forever (25 novembre 2026)
+Recherche web du 25/11 (voir aussi `docs/etudes/ADDONS-FOREVER.md`, non modifié). Quatre addons absents de cette liste :
+- **ForeverInfoBar** : barre avec FPS, latence, royaume, durabilité, sacs, or, XP, horloge, et boutons Recharger l'interface et Réglages. [CurseForge](https://www.curseforge.com/wow/addons/foreverinfobar)
+- **Glass Panel** : fine barre « verre » pour Forever, chaque lecture est un plugin (XP, or, sacs, minuteur de combat), barre d'XP et pastille de combat à poser sur l'écran ; affiche « ? » quand le client cache un chiffre. [CurseForge](https://www.curseforge.com/wow/addons/glasspanel)
+- **hudcraft** : HUD d'infos léger et modulaire fait pour Forever 1.60.1, sans dépendance. [CurseForge](https://www.curseforge.com/wow/addons/hudcraft)
+- **Broker Panels** : panneaux pour sources LibDataBroker ; Retail et Forever pris en charge « dans le développement en cours ». [CurseForge](https://www.curseforge.com/wow/addons/brokerpanels)
+- Titan Panel tourne sur Forever (plugin Titan Speed Revived testé sur la bêta 16001) et un site allemand le range parmi les addons importants de Forever.
+- Autres idées vues, hors Forever (Retail ou toutes versions) : Broker: Memory (mémoire de chaque addon, avec défilement), Broker_addon_ctrl (activer, désactiver, recharger), Broker_SlashCommands (commandes par addon, clic = insérer dans le chat), Broker: Custom (créer ses blocs en jeu), JulsanityUI DataBars (réglages par texte).
+- À retenir : pistage Herbes / Minerais (Ultimate Panel, déjà sur Forever), chrono de combat, boutons Recharger / Réglages, et afficher « ? » plutôt qu'un faux chiffre.

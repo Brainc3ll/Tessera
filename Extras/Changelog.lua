@@ -48,7 +48,7 @@ end
 ns.CHANGELOG = {
     {
         version = "1.8.0",
-        date = "2026-11-24",
+        date = "2026-11-25",
         highlights = {
             { en = "Language list in the General tab: pick the language of Tessera's texts, whatever your game language.",
               fr = "Liste Langue dans l'onglet Général : choisis la langue des textes de Tessera, quelle que soit celle du jeu.",

@@ -10,6 +10,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Volume block: "Hover shows" now offers a clickable list in place of the tooltip. Click a bar or use the wheel to set the general, music, effects, ambience or dialogue volume, and one button mutes or restores all sound. When the game lists several output devices, a button picks one. The list is the default; the tooltip stays a choice.
 - Volume presets: up to four, with names you choose (14 characters at most). A preset keeps the five volumes, whether sound is muted and the output device. A click on a preset in the list applies it; a right click renames, replaces or deletes it.
 - "Click on the block" chooses what a left click does: mute or restore sound (the default), or go to the next preset.
+- "Block text" can show the name of the preset in use, with the volume or alone. It shows only while the sound matches a preset exactly.
 - Presets are shared by all your characters. Create, name and delete them in the Volume block's settings too, without the mouse over the block.
 
 ## 1.8.0 — 2026-11-25

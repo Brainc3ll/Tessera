@@ -3407,6 +3407,18 @@ for _, step in ipairs({
             cvars.Sound_EnableAllSound = "1"
             assert(vol.clickHintFor({ volumeClick = "next" }) == ns.L.HINT_VOLUME_NEXT and vol.clickHintFor({}) == nil,
                 "volume click: the hint follows the setting")
+            -- "Block text": the preset name when the sound matches one exactly
+            local active = P.Get(2).name
+            assert(vol.update({ volumeText = "volume" }) == "35%" and vol.update({}) == "35%", "volume text: the volume alone by default")
+            assert(vol.update({ volumeText = "both" }) == active .. " 35%", "volume text: name and volume")
+            assert(vol.update({ volumeText = "name" }) == active, "volume text: the name alone")
+            cvars.Sound_MusicVolume = "0.9"
+            assert(vol.update({ volumeText = "both" }) == "35%" and vol.update({ volumeText = "name" }) == "35%", "volume text: no preset matches, only the volume")
+            cvars.Sound_MusicVolume = "0.4"
+            assert(P.ActiveName() == active, "volume text: the active name returns")
+            cvars.Sound_EnableAllSound = "0"
+            assert(vol.update({ volumeText = "both" }) == ns.L.MUTED, "volume text: muted stays first")
+            cvars.Sound_EnableAllSound = "1"
             assert(vol.hoverList(block, { volumeShow = "list" }), "volume: the list opens")
             local vlist = _G["TesseraVolumeList"]
             assert(vlist and vlist:IsShown(), "volume: the list is shown")

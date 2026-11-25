@@ -349,14 +349,22 @@ ns:RegisterModule("volume", {
     defaultEnabled = false,
     update = function(cfg)
         if Try(GetCVar, "Sound_EnableAllSound") == "0" then return L.MUTED, BAD end
-        return ("%d%%"):format(math.floor(CVarNumber(cfg and cfg.volumeChannel or "Sound_MasterVolume") * 100 + 0.5))
+        local percent = ("%d%%"):format(math.floor(CVarNumber(cfg and cfg.volumeChannel or "Sound_MasterVolume") * 100 + 0.5))
+        -- "Block text": the name of the preset the sound matches exactly (nothing extra when none does)
+        local mode = cfg and cfg.volumeText
+        local name = (mode == "both" or mode == "name") and ns.VolumePresets and ns.VolumePresets.ActiveName()
+        if name then return mode == "name" and name or (name .. " " .. percent) end
+        return percent
     end,
-    defaults = { volumeChannel = "Sound_MasterVolume", volumeShow = "list", volumeClick = "mute" },
+    defaults = { volumeChannel = "Sound_MasterVolume", volumeShow = "list", volumeClick = "mute", volumeText = "volume" },
     options = {
         { kind = "dropdown", field = "volumeChannel", tab = "text", label = "VOLUME_SHOWN", tip = "TIP_VOLUME_SHOWN",
           values = { { key = "Sound_MasterVolume", label = "TT_MASTER" }, { key = "Sound_MusicVolume", label = "TT_MUSIC" },
                      { key = "Sound_SFXVolume", label = "TT_EFFECTS" }, { key = "Sound_AmbienceVolume", label = "TT_AMBIENCE" },
                      { key = "Sound_DialogVolume", label = "TT_DIALOG" } } },
+        { kind = "dropdown", field = "volumeText", tab = "text", label = "VOLUME_TEXT", tip = "TIP_VOLUME_TEXT",
+          values = { { key = "volume", label = "VOLUME_TEXT_VOLUME" }, { key = "both", label = "VOLUME_TEXT_BOTH" },
+                     { key = "name", label = "VOLUME_TEXT_NAME" } } },
         { kind = "dropdown", field = "volumeClick", tab = "text", label = "VOLUME_CLICK", tip = "TIP_VOLUME_CLICK",
           values = { { key = "mute", label = "VOLUME_CLICK_MUTE" }, { key = "next", label = "VOLUME_CLICK_NEXT" } } },
         { kind = "dropdown", field = "volumeShow", tab = "text", label = "VOLUME_SHOW", tip = "TIP_VOLUME_SHOW",

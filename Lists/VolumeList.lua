@@ -160,6 +160,7 @@ function P.Save(i, name)
     ns.sv.volumePresets = ns.sv.volumePresets or {}
     local _, device = CurrentDevice()
     ns.sv.volumePresets[i] = { name = clipped, vol = vol, muted = IsMuted(), device = device }
+    if ns.UpdateBlock then ns:UpdateBlock("volume") end
 end
 
 function P.Rename(i, name)
@@ -167,6 +168,7 @@ function P.Rename(i, name)
     if not p then return end
     local clipped = Clip(name)
     p.name = clipped ~= "" and clipped or P.DefaultName(i)
+    if ns.UpdateBlock then ns:UpdateBlock("volume") end
 end
 
 function P.Delete(i)
@@ -174,6 +176,7 @@ function P.Delete(i)
     if not store then return end
     store[i] = nil
     if next(store) == nil then ns.sv.volumePresets = nil end
+    if ns.UpdateBlock then ns:UpdateBlock("volume") end
 end
 
 -- Puts the preset's volumes and muted state into the game's sound settings
@@ -195,6 +198,15 @@ function P.Apply(i)
         end
     end
     if ns.UpdateBlock then ns:UpdateBlock("volume") end
+end
+
+-- The name of the preset the sound settings match exactly, ready to show (a "|" doubled); nil when none does
+function P.ActiveName()
+    for i = 1, MAX_PRESETS do
+        local p = P.Get(i)
+        if p and P.Matches(i) then return Plain(p.name) end
+    end
+    return nil
 end
 
 -- Applies the next preset after the one in use (the first when none matches); returns its slot,

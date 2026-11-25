@@ -63,6 +63,7 @@ ns.CHANGELOG = {
                 "Volume presets: up to four, with names you choose (14 characters at most). A preset keeps the five volumes, whether sound"
                     .. " is muted and the output device. A click on a preset in the list applies it; a right click renames, replaces or deletes it.",
                 "\"Click on the block\" chooses what a left click does: mute or restore sound (the default), or go to the next preset.",
+                "\"Block text\" can show the name of the preset in use, with the volume or alone. It shows only while the sound matches a preset exactly.",
                 "Presets are shared by all your characters. Create, name and delete them in the Volume block's settings too, without the mouse over the block.",
               },
               fr = {
@@ -74,6 +75,8 @@ ns.CHANGELOG = {
                     .. " un clic droit le renomme, le remplace ou le supprime.",
                 "« Clic sur le bloc » choisit ce que fait un clic gauche : couper ou remettre le son (par défaut),"
                     .. " ou passer au préréglage suivant.",
+                "« Texte du bloc » peut afficher le nom du préréglage en cours, avec le volume ou seul."
+                    .. " Il s'affiche seulement quand le son correspond exactement à un préréglage.",
                 "Les préréglages sont communs à tous tes personnages. Tu peux aussi les créer, les nommer et les supprimer dans les réglages du bloc Volume,"
                     .. " sans passer la souris sur le bloc.",
               },

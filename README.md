@@ -279,7 +279,7 @@ Blocks and groups tab, then turn on "Enabled".
 | FPS *(shown at first)* | Frames per second, with a graph | |
 | Latency | Home and world latency, with a graph | |
 | Addon memory | Memory of your addons (5 to 30 listed) | |
-| Volume | Master volume | Mute or unmute; wheel: volume; clickable list of channels and up to four named presets (Hover shows: List) |
+| Volume | Master volume | Mute or unmute; wheel: volume; clickable list of channels, output device and up to four named presets (Hover shows: List); the block can show the preset name |
 | Played time *(shown at first)* | This level, total or this session | |
 | Streamer mode | Whether it is on; its settings choose what it hides (other players, your characters, guild name, gold) | Turn it on or off |
 | Micro-menu | Blizzard's micro menu in one block; the menus in its tooltip | The menu list |

@@ -47,6 +47,35 @@ end
 
 ns.CHANGELOG = {
     {
+        version = "1.9.0",
+        date = "2026-11-25",
+        highlights = {
+            { en = "Volume list: set every sound channel with a click or the wheel, and keep up to four named presets.",
+              fr = "Liste du volume : règle chaque canal d'un clic ou à la molette, et garde quatre préréglages nommés.",
+              show = { block = "volume", label = "VOLUME_SHOW" } },
+        },
+        sections = {
+            { kind = "new",
+              en = {
+                "Volume block: \"Hover shows\" now offers a clickable list in place of the tooltip. Click a bar or use the wheel to set the"
+                    .. " general, music, effects, ambience or dialogue volume, and one row mutes or restores all sound. The tooltip stays the default.",
+                "Volume presets: up to four, with names you choose (14 characters at most). A preset keeps the five volumes and whether sound"
+                    .. " is muted. A click on a preset in the list applies it; a right click renames, replaces or deletes it.",
+                "Presets are shared by all your characters. Create, name and delete them in the Volume block's settings too, without the mouse over the block.",
+              },
+              fr = {
+                "Bloc Volume : « Le survol affiche » propose une liste cliquable à la place de l'infobulle. Clique sur une barre ou utilise la"
+                    .. " molette pour régler le volume général, la musique, les effets, l'ambiance ou les dialogues. Une ligne coupe ou remet tout le son."
+                    .. " L'infobulle reste le choix par défaut.",
+                "Préréglages de volume : jusqu'à quatre, avec le nom de ton choix (14 caractères au plus). Un préréglage garde les cinq volumes et"
+                    .. " l'état du son coupé. Un clic sur un préréglage dans la liste l'applique ; un clic droit le renomme, le remplace ou le supprime.",
+                "Les préréglages sont communs à tous tes personnages. Tu peux aussi les créer, les nommer et les supprimer dans les réglages du bloc Volume,"
+                    .. " sans passer la souris sur le bloc.",
+              },
+            },
+        },
+    },
+    {
         version = "1.8.0",
         date = "2026-11-25",
         highlights = {

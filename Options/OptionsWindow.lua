@@ -628,6 +628,7 @@ local function BuildPanel()
         if ns.HideFriendsList then ns:HideFriendsList() end
         if ns.HideGroupList then ns:HideGroupList() end
         if ns.HideWhisperList then ns:HideWhisperList() end
+        if ns.HideVolumeList then ns:HideVolumeList() end
         if ns.RefreshPins then ns:RefreshPins() end -- a pinned tooltip under the window steps aside
     end)
     S.panel:HookScript("OnHide", function()

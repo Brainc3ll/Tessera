@@ -309,6 +309,38 @@ local VOLUMES = {
     { "Sound_DialogVolume", "TT_DIALOG" },
 }
 
+-- The block's options for the four presets (kept account-wide in ns.VolumePresets, see VolumeList.lua):
+-- a name (typing one on an empty slot saves the current volumes under it), "save" and "delete"
+local function VolumePresetOptions()
+    local out = {}
+    for i = 1, 4 do
+        local function Exists() return ns.VolumePresets and ns.VolumePresets.Get(i) ~= nil end
+        table.insert(out, { kind = "text", tab = "text", field = "volumePreset" .. i .. "Name",
+            label = function() return L.VOLUME_PRESET_NAME_N:format(i) end, tip = "TIP_VOLUME_PRESET_NAME",
+            get = function()
+                local p = ns.VolumePresets and ns.VolumePresets.Get(i)
+                return p and p.name or ""
+            end,
+            set = function(v)
+                local P = ns.VolumePresets
+                if not P then return end
+                if P.Get(i) then
+                    P.Rename(i, v)
+                elseif v and strtrim(v) ~= "" then
+                    P.Save(i, v)
+                end
+            end })
+        table.insert(out, { kind = "button", tab = "text", field = "volumePreset" .. i .. "Save",
+            label = function() return L.VOLUME_PRESET_SAVE_N:format(i) end, tip = "TIP_VOLUME_PRESET_SAVE",
+            onClick = function() if ns.VolumePresets then ns.VolumePresets.Save(i) end end })
+        table.insert(out, { kind = "button", tab = "text", field = "volumePreset" .. i .. "Delete",
+            label = function() return L.VOLUME_PRESET_DELETE_N:format(i) end, tip = "TIP_VOLUME_PRESET_DELETE",
+            shown = Exists,
+            onClick = function() if ns.VolumePresets then ns.VolumePresets.Delete(i) end end })
+    end
+    return out
+end
+
 ns:RegisterModule("volume", {
     label = "VOLUME",
     icon = "Interface\\Icons\\INV_Misc_Drum_01",
@@ -319,13 +351,21 @@ ns:RegisterModule("volume", {
         if Try(GetCVar, "Sound_EnableAllSound") == "0" then return L.MUTED, BAD end
         return ("%d%%"):format(math.floor(CVarNumber(cfg and cfg.volumeChannel or "Sound_MasterVolume") * 100 + 0.5))
     end,
-    defaults = { volumeChannel = "Sound_MasterVolume" },
+    defaults = { volumeChannel = "Sound_MasterVolume", volumeShow = "tooltip" },
     options = {
         { kind = "dropdown", field = "volumeChannel", tab = "text", label = "VOLUME_SHOWN", tip = "TIP_VOLUME_SHOWN",
           values = { { key = "Sound_MasterVolume", label = "TT_MASTER" }, { key = "Sound_MusicVolume", label = "TT_MUSIC" },
                      { key = "Sound_SFXVolume", label = "TT_EFFECTS" }, { key = "Sound_AmbienceVolume", label = "TT_AMBIENCE" },
                      { key = "Sound_DialogVolume", label = "TT_DIALOG" } } },
+        { kind = "dropdown", field = "volumeShow", tab = "text", label = "VOLUME_SHOW", tip = "TIP_VOLUME_SHOW",
+          values = { { key = "tooltip", label = "VOLUME_SHOW_TOOLTIP" }, { key = "list", label = "VOLUME_SHOW_LIST" } } },
     },
+    hoverList = function(frame, cfg)
+        if cfg and cfg.volumeShow == "list" and ns.ShowVolumeList then
+            ns:ShowVolumeList(frame, cfg)
+            return true
+        end
+    end,
     tooltip = function(tt)
         for _, v in ipairs(VOLUMES) do
             WHITE(tt, L[v[2]], ("%d%%"):format(math.floor(CVarNumber(v[1]) * 100 + 0.5)))
@@ -344,6 +384,12 @@ ns:RegisterModule("volume", {
         SetCVar(cvar, tostring(v))
     end,
 })
+
+-- the preset options come after the block's own two (a flat list)
+do
+    local volumeOptions = ns:GetModule("volume").options
+    for _, opt in ipairs(VolumePresetOptions()) do volumeOptions[#volumeOptions + 1] = opt end
+end
 
 ---------------------------------------------------------------------------
 -- Played time. The game only answers RequestTimePlayed() with an event that

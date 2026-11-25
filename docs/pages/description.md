@@ -15,8 +15,8 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 - What's new: one line per new thing in the About tab, with a Show me button that opens the setting.
 - Group list: hover the Group block to see your party or raid members. Click a name to whisper.
 - Friends list: hover the Friends block to see your WoW and Battle.net friends online. Click a name to whisper, right-click to invite.
-- Whispers history: Ctrl + click deletes a whisper, a Clear button removes all the loose ones.
-- Whispers history: the last 5, 10 or 20 whispers with the start of each message, in a list you can click to reply. Right-click pins a whisper so you do not forget a request.
+- Volume list: set every sound channel with a click and keep up to four named presets.
+- Whispers history: the last 5, 10 or 20 whispers in a list you can click to reply. Right-click pins one, Ctrl + click deletes it, Clear removes the loose ones.
 - Streamer mode hides, as you choose, other players' names, your other characters, your guild and your gold.
 - Accessibility: high contrast, fewer animations, a minimum text size and six reading fonts.
 - Language list: Tessera follows your game language, or you pick English, French, German, Spanish or Portuguese.
@@ -54,8 +54,8 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 - « Quoi de neuf ? » : une ligne par nouveauté dans l'onglet À propos, avec un bouton Montre-moi qui ouvre le réglage.
 - Liste du groupe : survole le bloc Groupe pour voir les membres de ton groupe ou raid. Clique sur un nom pour chuchoter.
 - Liste des amis : survole le bloc Amis pour voir tes amis du jeu et Battle.net en ligne. Clique sur un nom pour chuchoter, clic droit pour inviter.
-- Historique des chuchotements : Ctrl + clic supprime un chuchotement, un bouton Vider retire tous les non épinglés.
-- Historique des chuchotements : les 5, 10 ou 20 derniers chuchotements avec le début de chaque message, dans une liste sur laquelle cliquer pour répondre. Un clic droit épingle un chuchotement pour ne pas oublier une demande.
+- Liste du volume : règle chaque canal d'un clic et garde jusqu'à quatre préréglages nommés.
+- Historique des chuchotements : les 5, 10 ou 20 derniers dans une liste pour répondre. Clic droit épingle, Ctrl + clic supprime, Vider retire les autres.
 - Le mode streamer cache, au choix, les noms des autres joueurs, tes personnages, ta guilde et ton or.
 - Accessibilité : contraste élevé, moins d'animations, texte minimal, six polices. Langue au choix.
 - Une fenêtre d'options avec une recherche et un panneau d'aide pour chaque réglage. Les réglages de chaque bloc tiennent en trois onglets : Contenu, Apparence et Comportement. Anglais, français, allemand, espagnol et portugais du Brésil.

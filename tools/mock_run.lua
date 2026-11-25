@@ -1541,10 +1541,12 @@ for _, step in ipairs({
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.7.1" then e171 = e break end end
         local e180
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.8.0" then e180 = e break end end
+        local e190
+        for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.9.0" then e190 = e break end end
         local n161 = #ns.ChangelogHighlights(e161, "en")
         local n170 = #ns.ChangelogHighlights(e170, "en") + (e171 and #ns.ChangelogHighlights(e171, "en") or 0)
-            + (e180 and #ns.ChangelogHighlights(e180, "en") or 0)
-        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0, 1.7.1 and 1.8.0 news")
+            + (e180 and #ns.ChangelogHighlights(e180, "en") or 0) + (e190 and #ns.ChangelogHighlights(e190, "en") or 0)
+        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0, 1.7.1, 1.8.0 and 1.9.0 news")
         assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + n170 + 7, "a test build counts as its version")
         assert(#ns.WhatsNewItems("1.5.1") > n161 + n170, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")
@@ -3341,6 +3343,70 @@ for _, step in ipairs({
         _G["TesseraGuildList"]:Hide()
         assert(ns.modules.group.hoverList(block, { groupShow = "list" }), "preview: the group list opens without a group")
         _G["TesseraGroupList"]:Hide()
+        -- (1.9) Volume list and presets: four named slots, kept for the whole account
+        do
+            local cvars = { Sound_MasterVolume = "0.7", Sound_MusicVolume = "0.4", Sound_SFXVolume = "0.8",
+                Sound_AmbienceVolume = "0.5", Sound_DialogVolume = "1", Sound_EnableAllSound = "1" }
+            local oldGet, oldSet = GetCVar, SetCVar
+            GetCVar = function(n) return cvars[n] end
+            SetCVar = function(n, v) cvars[n] = tostring(v) end
+            local P = ns.VolumePresets
+            ns.sv.volumePresets = nil
+            assert(P and P.Count() == 0 and P.FreeSlot() == 1, "volume presets: none at first")
+            P.Save(1, "  Solo  ")
+            assert(P.Get(1).name == "Solo" and P.Get(1).vol[1] == 0.7 and P.Get(1).vol[5] == 1, "volume presets: a name and the five volumes")
+            assert(P.Matches(1), "volume presets: the saved state matches")
+            cvars.Sound_MusicVolume, cvars.Sound_MasterVolume = "0", "0.25"
+            assert(not P.Matches(1), "volume presets: a changed volume no longer matches")
+            P.Apply(1)
+            assert(cvars.Sound_MusicVolume == "0.4" and cvars.Sound_MasterVolume == "0.7" and cvars.Sound_EnableAllSound == "1", "volume presets: apply restores the volumes")
+            P.Save(2, "Éééééééééééééééé") -- 16 accented letters: cut to 14 letters, not bytes
+            local letters = 0
+            for _ in P.Get(2).name:gmatch("[%z\1-\127\194-\244][\128-\191]*") do letters = letters + 1 end
+            assert(letters == 14, "volume presets: a name is cut to 14 characters, accents whole")
+            cvars.Sound_EnableAllSound = "0"
+            P.Save(3, "Quiet")
+            assert(P.Get(3).muted == true, "volume presets: the muted state is kept")
+            cvars.Sound_EnableAllSound = "1"
+            P.Apply(3)
+            assert(cvars.Sound_EnableAllSound == "0", "volume presets: apply mutes again")
+            P.Save(4, "")
+            assert(P.Get(4).name == ns.L.VOLUME_PRESET_DEFAULT:format(4) and P.FreeSlot() == nil and P.Count() == 4, "volume presets: four at most, a default name")
+            P.Save(5, "x")
+            assert(P.Count() == 4 and P.Get(5) == nil, "volume presets: no fifth slot")
+            P.Rename(1, "   ")
+            assert(P.Get(1).name == ns.L.VOLUME_PRESET_DEFAULT:format(1), "volume presets: an empty name gets the default")
+            -- the block: the tooltip is kept unless the list is chosen, the options reach the presets
+            local vol = ns.modules.volume
+            assert(not vol.hoverList(block, { volumeShow = "tooltip" }), "volume: the tooltip stays the default")
+            assert(vol.defaults.volumeShow == "tooltip", "volume: the default is the tooltip")
+            assert(vol.hoverList(block, { volumeShow = "list" }), "volume: the list opens")
+            local vlist = _G["TesseraVolumeList"]
+            assert(vlist and vlist:IsShown(), "volume: the list is shown")
+            ns:HideVolumeList()
+            assert(not vlist:IsShown(), "volume: the list closes with the options window")
+            local names, buttons = 0, 0
+            for _, opt in ipairs(vol.options) do
+                if opt.kind == "text" and opt.get then names = names + 1 end
+                if opt.kind == "button" then buttons = buttons + 1 end
+            end
+            assert(names == 4 and buttons == 8, "volume: four names, four save and four delete buttons in the options")
+            local nameOpt
+            for _, opt in ipairs(vol.options) do if opt.field == "volumePreset1Name" then nameOpt = opt end end
+            nameOpt.set("Stream")
+            assert(P.Get(1).name == "Stream" and nameOpt.get() == "Stream", "volume options: a name renames the preset")
+            P.Delete(1) P.Delete(2) P.Delete(3) P.Delete(4)
+            assert(P.Count() == 0 and ns.sv.volumePresets == nil, "volume presets: deleting them all leaves nothing saved")
+            nameOpt.set("Fresh")
+            assert(P.Get(1) and P.Get(1).name == "Fresh", "volume options: a name on an empty slot saves the current volumes")
+            -- damaged saved data does not break the list
+            ns.sv.volumePresets = { "oops", { name = "x" }, { name = "y", vol = {} } }
+            assert(P.Count() == 1 and not P.Get(1) and not P.Get(2), "volume presets: damaged data is ignored")
+            assert(vol.hoverList(block, { volumeShow = "list" }), "volume: the list opens with damaged data")
+            ns:HideVolumeList()
+            ns.sv.volumePresets = nil
+            GetCVar, SetCVar = oldGet, oldSet
+        end
         ns.previewMode = nil
         C_FriendList, BNGetNumFriends, BNGetInfo, C_BattleNet = oldFL, oldBN, oldInfo, oldC
     end,

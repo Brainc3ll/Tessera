@@ -137,6 +137,8 @@ local function BuildModuleOptions(keys, route, condition)
                 return not opt.shown or (cfg and opt.shown(cfg)) or false
             end
             local get, set = Field(opt.field)
+            -- a value kept outside the block's settings (the volume presets are account-wide)
+            if opt.get then get, set = opt.get, opt.set or function() end end
             local label, tip = L[opt.label] or opt.label, L[opt.tip]
             if type(opt.label) == "function" then label = opt.label() end -- (a name the game gives: reagents)
             local setter = function(v)
@@ -171,6 +173,12 @@ local function BuildModuleOptions(keys, route, condition)
                     end
                     setter(v)
                 end, shown, tip, opt.kind == "number")
+            elseif opt.kind == "button" then
+                -- an action in the block's box (save a preset...); the options redraw after it
+                w = CreateButton(sub, label, function()
+                    if opt.onClick then opt.onClick() end
+                    ns:RefreshOptions()
+                end, shown, nil, tip)
             elseif opt.kind == "note" then
                 -- a short explanation in the block's own box (how to use it), shown like the others
                 w = CreateNote(sub, opt.text and opt.text() or L[opt.label])

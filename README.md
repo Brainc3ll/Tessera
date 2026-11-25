@@ -279,7 +279,7 @@ Blocks and groups tab, then turn on "Enabled".
 | FPS *(shown at first)* | Frames per second, with a graph | |
 | Latency | Home and world latency, with a graph | |
 | Addon memory | Memory of your addons (5 to 30 listed) | |
-| Volume | Master volume | Mute or unmute; wheel: volume |
+| Volume | Master volume | Mute or unmute; wheel: volume; clickable list of channels and up to four named presets (Hover shows: List) |
 | Played time *(shown at first)* | This level, total or this session | |
 | Streamer mode | Whether it is on; its settings choose what it hides (other players, your characters, guild name, gold) | Turn it on or off |
 | Micro-menu | Blizzard's micro menu in one block; the menus in its tooltip | The menu list |
@@ -387,6 +387,7 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Lists/FriendsList.lua` | The Friends block's list (WoW and Battle.net friends online), shown under the mouse in place of the tooltip: search, scrolling, whisper and invite. |
 | `Lists/GroupList.lua` | The Group block's list (party or raid members), shown under the mouse in place of the tooltip: search, scrolling, whisper. |
 | `Lists/GuildList.lua` | The Guild block's member list, shown under the mouse in place of the tooltip: search, scrolling, whisper and invite. |
+| `Lists/VolumeList.lua` | The Volume block's list, shown under the mouse in place of the tooltip: every sound channel, mute, and up to four named presets. |
 | `Blocks/ModulesWorld.lua` | Data blocks about the world: zone, subzone, coordinates, clocks, date, hearthstone, instances, reset. |
 | `Blocks/ModulesProgress.lua` | Data blocks about progress: reputation, currencies, quests, goal, professions, ammo, reagents, experience rate, gold gained. |
 | `Blocks/ModulesSystem.lua` | Data blocks about the computer and the game: FPS, latency, memory, volume, time played, streamer mode. |

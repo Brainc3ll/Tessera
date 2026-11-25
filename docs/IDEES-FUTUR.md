@@ -451,6 +451,11 @@ Maquette : https://claude.ai/artifact/6bYLHvVXo2fmWGsxFNnASk (Sonnet 5.5 ; appro
 - Ce qui a été validé est la version test222 de `SkinPreview.lua` (Tessera-dev) : la prendre comme référence.
 - La vraie fenêtre n'est pas commencée.
 
+### Plan de la vraie fenêtre (25/11, Opus 5.5, rien de codé)
+- Choix de Braincell1980 : « Pierre et métal » sur **toutes** les fenêtres de Tessera (options, bandeau de placement, « Tout voir », visite guidée, boîtes de copie, Quoi de neuf ?) ; commandes refaites **comme l'aperçu test222** ; **pas de choix** pour garder l'ancien cadre (aucune donnée enregistrée ne change, pas de T2) ; **deux zips** de test.
+- Zip 1 : dessins (`tools/gen_skin_media.py`, `Media/Skin/`), cadre (`Options/OptionsSkin.lua`, appelé par `ns:SkinWindow`), en-tête (version accrochée au titre), colonne de gauche (icônes, survol, focus). Zip 2 : commandes, petites fenêtres et bandeau, aide, changelog 2.0, README, page CurseForge, traductions, checks.
+- Conseil : Opus 5.5, effort élevé. Rien sans son « go ».
+
 ## Fenêtre d'options 1.3 (maquette du 11/11) [Fait dans la 1.3.0, sauf l'échelle pixel perfect]
 Principe : l'essentiel se voit au premier coup d'oeil, le détail est plus bas, le rare est replié. Tous les réglages actuels restent (une refonte n'enlève rien) ; seule leur place change. Commandes sur le modèle des réglages du jeu (◄ valeur ►, curseurs à losange, cases jaunes), pilotables à la manette (D-pad, A, B, LT / RT pour les onglets). Texte × 2 et contraste élevé testés dès le dessin.
 - Barre du haut : titre, recherche d'un réglage, ▲ réduire, ✕ fermer.

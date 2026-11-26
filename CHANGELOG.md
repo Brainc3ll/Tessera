@@ -10,6 +10,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Stone and metal: Tessera draws its windows (options, placement banner, See all, What's new, copy boxes) with the game's rock, the metal frame of its dialogs and a soft shadow, in your style's colors. Blocks and the lists under the mouse keep their style.
 - Options window: an icon for each page, the quest log's soft light under the mouse and on the open page, bigger titles, and the version beside the name.
 - Buttons, text fields, lists and sliders take rounded shapes in your style's colors; sliders use the classic knob and the spell book's arrows.
+- Switches: a rounded rail in your style's color and a round knob that slides when you click (it jumps with Fewer animations).
 - High contrast draws these windows plain black with a thick white edge, without rock or shadow.
 
 ## 1.9.0 — 2026-11-25

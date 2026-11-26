@@ -306,48 +306,67 @@ local function CreateSwitch(parent, label, getter, setter, isShown, tip, width)
     title:SetJustifyH("LEFT")
     title:SetText(label)
     local titleH = math.max(12, title:GetStringHeight() or 12)
-    local edge = b:CreateTexture(nil, "BACKGROUND")
-    edge:SetSize(48, 24)
-    edge:SetPoint("TOPLEFT", 0, -(titleH + 4))
-    b:SetHeight(titleH + 4 + 24 + 4)
-    local track = b:CreateTexture(nil, "BORDER")
-    track:SetPoint("TOPLEFT", edge, "TOPLEFT", 1, -1)
-    track:SetPoint("BOTTOMRIGHT", edge, "BOTTOMRIGHT", -1, 1)
-    local knobEdge = b:CreateTexture(nil, "ARTWORK", nil, 1)
-    knobEdge:SetSize(18, 18)
-    local knob = b:CreateTexture(nil, "ARTWORK", nil, 2)
-    knob:SetPoint("TOPLEFT", knobEdge, "TOPLEFT", 1, -1)
-    knob:SetPoint("BOTTOMRIGHT", knobEdge, "BOTTOMRIGHT", -1, 1)
+    -- 2.0: a rounded rail and a round knob that slides (OptionsSkin.lua draws them). On: the rail
+    -- in the style's color, the knob on the right; off: a dark rail, the knob on the left. The
+    -- words Yes / No say it too. High contrast: a gold or black rail with a white edge.
+    local SW, SH, KNOB, PAD = 48, 24, 18, 3
+    local rail = ns.Skin.Image(b, "pill", SW, nil, "BACKGROUND")
+    rail:SetSize(SW, SH)
+    rail:SetPoint("TOPLEFT", 0, -(titleH + 4))
+    b:SetHeight(titleH + 4 + SH + 4)
+    local outline = ns.Skin.Image(b, "pillEdge", SW, nil, "BORDER")
+    outline:SetSize(SW, SH)
+    outline:SetAllPoints(rail)
+    local knobEdge = ns.Skin.Image(b, "circle", KNOB + 2, nil, "ARTWORK")
+    local knob = ns.Skin.Image(b, "circle", KNOB, nil, "OVERLAY")
+    knob:SetPoint("CENTER", knobEdge, "CENTER")
     local state = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    state:SetPoint("LEFT", edge, "RIGHT", 8, 0)
-    b.hover = b:CreateTexture(nil, "HIGHLIGHT")
-    b.hover:SetAllPoints(edge)
-    b.hover:SetColorTexture(1, 1, 1, 0.15)
-    -- in the colors of the window's style: its title color (gold in most styles) for the
-    -- frame and the knob when on; grey when off. High contrast: a white frame.
+    state:SetPoint("LEFT", rail, "RIGHT", 8, 0)
+    b.hover = ns.Skin.Image(b, "pill", SW, nil, "HIGHLIGHT") -- shown by the game while hovered
+    b.hover:SetSize(SW, SH)
+    b.hover:SetAllPoints(rail)
+    b.hover:SetVertexColor(1, 1, 1, 0.15)
+    -- the knob slides in 0.15 s; at once with "Fewer animations", on the first drawing, or hidden
+    local x, from, to, t0 = nil, 0, 0, 0
+    local function Place(px)
+        x = px
+        knobEdge:ClearAllPoints()
+        knobEdge:SetPoint("LEFT", rail, "LEFT", px - 1, 0)
+    end
+    local function Slide(target)
+        local still = (ns.sv and ns.sv.reduceMotion) or not x or not b:IsVisible() or not GetTime
+        if still then
+            b:SetScript("OnUpdate", nil)
+            Place(target)
+            return
+        end
+        from, to, t0 = x, target, GetTime()
+        b:SetScript("OnUpdate", function(self)
+            local k = math.min(1, (GetTime() - t0) / 0.15)
+            k = 1 - (1 - k) * (1 - k) -- eases out: fast, then soft
+            Place(from + (to - from) * k)
+            if k >= 1 then self:SetScript("OnUpdate", nil) end
+        end)
+    end
     b.Refresh = function(self)
         local on = getter() and true or false
         self.on = on
-        local c = ns.Skin.Palette().title -- the window's title color (OptionsSkin.lua)
-        local r, g, bl = c[1], c[2], c[3]
-        if ns.sv and ns.sv.highContrast then
-            edge:SetColorTexture(1, 1, 1, 1)
+        local p = ns.Skin.Palette() -- the window's colors (OptionsSkin.lua)
+        local tint = ns.Skin.Tint
+        if p.contrast then
+            tint(rail, on and p.title or { 0, 0, 0 }, 1)
+            tint(outline, { 1, 1, 1 }, 1)
+            tint(knobEdge, { 1, 1, 1 }, 1)
+            tint(knob, on and { 0, 0, 0 } or { 1, 1, 1 }, 1)
         else
-            edge:SetColorTexture(r, g, bl, on and 1 or 0.6)
+            tint(rail, on and p.edge or p.field, on and 0.85 or 1)
+            tint(outline, on and ns.Skin.Mix(p.edge, { 1, 1, 1 }, 0.3) or p.line, 1)
+            tint(knobEdge, { 0, 0, 0 }, 0.6)
+            tint(knob, on and ns.Skin.Mix(p.title, { 1, 1, 1 }, 0.5) or p.soft, 1)
         end
-        if on then
-            track:SetColorTexture(r * 0.35, g * 0.35, bl * 0.35, 1)
-            knob:SetColorTexture(r, g, bl, 1)
-            state:SetTextColor(r, g, bl)
-        else
-            track:SetColorTexture(0.07, 0.07, 0.07, 1)
-            knob:SetColorTexture(0.55, 0.55, 0.55, 1)
-            state:SetTextColor(0.75, 0.75, 0.75)
-        end
-        knobEdge:SetColorTexture(0, 0, 0, 1)
-        knobEdge:ClearAllPoints()
-        knobEdge:SetPoint(on and "RIGHT" or "LEFT", edge, on and "RIGHT" or "LEFT", on and -3 or 3, 0)
+        ns.Skin.TextColor(state, on and p.title or p.soft)
         state:SetText(on and YES or NO)
+        Slide(on and (SW - PAD - KNOB) or PAD)
     end
     b.Activate = function(self)
         setter(not self.on)

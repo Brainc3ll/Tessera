@@ -22,6 +22,10 @@ for r in (8, 14):
         save(f"frame{r}{suffix}", (64, 64), lambda d, r=r, t=t: d.rounded_rectangle(
             [0, 0, 64 * S - 1, 64 * S - 1], r * S, outline=255, width=int(t * S)))
 
+# the switch's rail (64 x 32, shown at 48 x 24): a pill and its outline
+save("pill", (64, 32), lambda d: d.rounded_rectangle([0, 0, 64 * S - 1, 32 * S - 1], 16 * S, fill=255))
+save("pillEdge", (64, 32), lambda d: d.rounded_rectangle([0, 0, 64 * S - 1, 32 * S - 1], 16 * S, outline=255, width=int(2.5 * S)))
+
 # soft shadow
 m = Image.new("L", (64, 64), 0)
 ImageDraw.Draw(m).rounded_rectangle([14, 14, 50, 50], 10, fill=255)

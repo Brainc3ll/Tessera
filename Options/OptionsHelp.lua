@@ -532,6 +532,8 @@ local function LicensesText()
         L.LICENSES_LEXEND, "",
         L.LICENSES_ANDIKA, "",
         L.LICENSES_INCLUSIVESANS, "",
+        L.LICENSES_CINZEL, "",
+        L.LICENSES_INTER, "",
         L.LICENSES_SHARE,
     }, "\n")
 end

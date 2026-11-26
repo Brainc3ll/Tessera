@@ -11,6 +11,8 @@ Fonts in Media/Fonts, shipped unchanged. Each one keeps its own license, copied 
 - Lexend: SIL Open Font License 1.1 (OFL-Lexend.txt)
 - Andika: SIL Open Font License 1.1 (OFL-Andika.txt)
 - Inclusive Sans: SIL Open Font License 1.1 (OFL-InclusiveSans.txt)
+- Cinzel: SIL Open Font License 1.1 (OFL-Cinzel.txt)
+- Inter: SIL Open Font License 1.1 (OFL-Inter.txt)
 
 The credits (authors, links) are in the About tab, Licenses chapter, and in README.md.
 Tessera embeds no library. LibSharedMedia, LibDBIcon and DataBroker are used only when another

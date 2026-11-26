@@ -598,6 +598,14 @@ local function BuildBlockPage(page)
         end, nil, nil, L.TIP_BORDER)
     borderBox.Add(border, { field = "border" })
     borderBox.Add(Slider(a, L.BORDER_SIZE, 1, 32, "borderSize", L.TIP_BORDER_SIZE))
+    -- 2.0 borders: rounded corners or a plain line one screen pixel wide
+    borderBox.Add(Dropdown(a, L.EDGE_SHAPE, {
+        { key = "round", name = L.EDGE_SHAPE_ROUND },
+        { key = "pixel", name = L.EDGE_SHAPE_PIXEL },
+    }, "edgeShape", L.TIP_EDGE_SHAPE, function()
+        local cfg = Cfg()
+        return cfg and ns:FindMedia("border", cfg.border).hd and true or false
+    end))
 
     -- Corner join: belongs to the border (not the block), with a reset to the original value
     local function CurrentBorder()

@@ -1094,6 +1094,12 @@ local function CopyPiece(f, pool, id, src, name, e, along)
             tex:SetVertTile(src:GetVertTile())
         end
         tex:SetAtlas(atlas, true)
+    elseif f.tesseraHD then
+        -- 2.0 styles (Core/Looks.lua): stretched pieces, the same part of the drawing (a pool
+        -- texture used before by a nine-slice style keeps its tiling: turned off)
+        if tex.SetHorizTile then tex:SetHorizTile(false); tex:SetVertTile(false) end
+        tex:SetTexture(src:GetTexture())
+        tex:SetTexCoord(src:GetTexCoord())
     elseif name and e and e > 0 then
         -- border tile at the right length (repeated if longer than one tile); the tile
         -- count is in screen pixels, as in Blizzard's Backdrop.lua
@@ -1144,7 +1150,7 @@ end
 function ns:DrawSeparators(f, cov)
     local cfg = self.db.blocks[f.key]
     f.separatorPool = f.separatorPool or {}
-    local used = 0
+    local used, ornateUsed = 0, 0
     -- a spacer only draws the line under it, so a column does not look cut at the spacer;
     -- it takes the line settings of the block it is docked to (a spacer keeps its own look)
     local spacer = ns.IsSpacerKey(f.key)
@@ -1161,7 +1167,39 @@ function ns:DrawSeparators(f, cov)
         local thick = unit or self:PixelSize(1, f)
         local Shift = ns.PixelShift
         local fl, fb, fr, ft = f:GetLeft(), f:GetBottom(), f:GetRight(), f:GetTop()
+        -- 2.0 styles: an ornament (diamond, runes) centered on the join, on a layer above
+        -- the next block so it is not cut in half
+        local ornate = ns.SEPARATOR_FILES[cfg.separatorStyle or "line"]
+        if ornate and not f.ornateLayer then
+            f.ornateLayer = CreateFrame("Frame", nil, f)
+            f.ornateLayer:SetAllPoints()
+            f.ornatePool = {}
+        end
+        if f.ornateLayer then f.ornateLayer:SetFrameLevel(f:GetFrameLevel() + 4) end
+        local function Ornate(side, a, b)
+            local len = math.min(b - a - 2, 24)
+            if len < 6 then return end
+            ornateUsed = ornateUsed + 1
+            local tex = f.ornatePool[ornateUsed]
+            if not tex then
+                tex = f.ornateLayer:CreateTexture(nil, "OVERLAY")
+                f.ornatePool[ornateUsed] = tex
+            end
+            ns.SetOrnateSeparator(tex, cfg.separatorStyle, side == "BOTTOM")
+            tex:SetVertexColor(c.r, c.g, c.b, c.a)
+            tex:ClearAllPoints()
+            local mid = (a + b) / 2
+            if side == "RIGHT" then
+                tex:SetSize(len / 4, len)
+                tex:SetPoint("CENTER", f, "TOPRIGHT", 0, -mid)
+            else
+                tex:SetSize(len, len / 4)
+                tex:SetPoint("CENTER", f, "BOTTOMLEFT", mid, 0)
+            end
+            tex:Show()
+        end
         local function Line(side, a, b)
+            if ornate then return Ornate(side, a, b) end
             local len = b - a
             local inset = math.min(6, len / 4)
             if len - 2 * inset < 2 then return end
@@ -1200,6 +1238,7 @@ function ns:DrawSeparators(f, cov)
         for _, iv in ipairs(between.BOTTOM or {}) do Line("BOTTOM", iv[1], iv[2]) end
     end
     for i = used + 1, #f.separatorPool do f.separatorPool[i]:Hide() end
+    for i = ornateUsed + 1, #(f.ornatePool or {}) do f.ornatePool[i]:Hide() end
 end
 
 local function HidePool(f, pool)
@@ -1303,6 +1342,8 @@ function ns:ApplySeams(f, cov)
         if f.TopRightCorner then f.TopRightCorner:SetShown(not (topR or rightT)) end
         if f.BottomLeftCorner then f.BottomLeftCorner:SetShown(not (botL or leftB)) end
         if f.BottomRightCorner then f.BottomRightCorner:SetShown(not (botR or rightB)) end
+        -- 2.0 styles: the rounded fill follows the corners (square where a join hid one)
+        if f.tesseraHD then ns.SyncHDFill(f) end
 
         -- ends of each side: run all the way to the corner if the neighbouring
         -- side is touched there (its corner piece is hidden), otherwise stop e

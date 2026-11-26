@@ -23,6 +23,7 @@ Locales\koKR.lua
 Locales\zhCN.lua
 Locales\zhTW.lua
 Core\Core.lua
+Core\Looks.lua
 Core\Themes.lua
 Core\Merge.lua
 Core\Placement.lua

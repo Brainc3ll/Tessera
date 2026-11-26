@@ -143,6 +143,10 @@ ns.borders = {
     -- The same frame without its color (grey), tinted by the border color: silver on WoW Forever
     { key = "modernTooltipGrey", nameKey = "MEDIA_MODERN_TOOLTIP_GREY", nineSlice = "TooltipDefaultLayout", desaturate = true,
       reach = 0.33, size = 16 },
+    -- 2.0 styles: Tessera's own rounded drawings (Core/Looks.lua); size = corner size
+    { key = "hdLine",   nameKey = "MEDIA_HD_LINE",   hd = "hd_line",   reach = 0.35, size = 10 },
+    { key = "hdDouble", nameKey = "MEDIA_HD_DOUBLE", hd = "hd_double", reach = 0.35, size = 10 },
+    { key = "hdRune",   nameKey = "MEDIA_HD_RUNE",   hd = "hd_rune",   reach = 0.35, size = 10 },
 }
 
 ns.LocalizeList(ns.backgrounds, "name")
@@ -180,6 +184,11 @@ ns.fonts = {
       file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\InclusiveSans-Regular.ttf" },
     { key = "inclusivesansbold", name = "Inclusive Sans Bold", share = true, scripts = {"latin"},
       file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\InclusiveSans-Bold.ttf" },
+    -- fonts of the 2.0 styles (blue rune: Cinzel, silver: Inter), also free to pick
+    { key = "cinzel", name = "Cinzel", share = true, scripts = {"latin"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Cinzel-Bold.ttf" },
+    { key = "inter", name = "Inter", share = true, scripts = {"latin", "greek", "cyrillic"},
+      file = "Interface\\AddOns\\Tessera\\Media\\Fonts\\Inter-SemiBold.ttf" },
 }
 
 ---------------------------------------------------------------------------
@@ -333,34 +342,44 @@ function ns:ShareFonts()
     end
 end
 
--- Font shared by all the blocks (nil when they differ): the Accessibility tab's Font setting
--- is the same as "Font" under "All blocks" in the Blocks tab, so each follows the other
-function ns:AllBlocksFont()
-    local font
+-- Value of a field shared by all the blocks (nil when they differ), as "All blocks" in the
+-- Blocks tab sees it. The font: the Accessibility tab's Font setting is the same as "Font"
+-- under "All blocks", so each follows the other (also "Corners" in the Look tab, 2.0).
+-- look = true: a setting of the style's look (Corners): blocks whose style is locked keep
+-- theirs, spacers follow (the styles give them the same frame)
+local function Counts(self, key, cfg, look)
+    if not cfg then return false end
+    if look then return not cfg.styleLocked end
+    -- spacers keep their own look: "All blocks" does not change them
+    return not self.IsSpacerKey(key)
+end
+function ns:AllBlocksField(field, look)
+    local value
     for _, key in ipairs(self:GetBlockKeys()) do
         local cfg = self.db.blocks[key]
-        -- spacers keep their own look: "All blocks" does not change them
-        if cfg and not self.IsSpacerKey(key) then
-            if font and cfg.font ~= font then return nil end
-            font = cfg.font
+        if Counts(self, key, cfg, look) then
+            if value ~= nil and cfg[field] ~= value then return nil end
+            value = cfg[field]
         end
     end
-    return font
+    return value
 end
+function ns:AllBlocksFont() return self:AllBlocksField("font") end
 
--- Sets the font of all the blocks (what "All blocks" does in the Blocks tab), also for blocks
+-- Sets a field of all the blocks (what "All blocks" does in the Blocks tab), also for blocks
 -- and launchers created later
-function ns:SetAllBlocksFont(value)
+function ns:SetAllBlocksField(field, value, look)
     for _, key in ipairs(self:GetBlockKeys()) do
         local cfg = self.db.blocks[key]
-        if cfg and not self.IsSpacerKey(key) then
-            cfg.font = value
+        if Counts(self, key, cfg, look) then
+            cfg[field] = value
             self:ApplyStyle(key)
         end
     end
-    self.db.groupDefaults.font = value
-    self.db.launcherDefaults.font = value
+    self.db.groupDefaults[field] = value
+    self.db.launcherDefaults[field] = value
 end
+function ns:SetAllBlocksFont(value) self:SetAllBlocksField("font", value) end
 
 -- Menu text of a media entry: its name, then in grey the alphabets it covers (set for
 -- Tessera's own fonts only, measured on the font files: other fonts show no note)
@@ -435,7 +454,8 @@ local function Rgba(c)
 end
 
 -- Applies a skin to a frame. spec.kind is "modern" (spec.layout = nine-slice
--- layout name), "backdrop" (spec.info = backdrop table) or "none"; spec.border
+-- layout name), "backdrop" (spec.info = backdrop table), "hd" (2.0 styles, see
+-- ns.ApplyHDSkin in Core/Looks.lua) or "none"; spec.border
 -- and spec.bg are colors. Returns the border thickness for "modern" skins
 -- (used to compute insets and seams), 0 otherwise.
 -- Expansion frame art (The War Within, Midnight): one sliced border atlas over a tiled
@@ -470,6 +490,8 @@ end
 
 function ns:ApplySkin(frame, spec)
     if spec.kind ~= "atlas" and frame.tesseraArtBg then AtlasArt(frame, nil) end
+    -- 2.0 styles: their rounded fill is not one of the usual pieces (Core/Looks.lua)
+    if spec.kind ~= "hd" and frame.tesseraHD then ns.HideHDSkin(frame) end
     -- DaylightUI draws its look on a child frame it keeps for good: hide it when the look changes
     if spec.kind ~= "daylight" and frame.tesseraDaylightShell then
         frame.tesseraDaylightShell:Hide()
@@ -506,6 +528,10 @@ function ns:ApplySkin(frame, spec)
         if frame.backdropInfo then frame:SetBackdrop(nil) end
         ResetPieces(frame)
         AtlasArt(frame, spec)
+    elseif spec.kind == "hd" then
+        -- 2.0 styles: rounded frame in 9 pieces (Core/Looks.lua); returns the corner size
+        if frame.backdropInfo then frame:SetBackdrop(nil) end
+        return ns.ApplyHDSkin(frame, spec)
     elseif spec.kind == "daylight" then
         if frame.backdropInfo then frame:SetBackdrop(nil) end
         ResetPieces(frame)
@@ -1024,6 +1050,8 @@ local BLOCK_DEFAULTS = {
     iconDesaturate = false,   -- black and white icon
     separators = false,       -- thin line between merged blocks (see Merge.lua, DrawSeparators)
     separatorColor = { r = 0.8, g = 0.6, b = 0.34, a = 0.5 },
+    separatorStyle = "line",  -- 2.0 styles: "diamond" or "rune", an ornament in place of the line
+    edgeShape = "round",      -- 2.0 borders: "round" corners or "pixel" (a plain line, one screen pixel)
     barTexture = false,       -- progress bar texture ("lsm:<name>"; false = plain color)
     -- set by some styles (Themes.lua), cleared by the others:
     hideIcons = false,        -- text only (launchers keep their icon)
@@ -1057,7 +1085,7 @@ local STYLE_KEYS = {
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "classColorBg", "classColorIcon",
     "classColorSeparator", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
-    "barTexture", "hideIcons", "monochrome", "textTint", "inkColors",
+    "barTexture", "hideIcons", "monochrome", "textTint", "inkColors", "separatorStyle", "edgeShape",
 }
 ns.STYLE_KEYS = STYLE_KEYS -- also what a style export carries (Profiles.lua)
 
@@ -2138,6 +2166,11 @@ function ns:SkinBlockFrame(f, cfg)
     f.seamKey = nil
     local bg = self:FindMedia("background", cfg.bg)
     local border = self:FindMedia("border", cfg.border)
+    local borderSize = cfg.borderSize
+    -- a 2.0 border with "1 pixel" corners: a plain line one screen pixel wide
+    if border.hd and cfg.edgeShape == "pixel" then
+        border, borderSize = self:FindMedia("border", "solid"), 1
+    end
     -- colors after the class-color and high-contrast options
     local sv = self.sv or {}
     local borderColor = (cfg.classColorBorder and self:GetClassColor()) or cfg.borderColor
@@ -2145,12 +2178,23 @@ function ns:SkinBlockFrame(f, cfg)
     if sv.highContrast then
         bgColor = { r = bgColor.r, g = bgColor.g, b = bgColor.b, a = math.max(bgColor.a or 1, 0.9) }
     end
-    local inset = border.file and math.floor(cfg.borderSize * border.insetRatio + 0.5) or 0
+    local inset = border.file and math.floor(borderSize * border.insetRatio + 0.5) or 0
 
     f.nineSliceInfo = nil
-    if border.daylight then
+    if border.hd then
+        -- 2.0 styles: rounded corners of whole screen pixels, never more than half the
+        -- block's height; the seams of fused groups treat the pieces as a nine-slice frame
+        local e = math.max(2, math.min(borderSize or 10, math.floor(math.min(cfg.height or 24, cfg.width or 60) / 2)))
+        e = self:PixelSize(e, f)
+        self:ApplySkin(f, {
+            kind = "hd", file = border.hd, size = e,
+            border = borderColor, bg = bgColor, showFill = bg.file ~= nil,
+        })
+        f.nineSliceInfo = { edge = e }
+        inset = math.floor(e * 0.25 + 0.5)
+    elseif border.daylight then
         -- DaylightUI draws the whole frame: its background opacity follows the block's
-        local px = math.max(1, math.min(4, cfg.borderSize or 2))
+        local px = math.max(1, math.min(4, borderSize or 2))
         self:ApplySkin(f, { kind = "daylight", borderPx = px, bgAlpha = bgColor and bgColor.a })
         inset = px
     elseif border.nineSlice and NineSliceUtil and NineSliceUtil.ApplyLayoutByName then
@@ -2168,7 +2212,7 @@ function ns:SkinBlockFrame(f, cfg)
             info = {
                 bgFile = bg.file,
                 edgeFile = border.file,
-                edgeSize = border.file and self:PixelSize(cfg.borderSize, f) or nil,
+                edgeSize = border.file and self:PixelSize(borderSize, f) or nil,
                 tile = bg.tile or false,
                 tileSize = bg.tile and 32 or nil,
                 insets = { left = inset, right = inset, top = inset, bottom = inset },

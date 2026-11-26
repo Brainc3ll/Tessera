@@ -78,7 +78,8 @@ local methods = {
     IsMouseOver = function() return false end,
     GetChecked = function() return false end,
     HasFocus = function() return false end,
-    GetAtlas = function() return nil end, GetTexture = function() return "x" end,
+    GetAtlas = function() return nil end, GetTexture = function(self) return self.__texture or "x" end,
+    SetTexture = function(self, file) self.__texture = file end,
     GetVertexColor = function() return 1, 1, 1, 1 end, GetDrawLayer = function() return "ARTWORK" end,
     GetFrameStrata = function() return "MEDIUM" end, GetFrameLevel = function() return 1 end,
     IsMenuOpen = function() return false end,
@@ -1100,6 +1101,76 @@ for _, step in ipairs({
         ns:ApplyTheme("flat")
     end,
     function() for _, t in ipairs(ns.themes) do t.block({}); assert(t.window().title, t.key) end end,
+    -- 2.0 styles (2.0.0): rounded frame in 9 pieces, fill squared at joins, ornate separators,
+    -- "1 pixel" corners, their fonts, and an old block without the new fields
+    function()
+        for _, key in ipairs({ "hdGold", "hdRune", "hdSilver", "hdBronze" }) do
+            assert(ns:ApplyTheme(key), key .. " refused")
+            local cfg, f = ns.db.blocks.gold, ns.frames.gold
+            assert(ns:FindMedia("border", cfg.border).hd, key .. ": 2.0 border")
+            assert(cfg.separatorStyle ~= "line" and cfg.edgeShape == "round", key .. ": ornament, round corners")
+            ns:ApplyStyle("gold")
+            assert(f.tesseraHD and f.tesseraHDFill and f.TopLeftCorner and f.nineSliceInfo, key .. ": hd pieces")
+            assert(ns:FindMedia("font", cfg.font).key == cfg.font, key .. ": its font exists")
+        end
+        -- "1 pixel": a plain line, no rounded pieces left
+        ns:SetAllBlocksField("edgeShape", "pixel")
+        assert(ns:AllBlocksField("edgeShape") == "pixel", "corners for all blocks")
+        local f = ns.frames.gold
+        assert(not f.tesseraHD and f.skinKind == "backdrop" and not f.nineSliceInfo, "1 pixel corners use the plain line")
+        ns:SetAllBlocksField("edgeShape", "round")
+        assert(ns.frames.gold.tesseraHD, "rounded again")
+        -- the style export carries the new fields; an unknown corner value draws rounded
+        -- a client whose names the style's font cannot draw gets the game's font
+        local locale = GetLocale
+        GetLocale = function() return "ruRU" end
+        assert(ns:ApplyTheme("hdRune") and ns.db.blocks.gold.font == "friz", "Cinzel has no Cyrillic")
+        assert(ns:ApplyTheme("hdSilver") and ns.db.blocks.gold.font == "inter", "Inter draws Cyrillic")
+        GetLocale = function() return "koKR" end
+        assert(ns:ApplyTheme("hdSilver") and ns.db.blocks.gold.font == "friz", "Inter has no Hangul")
+        GetLocale = locale
+        assert(ns:ApplyTheme("hdBronze"))
+        local styleKeys = {}
+        for _, k in ipairs(ns.STYLE_KEYS) do styleKeys[k] = true end
+        assert(styleKeys.edgeShape and styleKeys.separatorStyle, "style keys")
+        -- a locked block keeps its corners when the Look tab changes them for all
+        ns.db.blocks.bags.styleLocked = true
+        ns:SetAllBlocksField("edgeShape", "pixel", true)
+        assert(ns.db.blocks.bags.edgeShape == "round" and ns.db.blocks.gold.edgeShape == "pixel", "locked corners")
+        ns.db.blocks.bags.styleLocked = nil
+        ns:SetAllBlocksField("edgeShape", "round", true)
+        -- a narrow block: corners never larger than half its width (the fill bands would overlap)
+        ns.db.blocks.gold.width, ns.db.blocks.gold.autoWidth = 12, false
+        ns:ApplyStyle("gold")
+        assert(ns.frames.gold.nineSliceInfo.edge <= 6, "corner fits the width")
+        ns.db.blocks.gold.width, ns.db.blocks.gold.autoWidth = 60, true
+        ns:ApplyStyle("gold")
+        ns.db.blocks.gold.edgeShape = "zigzag"
+        ns:ApplyStyle("gold")
+        assert(ns.frames.gold.tesseraHD, "unknown corners: rounded")
+        ns.db.blocks.gold.edgeShape = "round"
+        -- a 2.0 style export comes back whole; a style from 1.0.0-rc9 brings lines back
+        local text = ns:ExportStyle()
+        assert(ns:ApplyTheme("flat"))
+        assert(ns:ImportStyle(text) and ns.db.blocks.gold.border == "hdDouble"
+            and ns.db.blocks.gold.separatorStyle == "diamond", "2.0 style export round trip")
+        local fx = assert(io.open(addonDir .. "/tools/fixtures/rc9-style.txt"), "missing fixture")
+        local old = fx:read("*a")
+        fx:close()
+        assert(ns:ImportStyle(old), "rc9 style over a 2.0 style")
+        for key, cfg in pairs(ns.db.blocks) do
+            assert(cfg.separatorStyle == "line", "rc9 style keeps no 2.0 ornament: " .. key)
+        end
+        assert(ns:ApplyTheme("hdBronze"))
+        -- another style takes the frame back and puts the line separators back
+        assert(ns:ApplyTheme("flat"))
+        ns:ApplyStyle("gold")
+        assert(not ns.frames.gold.tesseraHD and ns.db.blocks.gold.separatorStyle == "line", "flat after a 2.0 style")
+        for _, tex in pairs(ns.frames.gold.tesseraHDFill) do assert(not tex:IsShown(), "2.0 fill hidden") end
+        local fonts = {}
+        for _, item in ipairs(ns:GetMediaList("font")) do fonts[item.key] = true end
+        assert(fonts.cinzel and fonts.inter, "Cinzel and Inter in the font list")
+    end,
     -- another interface's setup guide or tour: Tessera's popups wait for it, then follow
     function()
         local function Flush()
@@ -4922,6 +4993,31 @@ do
     if ns.db.grid ~= 0 then print("STEP ERROR: banner: the grid arrow does not go back") end
     ns:SetLocked(true, true)
     GetPhysicalScreenSize = physical
+    MOCK_GEOMETRY = false
+    ns:ResetProfile("top")
+end
+-- 2.0 styles in a fused bar (2.0.0): an ornament at each join instead of a line, rounded
+-- corners only where no block touches (the fill is squared under the hidden corners)
+do
+    MOCK_GEOMETRY = true
+    ns:ResetProfile("top")
+    ns:ApplyTheme("hdGold")
+    ns:UpdateLayout()
+    local ornate, lines, squared = 0, 0, 0
+    for _, f in pairs(ns.frames) do
+        for _, tex in ipairs(f.ornatePool or {}) do if tex:IsShown() then ornate = ornate + 1 end end
+        for _, tex in ipairs(f.separatorPool or {}) do if tex:IsShown() then lines = lines + 1 end end
+        if f.tesseraHD and f.TopRightCorner and not f.TopRightCorner:IsShown() then
+            squared = squared + 1
+            assert(f.tesseraHDFill.TopRightCorner:GetTexture() == "Interface\\Buttons\\WHITE8X8", "square fill at a join")
+        end
+        if f.tesseraHD and f.TopLeftCorner and f.TopLeftCorner:IsShown() then
+            assert(f.tesseraHDFill.TopLeftCorner:GetTexture():find("hd_fill", 1, true), "rounded fill at a free corner")
+        end
+    end
+    assert(ornate > 0 and lines == 0, "2.0 bar: ornaments, no lines (" .. ornate .. ", " .. lines .. ")")
+    assert(squared > 0, "2.0 bar: corners hidden at the joins")
+    ns:ApplyTheme("flat")
     MOCK_GEOMETRY = false
     ns:ResetProfile("top")
 end

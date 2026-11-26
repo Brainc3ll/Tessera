@@ -619,6 +619,8 @@ function ns:ImportStyle(text)
             for _, field in ipairs(self.STYLE_KEYS) do
                 if src[field] ~= nil then cfg[field] = self.DeepCopy(src[field]) end
             end
+            -- a style from before 2.0 has no ornaments: lines, not the current 2.0 style's ornaments
+            if src.separatorStyle == nil then cfg.separatorStyle = "line" end
         end
     end
     if type(data.theme) == "string" and self:GetThemeInfo(data.theme) then self.db.theme = data.theme end

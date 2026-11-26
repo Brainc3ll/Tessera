@@ -616,6 +616,21 @@ local function BuildLookPage(page)
            if note then ns.Print(note) end
            ns:RefreshOptions()
        end, nil, nil, L.TIP_THEME))
+    -- corners of the 2.0 styles for every block: the same setting as "Corners" under
+    -- "All blocks" in the Blocks tab
+    theme.Add(CreateDropdown(page, L.EDGE_SHAPE, function()
+            local list = {
+                { key = "round", name = L.EDGE_SHAPE_ROUND },
+                { key = "pixel", name = L.EDGE_SHAPE_PIXEL },
+            }
+            if not ns:AllBlocksField("edgeShape", true) then table.insert(list, 1, { key = "mixed", name = L.FONT_MIXED }) end
+            return list
+        end,
+        function() return ns:AllBlocksField("edgeShape", true) or "mixed" end,
+        function(v)
+            if v ~= "mixed" then ns:SetAllBlocksField("edgeShape", v, true) end
+            ns:RefreshOptions()
+        end, nil, nil, L.TIP_EDGE_SHAPE_ALL))
     theme.Add(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
         function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
         function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), { default = ns.PROFILE_DEFAULTS.scale * 100 })

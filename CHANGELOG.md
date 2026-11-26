@@ -14,6 +14,9 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - High contrast draws these windows plain black with a thick white edge, without rock or shadow.
 - Accessibility: Window shadow turns off the shadow under Tessera's windows, if it bothers you.
 - Sharper drawings: the page icons, the switch and the arrows are drawn at 128 px, and the logo at 256 px, so they stay sharp on big screens.
+- Four new block styles: Gilded, Blue rune, Silver and Bronze 2.0. A tinted, see-through background, a rounded edge drawn by Tessera and an ornament between merged blocks. Your other styles stay as they were.
+- Corners (Style and layouts tab, or Appearance for one block): rounded, or square with a line one screen pixel wide.
+- Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block, and addons that use LibSharedMedia get them too.
 
 ## 1.9.0 — 2026-11-25
 

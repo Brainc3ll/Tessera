@@ -224,6 +224,8 @@ Idée de Braincell1980, à faire **après la refonte « Accessibilité » (1.3) 
 
 ### Look « HD » (15 octobre 2026, à l'étude)
 
+**Décision du 26/11 (Braincell1980, pour la 2.0)** : des blocs plus modernes, toujours fantasy, avec les quatre pistes : netteté HD (bords de 1 vrai pixel, dessins faits en grand, police libre), matière légère (fond teinté un peu transparent, liseré doré ou runique, coins arrondis), séparateurs ornés et icônes rondes avec anneau, un peu de vie (survol qui s'allume, valeurs qui glissent, fine barre de progression ; rien avec « Moins d'animations »). Ce sont de **nouveaux styles** : les 27 styles existants restent tels quels, rien n'est retiré au joueur. Il faut **un autre moyen de choisir le style** que la liste déroulante, qui deviendrait trop longue. Méthode : un aperçu dans Tessera-dev (une même barre en plusieurs versions côte à côte), choix en jeu, puis la vraie version. Rien de codé.
+
 Souhait de Braincell1980 : un Tessera beaucoup plus HD, même sur Forever (il fait « 2006 » aujourd'hui). Pistes :
 1. Lignes nettes au pixel près : bordures de 1 pixel réel calées sur les pixels de l'écran, à toutes les échelles.
 2. Images faites pour Tessera, dessinées en grand (256-512 px) : bordures, coins, léger dégradé, ombre douce, lueur au survol.

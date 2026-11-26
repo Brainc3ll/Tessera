@@ -13,6 +13,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Switches: a rounded rail in your style's color and a round knob that slides when you click (it jumps with Fewer animations).
 - High contrast draws these windows plain black with a thick white edge, without rock or shadow.
 - Accessibility: Window shadow turns off the shadow under Tessera's windows, if it bothers you.
+- Sharper drawings: the page icons, the switch and the arrows are drawn at 128 px, and the logo at 256 px, so they stay sharp on big screens.
 
 ## 1.9.0 — 2026-11-25
 

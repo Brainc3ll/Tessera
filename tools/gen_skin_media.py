@@ -4,9 +4,10 @@ import sys
 OUT = sys.argv[1]
 S = 8  # supersampling
 
-def save(name, size, draw_fn):
+def save(name, size, draw_fn, sup=None):
     w, h = size
-    m = Image.new("L", (w * S, h * S), 0)
+    sup = sup or S  # canvas pixels per output pixel
+    m = Image.new("L", (w * sup, h * sup), 0)
     draw_fn(ImageDraw.Draw(m))
     m = m.resize((w, h), Image.LANCZOS)
     img = Image.new("RGBA", (w, h), (255, 255, 255, 0))
@@ -22,9 +23,9 @@ for r in (8, 14):
         save(f"frame{r}{suffix}", (64, 64), lambda d, r=r, t=t: d.rounded_rectangle(
             [0, 0, 64 * S - 1, 64 * S - 1], r * S, outline=255, width=int(t * S)))
 
-# the switch's rail (64 x 32, shown at 48 x 24): a pill and its outline
-save("pill", (64, 32), lambda d: d.rounded_rectangle([0, 0, 64 * S - 1, 32 * S - 1], 16 * S, fill=255))
-save("pillEdge", (64, 32), lambda d: d.rounded_rectangle([0, 0, 64 * S - 1, 32 * S - 1], 16 * S, outline=255, width=int(2.5 * S)))
+# the switch's rail (128 x 64, shown at 48 x 24): a pill and its outline
+save("pill", (128, 64), sup=4, draw_fn=lambda d: d.rounded_rectangle([0, 0, 64 * S - 1, 32 * S - 1], 16 * S, fill=255))
+save("pillEdge", (128, 64), sup=4, draw_fn=lambda d: d.rounded_rectangle([0, 0, 64 * S - 1, 32 * S - 1], 16 * S, outline=255, width=int(2.5 * S)))
 
 # soft shadow
 m = Image.new("L", (64, 64), 0)
@@ -34,6 +35,9 @@ img = Image.new("RGBA", (64, 64), (255, 255, 255, 0))
 img.putalpha(m)
 img.save(f"{OUT}/shadow.tga")
 
+# icons and small shapes: drawn on a 32-unit grid, saved at 128 px (HD, 2.0) so they stay sharp
+# on big screens and with Shift + mouse wheel
+S = 32
 W = 3 * S
 def line(d, *pts):
     p = [(pts[i] * S, pts[i + 1] * S) for i in range(0, len(pts), 2)]
@@ -66,4 +70,4 @@ icons = {
     "i_about": lambda d: (ring(d, 16, 16, 13), line(d, 16, 15, 16, 23), d.ellipse(u(13.5, 7, 18.5, 12), fill=255)),
 }
 for name, fn in icons.items():
-    save(name, (32, 32), fn)
+    save(name, (128, 128), fn, sup=8)

@@ -159,6 +159,13 @@ local function BuildAccessPage(page)
             ns.sv.reduceMotion = v or nil
             if ns.UpdateFades then ns:UpdateFades() end
         end, nil, L.TIP_REDUCE_MOTION), { half = true, default = false })
+    -- 2.0: the soft shadow under Tessera's windows (OptionsSkin.lua); saved only when taken off
+    see.Add(CreateCheck(page, L.WINDOW_SHADOW,
+        function() return not ns.sv.noWindowShadow end,
+        function(v)
+            ns.sv.noWindowShadow = (not v) or nil
+            ns:RepaintAccents() -- every stone and metal window
+        end, nil, L.TIP_WINDOW_SHADOW), { half = true, default = true })
 
     -- text sizes
     local text = F.Box(L.SECTION_ACCESS_TEXT, { reset = true })

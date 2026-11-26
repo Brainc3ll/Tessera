@@ -197,7 +197,7 @@ Help tab inside the game explains everything.
   window) and Tessera, in the addon's own colors.
 - Profiles with export/import, ready-made layouts and an automatic dungeon/raid profile.
 - Accessibility tab: bright or soft colors for values and class colors, or colorblind values;
-  high contrast; fewer animations; minimum text size; the font of all blocks (the same setting as in the Blocks and groups tab). Class color on the text, background,
+  high contrast; fewer animations; the shadow under Tessera's windows (on or off); minimum text size; the font of all blocks (the same setting as in the Blocks and groups tab). Class color on the text, background,
   border, icon frame and lines.
 - Fonts for easier reading, in every font menu: Atkinson Hyperlegible Next and Luciole (low vision), OpenDyslexic
   (dyslexia), Lexend (reading flow), Andika (beginning readers) and Inclusive Sans (general legibility), each in regular and bold. The menu shows in grey which alphabets each one covers. Other addons that

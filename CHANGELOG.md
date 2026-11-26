@@ -12,6 +12,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Buttons, text fields, lists and sliders take rounded shapes in your style's colors; sliders use the classic knob and the spell book's arrows.
 - Switches: a rounded rail in your style's color and a round knob that slides when you click (it jumps with Fewer animations).
 - High contrast draws these windows plain black with a thick white edge, without rock or shadow.
+- Accessibility: Window shadow turns off the shadow under Tessera's windows, if it bothers you.
 
 ## 1.9.0 — 2026-11-25
 

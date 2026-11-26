@@ -63,6 +63,7 @@ ns.CHANGELOG = {
                 "Buttons, text fields, lists and sliders take rounded shapes in your style's colors; sliders use the classic knob and the spell book's arrows.",
                 "Switches: a rounded rail in your style's color and a round knob that slides when you click (it jumps with Fewer animations).",
                 "High contrast draws these windows plain black with a thick white edge, without rock or shadow.",
+                "Accessibility: Window shadow turns off the shadow under Tessera's windows, if it bothers you.",
               },
               fr = {
                 "Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?, boîtes de copie)"
@@ -74,6 +75,7 @@ ns.CHANGELOG = {
                     .. " les curseurs reprennent le bouton classique et les flèches du grimoire.",
                 "Interrupteurs : un rail arrondi à la couleur de ton style et un bouton rond qui glisse quand tu cliques (il saute avec Moins d'animations).",
                 "Le contraste renforcé dessine ces fenêtres en noir uni avec un bord blanc épais, sans roche ni ombre.",
+                "Accessibilité : Ombre des fenêtres enlève l'ombre sous les fenêtres de Tessera, si elle te gêne.",
               },
             },
         },

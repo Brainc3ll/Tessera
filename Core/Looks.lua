@@ -152,7 +152,7 @@ end
 
 -- Ornate separators of the 2.0 styles (cfg.separatorStyle): the drawing stands upright in
 -- the file; a horizontal separator turns it a quarter
-ns.SEPARATOR_FILES = { diamond = "hd_sep_diamond", rune = "hd_sep_rune" }
+ns.SEPARATOR_FILES = { diamond = "hd_sep_diamond", rune = "hd_sep_rune", dot = "hd_sep_dot" }
 function ns.SetOrnateSeparator(tex, style, horizontal)
     tex:SetTexture(MEDIA .. ns.SEPARATOR_FILES[style])
     if horizontal then

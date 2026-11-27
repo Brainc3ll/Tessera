@@ -70,7 +70,8 @@ end
 local function ResettableRows(box)
     local list = {}
     for _, w in ipairs(box.rows) do
-        if w:IsShown() and (w.field or (w.resetTo ~= nil and w.setter)) then table.insert(list, w) end
+        -- (w.noReset: the style lock, in the Style box: Reset puts the look back, it does not unlock)
+        if w:IsShown() and not w.noReset and (w.field or (w.resetTo ~= nil and w.setter)) then table.insert(list, w) end
     end
     return list
 end

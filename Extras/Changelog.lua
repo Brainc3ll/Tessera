@@ -58,6 +58,12 @@ ns.CHANGELOG = {
             { en = "Pick your style in a gallery of real blocks, sorted by family.",
               fr = "Choisis ton style dans une galerie de vrais blocs, rangés par famille.",
               show = { page = "PAGE_LOOK", label = "THEME" } },
+            { en = "Style, font, corners and effects together in one Style box.",
+              fr = "Style, police, coins et effets réunis dans un seul cadre Style.",
+              show = { page = "PAGE_LOOK", label = "FONT" } },
+            { en = "Between merged blocks: a line, a diamond, runes or a dot.",
+              fr = "Entre les blocs fusionnés : un trait, un losange, des runes ou un point.",
+              show = { page = "PAGE_LOOK", label = "SEPARATOR_SHAPE" } },
         },
         sections = {
             { kind = "new",
@@ -74,11 +80,16 @@ ns.CHANGELOG = {
                     .. " so they stay sharp on big screens.",
                 "Four new block styles: Gilded, Blue rune, Silver and Brazen. A tinted, see-through background, a rounded edge"
                     .. " drawn by Tessera and an ornament between merged blocks. Your other styles stay as they were.",
-                "Corners (Style and layouts tab, or Appearance for one block): rounded, or square with a line one screen pixel wide.",
+                "Corners: rounded, or square with a line one screen pixel wide.",
                 "Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block,"
                     .. " and addons that use LibSharedMedia get them too.",
-                "Effects, for any style (Appearance tab): the edge lights up under the mouse, and a number that changes counts"
+                "Effects, for any style: the edge lights up under the mouse, and a number that changes counts"
                     .. " to its new value. The four new styles turn them on; Fewer animations turns them off.",
+                "One Style box for the whole look: style, font, text size, corners, icons and effects, in this order,"
+                    .. " in the Style and layouts tab for every block and at the top of a block's Appearance tab."
+                    .. " The block's style leaves the Content tab. Blocks whose style is locked keep theirs.",
+                "Separator shape, for any style: a line, a diamond, three runes or a dot between merged blocks"
+                    .. " (Groups of blocks for every block, or Separators for one block).",
                 "Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks"
                     .. " that have a progress; the other styles keep the band.",
                 "Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block,"
@@ -99,11 +110,16 @@ ns.CHANGELOG = {
                     .. " pour rester nets sur les grands écrans.",
                 "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Airain. Un fond teinté un peu transparent,"
                     .. " un bord arrondi dessiné par Tessera et un ornement entre les blocs fusionnés. Tes autres styles restent tels quels.",
-                "Coins (onglet Style et dispositions, ou Apparence pour un seul bloc) : arrondis, ou droits avec un trait d'un pixel de l'écran.",
+                "Coins : arrondis, ou droits avec un trait d'un pixel de l'écran.",
                 "Deux polices arrivent avec ces styles : Cinzel (Runique bleu) et Inter (Argent). Tu peux les choisir pour n'importe quel bloc,"
                     .. " et les addons qui utilisent LibSharedMedia les reçoivent aussi.",
-                "Effets, pour tous les styles (onglet Apparence) : le bord s'éclaire sous la souris, et un nombre qui change"
+                "Effets, pour tous les styles : le bord s'éclaire sous la souris, et un nombre qui change"
                     .. " glisse jusqu'à sa nouvelle valeur. Les quatre nouveaux styles les allument ; Moins d'animations les coupe.",
+                "Un seul cadre Style pour toute l'allure : style, police, taille du texte, coins, icônes et effets, dans cet ordre,"
+                    .. " dans l'onglet Style et dispositions pour tous les blocs et en haut de l'onglet Apparence d'un bloc."
+                    .. " Le style du bloc quitte l'onglet Contenu. Les blocs au style verrouillé gardent le leur.",
+                "Forme des séparateurs, pour tous les styles : un trait, un losange, trois runes ou un point entre les blocs fusionnés"
+                    .. " (Groupes de blocs pour tous les blocs, ou Séparateurs pour un seul bloc).",
                 "Barre de progression : une nouvelle allure, une fine ligne sous la valeur (Allure de la barre). Les quatre nouveaux"
                     .. " styles l'utilisent sur les blocs qui ont une progression ; les autres styles gardent la bande.",
                 "Galerie des styles : un clic sur la liste des styles (onglet Style et dispositions, ou page d'un bloc) montre tous les styles"

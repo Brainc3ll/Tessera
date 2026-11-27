@@ -15,9 +15,11 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Accessibility: Window shadow turns off the shadow under Tessera's windows, if it bothers you.
 - Sharper drawings: the page icons, the switch and the arrows are drawn at 128 px, and the logo at 256 px, so they stay sharp on big screens.
 - Four new block styles: Gilded, Blue rune, Silver and Brazen. A tinted, see-through background, a rounded edge drawn by Tessera and an ornament between merged blocks. Your other styles stay as they were.
-- Corners (Style and layouts tab, or Appearance for one block): rounded, or square with a line one screen pixel wide.
+- Corners: rounded, or square with a line one screen pixel wide.
 - Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block, and addons that use LibSharedMedia get them too.
-- Effects, for any style (Appearance tab): the edge lights up under the mouse, and a number that changes counts to its new value. The four new styles turn them on; Fewer animations turns them off.
+- Effects, for any style: the edge lights up under the mouse, and a number that changes counts to its new value. The four new styles turn them on; Fewer animations turns them off.
+- One Style box for the whole look: style, font, text size, corners, icons and effects, in this order, in the Style and layouts tab for every block and at the top of a block's Appearance tab. The block's style leaves the Content tab. Blocks whose style is locked keep theirs.
+- Separator shape, for any style: a line, a diamond, three runes or a dot between merged blocks (Groups of blocks for every block, or Separators for one block).
 - Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks that have a progress; the other styles keep the band.
 - Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block, in rows by family. Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.
 

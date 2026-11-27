@@ -635,43 +635,10 @@ local function BuildLookPage(page)
             } },
         })
     end)
-    -- the same choice in the style gallery (OptionsStyleGallery.lua): every style as a real block
-    -- corners of the 2.0 styles for every block: the same setting as "Corners" under
-    -- "All blocks" in the Blocks tab
-    theme.Add(CreateDropdown(page, L.EDGE_SHAPE, function()
-            local list = {
-                { key = "round", name = L.EDGE_SHAPE_ROUND },
-                { key = "pixel", name = L.EDGE_SHAPE_PIXEL },
-            }
-            if not ns:AllBlocksField("edgeShape", true) then table.insert(list, 1, { key = "mixed", name = L.FONT_MIXED }) end
-            return list
-        end,
-        function() return ns:AllBlocksField("edgeShape", true) or "mixed" end,
-        function(v)
-            if v ~= "mixed" then ns:SetAllBlocksField("edgeShape", v, true) end
-            ns:RefreshOptions()
-        end, function()
-            -- only useful with the rounded borders of Gilded, Blue rune, Silver and Brazen
-            for _, cfg in pairs(ns.db.blocks) do
-                if ns:FindMedia("border", cfg.border).hd then return true end
-            end
-            return false
-        end, nil, L.TIP_EDGE_SHAPE_ALL))
-    -- icons of every block, whatever the style: the same setting as "Icons" under "All blocks"
-    theme.Add(CreateDropdown(page, L.ICON_SET, function()
-            local list = {
-                { key = "classic", name = L.ICON_SET_CLASSIC },
-                { key = "hd", name = L.ICON_SET_HD },
-                { key = "hdTint", name = L.ICON_SET_HD_TINT },
-            }
-            if not ns:AllBlocksField("iconSet", "icons") then table.insert(list, 1, { key = "mixed", name = L.FONT_MIXED }) end
-            return list
-        end,
-        function() return ns:AllBlocksField("iconSet", "icons") or "mixed" end,
-        function(v)
-            if v ~= "mixed" then ns:SetAllBlocksField("iconSet", v, "icons") end
-            ns:RefreshOptions()
-        end, function() return ns.HD_ICONS_ON end, nil, L.TIP_ICON_SET_ALL))
+    -- under the style, the rest of the look of every block, in the same order as the Style box
+    -- of a block's Appearance tab (OptionsLookBox.lua): font, text size, corners, icons, effects.
+    -- Blocks whose style is locked keep theirs.
+    Tools.AddLookRows(theme, page, true)
     theme.Add(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
         function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
         function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), { default = ns.PROFILE_DEFAULTS.scale * 100 })
@@ -696,6 +663,21 @@ local function BuildLookPage(page)
         function() return ns.db.jointGap or 3 end,
         function(v) ns.db.jointGap = v; ns:ReanchorAll(); ns:RequestLayout() end,
         nil, L.TIP_JOINT_GAP), { default = 3 }) -- always shown: a single group can use tiles too
+    -- the shape of the separators of every block (27/11): the line, or an ornament in its place.
+    -- Locked blocks and spacers keep theirs.
+    groups.Add(CreateDropdown(page, L.SEPARATOR_SHAPE, function()
+            local list = ns.SeparatorChoices()
+            if not ns:AllBlocksField("separatorStyle", "blocks") then table.insert(list, 1, { key = "mixed", name = L.FONT_MIXED }) end
+            return list
+        end,
+        function() return ns:AllBlocksField("separatorStyle", "blocks") or "mixed" end,
+        function(v)
+            if v ~= "mixed" then
+                ns:SetAllBlocksField("separatorStyle", v, "blocks")
+                ns:UpdateLayout() -- the separators are drawn by the layout pass
+            end
+            ns:RefreshOptions()
+        end, nil, nil, L.TIP_SEPARATOR_SHAPE_ALL))
 
     -- sharing the style or the layout alone (the import window reads both, and profiles)
     local shareBox = F.Box(L.SECTION_SHARE)

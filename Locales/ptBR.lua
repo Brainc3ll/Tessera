@@ -1677,7 +1677,6 @@ L["TIP_STYLE_LOCK"] = "Uma mudança de estilo para todo o perfil deixa este bloc
 L["STYLE_LOCKED_APPLY"] = "%d destes blocos têm o estilo travado. Aplicar este estilo a eles também? Eles continuam travados."
 L["STYLE_UNLOCK_FOLLOW"] = "Estilo destravado. Dar agora a este bloco o estilo do perfil?"
 L["HELP_LOOK_21"] = "- \"Travar o estilo deste bloco\" (aba Blocos e grupos, Aparência, seção Trava do estilo): uma mudança de estilo para todo o perfil deixa esse bloco como está, mesmo quando uma interface some. Nas páginas com vários blocos (Todos os blocos, um grupo), nenhuma configuração o alcança. \"Aplicar este estilo a\" e os botões de cópia mudam ele mesmo assim, depois de um aviso."
-L["SECTION_STYLE_LOCK"] = "Trava do estilo"
 L["STYLE_NOTICE_LOCKED_TITLE"] = "Estes blocos mantêm a aparência (estilo travado):"
 L["STYLE_NOTICE_MORE"] = "... e mais %d"
 L["HELP_BMODE_BROKER_6"] = "- Botão do minimapa: mostrado ou ocultado na seção Minimapa, no fim desta aba."

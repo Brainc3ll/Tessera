@@ -1677,7 +1677,6 @@ L["TIP_STYLE_LOCK"] = "Eine Stiländerung für das ganze Profil lässt diesen Bl
 L["STYLE_LOCKED_APPLY"] = "%d dieser Blöcke haben einen gesperrten Stil. Den Stil auch auf sie anwenden? Sie bleiben gesperrt."
 L["STYLE_UNLOCK_FOLLOW"] = "Stil entsperrt. Diesem Block jetzt den Stil des Profils geben?"
 L["HELP_LOOK_21"] = "- „Stil dieses Blocks sperren“ (Reiter Blöcke und Gruppen, Aussehen, Abschnitt Stilsperre): Eine Stiländerung für das ganze Profil lässt diesen Block, wie er ist, auch wenn eine Oberfläche fehlt. Auf Seiten mit mehreren Blöcken (Alle Blöcke, eine Gruppe) erreicht ihn keine Einstellung. „Diesen Stil anwenden auf“ und die Kopier-Schaltflächen ändern ihn trotzdem, nach einer Warnung."
-L["SECTION_STYLE_LOCK"] = "Stilsperre"
 L["STYLE_NOTICE_LOCKED_TITLE"] = "Diese Blöcke behalten ihr Aussehen (Stil gesperrt):"
 L["STYLE_NOTICE_MORE"] = "... und %d weitere"
 L["HELP_BMODE_BROKER_6"] = "- Minikarten-Schaltfläche: im Abschnitt Minikarte unten in diesem Reiter ein- oder ausblenden."

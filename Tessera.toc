@@ -53,6 +53,7 @@ Options\Options.lua
 Options\OptionsSkin.lua
 Options\OptionsWidgets.lua
 Options\OptionsBoxes.lua
+Options\OptionsLookBox.lua
 Options\OptionsBlocks.lua
 Options\OptionsBlockPicker.lua
 Options\OptionsStyleGallery.lua

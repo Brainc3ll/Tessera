@@ -61,11 +61,11 @@ save("hd_rune", m, 64, 64)
 
 
 # ornate separators, 16 x 64: a line fading at both ends, with an ornament in the middle
-def separator(name, ornament):
+def separator(name, ornament, line=True):
     w, h = 16, 64
     m = mask(w, h)
     d = ImageDraw.Draw(m)
-    for y in range(h * S):
+    for y in range(h * S if line else 0):
         t = abs(y / (h * S) - 0.5) * 2  # 0 in the middle, 1 at the ends
         v = int(255 * max(0.0, 1 - t ** 3))
         d.line([(7.5 * S, y), (8.5 * S, y)], fill=v)
@@ -87,6 +87,16 @@ def runes(d):
 
 separator("hd_sep_diamond", diamond)
 separator("hd_sep_rune", runes)
+
+
+# "Dot" (27/11, Braincell1980): a round dot alone, no line; the texture keeps the same
+# 1 to 4 shape as the others, so the dot stays round in game
+def dot(d):
+    r = 5
+    d.ellipse([(8 - r) * S, (32 - r) * S, (8 + r) * S, (32 + r) * S], fill=255)
+
+
+separator("hd_sep_dot", dot, line=False)
 
 # HD icons (Core/Looks.lua): a ring with a fine inner line, and a dark disc behind the icon,
 # 128 px (the drawings of the preview chosen in game on 26/11)

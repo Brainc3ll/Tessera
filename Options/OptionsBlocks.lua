@@ -487,10 +487,11 @@ local function BuildBlockPage(page)
     local C, A, B = flows[1], flows[2], flows[3]
     local c, a, b = C.content, A.content, B.content
 
-    -- 1. Content: what the block shows (its name, value, icon, style and its own settings),
+    -- 1. Content: what the block shows (its name, value, icon and its own settings),
     -- then what its tooltip shows
     -- first what only this block has (its own settings and what its tooltip lists), then the
-    -- settings every block has (name, label, value, icon, style, tooltip)
+    -- settings every block has (name, label, value, icon, tooltip). Its style is at the top of
+    -- Appearance (27/11)
     local ownBox = C.Box(L.BOX_OWN, { reset = true })
     local standardNote = C.Box(nil)
     standardNote.Add(CreateNote(c, L.NOTE_STANDARD))
@@ -504,15 +505,39 @@ local function BuildBlockPage(page)
     valueBox.Add(Check(c, L.SHOW_LABEL, "showLabel", L.TIP_SHOW_LABEL), { half = true })
     valueBox.Add(Check(c, L.SHOW_VALUE, "showValue", L.TIP_SHOW_VALUE), { half = true })
     valueBox.Add(Check(c, L.SHOW_ICON, "showIcon", L.TIP_SHOW_ICON), { half = true })
+
+    local tipBox = C.Box(L.SECTION_TOOLTIP, { reset = true })
+    local showTip = tipBox.Add(Check(c, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP))
+    tipBox.Add(Dropdown(c, L.TOOLTIP_ANCHOR, {
+        { key = "auto", name = L.TOOLTIP_AUTO },
+        { key = "top", name = L.TOOLTIP_TOP },
+        { key = "bottom", name = L.TOOLTIP_BOTTOM },
+    }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR, notSpacer), { parent = IsOn("tooltip") })
+    tipBox.Add(Dropdown(c, L.TOOLTIP_ALIGN, {
+        { key = "auto", name = L.TOOLTIP_AUTO },
+        { key = "left", name = L.TOOLTIP_ALIGN_LEFT },
+        { key = "center", name = L.TOOLTIP_ALIGN_CENTER },
+        { key = "right", name = L.TOOLTIP_ALIGN_RIGHT },
+    }, "tooltipAlign", L.TIP_TOOLTIP_ALIGN, notSpacer), { parent = IsOn("tooltip") })
+    ns.blockTooltipCheck = showTip -- (tools/mock_run.lua)
+
+    -- 2. Appearance: style (with font, text size, corners, icons, effects), size, text, background,
+    -- icon, border, separators, opacity and layer, colors by level and progress bar
+    -- Style (27/11, Braincell1980): the style to apply and where, the lock, then font, text size,
+    -- corners, icons and effects, in the same order as the Style box of the Style and layouts
+    -- tab (OptionsLookBox.lua). At the top of Appearance, so the lock is seen before the settings
+    -- it protects. locked: a style change for the whole profile (Style and layouts tab, an
+    -- interface missing or back) leaves the block as it is.
+    local styleBox = A.Box(L.SECTION_THEME, { reset = true })
     -- style of this block, its group or every block: an action (written into their
-    -- settings, Ctrl + Z undoes it); the window keeps the style of the Look tab
+    -- settings, Ctrl + Z undoes it); the window keeps the style of the Style and layouts tab
     local pickStyle
     local function StyleChoices()
         local list = {}
         for _, t in ipairs(ns:GetAvailableThemes()) do table.insert(list, { key = t.key, name = t.name }) end
         return list
     end
-    local styleDropdown = valueBox.Add(CreateDropdown(c, L.BLOCK_STYLE, StyleChoices,
+    local styleDropdown = styleBox.Add(CreateDropdown(a, L.BLOCK_STYLE, StyleChoices,
         function() return pickStyle or ns:GetTheme() end,
         function(v) pickStyle = v end, nil, nil, L.TIP_BLOCK_STYLE .. " " .. L.TIP_STYLE_GALLERY_OPEN_BLOCK))
     -- greyed on the "All blocks" page: the Look tab picks that style (see CreateStyleTargets)
@@ -524,7 +549,7 @@ local function BuildBlockPage(page)
         self:SetAlpha(off and 0.45 or 1)
         self.galleryOff = off
     end
-    local styleTargets = CreateStyleTargets(c, function() return pickStyle or ns:GetTheme() end)
+    local styleTargets = CreateStyleTargets(a, function() return pickStyle or ns:GetTheme() end)
     -- a click on the list opens the style gallery (OptionsStyleGallery.lua), with the three
     -- buttons of "Apply this style to"
     ns.blockStyleList = ns.StyleListOpensGallery(styleDropdown, function()
@@ -546,34 +571,15 @@ local function BuildBlockPage(page)
             actions = actions,
         })
     end)
-    valueBox.Add(styleTargets)
-
-    local tipBox = C.Box(L.SECTION_TOOLTIP, { reset = true })
-    local showTip = tipBox.Add(Check(c, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP))
-    tipBox.Add(Dropdown(c, L.TOOLTIP_ANCHOR, {
-        { key = "auto", name = L.TOOLTIP_AUTO },
-        { key = "top", name = L.TOOLTIP_TOP },
-        { key = "bottom", name = L.TOOLTIP_BOTTOM },
-    }, "tooltipAnchor", L.TIP_TOOLTIP_ANCHOR, notSpacer), { parent = IsOn("tooltip") })
-    tipBox.Add(Dropdown(c, L.TOOLTIP_ALIGN, {
-        { key = "auto", name = L.TOOLTIP_AUTO },
-        { key = "left", name = L.TOOLTIP_ALIGN_LEFT },
-        { key = "center", name = L.TOOLTIP_ALIGN_CENTER },
-        { key = "right", name = L.TOOLTIP_ALIGN_RIGHT },
-    }, "tooltipAlign", L.TIP_TOOLTIP_ALIGN, notSpacer), { parent = IsOn("tooltip") })
-    ns.blockTooltipCheck = showTip -- (tools/mock_run.lua)
-
-    -- 2. Appearance: size, text, background, icon, border, separators, opacity and layer,
-    -- colors by level and progress bar
-    -- locked: a style change for the whole profile (Look tab, an interface missing or back) leaves it
-    -- as it is. Its own section at the top of Appearance, so it is seen before the settings it protects
-    local lockBox = A.Box(L.SECTION_STYLE_LOCK)
-    local lockCheck = lockBox.Add(CreateCheck(a, L.STYLE_LOCK, Field("styleLocked"), function(v)
+    styleBox.Add(styleTargets)
+    local lockCheck = styleBox.Add(CreateCheck(a, L.STYLE_LOCK, Field("styleLocked"), function(v)
         local keys = Tools.Targets()
         SetField("styleLocked", v and true or nil)
         if not v then StaticPopup_Show("TESSERA_STYLE_UNLOCK", nil, nil, keys) end
     end, nil, L.TIP_STYLE_LOCK))
     lockCheck.field = "styleLocked"
+    lockCheck.noReset = true -- Reset of the box puts the look back, it does not unlock
+    Tools.AddLookRows(styleBox, a, false, Cfg)
 
     local sizeBox = A.Box(L.SECTION_SIZE, { reset = true })
     sizeBox.Add(Check(a, L.AUTO_WIDTH, "autoWidth", L.AUTO_WIDTH_TIP))
@@ -593,8 +599,6 @@ local function BuildBlockPage(page)
         single, L.TIP_GROUP_SCALE))
 
     local textBox = A.Box(L.SECTION_TEXT, { reset = true })
-    textBox.Add(Dropdown(a, L.FONT, function() return ns:GetMediaList("font") end, "font", L.TIP_FONT))
-    textBox.Add(Slider(a, L.FONT_SIZE, 6, 32, "fontSize", L.TIP_FONT_SIZE))
     textBox.Add(Dropdown(a, L.OUTLINE, {
         { key = "NONE", name = L.OUTLINE_NONE },
         { key = "OUTLINE", name = L.OUTLINE_THIN },
@@ -621,19 +625,9 @@ local function BuildBlockPage(page)
         { key = "square", name = L.ICON_SHAPE_SQUARE },
         { key = "round", name = L.ICON_SHAPE_ROUND },
     }, "iconShape", L.TIP_ICON_SHAPE))
-    iconBox.Add(Dropdown(a, L.ICON_SET, {
-        { key = "classic", name = L.ICON_SET_CLASSIC },
-        { key = "hd", name = L.ICON_SET_HD },
-        { key = "hdTint", name = L.ICON_SET_HD_TINT },
-    }, "iconSet", L.TIP_ICON_SET, function() return ns.HD_ICONS_ON end))
     iconBox.Add(Color(a, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR))
     iconBox.Add(Check(a, L.CLASS_COLOR_ICON, "classColorIcon", L.TIP_CLASS_COLOR_ICON), { half = true })
     iconBox.Add(Check(a, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), { half = true })
-
-    -- a little life: the edge lights up under the mouse, numbers count to their new value
-    local lifeBox = A.Box(L.SECTION_LIFE, { reset = true })
-    lifeBox.Add(Check(a, L.HOVER_GLOW, "hoverGlow", L.TIP_HOVER_GLOW), { half = true })
-    lifeBox.Add(Check(a, L.VALUE_GLIDE, "valueGlide", L.TIP_VALUE_GLIDE), { half = true })
 
     local borderBox = A.Box(L.BORDER, { reset = true })
     -- picking a border also restores its original thickness
@@ -651,14 +645,6 @@ local function BuildBlockPage(page)
         end, nil, nil, L.TIP_BORDER)
     borderBox.Add(border, { field = "border" })
     borderBox.Add(Slider(a, L.BORDER_SIZE, 1, 32, "borderSize", L.TIP_BORDER_SIZE))
-    -- 2.0 borders: rounded corners or a plain line one screen pixel wide
-    borderBox.Add(Dropdown(a, L.EDGE_SHAPE, {
-        { key = "round", name = L.EDGE_SHAPE_ROUND },
-        { key = "pixel", name = L.EDGE_SHAPE_PIXEL },
-    }, "edgeShape", L.TIP_EDGE_SHAPE, function()
-        local cfg = Cfg()
-        return cfg and ns:FindMedia("border", cfg.border).hd and true or false
-    end))
 
     -- Corner join: belongs to the border (not the block), with a reset to the original value
     local function CurrentBorder()
@@ -705,6 +691,9 @@ local function BuildBlockPage(page)
     -- thin lines between merged blocks: their color only matters when they are on
     local sepBox = A.Box(L.SECTION_SEPARATORS, { reset = true })
     sepBox.Add(Check(a, L.SEPARATORS, "separators", L.TIP_SEPARATORS))
+    -- its shape (27/11): the line, or an ornament in its place, whatever the style
+    sepBox.Add(Dropdown(a, L.SEPARATOR_SHAPE, ns.SeparatorChoices, "separatorStyle", L.TIP_SEPARATOR_SHAPE),
+        { parent = IsOn("separators") })
     sepBox.Add(Color(a, L.SEPARATOR_COLOR, true, "separatorColor", L.TIP_SEPARATOR_COLOR), { parent = IsOn("separators") })
     sepBox.Add(Check(a, L.CLASS_COLOR_SEPARATOR, "classColorSeparator", L.TIP_CLASS_COLOR_SEPARATOR),
         { parent = IsOn("separators") })

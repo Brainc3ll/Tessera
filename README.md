@@ -142,6 +142,9 @@ Help tab inside the game explains everything.
   and the progress bar can be a thin line under the value.
 - **Style gallery:** a click on the style list shows every style as a real block, in rows by family.
   Click a style, then Apply; the keyboard and the gamepad work too.
+- **One Style box:** style, font, text size, corners, icons and effects, in this order, for every
+  block (Style and layouts tab) or for one block (top of its Appearance tab).
+- **Separator shapes (any style):** a line, a diamond, three runes or a dot between merged blocks.
 - **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every
   direction: a bar, a column, a corner, an L shape... Stick a bar to a screen edge and stretch it
   over the whole width, or start from a ready-made layout (among them "Double
@@ -414,6 +417,7 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Options/OptionsSkin.lua` | The 2.0 "stone and metal" skin of Tessera's windows (`ns.Skin`): colors of each style, the rock and metal frame, boxes, the light behind list lines; plain in high contrast. Its white drawings are in `Media/Skin`, made by `tools/gen_skin_media.py` (icons at 128 px). The logo `Media/Icon.png` (256 px) is redrawn from `tools/logo-source-128.png` by `tools/gen_logo.py`. |
 | `Options/OptionsWidgets.lua` | The widget factory (rows, checkbox, slider, dropdown, color, edit box, button) and the small stack that places the head of the Blocks and groups tab. Every widget has a `Refresh()` method and is registered so `ns:RefreshOptions()` can update them all. |
 | `Options/OptionsBoxes.lua` | Pages laid out in boxes, as in FlareUI's settings panel (1.5): each section in its own box with a Reset button, two short settings per line, indented settings that grey out under the one they depend on, only the shown rows placed; tabs at the top of a page; the keyboard order of the rows. |
+| `Options/OptionsLookBox.lua` | The rows of the Style box under the style (`ns.LOOK_ROWS`: font, text size, corners, icons, effects), built in the same order in the Style and layouts tab (every block, locked ones left alone) and at the top of a block's Appearance tab (`Tools.AddLookRows`); the separator shapes (`ns.SeparatorChoices`). |
 | `Options/OptionsBlocks.lua` | The Blocks and groups tab: its head, its three tabs (Content, Appearance, Behaviour), the options of the selection and of every block, style targets. |
 | `Options/OptionsBlockPicker.lua` | The "See all" window of the Blocks tab: every block at once (green dot on the ones on screen), search, a click selects. |
 | `Options/OptionsStyleGallery.lua` | The style gallery (a click on a style list opens it, `ns.StyleListOpensGallery`): every style as a real block, in rows by family, "Automatic" first from the Style and layouts tab. A click marks a style; Apply (or This block, Its group, All blocks) sets it. Arrows or d-pad, Enter or A, Escape or B. |

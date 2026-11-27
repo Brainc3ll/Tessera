@@ -1677,7 +1677,6 @@ L["TIP_STYLE_LOCK"] = "Un cambio de estilo para todo el perfil deja este bloque 
 L["STYLE_LOCKED_APPLY"] = "%d de estos bloques tienen el estilo bloqueado. ¿Aplicarles también este estilo? Siguen bloqueados."
 L["STYLE_UNLOCK_FOLLOW"] = "Estilo desbloqueado. ¿Dar ahora a este bloque el estilo del perfil?"
 L["HELP_LOOK_21"] = "- «Bloquear el estilo de este bloque» (pestaña Bloques y grupos, Apariencia, sección Bloqueo del estilo): un cambio de estilo para todo el perfil deja ese bloque como está, también cuando falta una interfaz. En las páginas con varios bloques (Todos los bloques, un grupo), ningún ajuste lo alcanza. «Aplicar este estilo a» y los botones de copia lo cambian igualmente, tras un aviso."
-L["SECTION_STYLE_LOCK"] = "Bloqueo del estilo"
 L["STYLE_NOTICE_LOCKED_TITLE"] = "Estos bloques conservan su aspecto (estilo bloqueado):"
 L["STYLE_NOTICE_MORE"] = "... y %d más"
 L["HELP_BMODE_BROKER_6"] = "- Botón del minimapa: se muestra u oculta en la sección Minimapa, al final de esta pestaña."

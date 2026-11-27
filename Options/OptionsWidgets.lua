@@ -11,7 +11,7 @@ local PER_BLOCK_FIELDS, SPACER_SHARED_FIELDS, SPACING, WriteTargets = Tools.PER_
 local widgets = Tools.widgets
 
 -- Settings of the lines between merged blocks: they are drawn by the layout pass (ns:UpdateSeams), not by ApplyStyle
-local SEPARATOR_FIELDS = { separators = true, separatorColor = true, classColorSeparator = true }
+local SEPARATOR_FIELDS = { separators = true, separatorColor = true, classColorSeparator = true, separatorStyle = true }
 
 local function SetField(name, value)
     if name == "enabled" then

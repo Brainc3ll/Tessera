@@ -347,20 +347,22 @@ end
 -- under "All blocks", so each follows the other (also "Corners" in the Look tab, 2.0).
 -- look = true: a setting of the style's look (Corners): blocks whose style is locked keep
 -- theirs, spacers follow (the styles give them the same frame)
+-- look = "icons" or "blocks" (the Style box, 27/11): the same, without the spacers (no icon,
+-- no value, no separator of their own), so they do not make the setting look mixed
 local function Counts(self, key, cfg, look)
     if not cfg then return false end
-    -- "icons": spacers have no icon, they do not make the setting look mixed
-    if look == "icons" and self.IsSpacerKey(key) then return false end
+    if type(look) == "string" and self.IsSpacerKey(key) then return false end
     if look then return not cfg.styleLocked end
     -- spacers keep their own look: "All blocks" does not change them
     return not self.IsSpacerKey(key)
 end
-function ns:AllBlocksField(field, look)
+-- (first = true: the first block's value even when they differ, for a slider or a check)
+function ns:AllBlocksField(field, look, first)
     local value
     for _, key in ipairs(self:GetBlockKeys()) do
         local cfg = self.db.blocks[key]
         if Counts(self, key, cfg, look) then
-            if value ~= nil and cfg[field] ~= value then return nil end
+            if value ~= nil and cfg[field] ~= value then return first and value or nil end
             value = cfg[field]
         end
     end
@@ -1064,7 +1066,7 @@ local BLOCK_DEFAULTS = {
     iconDesaturate = false,   -- black and white icon
     separators = false,       -- thin line between merged blocks (see Merge.lua, DrawSeparators)
     separatorColor = { r = 0.8, g = 0.6, b = 0.34, a = 0.5 },
-    separatorStyle = "line",  -- 2.0 styles: "diamond" or "rune", an ornament in place of the line
+    separatorStyle = "line",  -- "diamond", "rune" or "dot": an ornament in place of the line (any style)
     hoverGlow = false,        -- the edge lights up under the mouse (Core/Looks.lua)
     glowColor = { r = 1, g = 0.85, b = 0.5, a = 1 }, -- its color (set by the style)
     valueGlide = false,       -- a number that changes counts to its new value

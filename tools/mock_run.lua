@@ -5001,6 +5001,93 @@ do
     end
     if themeBefore then ns:ApplyTheme(themeBefore) else ns:PickStyleChoice("auto") end
 end
+-- Look settings gathered (27/11): the Style box of the Style and layouts tab and the one at the top of
+-- a block's Appearance tab hold the same rows in the same order; locked blocks keep theirs; Reset of
+-- the box does not unlock; the separator shape reaches every block and draws its ornament
+do
+    local L = ns.L
+    local function Fields(box)
+        local list = {}
+        for _, w in ipairs(box.rows) do if w.lookField then list[#list + 1] = w.lookField end end
+        return table.concat(list, " ")
+    end
+    local function RowOf(label)
+        for _, r in ipairs(ns.optionRows) do if r.label == label then return r end end
+    end
+    local want = {}
+    for _, spec in ipairs(ns.LOOK_ROWS) do want[#want + 1] = spec.field end
+    want = table.concat(want, " ")
+    local lookRow, blockRow = RowOf(L.THEME), RowOf(L.BLOCK_STYLE)
+    if not (lookRow and blockRow) then
+        print("STEP ERROR: look box: style rows not found")
+    else
+        if Fields(lookRow.box) ~= want then print("STEP ERROR: look box: Style and layouts rows: " .. Fields(lookRow.box)) end
+        if Fields(blockRow.box) ~= want then print("STEP ERROR: look box: block page rows: " .. Fields(blockRow.box)) end
+        if blockRow.tabName ~= L.BLOCK_TAB_LOOK then print("STEP ERROR: look box: the block's style is not in the Appearance tab") end
+        -- the style comes first in both boxes, and the block's box is the first of Appearance
+        if lookRow.box.rows[2] ~= lookRow.frame then print("STEP ERROR: look box: the style is not first (Style and layouts)") end
+        if blockRow.box.rows[1] ~= blockRow.frame then print("STEP ERROR: look box: the style is not first (block page)") end
+        if ns.blockTabs.flows[2].boxes[1] ~= blockRow.box then print("STEP ERROR: look box: the Style box is not first in Appearance") end
+        local lock = RowOf(L.STYLE_LOCK)
+        if not (lock and lock.box == blockRow.box) then print("STEP ERROR: look box: the style lock is not in the Style box") end
+        -- nothing taken away: each moved setting is found once in the block page (search, Show me)
+        for _, label in ipairs({ L.FONT, L.FONT_SIZE, L.HOVER_GLOW, L.VALUE_GLIDE, L.EDGE_SHAPE, L.APPLY_STYLE_TO }) do
+            local n = 0
+            for _, r in ipairs(ns.optionRows) do if r.label == label and r.box == blockRow.box then n = n + 1 end end
+            if n ~= 1 then print("STEP ERROR: look box: \"" .. label .. "\" found " .. n .. " times in the block's Style box") end
+        end
+        -- every block from Style and layouts: a locked block keeps its font and its glow
+        local locked = "fps"
+        ns.db.blocks[locked].styleLocked = true
+        local keepFont, keepGlow = ns.db.blocks[locked].font, ns.db.blocks[locked].hoverGlow
+        local font, glow
+        for _, w in ipairs(lookRow.box.rows) do
+            if w.lookField == "font" then font = w elseif w.lookField == "hoverGlow" then glow = w end
+        end
+        font.setter("inter")
+        glow.setter(not keepGlow)
+        if ns.db.blocks.gold.font ~= "inter" then print("STEP ERROR: look box: Font did not reach every block") end
+        if ns.db.blocks.gold.hoverGlow ~= (not keepGlow) then print("STEP ERROR: look box: Glow did not reach every block") end
+        if ns.db.blocks[locked].font ~= keepFont or ns.db.blocks[locked].hoverGlow ~= keepGlow then
+            print("STEP ERROR: look box: a locked block lost its look")
+        end
+        if ns:AllBlocksField("font", "blocks") ~= "inter" then print("STEP ERROR: look box: a locked block makes Font look mixed") end
+        -- the Accessibility tab's Font still reaches every block, locked ones too
+        ns:SetAllBlocksFont("friz")
+        if ns.db.blocks[locked].font ~= "friz" then print("STEP ERROR: look box: Accessibility Font left a locked block") end
+        -- Reset of the block's Style box puts the look back but keeps the lock
+        ns:SetOptionsSelection(locked)
+        ns:RefreshOptions()
+        StaticPopupDialogs["TESSERA_RESET_BOX"].OnAccept(nil, blockRow.box)
+        if not ns.db.blocks[locked].styleLocked then print("STEP ERROR: look box: Reset unlocked the block") end
+        ns.db.blocks[locked].styleLocked = nil
+        ns:SetOptionsSelection("gold")
+        ns:RefreshOptions()
+    end
+    -- separator shape: in the Separators box and for every block (Groups of blocks)
+    local sepRow = RowOf(L.SEPARATOR_SHAPE)
+    if not sepRow then print("STEP ERROR: separators: no shape setting") end
+    local allSep
+    for _, r in ipairs(ns.optionRows) do
+        if r.label == L.SEPARATOR_SHAPE and r.section == L.SECTION_GROUP_LOOK then allSep = r.frame end
+    end
+    if not allSep then
+        print("STEP ERROR: separators: no shape setting in Groups of blocks")
+    else
+        for _, key in ipairs({ "line", "diamond", "rune", "dot" }) do
+            local found = false
+            for _, opt in ipairs(ns.SeparatorChoices()) do if opt.key == key and L[opt.name] ~= opt.name then found = true end end
+            if not found or (key ~= "line" and not ns.SEPARATOR_FILES[key]) then print("STEP ERROR: separators: shape " .. key) end
+        end
+        ns.db.blocks.time.styleLocked = true
+        local keep = ns.db.blocks.time.separatorStyle
+        allSep.setter("dot")
+        if ns.db.blocks.gold.separatorStyle ~= "dot" then print("STEP ERROR: separators: Dot did not reach every block") end
+        if ns.db.blocks.time.separatorStyle ~= keep then print("STEP ERROR: separators: a locked block lost its shape") end
+        ns.db.blocks.time.styleLocked = nil
+        allSep.setter("line")
+    end
+end
 -- Language list (1.8): the choice is saved, a change offers the reload, "as the game" does not
 do
     local asked = {}
@@ -5279,6 +5366,21 @@ do
     end
     assert(ornate > 0 and lines == 0, "2.0 bar: ornaments, no lines (" .. ornate .. ", " .. lines .. ")")
     assert(squared > 0, "2.0 bar: corners hidden at the joins")
+    -- the separator shape (27/11): Dot for every block draws the dot's drawing at each join
+    ns:SetAllBlocksField("separatorStyle", "dot", "blocks")
+    ns:UpdateLayout()
+    local drawn, dot = 0, 0
+    for _, f in pairs(ns.frames) do
+        for _, tex in ipairs(f.ornatePool or {}) do
+            if tex:IsShown() then
+                drawn = drawn + 1
+                if tostring(tex:GetTexture()):find("hd_sep_dot", 1, true) then dot = dot + 1 end
+            end
+        end
+    end
+    assert(drawn > 0 and dot == drawn, "Dot separators: " .. dot .. " of " .. drawn)
+    ns:ApplyTheme("hdGold")
+    ns:UpdateLayout()
     -- the whole group stays on the screen as one piece: only group heads are clamped, their
     -- clamp rectangle covers the group (27/11: a wider font opened a gap at the screen edge)
     local heads, docked = 0, 0

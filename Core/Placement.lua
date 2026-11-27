@@ -851,10 +851,11 @@ end
 
 -- Asks before replacing (or swapping) a block
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_REPLACE_BLOCK"] = {
+    ns.Dialogs["TESSERA_REPLACE_BLOCK"] = {
         text = L.REPLACE_CONFIRM,
         button1 = YES,
         button2 = NO,
+        defaultButton = 2, -- erases something: Cancel is selected first (Braincell1980, 27/11)
         timeout = 0,
         whileDead = true,
         hideOnEscape = true,
@@ -869,7 +870,7 @@ function ns:AskReplaceBlock(oldKey, newKey)
         self.Print(L.REPLACE_IN_COMBAT)
         return
     end
-    StaticPopup_Show("TESSERA_REPLACE_BLOCK", self:GetBlockName(newKey), self:GetBlockName(oldKey),
+    ns:ShowDialog("TESSERA_REPLACE_BLOCK", self:GetBlockName(newKey), self:GetBlockName(oldKey),
         { old = oldKey, new = newKey })
 end
 

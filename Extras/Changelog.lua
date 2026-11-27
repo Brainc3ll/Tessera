@@ -68,8 +68,10 @@ ns.CHANGELOG = {
         sections = {
             { kind = "new",
               en = {
-                "Stone and metal: Tessera draws its windows (options, placement banner, See all, What's new, copy boxes) with the game's rock,"
+                "Stone and metal: Tessera draws its windows (options, placement banner, See all, What's new, copy boxes, confirmations) with the game's rock,"
                     .. " the metal frame of its dialogs and a soft shadow, in your style's colors. Blocks and the lists under the mouse keep their style.",
+                "Confirmation windows open one at a time, at the top of the screen. Tab, arrows or d-pad pick a button,"
+                    .. " Enter or A presses it, Escape or B cancels when the window allows it. When the answer erases something, Cancel is picked first.",
                 "Options window: an icon for each page, the quest log's soft light under the mouse and on the open page, bigger titles,"
                     .. " and the version beside the name.",
                 "Buttons, text fields, lists and sliders take rounded shapes in your style's colors; sliders use the classic knob and the spell book's arrows.",
@@ -101,9 +103,12 @@ ns.CHANGELOG = {
                     .. " Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.",
               },
               fr = {
-                "Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?, boîtes de copie)"
+                "Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?, boîtes de copie, confirmations)"
                     .. " avec la roche du jeu, le cadre de métal de ses dialogues et une ombre douce, aux couleurs de ton style."
                     .. " Les blocs et les listes au survol gardent leur style.",
+                "Les fenêtres de confirmation s'ouvrent une à une, en haut de l'écran. Tab, les flèches ou la croix choisissent un bouton,"
+                    .. " Entrée ou A l'active, Échap ou B annule quand la fenêtre le permet."
+                    .. " Quand la réponse efface quelque chose, Annuler est choisi d'abord.",
                 "Fenêtre d'options : une icône pour chaque page, la lumière douce du journal de quêtes sous la souris et sur la page ouverte,"
                     .. " des titres plus grands et la version à côté du nom.",
                 "Les boutons, champs de texte, listes et curseurs prennent des formes arrondies aux couleurs de ton style ;"
@@ -147,6 +152,7 @@ ns.CHANGELOG = {
                 "Locked styles: when a style goes to all blocks or to a group, the warning about locked blocks offers"
                     .. " Skip locked (the others take the style, the locked ones stay as they are), Them too, or Cancel."
                     .. " No used to leave every block as it was.",
+                "Rampart layout: its spacers no longer show an icon. Apply the layout again to clear the ones you have.",
               },
               fr = {
                 "Un groupe qui dépasse le bord de l'écran (police plus large, texte plus long) reste une seule barre : le jeu"
@@ -156,6 +162,7 @@ ns.CHANGELOG = {
                 "Styles verrouillés : quand un style va à tous les blocs ou à un groupe, l'avertissement sur les blocs verrouillés"
                     .. " propose Sauf verrouillés (les autres prennent le style, les verrouillés restent tels quels), Eux aussi ou Annuler."
                     .. " Non laissait tous les blocs tels quels.",
+                "Disposition Chemin de ronde : ses espaces n'affichent plus d'icône. Applique de nouveau la disposition pour effacer celles qui restent.",
               },
             },
         },

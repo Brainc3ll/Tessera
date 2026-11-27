@@ -13,7 +13,7 @@ local PAGE_ABOUT, PAGE_ACCESS, PAGE_LOOK = Tools.PAGE_ABOUT, Tools.PAGE_ACCESS, 
 -- Welcome popup on first launch
 ---------------------------------------------------------------------------
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_WELCOME"] = {
+    ns.Dialogs["TESSERA_WELCOME"] = {
         text = L.WELCOME_TEXT,
         button1 = L.TUTORIAL_START,
         button2 = L.WELCOME_LATER,
@@ -468,13 +468,13 @@ function ns:ShowWelcomeIfNeeded()
     if self.sv.welcomed then return end
     self.sv.welcomed = true
     if self.brokerModeActive then return end -- the DataBroker mode popup says what matters
-    StaticPopup_Show("TESSERA_WELCOME")
+    ns:ShowDialog("TESSERA_WELCOME")
 end
 
 -- Shown once, the first time DataBroker mode turns itself on: explains it and offers
 -- to turn it off at once (no Escape: the player has to choose)
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_BROKER_MODE"] = {
+    ns.Dialogs["TESSERA_BROKER_MODE"] = {
         text = L.BROKER_POPUP_TEXT,
         button1 = L.BROKER_POPUP_KEEP,
         button2 = L.BROKER_MODE_OFF_BUTTON,
@@ -702,8 +702,8 @@ function ns:OfferStylesIfNeeded()
     if not self.built or self.brokerModeActive then return end
     if offer and offer:IsShown() then return end
     -- not on top of Tessera's other popups (welcome, DataBroker mode, what's new), nor of another interface's tour
-    local busy = StaticPopup_Visible and (StaticPopup_Visible("TESSERA_WELCOME")
-        or StaticPopup_Visible("TESSERA_BROKER_MODE") or (ns.WhatsNewShown and ns.WhatsNewShown()))
+    local busy = ns:IsDialogShown("TESSERA_WELCOME")
+        or ns:IsDialogShown("TESSERA_BROKER_MODE") or (ns.WhatsNewShown and ns.WhatsNewShown())
     if InCombatLockdown() or busy or self:OtherUIBusy() then
         C_Timer.After(10, function() ns:OfferStylesIfNeeded() end)
         return

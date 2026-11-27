@@ -899,7 +899,7 @@ local function RegisterBlizzardSettings()
     reset:SetPoint("TOPLEFT", open, "BOTTOMLEFT", 0, -10)
     reset:SetText(L.RESET_PROFILE)
     reset:SetScript("OnClick", function()
-        if ns.built then StaticPopup_Show("TESSERA_RESET_PROFILE") end
+        if ns.built then ns:ShowDialog("TESSERA_RESET_PROFILE") end
     end)
 
     local category = Settings.RegisterCanvasLayoutCategory(canvas, L.OPTIONS_TITLE)

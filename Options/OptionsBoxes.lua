@@ -132,7 +132,7 @@ end
 
 -- asks first: a box can hold many settings
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_RESET_BOX"] = {
+    ns.Dialogs["TESSERA_RESET_BOX"] = {
         text = L.RESET_BOX_CONFIRM,
         button1 = YES,
         button2 = NO,
@@ -290,7 +290,7 @@ local function NewBox(flow, title, opts)
             if b.SetMotionScriptsWhileDisabled then b:SetMotionScriptsWhileDisabled(true) end
             b:SetScript("OnEnter", function(self) self.hovered = true PaintReset(self) end)
             b:SetScript("OnLeave", function(self) self.hovered = nil PaintReset(self) end)
-            b:SetScript("OnClick", function() StaticPopup_Show("TESSERA_RESET_BOX", title, nil, box) end)
+            b:SetScript("OnClick", function() ns:ShowDialog("TESSERA_RESET_BOX", title, nil, box) end)
             b.Activate = function(self) if self:IsEnabled() then self:Click() end end
             AttachTip(b, L.RESET_BOX, L.TIP_RESET_BOX)
             box.reset = b

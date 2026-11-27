@@ -1816,3 +1816,4 @@ L["TIP_GLOW_SHAPE"] = "Halo : une lumière douce le long du bord. Liseré : seul
 L["TIP_GLOW_SHAPE_ALL"] = "Forme de la lueur de tous les blocs : halo, liseré, intérieure ou pulsation. Les blocs verrouillés gardent la leur."
 L["TIP_SEPARATORS_ALL"] = "Trace une ligne ou un ornement là où deux blocs fusionnés se touchent, sur tous les blocs. Les blocs verrouillés gardent leur réglage."
 L["TIP_STYLE_WORKSHOP_ANIMATE"] = "Les vignettes s'allument et leurs nombres changent, pour voir la lueur et les valeurs qui glissent. Moins d'animations les garde immobiles."
+L["HELP_LOOK_33"] = "- Les fenêtres de confirmation (réinitialiser un profil, retirer des blocs...) s'ouvrent une à une, en haut de l'écran. Tab, les flèches ou la croix choisissent un bouton, Entrée ou A l'active, Échap ou B annule quand la fenêtre le permet. Quand la réponse efface quelque chose, Annuler est choisi d'abord."

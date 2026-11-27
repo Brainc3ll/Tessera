@@ -35,6 +35,8 @@
 -- ===========================================================================
 
 local ADDON, ns = ...
+-- Tessera's confirmation dialogs, shown in its own window (Options/OptionsDialog.lua)
+ns.Dialogs = {}
 local L = ns.L
 
 ns.modules = {}
@@ -3050,8 +3052,8 @@ function ns:CopyStyleToAll(sourceKey, confirmed)
     if not src then return end
     if not confirmed then
         local locked = CountLocked(self, self:GetBlockKeys(), sourceKey)
-        if locked > 0 and StaticPopup_Show then
-            StaticPopup_Show("TESSERA_STYLE_LOCKED_COPY", locked, nil, { source = sourceKey })
+        if locked > 0 and ns.ShowDialog then
+            ns:ShowDialog("TESSERA_STYLE_LOCKED_COPY", locked, nil, { source = sourceKey })
             return
         end
     end
@@ -3074,8 +3076,8 @@ function ns:CopyStyleToGroup(sourceKey, confirmed)
     if not src or #members < 2 then return false end
     if not confirmed then
         local locked = CountLocked(self, members, sourceKey)
-        if locked > 0 and StaticPopup_Show then
-            StaticPopup_Show("TESSERA_STYLE_LOCKED_COPY", locked, nil, { source = sourceKey, group = true })
+        if locked > 0 and ns.ShowDialog then
+            ns:ShowDialog("TESSERA_STYLE_LOCKED_COPY", locked, nil, { source = sourceKey, group = true })
             return true
         end
     end
@@ -3274,8 +3276,9 @@ ns.PRESETS = { "essentials", "top", "forever", "bottom", "left", "compact", "gry
 -- Last step of every ready-made layout: icon without label on all data blocks
 -- (even hidden ones), the theme's look, remembered for future blocks
 local function FinishBaseLayout(self, p)
-    for _, cfg in pairs(p.blocks) do
-        if not cfg.launcher then cfg.showIcon, cfg.showLabel = true, false end
+    for key, cfg in pairs(p.blocks) do
+        -- spacers (the Rampart bar makes some) keep no icon and no label (Braincell1980, 27/11)
+        if not cfg.launcher and not self.IsSpacerKey(key) then cfg.showIcon, cfg.showLabel = true, false end
         self:ApplyThemeToCfg(cfg)
     end
     p.groupDefaults = p.groupDefaults or {}
@@ -3710,10 +3713,11 @@ function ns:ForgetCharacter(name)
     return true
 end
 
-StaticPopupDialogs["TESSERA_FORGET_CHARACTER"] = {
+ns.Dialogs["TESSERA_FORGET_CHARACTER"] = {
     text = "%s",
     button1 = YES,
     button2 = NO,
+    defaultButton = 2, -- erases something: Cancel is selected first (Braincell1980, 27/11)
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
@@ -3721,7 +3725,7 @@ StaticPopupDialogs["TESSERA_FORGET_CHARACTER"] = {
 }
 
 function ns:AskForgetCharacter(name)
-    StaticPopup_Show("TESSERA_FORGET_CHARACTER", L.GOLD_FORGET_CONFIRM:format(ns.ShortCharName(name)), nil, name)
+    ns:ShowDialog("TESSERA_FORGET_CHARACTER", L.GOLD_FORGET_CONFIRM:format(ns.ShortCharName(name)), nil, name)
 end
 
 ---------------------------------------------------------------------------

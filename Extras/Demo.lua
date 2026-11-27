@@ -172,7 +172,7 @@ function ns:SetDemoHideUI(hide)
                 local ok, name = pcall(f.GetName, f)
                 name = ok and name or ""
                 -- popups, menus and tooltips stay visible
-                local keepIt = name:match("^StaticPopup") or name:match("^DropDownList") or name:match("Tooltip")
+                local keepIt = name:match("^StaticPopup") or name == "TesseraDialog" or name:match("^DropDownList") or name:match("Tooltip")
                 if not keepIt then
                     local okAlpha, alpha = pcall(f.GetAlpha, f)
                     if okAlpha and pcall(f.SetAlpha, f, 0) then self.demoAlpha[f] = alpha end

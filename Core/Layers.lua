@@ -201,12 +201,12 @@ function ns:AskLayer(force)
     local labels, covering, signature = self:GetCoveredFrames()
     if #labels == 0 then
         if not force then return end
-        StaticPopup_Show("TESSERA_LAYER_ALL")
+        ns:ShowDialog("TESSERA_LAYER_ALL")
         return true
     end
     if not force and self.db.layerAsked == signature then return end
     self.db.layerAsked = signature
-    StaticPopup_Show("TESSERA_LAYER", table.concat(labels, ", "), nil, covering)
+    ns:ShowDialog("TESSERA_LAYER", table.concat(labels, ", "), nil, covering)
     return true
 end
 
@@ -298,7 +298,7 @@ function ns:ShowEditModeLayerButton(show)
 end
 
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_LAYER_ALL"] = {
+    ns.Dialogs["TESSERA_LAYER_ALL"] = {
         text = L.LAYER_ASK_ALL,
         button1 = L.LAYER_FRONT,
         button2 = L.LAYER_BEHIND,
@@ -313,7 +313,7 @@ ns.OnLanguage(function()
 end)
 
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_LAYER"] = {
+    ns.Dialogs["TESSERA_LAYER"] = {
         text = L.LAYER_ASK,
         button1 = L.LAYER_FRONT,
         button2 = L.LAYER_BEHIND,
@@ -418,7 +418,7 @@ function ns:LeaveEditModeCopy()
 end
 
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_EDITMODE_LEGACY"] = {
+    ns.Dialogs["TESSERA_EDITMODE_LEGACY"] = {
         text = L.EDITMODE_LEGACY,
         button1 = L.EDITMODE_REVERT,
         button2 = L.EDITMODE_KEEP_LAYOUT,
@@ -443,7 +443,7 @@ function ns:CheckEditModeCopies()
     local state = ReadLayouts()
     if not state then return end
     if state.active and IsOurCopy(state.active) and self.sv.editModeOriginal then
-        StaticPopup_Show("TESSERA_EDITMODE_LEGACY", self.sv.editModeOriginal.name)
+        ns:ShowDialog("TESSERA_EDITMODE_LEGACY", self.sv.editModeOriginal.name)
     else
         DeleteCopies()
         ForgetCopies()

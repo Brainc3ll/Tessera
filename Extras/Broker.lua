@@ -610,7 +610,7 @@ function ns:NotifyBrokerModeIfNeeded()
         -- another interface's setup guide or tour goes first
         ns:WhenOtherUIFree(function()
             notifyScheduled = false
-            if WantsNotice() then StaticPopup_Show("TESSERA_BROKER_MODE", ns.brokerDisplay) end
+            if WantsNotice() then ns:ShowDialog("TESSERA_BROKER_MODE", ns.brokerDisplay) end
         end)
     end)
 end

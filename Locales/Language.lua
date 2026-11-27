@@ -92,5 +92,5 @@ function ns:SetLanguageChoice(code)
     ns.sv.language = IsLanguage(code) and code or nil
     local target = ns.sv.language or clientCode
     if not IsLanguage(target) then target = "enUS" end
-    if target ~= active then StaticPopup_Show("TESSERA_LANGUAGE_RELOAD") end
+    if target ~= active then ns:ShowDialog("TESSERA_LANGUAGE_RELOAD") end
 end

@@ -1816,3 +1816,4 @@ L["TIP_GLOW_SHAPE"] = "Halo: a soft light along the edge. Edge: the border alone
 L["TIP_GLOW_SHAPE_ALL"] = "Glow shape of every block: halo, edge, inner or pulse. Locked blocks keep theirs."
 L["TIP_SEPARATORS_ALL"] = "Draws a line or an ornament where two merged blocks touch, on every block. Locked blocks keep their setting."
 L["TIP_STYLE_WORKSHOP_ANIMATE"] = "The thumbnails light up and their numbers change, so you see the glow and the gliding values. Fewer animations keeps them still."
+L["HELP_LOOK_33"] = "- Confirmation windows (reset a profile, remove blocks...) open one at a time, at the top of the screen. Tab, arrows or d-pad pick a button, Enter or A presses it, Escape or B cancels when the window allows it. When the answer erases something, Cancel is picked first."

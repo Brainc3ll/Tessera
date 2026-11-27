@@ -242,14 +242,14 @@ local function LockedDialog(text)
     }
 end
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_STYLE_LOCKED_APPLY"] = LockedDialog(L.STYLE_LOCKED_APPLY)
-    StaticPopupDialogs["TESSERA_STYLE_LOCKED_LOOK"] = LockedDialog(L.STYLE_LOCKED_LOOK)
+    ns.Dialogs["TESSERA_STYLE_LOCKED_APPLY"] = LockedDialog(L.STYLE_LOCKED_APPLY)
+    ns.Dialogs["TESSERA_STYLE_LOCKED_LOOK"] = LockedDialog(L.STYLE_LOCKED_LOOK)
 end)
 
 -- "Copy style to all" / "Copy this style to the group" with locked blocks among the targets: asks first,
 -- then copies (they stay locked)
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_STYLE_LOCKED_COPY"] = {
+    ns.Dialogs["TESSERA_STYLE_LOCKED_COPY"] = {
         text = L.STYLE_LOCKED_APPLY,
         button1 = L.STYLE_LOCKED_KEEP,
         button2 = CANCEL,
@@ -272,7 +272,7 @@ end)
 
 -- Unlocking a block's style: follow the profile's style now, or keep the current look
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_STYLE_UNLOCK"] = {
+    ns.Dialogs["TESSERA_STYLE_UNLOCK"] = {
         text = L.STYLE_UNLOCK_FOLLOW,
         button1 = YES,
         button2 = NO,
@@ -309,7 +309,7 @@ local function CreateStyleTargets(parent, getStyle)
         end
         -- a block whose style is locked takes the style only after a warning (it stays locked)
         if locked > 0 then
-            StaticPopup_Show(style and "TESSERA_STYLE_LOCKED_APPLY" or "TESSERA_STYLE_LOCKED_LOOK", locked, nil,
+            ns:ShowDialog(style and "TESSERA_STYLE_LOCKED_APPLY" or "TESSERA_STYLE_LOCKED_LOOK", locked, nil,
                 { keys = keys, style = style, look = look, done = done })
             return
         end
@@ -598,7 +598,7 @@ local function BuildBlockPage(page)
     local lockCheck = styleBox.Add(CreateCheck(a, L.STYLE_LOCK, Field("styleLocked"), function(v)
         local keys = Tools.Targets()
         SetField("styleLocked", v and true or nil)
-        if not v then StaticPopup_Show("TESSERA_STYLE_UNLOCK", nil, nil, keys) end
+        if not v then ns:ShowDialog("TESSERA_STYLE_UNLOCK", nil, nil, keys) end
     end, nil, L.TIP_STYLE_LOCK))
     lockCheck.field = "styleLocked"
     lockCheck.noReset = true -- Reset of the box puts the look back, it does not unlock

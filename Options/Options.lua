@@ -410,10 +410,11 @@ end
 
 -- Taking several blocks off the screen at once (a group, "All blocks") asks first
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_REMOVE_BLOCKS"] = {
+    ns.Dialogs["TESSERA_REMOVE_BLOCKS"] = {
         text = L.REMOVE_BLOCKS_CONFIRM,
         button1 = YES,
         button2 = NO,
+        defaultButton = 2, -- erases something: Cancel is selected first (Braincell1980, 27/11)
         timeout = 0,
         whileDead = true,
         hideOnEscape = true,

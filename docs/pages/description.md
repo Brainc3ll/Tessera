@@ -20,7 +20,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 - Streamer mode hides, as you choose, other players' names, your other characters, your guild and your gold.
 - Accessibility: high contrast, fewer animations, a window shadow you can turn off, a minimum text size and six reading fonts.
 - Language list: Tessera follows your game language, or you pick English, French, German, Spanish or Portuguese.
-- An options window in stone and metal, the game's rock and the metal of its dialogs in your style's colors, with a search and a help panel for each setting. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
+- An options window in stone and metal, the game's rock and the metal of its dialogs in your style's colors, with a search and a help panel for each setting. Its confirmation windows match, and answer to the keyboard and a gamepad. Each block's settings sit in three tabs: Content, Appearance and Behaviour. English, French, German, Spanish and Brazilian Portuguese.
 - Your layouts and profiles carry over between versions.
 
 Type **/tessera** for the options, or **/tessera demo** to see every block at once. The [README on GitHub](https://github.com/Brainc3ll/Tessera#readme) lists every block, command and setting.

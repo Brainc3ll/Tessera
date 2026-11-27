@@ -754,7 +754,7 @@ end
 
 -- "How many?" box, then the item goes in the list
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_GOAL_COUNT"] = {
+    ns.Dialogs["TESSERA_GOAL_COUNT"] = {
         text = L.GOAL_HOW_MANY,
         button1 = ACCEPT,
         button2 = CANCEL,
@@ -774,14 +774,14 @@ ns.OnLanguage(function()
         end,
         EditBoxOnEnterPressed = function(self, data)
             local parent = self:GetParent()
-            StaticPopupDialogs["TESSERA_GOAL_COUNT"].OnAccept(parent, data or parent.data)
+            ns.Dialogs["TESSERA_GOAL_COUNT"].OnAccept(parent, data or parent.data)
             parent:Hide()
         end,
     }
 end)
 function ns:AskGoalCount(key, id, current)
-    if not StaticPopup_Show then return self:AddGoalItem(key, id, current or 20) end
-    StaticPopup_Show("TESSERA_GOAL_COUNT", ItemName(id), nil, { key = key, id = id, count = current })
+    if not self.ShowDialog then return self:AddGoalItem(key, id, current or 20) end
+    ns:ShowDialog("TESSERA_GOAL_COUNT", ItemName(id), nil, { key = key, id = id, count = current })
 end
 
 -- The items in the bags, once each, sorted by name (for "Add from my bags")

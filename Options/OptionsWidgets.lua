@@ -17,7 +17,7 @@ local function SetField(name, value)
     if name == "enabled" then
         local keys = WriteTargets(name)
         if not value and #keys > 1 then
-            StaticPopup_Show("TESSERA_REMOVE_BLOCKS", #keys, nil, keys)
+            ns:ShowDialog("TESSERA_REMOVE_BLOCKS", #keys, nil, keys)
             return
         end
         ns:SetBlocksOnScreen(keys, value and true or false)

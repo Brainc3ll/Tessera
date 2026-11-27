@@ -406,6 +406,13 @@ for line in toc:gmatch("[^\r\n]+") do
         local chunk = assert(loadfile(path))
         local ok, err = pcall(chunk, "Tessera", ns)
         if not ok then print("LOAD ERROR " .. line .. ": " .. tostring(err)) os.exit(1) end
+        -- the confirmation window waits for a player: in the scenarios nobody answers, so they
+        -- are told nothing (like the game's StaticPopup_Show before 2.0); its own test below
+        -- uses the real one (ns.RealShowDialog)
+        if line:match("OptionsDialog%.lua$") then
+            ns.RealShowDialog = ns.ShowDialog
+            ns.ShowDialog = function() end
+        end
         -- TESSERA_EARLY=1: lists every text read while the files load (before the saved language is
         -- applied, Locales/Language.lua); such a text would stay in the language of the game
         if line:match("Language%.lua$") and os.getenv("TESSERA_EARLY") then
@@ -1441,8 +1448,8 @@ for _, step in ipairs({
         bags.styleLocked, bags.fontSize = true, 13
         -- copy style: it asks first, then copies and the block stays locked
         local asked = {}
-        local realShow = StaticPopup_Show
-        StaticPopup_Show = function(which, a, b, data) table.insert(asked, { which = which, n = a, data = data }) end
+        local realShow = ns.ShowDialog
+        ns.ShowDialog = function(_, which, a, b, data) table.insert(asked, { which = which, n = a, data = data }) end
         gold.iconSize = 44
         ns:CopyStyleToAll("gold")
         assert(#asked == 1 and asked[1].which == "TESSERA_STYLE_LOCKED_COPY" and asked[1].n >= 1, "Copy style to all: no question about the locked block")
@@ -1450,9 +1457,9 @@ for _, step in ipairs({
         -- the first button (default): every block but the locked one
         local other = ns.db.blocks.time
         other.iconSize = 30
-        StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnAccept(nil, asked[1].data)
+        ns.Dialogs.TESSERA_STYLE_LOCKED_COPY.OnAccept(nil, asked[1].data)
         assert(bags.iconSize == 31 and other.iconSize == 44, "Copy style to all, Not the locked ones: wrong blocks changed")
-        StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnButton3(nil, asked[1].data)
+        ns.Dialogs.TESSERA_STYLE_LOCKED_COPY.OnButton3(nil, asked[1].data)
         assert(bags.iconSize == 44 and bags.styleLocked, "Copy style to all: not copied after Them too, or the lock was lost")
         bags.iconSize = 31
         local members = ns:GetStyleGroup("bags")
@@ -1464,18 +1471,18 @@ for _, step in ipairs({
         asked = {}
         ns:CopyStyleToGroup(src)
         assert(#asked == 1 and asked[1].data.group and bags.iconSize == 31, "Copy style to the group: no question, or changed before the answer")
-        StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnAccept(nil, asked[1].data)
+        ns.Dialogs.TESSERA_STYLE_LOCKED_COPY.OnAccept(nil, asked[1].data)
         assert(bags.iconSize == 31, "Copy style to the group, Not the locked ones: the locked block changed")
-        StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnButton3(nil, asked[1].data)
+        ns.Dialogs.TESSERA_STYLE_LOCKED_COPY.OnButton3(nil, asked[1].data)
         assert(bags.iconSize == 45 and bags.styleLocked, "Copy style to the group: not copied after Them too, or the lock was lost")
         ns.db.blocks[src].iconSize = before
-        StaticPopup_Show = realShow
+        ns.ShowDialog = realShow
         -- no locked block: no question
         bags.styleLocked, bags.iconSize = nil, 31
         asked = {}
-        StaticPopup_Show = function(which, a, b, data) table.insert(asked, { which = which }) end
+        ns.ShowDialog = function(_, which, a, b, data) table.insert(asked, { which = which }) end
         ns:CopyStyleToAll("gold")
-        StaticPopup_Show = realShow
+        ns.ShowDialog = realShow
         assert(#asked == 0 and bags.iconSize == 44, "Copy style to all: asked with no locked block")
         Tools.S.selected = selected
         bags.styleLocked, bags.fontSize, bags.enabled, bags.iconSize, gold.fontSize, gold.iconSize = sLock, sFont, sEnabled, sIcon, gFont, gIcon
@@ -2395,6 +2402,10 @@ for _, step in ipairs({
         -- stretched bar: no second row
         ns:ResetProfile("rampart")
         b = ns.db.blocks
+        -- Rampart's spacers show no icon and no label (27/11)
+        for key, cfg in pairs(b) do
+            if ns.IsSpacerKey(key) and (cfg.showIcon or cfg.showLabel) then print("STEP ERROR: Rampart spacer " .. key .. " shows an icon or a label") end
+        end
         -- the mock measures short texts wide (40 px at least, see MockTextWidth): with the
         -- gold amount and its coin icons, the mock screen's bar has no room left
         b.gold.goldFormat, b.gold.goldIcons = "gold", false
@@ -3302,8 +3313,8 @@ for _, step in ipairs({
         assert(ns.db.theme == "grimoire", "the style stays when a layout is applied")
         ns.db.theme = nil
         local shown = {}
-        local realShow = StaticPopup_Show
-        StaticPopup_Show = function(which, a, b, data) table.insert(shown, { which = which, text = a, data = data }) end
+        local realShow = ns.ShowDialog
+        ns.ShowDialog = function(_, which, a, b, data) table.insert(shown, { which = which, text = a, data = data }) end
         ns:ResetProfile("rampart")
         RunTimers()
         -- the blocks laid along the bottom edge (Blizzard's frames keep their own rectangles)
@@ -3318,7 +3329,7 @@ for _, step in ipairs({
         ns:AskLayer()
         local ask = shown[#shown]
         assert(ask and ask.which == "TESSERA_LAYER", "question asked")
-        StaticPopupDialogs.TESSERA_LAYER.OnCancel(nil, ask.data, "clicked")
+        ns.Dialogs.TESSERA_LAYER.OnCancel(nil, ask.data, "clicked")
         local root = next(ask.data)
         assert(ns.db.blocks[root].strata == "BACKGROUND", "blocks behind")
         local count = #shown
@@ -3341,7 +3352,7 @@ for _, step in ipairs({
         RunTimers()
         assert(#shown == count + 1 and shown[#shown].which == "TESSERA_LAYER", "asked after the switch")
         assert(ns.tempStrata, "the switch stays until the answer")
-        StaticPopupDialogs.TESSERA_LAYER.OnAccept(nil, shown[#shown].data)
+        ns.Dialogs.TESSERA_LAYER.OnAccept(nil, shown[#shown].data)
         assert(not ns.tempStrata and ns.db.blocks[root].strata == "HIGH", "kept in front")
         -- nothing covered: the question is about every block
         local covered = ns.GetCoveredFrames
@@ -3350,7 +3361,7 @@ for _, step in ipairs({
         ns:OnBlocksLocked()
         RunTimers()
         assert(shown[#shown].which == "TESSERA_LAYER_ALL", "asked for every block")
-        StaticPopupDialogs.TESSERA_LAYER_ALL.OnCancel(nil, nil, "clicked")
+        ns.Dialogs.TESSERA_LAYER_ALL.OnCancel(nil, nil, "clicked")
         assert(not ns.tempStrata and ns.db.blocks.gold.strata == "BACKGROUND", "every block behind")
         ns.GetCoveredFrames = covered
         -- the button under Blizzard's Edit Mode window: same switch, the question on closing
@@ -3361,12 +3372,12 @@ for _, step in ipairs({
         ns:OnBlocksLocked()
         RunTimers()
         assert(shown[#shown].which:find("TESSERA_LAYER"), "asked when Edit Mode closes")
-        StaticPopupDialogs.TESSERA_LAYER.OnAccept(nil, shown[#shown].data)
+        ns.Dialogs.TESSERA_LAYER.OnAccept(nil, shown[#shown].data)
         ns:ShowEditModeLayerButton(false)
         -- Look tab: every block in front
         ns:SetLayer("front")
         assert(ns.db.blocks[root].strata == "HIGH" and ns.db.groupDefaults.strata == "HIGH", "all blocks in front")
-        StaticPopupDialogs.TESSERA_LAYER.OnAccept(nil, ask.data)
+        ns.Dialogs.TESSERA_LAYER.OnAccept(nil, ask.data)
         ns.GetRectUI = rect
         -- an Edit Mode copy left by an older test version, active: back to the player's layout
         local copy = { layoutName = "Moderne (Tessera 1)", layoutType = 1, systems = EMSystems() }
@@ -3389,7 +3400,7 @@ for _, step in ipairs({
         assert(#EM.layouts.layouts == 1 and EM.layouts.layouts[1].layoutName == "Mine", "the player's layout is kept")
         assert(not ns.sv.editModeCopies, "copies forgotten")
         EM.layouts = { activeLayout = 1, layouts = {} }
-        StaticPopup_Show = realShow
+        ns.ShowDialog = realShow
         ns:ResetProfile("top")
         RunTimers()
     end,
@@ -5139,15 +5150,15 @@ do
     ns.db.blocks.time.styleLocked = true
     Row("fontSize").Step(1)
     local asked = {}
-    local realShow = StaticPopup_Show
-    StaticPopup_Show = function(which, n, _, data) table.insert(asked, { which = which, n = n, data = data }) end
+    local realShow = ns.ShowDialog
+    ns.ShowDialog = function(_, which, n, _, data) table.insert(asked, { which = which, n = n, data = data }) end
     g.buttons[3]:GetScript("OnClick")(g.buttons[3]) -- All blocks
-    StaticPopup_Show = realShow
+    ns.ShowDialog = realShow
     if not (asked[1] and asked[1].which == "TESSERA_STYLE_LOCKED_LOOK") then print("STEP ERROR: workshop: no warning for the locked block") end
     if W.Changes() == nil then print("STEP ERROR: workshop: the warning emptied the workshop before an answer") end
     -- "Skip locked": the others get the size, the locked one keeps its own
     if asked[1] then
-        StaticPopupDialogs.TESSERA_STYLE_LOCKED_LOOK.OnAccept(nil, asked[1].data)
+        ns.Dialogs.TESSERA_STYLE_LOCKED_LOOK.OnAccept(nil, asked[1].data)
         if ns.db.blocks.time.fontSize ~= timeSize then print("STEP ERROR: workshop: Skip locked changed a locked block") end
         if ns.db.blocks.gold.fontSize ~= size1 + 2 then print("STEP ERROR: workshop: Skip locked left the others") end
         if W.Changes() ~= nil then print("STEP ERROR: workshop: changes left after the warning") end
@@ -5342,7 +5353,7 @@ do
         -- Reset of the block's Style box puts the look back but keeps the lock
         ns:SetOptionsSelection(locked)
         ns:RefreshOptions()
-        StaticPopupDialogs["TESSERA_RESET_BOX"].OnAccept(nil, blockRow.box)
+        ns.Dialogs["TESSERA_RESET_BOX"].OnAccept(nil, blockRow.box)
         if not ns.db.blocks[locked].styleLocked then print("STEP ERROR: look box: Reset unlocked the block") end
         ns.db.blocks[locked].styleLocked = nil
         ns:SetOptionsSelection("gold")
@@ -5375,8 +5386,8 @@ end
 -- Language list (1.8): the choice is saved, a change offers the reload, "as the game" does not
 do
     local asked = {}
-    local realShow = StaticPopup_Show
-    StaticPopup_Show = function(which) asked[#asked + 1] = which end
+    local realShow = ns.ShowDialog
+    ns.ShowDialog = function(_, which) asked[#asked + 1] = which end
     -- the list holds the languages that have texts (a file registers itself), not the empty ones
     local listed = {}
     for _, entry in ipairs(ns.LANGUAGES) do listed[#listed + 1] = entry.key end
@@ -5385,13 +5396,79 @@ do
     ns:SetLanguageChoice(other)
     if ns.sv.language ~= other or ns.GetLanguageChoice() ~= other then print("STEP ERROR: the language choice is not saved") end
     if asked[1] ~= "TESSERA_LANGUAGE_RELOAD" then print("STEP ERROR: a language change does not offer the reload") end
-    local popup = StaticPopupDialogs["TESSERA_LANGUAGE_RELOAD"]
+    local popup = ns.Dialogs["TESSERA_LANGUAGE_RELOAD"]
     if not (popup and popup.text == ns.L.LANGUAGE_RELOAD) then print("STEP ERROR: the language reload window has no text") end
     asked = {}
     ns:SetLanguageChoice(nil)
     if ns.sv.language ~= nil or #asked > 0 then print("STEP ERROR: \"As the game\" must save nothing and ask nothing") end
     if ns.TextLanguage() ~= (GetLocale() == "frFR" and "fr" or "en") then print("STEP ERROR: text language of the changelog") end
-    StaticPopup_Show = realShow
+    ns.ShowDialog = realShow
+end
+-- Tessera's confirmation window (2.0): one at a time in turn, buttons, Escape, keys, field
+do
+    local log = {}
+    ns.Dialogs.MOCK_A = { text = "A %s", button1 = "Yes", button2 = "No", hideOnEscape = true,
+        OnAccept = function(_, data) log[#log + 1] = "A ok " .. tostring(data) end,
+        OnCancel = function(_, _, reason) log[#log + 1] = "A cancel " .. tostring(reason) end }
+    ns.Dialogs.MOCK_B = { text = "B", button1 = "Yes", button2 = "No", button3 = "Other", hideOnEscape = false,
+        defaultButton = 2, OnAlt = function() log[#log + 1] = "B alt" end,
+        OnCancel = function(_, _, reason) log[#log + 1] = "B cancel " .. tostring(reason) end }
+    ns.Dialogs.MOCK_C = { text = "C", button1 = "Ok", button2 = "Cancel", hasEditBox = true, hideOnEscape = true,
+        OnAccept = function(self) log[#log + 1] = "C " .. self.editBox:GetText() end }
+    local mockShow = ns.ShowDialog
+    ns.ShowDialog = ns.RealShowDialog
+    ns:ShowDialog("MOCK_A", "x", nil, 7)
+    ns:ShowDialog("MOCK_B")
+    local f, name, waiting = ns.DialogState()
+    if not (f and name == "MOCK_A" and waiting == 1) then print("STEP ERROR: dialog: the second one must wait its turn") end
+    if f.text:GetText() ~= "A x" then print("STEP ERROR: dialog: text arguments") end
+    if f.focus ~= 1 then print("STEP ERROR: dialog: the first button is selected first") end
+    if not ns:IsDialogShown("MOCK_B") then print("STEP ERROR: dialog: a waiting dialog counts as shown") end
+    ns.DialogKey("ENTER")
+    _, name = ns.DialogState()
+    if log[1] ~= "A ok 7" or name ~= "MOCK_B" then print("STEP ERROR: dialog: Enter answers, then the next one opens") end
+    if f.focus ~= 2 then print("STEP ERROR: dialog: defaultButton (Cancel first when it erases)") end
+    ns.DialogKey("ESCAPE")
+    _, name = ns.DialogState()
+    if name ~= "MOCK_B" or #log ~= 1 then print("STEP ERROR: dialog: a real choice ignores Escape") end
+    ns.DialogKey("PADDRIGHT")
+    if f.focus ~= 3 then print("STEP ERROR: dialog: the d-pad moves the selection") end
+    ns.DialogKey("PAD1")
+    if log[2] ~= "B alt" then print("STEP ERROR: dialog: third button") end
+    ns:ShowDialog("MOCK_A", "y", nil, 8)
+    ns.DialogKey("PAD2")
+    if log[3] ~= "A cancel clicked" then print("STEP ERROR: dialog: B on the gamepad cancels") end
+    ns:ShowDialog("MOCK_C")
+    f.editBox:SetText("Main")
+    ns.DialogClick(1)
+    if log[4] ~= "C Main" then print("STEP ERROR: dialog: the field's text reaches OnAccept") end
+    ns:ShowDialog("MOCK_A", "z")
+    ns:HideDialog("MOCK_A")
+    _, name, waiting = ns.DialogState()
+    if name or waiting ~= 0 or #log ~= 4 then print("STEP ERROR: dialog: HideDialog closes without an answer") end
+    ns.Dialogs.MOCK_A, ns.Dialogs.MOCK_B, ns.Dialogs.MOCK_C = nil, nil, nil
+    -- every Tessera dialog opens in the window, with its text and its buttons
+    local count = 0
+    for key, def in pairs(ns.Dialogs) do
+        count = count + 1
+        ns:ShowDialog(key, 2, nil, nil)
+        local _, shown = ns.DialogState()
+        if shown ~= key or not def.button1 or (f.text:GetText() or "") == "" then print("STEP ERROR: dialog " .. key .. " does not open") end
+        ns:HideDialog(key)
+    end
+    if count ~= 21 then print("STEP ERROR: dialogs: " .. count .. " instead of 21") end
+    for _, k in ipairs({ "TESSERA_RESET_PROFILE", "TESSERA_REMOVE_BLOCKS", "TESSERA_FORGET_CHARACTER", "TESSERA_REPLACE_BLOCK" }) do
+        if ns.Dialogs[k].defaultButton ~= 2 then print("STEP ERROR: " .. k .. " must select Cancel first") end
+    end
+    -- Cancel of the three-button windows (locked blocks) closes them and does nothing
+    -- (test247: the game's popup stayed open, it has no OnButton2)
+    for _, k in ipairs({ "TESSERA_STYLE_LOCKED_APPLY", "TESSERA_STYLE_LOCKED_LOOK", "TESSERA_STYLE_LOCKED_COPY" }) do
+        ns:ShowDialog(k, 1, nil, { keys = {}, source = "gold" })
+        ns.DialogClick(2)
+        local _, still = ns.DialogState()
+        if still then print("STEP ERROR: Cancel does not close " .. k) end
+    end
+    ns.ShowDialog = mockShow
 end
 -- Options that must never get lost (rule: a rework takes nothing away). Dump with
 -- MOCK_WRITE_OPTIONS=1 on a version known good; then every run (enUS only) checks that each

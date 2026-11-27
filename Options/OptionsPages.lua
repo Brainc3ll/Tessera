@@ -108,7 +108,7 @@ end
 -- Offered when the language changes: the new language applies after a reload
 -- (the texts are read again once the language is known, see Locales/Language.lua)
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_LANGUAGE_RELOAD"] = {
+    ns.Dialogs["TESSERA_LANGUAGE_RELOAD"] = {
         text = L.LANGUAGE_RELOAD,
         button1 = L.RELOAD_SHORT,
         button2 = L.LANGUAGE_LATER,
@@ -456,7 +456,7 @@ end
 ---------------------------------------------------------------------------
 -- Popup asking for a new profile name
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_NEW_PROFILE"] = {
+    ns.Dialogs["TESSERA_NEW_PROFILE"] = {
         text = L.NEW_PROFILE_PROMPT,
         button1 = ACCEPT,
         button2 = CANCEL,
@@ -471,7 +471,7 @@ ns.OnLanguage(function()
         end,
         EditBoxOnEnterPressed = function(self)
             local parent = self:GetParent()
-            StaticPopupDialogs["TESSERA_NEW_PROFILE"].OnAccept(parent)
+            ns.Dialogs["TESSERA_NEW_PROFILE"].OnAccept(parent)
             parent:Hide()
         end,
     }
@@ -501,13 +501,13 @@ local function NamePopup(text, onName)
 end
 
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_DUPLICATE_PROFILE"] = NamePopup(L.DUPLICATE_PROFILE_PROMPT, function(name)
+    ns.Dialogs["TESSERA_DUPLICATE_PROFILE"] = NamePopup(L.DUPLICATE_PROFILE_PROMPT, function(name)
         if not ns:DuplicateProfile(name) then ns.Print(L.PROFILE_EXISTS) end
     end)
 end)
 
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_IMPORT_PROFILE"] = NamePopup(L.IMPORT_PROFILE_PROMPT, function(name, text)
+    ns.Dialogs["TESSERA_IMPORT_PROFILE"] = NamePopup(L.IMPORT_PROFILE_PROMPT, function(name, text)
         local ok, err = ns:ImportProfile(text, name)
         if ok then
             ns.Print(L.IMPORT_DONE:format(strtrim(name)))
@@ -520,7 +520,7 @@ end)
 
 -- Confirmation before an import: what the text needs and this computer lacks,
 -- then what will happen. data = { text, kind }
-StaticPopupDialogs["TESSERA_IMPORT_CONFIRM"] = {
+ns.Dialogs["TESSERA_IMPORT_CONFIRM"] = {
     text = "%s",
     button1 = YES,
     button2 = NO,
@@ -538,7 +538,7 @@ function ns:FinishImport(text, kind)
     elseif kind == "layout" then
         if self:ImportLayout(text) then self.Print(L.LAYOUT_IMPORTED) end
     else
-        StaticPopup_Show("TESSERA_IMPORT_PROFILE", nil, nil, text)
+        ns:ShowDialog("TESSERA_IMPORT_PROFILE", nil, nil, text)
     end
     self:RefreshOptions()
 end
@@ -566,14 +566,14 @@ function ns:OpenImportWindow(prefill)
         if #msg == 0 then
             ns:FinishImport(text, kind)
         else
-            StaticPopup_Show("TESSERA_IMPORT_CONFIRM", table.concat(msg, "\n\n"), nil, { text = text, kind = kind })
+            ns:ShowDialog("TESSERA_IMPORT_CONFIRM", table.concat(msg, "\n\n"), nil, { text = text, kind = kind })
         end
     end, L.IMPORT_BUTTON)
 end
 
 -- Confirmation before applying a ready-made layout (replaces the current profile)
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_APPLY_PRESET"] = {
+    ns.Dialogs["TESSERA_APPLY_PRESET"] = {
         text = L.PRESET_CONFIRM,
         button1 = YES,
         button2 = NO,
@@ -586,10 +586,11 @@ end)
 
 -- Confirmation popup before resetting everything (all saved data, then reload)
 ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_RESET_PROFILE"] = {
+    ns.Dialogs["TESSERA_RESET_PROFILE"] = {
         text = L.RESET_PROFILE_CONFIRM,
         button1 = YES,
         button2 = NO,
+        defaultButton = 2, -- erases something: Cancel is selected first (Braincell1980, 27/11)
         timeout = 0,
         whileDead = true,
         hideOnEscape = true,
@@ -742,7 +743,7 @@ local function BuildLookPage(page)
     presets.Add(presetNote)
     presetNote:Refresh()
     presets.Add(CreateButton(page, L.PRESET_APPLY, function()
-        StaticPopup_Show("TESSERA_APPLY_PRESET", nil, nil, chosenPreset)
+        ns:ShowDialog("TESSERA_APPLY_PRESET", nil, nil, chosenPreset)
     end, nil, nil, L.TIP_PRESET_APPLY))
 
     -- Blizzard's frames: all blocks in front of them or behind them (Layers.lua)
@@ -771,10 +772,10 @@ local function BuildProfilesPage(page)
     end, function() return ns.profileName end,
        function(v) ns:SetProfile(v) end, nil, nil, L.TIP_PROFILE))
     profiles.Add(CreateButton(page, L.NEW_PROFILE, function()
-        StaticPopup_Show("TESSERA_NEW_PROFILE")
+        ns:ShowDialog("TESSERA_NEW_PROFILE")
     end, nil, nil, L.TIP_NEW_PROFILE), { half = true })
     profiles.Add(CreateButton(page, L.DUPLICATE_PROFILE, function()
-        StaticPopup_Show("TESSERA_DUPLICATE_PROFILE")
+        ns:ShowDialog("TESSERA_DUPLICATE_PROFILE")
     end, nil, nil, L.TIP_DUPLICATE_PROFILE), { half = true })
     profiles.Add(CreateButton(page, L.DELETE_PROFILE, function()
         if not ns:DeleteProfile(ns.profileName) then ns.Print(L.CANNOT_DELETE_DEFAULT) end
@@ -803,7 +804,7 @@ local function BuildProfilesPage(page)
     local resetBox = F.Box(L.SECTION_RESET)
     resetBox.Add(CreateNote(page, L.RESET_HINT))
     resetBox.Add(CreateButton(page, L.RESET_PROFILE, function()
-        StaticPopup_Show("TESSERA_RESET_PROFILE")
+        ns:ShowDialog("TESSERA_RESET_PROFILE")
     end, nil, nil, L.TIP_RESET_PROFILE))
 end
 

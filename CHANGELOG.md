@@ -7,7 +7,8 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ### New
 
-- Stone and metal: Tessera draws its windows (options, placement banner, See all, What's new, copy boxes) with the game's rock, the metal frame of its dialogs and a soft shadow, in your style's colors. Blocks and the lists under the mouse keep their style.
+- Stone and metal: Tessera draws its windows (options, placement banner, See all, What's new, copy boxes, confirmations) with the game's rock, the metal frame of its dialogs and a soft shadow, in your style's colors. Blocks and the lists under the mouse keep their style.
+- Confirmation windows open one at a time, at the top of the screen. Tab, arrows or d-pad pick a button, Enter or A presses it, Escape or B cancels when the window allows it. When the answer erases something, Cancel is picked first.
 - Options window: an icon for each page, the quest log's soft light under the mouse and on the open page, bigger titles, and the version beside the name.
 - Buttons, text fields, lists and sliders take rounded shapes in your style's colors; sliders use the classic knob and the spell book's arrows.
 - Switches: a rounded rail in your style's color and a round knob that slides when you click (it jumps with Fewer animations).
@@ -28,6 +29,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push back only the block past the edge, which opened a gap in the group.
 - Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were at its first or last choice. The arrows now follow the value.
 - Locked styles: when a style goes to all blocks or to a group, the warning about locked blocks offers Skip locked (the others take the style, the locked ones stay as they are), Them too, or Cancel. No used to leave every block as it was.
+- Rampart layout: its spacers no longer show an icon. Apply the layout again to clear the ones you have.
 
 ## 1.9.0 — 2026-11-25
 

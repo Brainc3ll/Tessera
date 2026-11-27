@@ -341,21 +341,32 @@ local function IsNewer(v, than)
 end
 ns.WhatsNewIsNewer = IsNewer -- (tools/mock_run.lua)
 
-local function WhatsNewItems(since)
-    local lang = ns.TextLanguage()
-    local items = {}
-    -- only the versions newer than the one the player had (none known: the fallback below)
+-- The changelog entries the update window speaks of: the versions newer than the one the player
+-- had; none known (or none with highlights): the latest entry with highlights
+local function NewEntries(since)
+    local list, any = {}, false
     for _, entry in ipairs(ns.CHANGELOG or {}) do
         if not since or not IsNewer(entry.version, since) then break end
-        for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do items[#items + 1] = line end
+        list[#list + 1] = entry
+        if entry.highlights then any = true end
     end
-    if #items == 0 then
+    if not any then
+        list = {}
         for _, entry in ipairs(ns.CHANGELOG or {}) do
             if entry.highlights then
-                for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do items[#items + 1] = line end
+                list[1] = entry
                 break
             end
         end
+    end
+    return list
+end
+
+local function WhatsNewItems(since)
+    local lang = ns.TextLanguage()
+    local items = {}
+    for _, entry in ipairs(NewEntries(since)) do
+        for _, line in ipairs(ns.ChangelogHighlights(entry, lang)) do items[#items + 1] = line end
     end
     return items
 end
@@ -367,9 +378,12 @@ local function WhatsNewPopupText(version, since)
     return table.concat(lines, "\n")
 end
 
--- The update window, in Tessera's style: the version, the first news lines with a "Show me" button
--- when a setting goes with them, "... and N more", then "See what's new" and "Later". Escape closes it.
+-- The update window, in Tessera's style: the version, the demo of the new styles when the update
+-- brings them (OptionsNewsDemo.lua, 2.0.0), the first news lines with a "Show me" button when a
+-- setting goes with them, "... and N more", then "See what's new" and "Later". Escape closes it;
+-- Tab or the d-pad puts the keyboard or gamepad focus in it (OptionsNewsDemo.lua).
 local NEWS_SHOWN = 4
+local NEWS_W = 480 -- wider with the demo (three thumbnails in a row), never wider than the screen
 local news
 local function BuildNewsWindow()
     news = CreateFrame("Frame", "TesseraWhatsNew", UIParent, "BackdropTemplate")
@@ -380,15 +394,14 @@ local function BuildNewsWindow()
     table.insert(UISpecialFrames, "TesseraWhatsNew")
     news.title = news:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     news.title:SetPoint("TOPLEFT", 20, -18)
-    news.title:SetWidth(440)
     news.title:SetJustifyH("LEFT")
     news.rows = {}
     for i = 1, NEWS_SHOWN do
         local row = { text = news:CreateFontString(nil, "OVERLAY", "GameFontHighlight") }
         row.text:SetJustifyH("LEFT")
-        row.text:SetWidth(310)
         row.button = ns.Skin.Button(CreateFrame("Button", nil, news, "UIPanelButtonTemplate"))
         row.button:SetSize(110, 24)
+        ns.NewsDemo.Ring(row.button)
         row.button:SetText(L.SHOW_ME)
         row.button:SetScript("OnClick", function(self)
             news:Hide()
@@ -407,11 +420,24 @@ local function BuildNewsWindow()
         if S.aboutContent then S.aboutContent:ShowTopic(WHATS_NEW_TOPIC) end
     end)
     news.all:SetPoint("BOTTOMLEFT", 18, 16)
+    ns.NewsDemo.Ring(news.all)
     news.later = ns.Skin.Button(CreateFrame("Button", nil, news, "UIPanelButtonTemplate"))
     news.later:SetSize(140, 26)
     news.later:SetText(L.WELCOME_LATER)
     news.later:SetScript("OnClick", function() news:Hide() end)
     news.later:SetPoint("BOTTOMRIGHT", -18, 16)
+    ns.NewsDemo.Ring(news.later)
+    -- the buttons the keyboard and gamepad go through, in order (after the demo's)
+    news.navButtons = function()
+        local list = {}
+        for _, row in ipairs(news.rows) do
+            if row.button:IsShown() then list[#list + 1] = row.button end
+        end
+        list[#list + 1] = news.all
+        list[#list + 1] = news.later
+        return list
+    end
+    ns.NewsDemo.AttachKeys(news)
 end
 
 function ns.WhatsNewShown() return news ~= nil and news:IsShown() end
@@ -421,13 +447,30 @@ ns.WhatsNewItems = WhatsNewItems
 function ns:ShowWhatsNewWindow(version, since)
     if not news then BuildNewsWindow() end
     if ns.SkinWindow then ns:SkinWindow(news) end
+    local Demo = ns.NewsDemo
+    local withDemo = Demo.Wanted(NewEntries(since))
+    local width = NEWS_W
+    if withDemo then
+        local screen = UIParent and UIParent.GetWidth and UIParent:GetWidth() or 0
+        if screen < 200 then screen = 1000 end
+        width = math.max(NEWS_W, math.min(Demo.WantedWidth(news) + 40, math.floor(screen - 40)))
+    end
+    news:SetWidth(width)
+    news.title:SetWidth(width - 40)
     news.title:SetText((L.WHATS_NEW_TEXT:format(version):gsub("%s+$", "")))
     local items = WhatsNewItems(since)
     local above, height = news.title, 18 + news.title:GetStringHeight()
+    if withDemo then
+        height = height + Demo.Show(news, news.title, width - 40)
+        above = Demo.Frame()
+    else
+        Demo.Hide()
+    end
     for i, row in ipairs(news.rows) do
         local item = items[i]
         row.text:SetShown(item ~= nil)
         row.button:SetShown(item ~= nil and item.show ~= nil)
+        row.text:SetWidth(width - 170)
         if item then
             -- a gold dot, then the line (a shape and a color)
             row.text:SetText("|cffffd100\226\128\162|r  " .. item.text)
@@ -451,6 +494,7 @@ function ns:ShowWhatsNewWindow(version, since)
     end
     news:SetHeight(height + 22 + 26 + 16 + 10)
     news:Show()
+    if news.showFocus then news.showFocus() end
 end
 
 function ns:ShowWelcomeIfNeeded()

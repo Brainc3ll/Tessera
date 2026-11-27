@@ -1817,3 +1817,7 @@ L["TIP_GLOW_SHAPE_ALL"] = "Forme de la lueur de tous les blocs : halo, liseré, 
 L["TIP_SEPARATORS_ALL"] = "Trace une ligne ou un ornement là où deux blocs fusionnés se touchent, sur tous les blocs. Les blocs verrouillés gardent leur réglage."
 L["TIP_STYLE_WORKSHOP_ANIMATE"] = "Les vignettes s'allument et leurs nombres changent, pour voir la lueur et les valeurs qui glissent. Moins d'animations les garde immobiles."
 L["HELP_LOOK_33"] = "- Les fenêtres de confirmation (réinitialiser un profil, retirer des blocs...) s'ouvrent une à une, en haut de l'écran. Tab, les flèches ou la croix choisissent un bouton, Entrée ou A l'active, Échap ou B annule quand la fenêtre le permet. Quand la réponse efface quelque chose, Annuler est choisi d'abord."
+L["HELP_LOOK_34"] = "- Après la mise à jour vers cette version, la fenêtre Quoi de neuf ? montre les six nouveaux styles sur de vrais blocs qui s'allument pendant que leurs nombres glissent. Clique sur un style, puis Essayer ouvre la galerie sur ce style ; rien ne change avant Appliquer. Moins d'animations les garde immobiles."
+L["TIP_WHATS_NEW_DEMO_TRY"] = "Ouvre la galerie des styles sur ce style, avec sa police et ses effets à côté. Rien ne change avant Appliquer."
+L["WHATS_NEW_DEMO_TITLE"] = "Les nouveaux styles en action. Clique sur un style pour le marquer."
+L["WHATS_NEW_DEMO_TRY"] = "Essayer %s..."

@@ -23,6 +23,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Separator shape, for any style: a line, a short line, a dash, a diamond, three runes, a dot or a big dot between merged blocks (Style box or Groups of blocks for every block, or Separators for one block).
 - Progress bar: a new look, a thin line under the value (Bar look). The six new styles use it on the blocks that have a progress; the other styles keep the band.
 - Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block, in rows by family, two merged blocks each. On the right, set the font, text size, corners, separators and effects: every thumbnail shows them, and can light up and move (Animate the thumbnails). Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.
+- The window after this update shows the six new styles on real blocks that light up while their numbers glide. Click one, then Try opens the gallery on it. Tab or the d-pad lets you use the window with the keyboard or a gamepad.
 
 ### Fixes
 

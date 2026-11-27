@@ -598,6 +598,35 @@ ns.OnLanguage(function()
     }
 end)
 
+-- The style gallery for every block, as the style list of the Look tab opens it. chosen: the key
+-- marked when it opens (the demo of the new styles in the update window marks the one tried;
+-- none: the current choice). The workshop on its right starts from the settings of every block
+-- (blocks whose style is locked are left out, as in the Style box); Apply gives the style if it
+-- changed, then only the settings changed in the workshop (choice of Braincell1980, 27/11)
+function ns:OpenLookStyleGallery(chosen)
+    ns:ShowStyleGallery({
+        auto = true,
+        chosen = chosen or ns:GetStyleChoice(),
+        current = function() return ns:GetStyleChoice() end,
+        currentLabel = L.STYLE_GALLERY_CURRENT,
+        lookNow = function(field, first) return ns:AllBlocksField(field, ns.LookRowOf(field).look, first) end,
+        actions = { {
+            text = L.STYLE_GALLERY_APPLY, tip = L.TIP_STYLE_GALLERY_APPLY,
+            enabled = function(key, changed) return key ~= nil and (changed or key ~= ns:GetStyleChoice()) end,
+            run = function(key, _, look, done)
+                if key ~= ns:GetStyleChoice() then
+                    ns:PickStyleChoice(key)
+                    local note = ns:GetThemeNote()
+                    if note then ns.Print(note) end
+                end
+                for _, item in ipairs(look or {}) do ns:SetAllBlocksField(item.field, item.value, item.look) end
+                ns:RefreshOptions()
+                done()
+            end,
+        } },
+    })
+end
+
 ---------------------------------------------------------------------------
 -- "Look" tab: style of the blocks, how groups look, ready-made layouts, screen edges
 ---------------------------------------------------------------------------
@@ -618,32 +647,7 @@ local function BuildLookPage(page)
            ns:RefreshOptions()
        end, nil, nil, L.TIP_THEME .. " " .. L.TIP_STYLE_GALLERY_OPEN))
     -- a click on the list opens the style gallery (OptionsStyleGallery.lua): every style as a real block
-    -- The workshop on its right starts from the settings of every block (blocks whose style is
-    -- locked are left out, as in the Style box); Apply gives the style if it changed, then only
-    -- the settings changed in the workshop (choice of Braincell1980, 27/11)
-    ns.lookStyleList = ns.StyleListOpensGallery(styleList, function()
-        ns:ShowStyleGallery({
-            auto = true,
-            chosen = ns:GetStyleChoice(),
-            current = function() return ns:GetStyleChoice() end,
-            currentLabel = L.STYLE_GALLERY_CURRENT,
-            lookNow = function(field, first) return ns:AllBlocksField(field, ns.LookRowOf(field).look, first) end,
-            actions = { {
-                text = L.STYLE_GALLERY_APPLY, tip = L.TIP_STYLE_GALLERY_APPLY,
-                enabled = function(key, changed) return key ~= nil and (changed or key ~= ns:GetStyleChoice()) end,
-                run = function(key, _, look, done)
-                    if key ~= ns:GetStyleChoice() then
-                        ns:PickStyleChoice(key)
-                        local note = ns:GetThemeNote()
-                        if note then ns.Print(note) end
-                    end
-                    for _, item in ipairs(look or {}) do ns:SetAllBlocksField(item.field, item.value, item.look) end
-                    ns:RefreshOptions()
-                    done()
-                end,
-            } },
-        })
-    end)
+    ns.lookStyleList = ns.StyleListOpensGallery(styleList, function() ns:OpenLookStyleGallery() end)
     -- under the style, the rest of the look of every block, in the same order as the Style box
     -- of a block's Appearance tab (OptionsLookBox.lua): font, text size, corners, icons, effects.
     -- Blocks whose style is locked keep theirs.

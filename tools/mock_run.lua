@@ -1654,6 +1654,35 @@ for _, step in ipairs({
         assert(w and w:IsShown() and w.more:IsShown(), "the update window shows, with more news than it lists")
         w.all:GetScript("OnClick")(w.all)
         assert(not w:IsShown(), "See what's new closes it")
+        -- the demo of the new styles (2.0.0, Options/OptionsNewsDemo.lua): six real samples, animated,
+        -- with the keyboard taken only after Tab; a marked style opens the gallery on it
+        local demo = ns.NewsDemo
+        ns:ShowWhatsNewWindow("2.0.0", "1.8.0")
+        local df = demo.Frame()
+        assert(demo.Shown() and df.nCards == 6, "the update to 2.0.0 shows the six new styles")
+        assert(w:GetWidth() > 480, "the window widens for the thumbnails")
+        local before = df.cards[1].sample.text:GetText()
+        df:GetScript("OnUpdate")(df, ns.StyleSample.PERIOD + 0.1)
+        assert(df.cards[1].sample2.barFrac, "the bags of a new style show their thin bar")
+        assert(ns.sv.reduceMotion or df.cards[1].animStep == 1, "the numbers move on: " .. tostring(before))
+        assert(not demo.Key(w, "LEFT"), "the arrows stay the player's before Tab")
+        assert(demo.Key(w, "TAB") and w.keyboardOn, "Tab puts the focus in the window")
+        local start = df.chosen
+        demo.Key(w, "RIGHT")
+        demo.Key(w, "ENTER")
+        local expect = math.min(6, start + 1)
+        assert(df.chosen == expect, "Enter marks the focused style")
+        demo.Key(w, "ENTER")
+        local g = ns.StyleGallery()
+        assert(not w:IsShown() and g and g:IsShown() and g.chosen == df.cards[expect].key,
+            "Enter on the marked style opens the gallery on it")
+        g:Hide()
+        local wasBroker = ns.brokerModeActive
+        ns.brokerModeActive = true
+        ns:ShowWhatsNewWindow("2.0.0", "1.8.0")
+        assert(not demo.Shown(), "no demo in DataBroker mode (no blocks)")
+        ns.brokerModeActive = wasBroker
+        w:Hide()
         assert(ns.L.ABOUT_AI and ns.L.TAB_ABOUT, "About strings missing")
     end,
     -- shape test: every shape, then back to the original layout

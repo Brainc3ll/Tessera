@@ -1817,3 +1817,7 @@ L["TIP_GLOW_SHAPE_ALL"] = "Glow shape of every block: halo, edge, inner or pulse
 L["TIP_SEPARATORS_ALL"] = "Draws a line or an ornament where two merged blocks touch, on every block. Locked blocks keep their setting."
 L["TIP_STYLE_WORKSHOP_ANIMATE"] = "The thumbnails light up and their numbers change, so you see the glow and the gliding values. Fewer animations keeps them still."
 L["HELP_LOOK_33"] = "- Confirmation windows (reset a profile, remove blocks...) open one at a time, at the top of the screen. Tab, arrows or d-pad pick a button, Enter or A presses it, Escape or B cancels when the window allows it. When the answer erases something, Cancel is picked first."
+L["HELP_LOOK_34"] = "- After the update to this version, the What's new window shows the six new styles on real blocks that light up while their numbers glide. Click one, then Try opens the gallery on it; nothing changes before Apply. Fewer animations keeps them still."
+L["TIP_WHATS_NEW_DEMO_TRY"] = "Opens the style gallery on this style, with its font and effects beside it. Nothing changes until you press Apply."
+L["WHATS_NEW_DEMO_TITLE"] = "The new styles in action. Click one to mark it."
+L["WHATS_NEW_DEMO_TRY"] = "Try %s..."

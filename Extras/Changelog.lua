@@ -49,6 +49,7 @@ ns.CHANGELOG = {
     {
         version = "2.0.0",
         date = "2026-11-25",
+        demo = "styles", -- the update window shows the new styles on real blocks (Options/OptionsNewsDemo.lua)
         highlights = {
             { en = "Tessera's windows in stone and metal, in your style's colors.",
               fr = "Les fenêtres de Tessera en pierre et métal, aux couleurs de ton style." },
@@ -101,6 +102,9 @@ ns.CHANGELOG = {
                     .. " in rows by family, two merged blocks each. On the right, set the font, text size, corners, separators and effects:"
                     .. " every thumbnail shows them, and can light up and move (Animate the thumbnails)."
                     .. " Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.",
+                "The window after this update shows the six new styles on real blocks that light up while their numbers glide."
+                    .. " Click one, then Try opens the gallery on it. Tab or the d-pad lets you use the window"
+                    .. " with the keyboard or a gamepad.",
               },
               fr = {
                 "Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?, boîtes de copie, confirmations)"
@@ -141,6 +145,9 @@ ns.CHANGELOG = {
                     .. " les coins, les séparateurs et les effets : chaque vignette les montre, et peut s'allumer et bouger"
                     .. " (Animer les vignettes). Clique sur un style, puis sur Appliquer. Les flèches ou la croix,"
                     .. " Entrée ou A, et Échap ou B marchent aussi.",
+                "La fenêtre qui suit cette mise à jour montre les six nouveaux styles sur de vrais blocs qui s'allument pendant que leurs nombres glissent."
+                    .. " Clique sur un style, puis Essayer ouvre la galerie sur ce style. Tab ou la croix permettent"
+                    .. " d'utiliser la fenêtre au clavier ou à la manette.",
               },
             },
             { kind = "fixed",

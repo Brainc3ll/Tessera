@@ -35,7 +35,7 @@ Version en jeu : 1.7.2, publiée le 21/11 (correctif : un bloc au style verrouil
 - 27/11 : séparateurs un peu plus petits, plus coupés, + Ligne dessinée et Tiret, test244 (Opus 5.5).
 - 27/11 : ornements nets et jamais coupés, espace autour, Point / Gros point, Airain en Ligne dessinée, test245 (Opus 5.5).
 - 27/11 : test245 validé ; Trait renommé Ligne, Ligne dessinée renommée Petit trait ; bouton « Plus de réglages... » dans Groupes de blocs (vers Tous les blocs, Apparence, Séparateurs) ; pas de zip (Opus 5.5).
-- 27/11 : test247 (T2) : lueurs (formes, couleur), séparateurs dans le cadre Style, deux blocs par vignette, animation, Jade et Améthyste (Opus 5.5).
+- 27/11 : test247 validé en jeu, sujet de l'atelier fermé. test247 (T2) : lueurs (formes, couleur), séparateurs dans le cadre Style, deux blocs par vignette, animation, Jade et Améthyste (Opus 5.5).
 - 27/11 : zip B, l'atelier dans la galerie (colonne Réglages, vignettes en direct, fenêtre élargie), test246 (Opus 5.5). Décision : le style de la fenêtre ne bouge plus.
 - 26/11 : aperçu des styles de blocs 2.0 validé en jeu (test231, galerie avec les vrais styles) ; choix faits (IDEES-FUTUR, « Look HD ») ; suite : vraie version sur `2.0`, nouvelle conversation, Opus 5.5 effort élevé.
 - 26/11 : aperçu des nouveaux styles de blocs 2.0 codé dans Tessera-dev (`/tes debug looks`, zip test230, Opus 5.5) : 4 matières, galerie de vignettes pour le choix du style, icônes HD de la manette en anneau, polices du jeu, Cinzel et Inter. À juger en jeu, puis vraie version sur `2.0`.

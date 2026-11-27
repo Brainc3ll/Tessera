@@ -21,13 +21,16 @@ local NARROW_W, WIDE_W, SIDE_W = 900, 1100, 260
 local MIN_CARD_W, GAP, BAR_H = 196, 8, 44
 local WINDOW_W = NARROW_W -- set at each opening (the workshop makes it wider)
 local SIDE_SPACE = 0       -- room of the workshop's column on the right
-local SAMPLE_TEXT = "1 234   42/80   17:42"
+-- (27/11) two merged blocks per thumbnail, gold and bags, so the separator and the glow show;
+-- the animation (the workshop's "Animate") moves their numbers through these values
+local SAMPLE_TEXTS = { { "1 234", "1 289", "1 247" }, { "42/80", "45/80", "43/80" } }
+local ANIM_PERIOD = 2.4 -- seconds: the first block lights up, then the second, then the numbers change
 local MEDIA = Skin.MEDIA
 
 -- Families of the gallery, in order (decided 26/11 and 27/11). A style found in none of them
 -- goes to "Others", so none is lost when a style is added.
 ns.STYLE_FAMILIES = {
-    { title = "STYLE_FAMILY_NEW", keys = { "hdGold", "hdRune", "hdSilver", "hdBronze" } },
+    { title = "STYLE_FAMILY_NEW", keys = { "hdGold", "hdRune", "hdSilver", "hdBronze", "hdJade", "hdAmethyst" } },
     { title = "STYLE_FAMILY_FANTASY", keys = { "runestone", "grimoire", "parchment", "arcane" } },
     { title = "STYLE_FAMILY_FRAMES", keys = { "royalSeal", "ironforge", "runeblade", "ember", "sylvan", "warWithin", "midnight" } },
     { title = "STYLE_FAMILY_BLIZZARD", keys = { "blizzardModern", "modernSquare", "blizzardForever", "foreverSquare", "blizzard", "classicSquare" } },
@@ -83,20 +86,13 @@ local function Sliced(f, layer, file, margin, sub)
     return t
 end
 
--- The sample block of a thumbnail: same frame parts as a real block (Core.lua CreateBlock),
--- skinned by ns:SkinBlockFrame as the style offer does (OptionsTour.lua). Returns its width.
-local function DrawSample(card, style)
-    local f = card.sample
-    local cfg = ns:GetBlockDefaults("gold")
-    ns:ApplyThemeToCfg(cfg, style)
-    -- the workshop's font, size, corners, icons and effects (what the player will get)
-    ns.StyleWorkshop.ApplyToCfg(cfg, card.key, style)
-    cfg.showIcon, cfg.showLabel = true, false
+-- One block of a thumbnail: same frame parts as a real block (Core.lua CreateBlock), skinned by
+-- ns:SkinBlockFrame as the style offer does (OptionsTour.lua). Returns its width.
+local function DrawBlock(f, cfg, moduleKey, text, h)
     local ok, inset = pcall(ns.SkinBlockFrame, ns, f, cfg)
     if not ok then inset = 0 end
-    local mod = ns.modules and ns.modules.gold
+    local mod = ns.modules and ns.modules[moduleKey]
     ns:SetIcon(f.icon, mod and type(mod.icon) ~= "function" and mod.icon or 134400)
-    local h = math.max(18, cfg.height or 22)
     -- as a real block (Core.lua ApplyStyle): a "text only" style (Runestone) hides the icon,
     -- and the icon takes the style's frame, shape and black and white
     local showIcon = not cfg.hideIcons
@@ -113,14 +109,107 @@ local function DrawSample(card, style)
         f.text:SetPoint("LEFT", f, "LEFT", 6 + inset, 0)
         iconSize = -2
     end
-    f.text:SetText(SAMPLE_TEXT)
+    f.glide, f.glideLast = nil, text
+    f.text:SetText(text)
     local w = math.ceil(f.text:GetStringWidth() or 0) + iconSize + 14 + 2 * inset
     f:SetSize(w, h)
     -- the glow under the mouse, as on a real block (Core/Looks.lua reads f.lifeCfg)
     f.lifeCfg = cfg
     pcall(ns.PrepareLife, f, cfg, f.nineSliceInfo and f.nineSliceInfo.edge or 6)
-    return w, h
+    return w
 end
+
+-- The separator between the two blocks, on a layer above both (Merge.lua DrawSeparators draws
+-- it for real blocks: a line, or an ornament centered on the join)
+local function DrawJoin(card, cfg, h)
+    local layer = card.joinLayer
+    local line, ornate = layer.line, layer.ornate
+    line:Hide()
+    ornate:Hide()
+    if not cfg.separators then return end
+    local c = cfg.separatorColor or { r = 1, g = 1, b = 1, a = 0.4 }
+    if cfg.classColorSeparator then c = ns:GetClassColor(c.a) or c end
+    local a = card.sample
+    if ns.SEPARATOR_FILES[cfg.separatorStyle or "line"] then
+        local len = math.min(h - 6, 18)
+        if len < 6 then return end
+        ns.SetOrnateSeparator(ornate, cfg.separatorStyle, false)
+        ornate:SetVertexColor(c.r, c.g, c.b, c.a)
+        ornate:SetSize(len / 2, len)
+        ornate:ClearAllPoints()
+        ornate:SetPoint("CENTER", a, "RIGHT", 0, 0)
+        ornate:Show()
+    else
+        local inset = math.min(6, h / 4)
+        line:SetVertexColor(c.r, c.g, c.b, c.a)
+        line:SetSize(ns:PixelSize(1, a), math.max(2, h - 2 * inset))
+        line:ClearAllPoints()
+        line:SetPoint("RIGHT", a, "RIGHT", 0, 0)
+        line:Show()
+    end
+end
+
+-- The two merged blocks of a thumbnail (gold, then bags), with the style and the workshop's
+-- settings. Returns their total width and their height.
+local function DrawSample(card, style)
+    local cfg = ns:GetBlockDefaults("gold")
+    ns:ApplyThemeToCfg(cfg, style)
+    -- the workshop's font, size, corners, icons, separators and effects (what the player will get)
+    ns.StyleWorkshop.ApplyToCfg(cfg, card.key, style)
+    cfg.showIcon, cfg.showLabel = true, false
+    local h = math.max(18, cfg.height or 22)
+    local step = card.animStep or 0
+    local a, b = card.sample, card.sample2
+    local wA = DrawBlock(a, cfg, "gold", SAMPLE_TEXTS[1][step % 3 + 1], h)
+    local wB = DrawBlock(b, ns.DeepCopy(cfg), "bags", SAMPLE_TEXTS[2][step % 3 + 1], h)
+    b:ClearAllPoints()
+    b:SetPoint("LEFT", a, "RIGHT", 0, 0)
+    -- merged as in a group (Merge.lua ApplySeams): the touching sides open
+    a.seamKey, b.seamKey = nil, nil
+    pcall(ns.ApplySeams, ns, a, { W = wA, H = h, TOP = {}, BOTTOM = {}, LEFT = {}, RIGHT = { { 0, h } }, cornerNotch = {} })
+    pcall(ns.ApplySeams, ns, b, { W = wB, H = h, TOP = {}, BOTTOM = {}, LEFT = { { 0, h } }, RIGHT = {}, cornerNotch = {} })
+    DrawJoin(card, cfg, h)
+    card.pairW = wA + wB
+    return wA + wB, h
+end
+
+-- The animation of every thumbnail (the workshop's "Animate the thumbnails", 27/11): the first
+-- block lights up, then the second, then both numbers change (gliding when the style asks for
+-- it). "Fewer animations" keeps them still (ns.GlowTo, ns.SetBlockText).
+local function Animate(_, elapsed)
+    local workshop = ns.StyleWorkshop
+    if not (workshop.Animating() and gallery.nCards) then return end
+    gallery.animT = (gallery.animT or 0) + (elapsed or 0)
+    local t = gallery.animT
+    local step = math.floor(t / ANIM_PERIOD)
+    local first = (t % ANIM_PERIOD) < ANIM_PERIOD / 2
+    local stepped = step ~= gallery.animStep
+    if first == gallery.animFirst and not stepped then return end
+    gallery.animFirst, gallery.animStep = first, step
+    for i = 1, gallery.nCards do
+        local c = gallery.cards[i]
+        if c:IsShown() and not c.hovered then
+            ns.GlowTo(c.sample, first and 1 or 0)
+            ns.GlowTo(c.sample2, first and 0 or 1)
+            if stepped then
+                c.animStep = step
+                ns.SetBlockText(c.sample, c.sample.lifeCfg, SAMPLE_TEXTS[1][step % 3 + 1])
+                ns.SetBlockText(c.sample2, c.sample2.lifeCfg, SAMPLE_TEXTS[2][step % 3 + 1])
+            end
+        end
+    end
+end
+-- the animation stops: both blocks dark again (off = at once, the gallery is closing)
+local function StillCards(off)
+    gallery.animFirst = nil
+    for i = 1, gallery.nCards or 0 do
+        local c = gallery.cards[i]
+        for _, f in ipairs({ c.sample, c.sample2 }) do
+            if off then ns.GlowOff(f) else ns.GlowTo(f, 0) end
+        end
+    end
+end
+ns.StyleGalleryStill = StillCards
 
 local Refresh, ShowMarks
 
@@ -140,11 +229,21 @@ local function NewCard(parent)
     c.fill:SetAllPoints()
     c.hover = c:CreateTexture(nil, "HIGHLIGHT")
     c.hover:SetAllPoints()
-    c.sample = CreateFrame("Frame", nil, c, "BackdropTemplate")
-    c.sample.icon = c.sample:CreateTexture(nil, "ARTWORK")
-    c.sample.text = c.sample:CreateFontString(nil, "OVERLAY")
-    c.sample.text:SetWordWrap(false)
-    c.sample:EnableMouse(false)
+    -- two merged blocks (gold, bags), and the separator between them on a layer above both
+    for _, name in ipairs({ "sample", "sample2" }) do
+        local f = CreateFrame("Frame", nil, c, "BackdropTemplate")
+        f.icon = f:CreateTexture(nil, "ARTWORK")
+        f.text = f:CreateFontString(nil, "OVERLAY")
+        f.text:SetWordWrap(false)
+        f:EnableMouse(false)
+        c[name] = f
+    end
+    c.joinLayer = CreateFrame("Frame", nil, c)
+    c.joinLayer:SetAllPoints(c)
+    c.joinLayer:SetFrameLevel(c:GetFrameLevel() + 20)
+    c.joinLayer.line = c.joinLayer:CreateTexture(nil, "OVERLAY")
+    c.joinLayer.line:SetTexture("Interface\\Buttons\\WHITE8X8")
+    c.joinLayer.ornate = c.joinLayer:CreateTexture(nil, "OVERLAY")
     c.label = c:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     c.label:SetJustifyH("CENTER")
     c.label:SetWordWrap(true)
@@ -170,8 +269,16 @@ local function NewCard(parent)
         Skin.TextColor(c.tag, p.soft)
     end)
     c:SetScript("OnClick", function(self) Choose(self.index) end)
-    c:HookScript("OnEnter", function(self) ns.GlowTo(self.sample, 1) end)
-    c:HookScript("OnLeave", function(self) ns.GlowTo(self.sample, 0) end)
+    c:HookScript("OnEnter", function(self)
+        self.hovered = true
+        ns.GlowTo(self.sample, 1)
+        ns.GlowTo(self.sample2, 1)
+    end)
+    c:HookScript("OnLeave", function(self)
+        self.hovered = nil
+        ns.GlowTo(self.sample, 0)
+        ns.GlowTo(self.sample2, 0)
+    end)
     return c
 end
 
@@ -310,7 +417,8 @@ function Refresh()
             c:ClearAllPoints()
             c:SetPoint("TOPLEFT", gallery.content, "TOPLEFT", col * (cardW + GAP) + 4, -y - 4)
             c.sample:ClearAllPoints()
-            c.sample:SetPoint("TOP", c, "TOP", 0, -10 - math.floor((tallest - c.sample:GetHeight()) / 2))
+            c.sample:SetPoint("TOPLEFT", c, "TOP", -math.floor((c.pairW or 0) / 2),
+                -10 - math.floor((tallest - c.sample:GetHeight()) / 2))
             c.label:SetWidth(cardW - 12)
             c.label:SetText(c.name)
             c.label:ClearAllPoints()
@@ -554,7 +662,9 @@ local function Build()
     f:SetScript("OnKeyDown", OnKey)
     if f.SetScript and f.EnableGamePadButton then f:SetScript("OnGamePadButtonDown", OnKey) end
     f:SetScript("OnShow", function() Listen(true) end)
+    f:SetScript("OnUpdate", Animate) -- (runs only while the gallery is shown)
     f:SetScript("OnHide", function()
+        StillCards(true) -- (the thumbnails' glow goes out: nothing moves while the gallery is closed)
         Listen(false)
         f.keyboardOn = false
         f.zone = nil
@@ -590,6 +700,9 @@ function ns:ShowStyleGallery(o)
     gallery.chosen = opts.chosen or ns:GetTheme()
     gallery.keyboardOn = false
     gallery.zone = nil
+    -- the animation starts again from the first values
+    gallery.animT, gallery.animStep, gallery.animFirst = 0, nil, nil
+    for _, c in ipairs(gallery.cards) do c.animStep = 0 end
     -- the workshop: a wider window (never wider than the screen), the column on the right
     local workshop = ns.StyleWorkshop
     workshop.Open(opts, gallery.chosen, function() return gallery.chosen, ChosenStyle() end, function()

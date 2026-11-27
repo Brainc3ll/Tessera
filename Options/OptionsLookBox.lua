@@ -44,6 +44,34 @@ local function AnyHDBorder()
     return false
 end
 local function HDIcons() return ns.HD_ICONS_ON end
+-- (27/11) the shape of the separators only matters when they are on; the shape and the color
+-- of the glow when it is on
+local function Separators(cfg) return cfg ~= nil and cfg.separators and true or false end
+local function Glow(cfg) return cfg ~= nil and cfg.hoverGlow and true or false end
+-- (the blocks "every block" counts: no spacer, no locked block, as ns:AllBlocksField "blocks")
+local function AnyUnlocked(test)
+    return function()
+        for _, key in ipairs(ns:GetBlockKeys()) do
+            local cfg = ns.db.blocks[key]
+            if cfg and not ns.IsSpacerKey(key) and not cfg.styleLocked and test(cfg) then return true end
+        end
+        return false
+    end
+end
+local function GlowShapeChoices()
+    return {
+        { key = "halo", name = L.GLOW_SHAPE_HALO },
+        { key = "edge", name = L.GLOW_SHAPE_EDGE },
+        { key = "inner", name = L.GLOW_SHAPE_INNER },
+        { key = "pulse", name = L.GLOW_SHAPE_PULSE },
+    }
+end
+local function GlowColorChoices()
+    return {
+        { key = "style", name = L.GLOW_COLOR_STYLE },
+        { key = "class", name = L.GLOW_COLOR_CLASS },
+    }
+end
 -- (the style gallery's workshop uses the same choices and the same test for Corners)
 ns.LookHDBorder = HDBorder
 
@@ -61,10 +89,21 @@ ns.LOOK_ROWS = {
       tip = "TIP_EDGE_SHAPE", tipAll = "TIP_EDGE_SHAPE_ALL", shownOne = HDBorder, shownAll = AnyHDBorder },
     { field = "iconSet", label = "ICON_SET", kind = "list", choices = IconChoices, look = "icons",
       tip = "TIP_ICON_SET", tipAll = "TIP_ICON_SET_ALL", shownOne = HDIcons, shownAll = HDIcons },
+    -- (27/11) the separators between merged blocks: on or off, then their shape
+    { field = "separators", label = "SEPARATORS", kind = "check", look = "blocks",
+      tip = "TIP_SEPARATORS", tipAll = "TIP_SEPARATORS_ALL" },
+    { field = "separatorStyle", label = "SEPARATOR_SHAPE", kind = "list", choices = ns.SeparatorChoices, look = "blocks",
+      tip = "TIP_SEPARATOR_SHAPE", tipAll = "TIP_SEPARATOR_SHAPE_ALL",
+      shownOne = Separators, shownAll = AnyUnlocked(Separators) },
     { field = "hoverGlow", label = "HOVER_GLOW", kind = "check", half = true, look = "blocks",
       tip = "TIP_HOVER_GLOW", tipAll = "TIP_HOVER_GLOW_ALL" },
     { field = "valueGlide", label = "VALUE_GLIDE", kind = "check", half = true, look = "blocks",
       tip = "TIP_VALUE_GLIDE", tipAll = "TIP_VALUE_GLIDE_ALL" },
+    -- (27/11) the glow's shape and color
+    { field = "glowShape", label = "GLOW_SHAPE", kind = "list", choices = GlowShapeChoices, look = "blocks",
+      tip = "TIP_GLOW_SHAPE", tipAll = "TIP_GLOW_SHAPE_ALL", shownOne = Glow, shownAll = AnyUnlocked(Glow) },
+    { field = "glowColorMode", label = "GLOW_COLOR", kind = "list", choices = GlowColorChoices, look = "blocks",
+      tip = "TIP_GLOW_COLOR", tipAll = "TIP_GLOW_COLOR_ALL", shownOne = Glow, shownAll = AnyUnlocked(Glow) },
 }
 
 -- The row of a field (look, kind, tips...)

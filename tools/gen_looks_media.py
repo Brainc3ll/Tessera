@@ -151,3 +151,20 @@ save("hd_box", m, 128, 128)
 m = mask(64, 64)
 box(ImageDraw.Draw(m), 2, R - 1, outline=255, width=int(3 * S))
 save("hd_glow", m, 64, 64, blur=2.2)
+
+# glow shapes (27/11, Core/Looks.lua GLOW_FILES): "edge", a sharp line on the edge (the
+# border alone seems to light up), a touch of blur so it stays soft at any size
+m = mask(64, 64)
+box(ImageDraw.Draw(m), 0, R, outline=255, width=int(2.2 * S))
+save("hd_glow_edge", m, 64, 64, blur=0.6)
+
+# "inner": light from the edge toward the middle, fading out before the corner pieces end
+# (the edges are stretched: each side must stay the same along its length)
+m = mask(64, 64)
+d = ImageDraw.Draw(m)
+steps = 12
+for i in range(steps):
+    inset = 1 + i
+    level = int(230 * (1 - i / steps) ** 1.6)
+    box(d, inset, max(1, R - inset), outline=level, width=int(1.2 * S))
+save("hd_glow_inner", m, 64, 64, blur=1.4)

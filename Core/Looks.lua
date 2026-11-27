@@ -282,7 +282,17 @@ local NO_GLIDE = { time = true, serverTime = true, date = true, coords = true, p
 
 local function Still() return ns.sv and ns.sv.reduceMotion end
 
--- the soft glow: 8 pieces of hd_glow around the block (no center), corner size e
+-- The glow's shapes (cfg.glowShape, 27/11): a white drawing of Media/Looks cut in 9 pieces like
+-- the frame. "halo": the soft line just inside the edge (chosen on 26/11); "edge": a sharp line
+-- on the edge, the border alone seems to light up; "inner": light from the edge toward the
+-- middle; "pulse": the halo, breathing slowly while the mouse stays. An unknown value (a
+-- profile from a later version) draws the halo.
+local GLOW_FILES = { halo = "hd_glow", edge = "hd_glow_edge", inner = "hd_glow_inner", pulse = "hd_glow" }
+ns.GLOW_SHAPES = { "halo", "edge", "inner", "pulse" }
+local PULSE_TIME = 1.6    -- seconds for one breath of the pulse
+local PULSE_LOW = 0.35    -- the faintest point of a breath (1 = the full glow)
+
+-- the glow: 8 pieces around the block (no center), corner size e
 local function GlowPieces(f)
     if f.hoverGlowPieces then return f.hoverGlowPieces end
     local pieces = {}
@@ -321,6 +331,8 @@ end
 
 local function SetGlowAlpha(f, a)
     if not f.hoverGlowPieces then return end
+    -- a pulsing glow breathes between PULSE_LOW and 1 (f.pulse: where it is in its breath)
+    if f.pulse then a = a * (PULSE_LOW + (1 - PULSE_LOW) * (0.5 + 0.5 * math.cos(f.pulse * 2 * math.pi / PULSE_TIME))) end
     for _, t in pairs(f.hoverGlowPieces) do t:SetAlpha(a * 0.9) end
 end
 
@@ -395,11 +407,27 @@ local function Step(_, elapsed)
     for f in pairs(moving) do
         local done = true
         -- glow toward its target
+        -- Fewer animations turned on during a glow, or a pulsing block hidden (the gallery closed):
+        -- the glow goes out at once, so the animator never runs for nothing (review of 27/11)
+        if f.glowTarget and (Still() or (f.pulse and f.IsVisible and not f:IsVisible())) then
+            f.glowTarget, f.glowAlpha = nil, 0
+            if f.pulse then f.pulse = 0 end
+            SetGlowAlpha(f, 0)
+        end
         if f.glowTarget then
             local a = f.glowAlpha or 0
             a = a + (f.glowTarget - a) * math.min(1, (elapsed or 0) * GLOW_SPEED)
             if math.abs(a - f.glowTarget) < 0.01 then a = f.glowTarget else done = false end
             f.glowAlpha = a
+            -- the pulse breathes as long as the glow is on (it starts at its brightest)
+            if f.pulse then
+                if f.glowTarget > 0 or a > 0 then
+                    f.pulse = f.pulse + (elapsed or 0)
+                    done = false
+                else
+                    f.pulse = 0
+                end
+            end
             SetGlowAlpha(f, a)
         end
         -- number toward its value
@@ -421,6 +449,15 @@ local function Step(_, elapsed)
     if not busy then animator:SetScript("OnUpdate", nil) end
 end
 
+function ns.GlowAnimator() return animator end -- (tools/mock_run.lua)
+
+-- The glow out at once, with no fade (a frame that goes away: the style gallery closing)
+function ns.GlowOff(f)
+    f.glowTarget, f.glowAlpha = nil, 0
+    if f.pulse then f.pulse = 0 end
+    SetGlowAlpha(f, 0)
+end
+
 local function Wake(f)
     moving[f] = true
     if not animator then animator = CreateFrame("Frame") end
@@ -431,11 +468,19 @@ end
 function ns.PrepareLife(f, cfg, e)
     if cfg.hoverGlow then
         PlaceGlow(f, e)
+        -- the style's color, or the class color (cfg.glowColorMode, 27/11)
         local c = cfg.glowColor or {}
-        for _, t in pairs(f.hoverGlowPieces) do t:SetVertexColor(c.r or 1, c.g or 0.85, c.b or 0.5, 1) end
+        if cfg.glowColorMode == "class" then c = ns:GetClassColor(1) or c end
+        local file = GLOW_FILES[cfg.glowShape] or GLOW_FILES.halo
+        for _, t in pairs(f.hoverGlowPieces) do
+            if f.glowFile ~= file then t:SetTexture(MEDIA .. file) end
+            t:SetVertexColor(c.r or 1, c.g or 0.85, c.b or 0.5, 1)
+        end
+        f.glowFile = file
+        f.pulse = cfg.glowShape == "pulse" and (f.pulse or 0) or nil
         SetGlowAlpha(f, f.glowAlpha or 0)
     else
-        f.glowTarget, f.glowAlpha = nil, 0
+        f.glowTarget, f.glowAlpha, f.pulse = nil, 0, nil
         SetGlowAlpha(f, 0)
     end
 end
@@ -448,6 +493,7 @@ function ns.GlowTo(f, target)
         SetGlowAlpha(f, 0)
         return
     end
+    if f.pulse and target > 0 and (f.glowAlpha or 0) <= 0 then f.pulse = 0 end -- a new breath
     f.glowTarget = target
     Wake(f)
 end

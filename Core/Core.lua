@@ -1069,6 +1069,9 @@ local BLOCK_DEFAULTS = {
     separatorStyle = "line",  -- "diamond", "rune" or "dot": an ornament in place of the line (any style)
     hoverGlow = false,        -- the edge lights up under the mouse (Core/Looks.lua)
     glowColor = { r = 1, g = 0.85, b = 0.5, a = 1 }, -- its color (set by the style)
+    glowShape = "halo",       -- (27/11) "halo" (soft, around the edge), "edge" (the edge alone lights up),
+                              -- "inner" (from the edge inward) or "pulse" (the halo breathes under the mouse)
+    glowColorMode = "style",  -- (27/11) "style": glowColor; "class": the character's class color
     valueGlide = false,       -- a number that changes counts to its new value
     progressLook = "fill",    -- progress bar: "fill" (a band behind the text) or "thin" (a line under it)
     progressByStyle = false,  -- the progress bar was turned on by a style (Gilded...), not by the player
@@ -1107,7 +1110,7 @@ local STYLE_KEYS = {
     "classColorSeparator", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
     "barTexture", "hideIcons", "monochrome", "textTint", "inkColors", "separatorStyle", "edgeShape", "iconSet",
-    "hoverGlow", "glowColor", "valueGlide", "progressLook",
+    "hoverGlow", "glowColor", "valueGlide", "progressLook", "glowShape", "glowColorMode",
 }
 ns.STYLE_KEYS = STYLE_KEYS -- also what a style export carries (Profiles.lua)
 

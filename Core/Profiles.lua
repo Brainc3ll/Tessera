@@ -626,6 +626,9 @@ function ns:ImportStyle(text)
             -- nor effects (glow, gliding values, thin bar); a bar a style turned on goes away
             if src.hoverGlow == nil then cfg.hoverGlow = false end
             if src.valueGlide == nil then cfg.valueGlide = false end
+            -- (27/11) a style from before the glow shapes: the soft halo in the style's color
+            if src.glowShape == nil then cfg.glowShape = "halo" end
+            if src.glowColorMode == nil then cfg.glowColorMode = "style" end
             if src.progressLook == nil then cfg.progressLook = "fill" end
             if cfg.progressByStyle and src.progressLook ~= "thin" then cfg.progressBar, cfg.progressByStyle = false, false end
         end

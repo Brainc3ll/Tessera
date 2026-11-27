@@ -5157,6 +5157,134 @@ do
     g:Hide()
     if themeBefore then ns:ApplyTheme(themeBefore) else ns:PickStyleChoice("auto") end
 end
+-- The gallery, second round (27/11): two merged blocks per thumbnail with the separator between
+-- them; separators and glow rows in the column; the animation and its box; Jade and Amethyst;
+-- the glow shapes and color (new saved fields: old profiles and old style texts keep the halo)
+do
+    local W = ns.StyleWorkshop
+    local themeBefore = ns.db.theme
+    ns:PickStyleChoice("auto")
+    ns.lookStyleList.dropdown:SetMenuOpen(true)
+    local g = ns.StyleGallery()
+    local function CardOf(key)
+        for i = 1, g.nCards do if g.cards[i].key == key then return g.cards[i] end end
+    end
+    local function Row(field)
+        for _, r in ipairs(W.rows) do if r.spec.field == field then return r end end
+    end
+    -- six rounded styles, Jade and Amethyst among them, two rows of three
+    local fam = {}
+    for i = 1, g.nCards do
+        local k = g.cards[i].key
+        if k:sub(1, 2) == "hd" then fam[#fam + 1] = g.cards[i] end
+    end
+    if #fam ~= 6 then print("STEP ERROR: gallery: " .. #fam .. " rounded styles, not 6") end
+    if not (CardOf("hdJade") and CardOf("hdAmethyst")) then print("STEP ERROR: gallery: Jade or Amethyst missing") end
+    if fam[1] and fam[4] and (fam[1].row == fam[4].row or fam[4].row ~= fam[6].row) then
+        print("STEP ERROR: gallery: the rounded styles are not two rows of three")
+    end
+    for _, key in ipairs({ "hdJade", "hdAmethyst" }) do
+        local cfg = ns:GetBlockDefaults("gold")
+        ns:ApplyThemeToCfg(cfg, key)
+        if not (cfg.hoverGlow and cfg.separators and ns:FindMedia("border", cfg.border).hd) then
+            print("STEP ERROR: style " .. key .. " is not a rounded style")
+        end
+    end
+    -- two blocks side by side, the second against the first, the separator between them
+    local card = CardOf("hdGold")
+    local a, b = card.sample, card.sample2
+    if not (b and b:IsShown()) then print("STEP ERROR: gallery: no second block on the thumbnail") end
+    if math.abs((card.pairW or 0) - (a:GetWidth() + b:GetWidth())) > 0.5 then print("STEP ERROR: gallery: the pair width is wrong") end
+    if not card.joinLayer.ornate:IsShown() then print("STEP ERROR: gallery: Gilded's diamond is not drawn between the blocks") end
+    if a.text:GetText() == b.text:GetText() then print("STEP ERROR: gallery: both blocks show the same value") end
+    -- the column: separators off hides their shape and the thumbnails' separator
+    g.chosen = "hdGold"
+    W.Sync()
+    if not (Row("separators").shown and Row("separatorStyle").shown) then print("STEP ERROR: workshop: separator rows missing") end
+    Row("separators").Step(1)
+    if Row("separatorStyle").shown then print("STEP ERROR: workshop: separator shape shown with separators off") end
+    if card.joinLayer.ornate:IsShown() or card.joinLayer.line:IsShown() then print("STEP ERROR: gallery: separator drawn while off") end
+    Row("separators").Step(1)
+    -- the glow rows follow Glow on hover; Pulse and the class color reach the thumbnails
+    if not (Row("glowShape").shown and Row("glowColorMode").shown) then print("STEP ERROR: workshop: glow rows missing") end
+    while W.Value("glowShape", "hdGold", "hdGold") ~= "pulse" do Row("glowShape").Step(1) end
+    Row("glowColorMode").Step(1)
+    if a.lifeCfg.glowShape ~= "pulse" or a.lifeCfg.glowColorMode ~= "class" then print("STEP ERROR: workshop: glow shape or color not on the thumbnail") end
+    if a.pulse == nil then print("STEP ERROR: glow: Pulse does not breathe") end
+    Row("hoverGlow").Step(1)
+    if Row("glowShape").shown or Row("glowColorMode").shown then print("STEP ERROR: workshop: glow rows shown with the glow off") end
+    -- the animation: the first block lights up, then the second; the numbers change
+    if not W.Animating() then print("STEP ERROR: workshop: the thumbnails do not animate at opening") end
+    Row("hoverGlow").Step(1)
+    local anim = g:GetScript("OnUpdate")
+    local before = a.glideLast
+    anim(g, 0.1)
+    if a.glowTarget ~= 1 or b.glowTarget ~= 0 then print("STEP ERROR: animation: the first block does not light up first") end
+    anim(g, 1.3)
+    if b.glowTarget ~= 1 or a.glowTarget ~= 0 then print("STEP ERROR: animation: the second block does not light up next") end
+    anim(g, 1.2)
+    if a.glideLast == before then print("STEP ERROR: animation: the numbers do not change") end
+    -- the box stops it; Fewer animations greys it and keeps everything still
+    Row("animate").Step(1)
+    if W.Animating() or a.glowTarget == 1 or b.glowTarget == 1 then print("STEP ERROR: animation: the box does not stop it") end
+    Row("animate").Step(1)
+    ns.sv.reduceMotion = true
+    Row("animate").Refresh()
+    if W.Animating() or Row("animate").control:IsEnabled() then print("STEP ERROR: animation: Fewer animations does not keep it still") end
+    ns.sv.reduceMotion = nil
+    -- closing the gallery while a thumbnail pulses: everything goes out, the animator stops
+    while W.Value("glowShape", "hdGold", "hdGold") ~= "pulse" do Row("glowShape").Step(1) end
+    anim(g, 2.4)
+    g:Hide()
+    local driver = ns.GlowAnimator and ns.GlowAnimator()
+    for _ = 1, 30 do -- (real blocks may still be gliding: a few seconds of ticks)
+        if driver and driver:GetScript("OnUpdate") then driver:GetScript("OnUpdate")(driver, 0.1) end
+    end
+    if driver and driver:GetScript("OnUpdate") then print("STEP ERROR: animation: the animator runs after the gallery closed") end
+    if a.glowTarget or b.glowTarget then print("STEP ERROR: animation: a thumbnail still glows after closing") end
+    -- the Style box holds the new rows too, in the same order
+    local seen = {}
+    for _, spec in ipairs(ns.LOOK_ROWS) do seen[spec.field] = true end
+    for _, field in ipairs({ "separators", "separatorStyle", "glowShape", "glowColorMode" }) do
+        if not seen[field] then print("STEP ERROR: Style box: no row " .. field) end
+    end
+    -- saved data (T2): a block from an old profile gets the halo in the style's color; a style
+    -- text from before the glow shapes resets them; an unknown shape draws the halo
+    local fresh = ns:GetBlockDefaults("gold")
+    if fresh.glowShape ~= "halo" or fresh.glowColorMode ~= "style" then print("STEP ERROR: glow: wrong defaults") end
+    for _, key in ipairs({ "gold", "time" }) do
+        ns.db.blocks[key].glowShape, ns.db.blocks[key].glowColorMode = "pulse", "class"
+    end
+    local fx = assert(io.open(addonDir .. "/tools/fixtures/rc9-style.txt"), "missing fixture")
+    local old = fx:read("*a")
+    fx:close()
+    if not ns:ImportStyle(old) then print("STEP ERROR: glow: the rc9 style text does not import") end
+    for _, key in ipairs({ "gold", "time" }) do
+        local cfg = ns.db.blocks[key]
+        if cfg.glowShape ~= "halo" or cfg.glowColorMode ~= "style" then print("STEP ERROR: glow: an old style text left " .. key .. "'s glow shape") end
+    end
+    -- a new style text carries them, and imports twice to the same result
+    ns.db.blocks.gold.glowShape, ns.db.blocks.gold.glowColorMode = "edge", "class"
+    local text = ns:ExportStyle()
+    ns.db.blocks.gold.glowShape, ns.db.blocks.gold.glowColorMode = "halo", "style"
+    ns:ImportStyle(text)
+    ns:ImportStyle(text)
+    if ns.db.blocks.gold.glowShape ~= "edge" or ns.db.blocks.gold.glowColorMode ~= "class" then print("STEP ERROR: glow: a style text loses the glow shape") end
+    local f = ns.frames and ns.frames.gold
+    if f then
+        local cfg = ns.db.blocks.gold
+        cfg.hoverGlow, cfg.glowShape = true, "from a later version"
+        ns.PrepareLife(f, cfg, 6)
+        if f.glowFile ~= "hd_glow" then print("STEP ERROR: glow: an unknown shape does not draw the halo") end
+        cfg.glowShape = "inner"
+        ns.PrepareLife(f, cfg, 6)
+        if f.glowFile ~= "hd_glow_inner" then print("STEP ERROR: glow: Inner does not draw its texture") end
+    end
+    for _, key in ipairs({ "gold", "time" }) do
+        ns.db.blocks[key].glowShape, ns.db.blocks[key].glowColorMode = "halo", "style"
+    end
+    if themeBefore then ns:ApplyTheme(themeBefore) else ns:PickStyleChoice("auto") end
+end
 -- Look settings gathered (27/11): the Style box of the Style and layouts tab and the one at the top of
 -- a block's Appearance tab hold the same rows in the same order; locked blocks keep theirs; Reset of
 -- the box does not unlock; the separator shape reaches every block and draws its ornament

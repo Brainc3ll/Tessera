@@ -793,6 +793,13 @@ table.insert(ns.themes, HDStyle("hdSilver", "THEME_HD_SILVER", {
 table.insert(ns.themes, HDStyle("hdBronze", "THEME_HD_BRONZE", {
     tint = { 0.09, 0.05, 0.03, 0.80 }, edge = { 0.72, 0.45, 0.24 }, value = { 1, 0.92, 0.84 },
     glow = { 1, 0.62, 0.35 }, border = "hdDouble", sep = "drawn", font = "friz" }))
+-- (27/11, chosen by Braincell1980 among four ideas: six rounded styles, two rows of three)
+table.insert(ns.themes, HDStyle("hdJade", "THEME_HD_JADE", {
+    tint = { 0.03, 0.075, 0.05, 0.80 }, edge = { 0.38, 0.80, 0.58 }, value = { 0.90, 1, 0.94 },
+    glow = { 0.45, 0.95, 0.65 }, border = "hdRune", sep = "drawn", font = "cinzel" }))
+table.insert(ns.themes, HDStyle("hdAmethyst", "THEME_HD_AMETHYST", {
+    tint = { 0.07, 0.045, 0.10, 0.80 }, edge = { 0.70, 0.52, 0.95 }, value = { 0.96, 0.92, 1 },
+    glow = { 0.78, 0.58, 1 }, border = "hdLine", sep = "dot", font = "inter" }))
 ns.LocalizeList(ns.themes, "name") -- the names come from keys (nameKey), see Locales/Language.lua
 
 -- The center of modern tooltips is a white texture that the game tints with
@@ -900,6 +907,7 @@ function ns:ApplyThemeToCfg(cfg, key)
     cfg.separatorStyle = "line" -- the 2.0 styles draw an ornament instead
     -- the life of the four new styles, and a progress bar one of them turned on
     cfg.hoverGlow, cfg.valueGlide, cfg.progressLook = false, false, "fill"
+    cfg.glowShape, cfg.glowColorMode = "halo", "style" -- (27/11) the soft halo in the style's color
     if cfg.progressByStyle then cfg.progressBar, cfg.progressByStyle = false, false end
     theme.block(cfg)
 end
@@ -911,7 +919,8 @@ local function RestyleProfile(self, key, restyle)
                              "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor",
                              "barTexture", "classColorText", "classColorBorder", "classColorBg",
                              "classColorIcon", "classColorSeparator", "hideIcons", "monochrome", "textTint", "inkColors",
-                             "textShadow", "separatorStyle", "hoverGlow", "glowColor", "valueGlide", "progressLook" }) do
+                             "textShadow", "separatorStyle", "hoverGlow", "glowColor", "valueGlide", "progressLook",
+                             "glowShape", "glowColorMode" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end

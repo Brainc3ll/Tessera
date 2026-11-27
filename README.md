@@ -135,12 +135,12 @@ Help tab inside the game explains everything.
 - **Stone and metal windows (2.0):** the options window, the placement banner and Tessera's other
   windows use the game's rock and the metal frame of its dialogs, in the colors of your style;
   high contrast draws them plain black with a thick white edge.
-- **Four new block styles:** Gilded, Blue rune, Silver and Brazen give your blocks a tinted,
+- **Six new block styles:** Gilded, Blue rune, Silver, Brazen, Jade and Amethyst give your blocks a tinted,
   see-through background, a rounded edge drawn by Tessera and an ornament between merged blocks.
   Corners: rounded, or square with a line one screen pixel wide.
-- **Effects (any style):** the edge lights up under the mouse, numbers count to their new value,
+- **Effects (any style):** the edge lights up under the mouse (halo, edge, inner or pulse, in the style's or your class color), numbers count to their new value,
   and the progress bar can be a thin line under the value.
-- **Style gallery:** a click on the style list shows every style as a real block, in rows by family. Set the font, text size, corners and effects on the right and see them on every thumbnail before you apply.
+- **Style gallery:** a click on the style list shows every style as a real block, in rows by family. Each thumbnail shows two merged blocks. Set the font, text size, corners, separators and effects on the right and see them on every thumbnail, still or animated, before you apply.
   Click a style, then Apply; the keyboard and the gamepad work too.
 - **One Style box:** style, font, text size, corners, icons and effects, in this order, for every
   block (Style and layouts tab) or for one block (top of its Appearance tab).
@@ -199,7 +199,7 @@ Help tab inside the game explains everything.
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- 31 styles: four new styles (Gilded, Blue rune, Silver, Brazen: rounded edge drawn by Tessera, ornaments between merged blocks), matching FlareUI (Bronze, Bronze and gold), ElvUI (Elven), EllesmereUI (Emerald), DaylightUI (Aurora: with the addon, its own API draws the frame of each block) (also without those addons, as an imitation) or
+- 33 styles: six new styles (Gilded, Blue rune, Silver, Brazen, Jade, Amethyst: rounded edge drawn by Tessera, ornaments between merged blocks), matching FlareUI (Bronze, Bronze and gold), ElvUI (Elven), EllesmereUI (Emerald), DaylightUI (Aurora: with the addon, its own API draws the frame of each block) (also without those addons, as an imitation) or
   Blizzard's look (Blizzard Retail in silver, Blizzard Forever in gold, Blizzard Classic), Square
   styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
   Parchment; Arcane), styles made of the game's own frames (Royal seal, Ironforge, Runeblade,
@@ -386,7 +386,7 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Locales/deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`... | The other languages, sent by pull request or issue; a missing text shows in English. |
 | `Core/Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
 | `Core/Themes.lua` | The styles (Bronze, Bronze and gold and Bronze (old) for FlareUI, Emerald for EllesmereUI, Elven for ElvUI, Aurora for DaylightUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames, Gilded, Blue rune, Silver and Brazen), the style offered when an interface is installed. |
-| `Core/Looks.lua` | HD icons (`ns.HD_ICONS`, round or square frame), off for now (`ns.HD_ICONS_ON`, option hidden); the frame of Gilded, Blue rune, Silver and Brazen: rounded fill and edge in 9 pieces from `Media/Looks` (made by `tools/gen_looks_media.py`), squared at the joins of fused groups; ornate separators. |
+| `Core/Looks.lua` | HD icons (`ns.HD_ICONS`, round or square frame), off for now (`ns.HD_ICONS_ON`, option hidden); the frame of Gilded, Blue rune, Silver, Brazen, Jade and Amethyst: rounded fill and edge in 9 pieces from `Media/Looks` (made by `tools/gen_looks_media.py`), squared at the joins of fused groups; ornate separators; the glow under the mouse (`cfg.glowShape`: halo, edge, inner, pulse; `cfg.glowColorMode`: the style's or the class color) and the gliding numbers. |
 | `Core/Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
 | `Core/Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Core/Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |
@@ -421,7 +421,7 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Options/OptionsBlocks.lua` | The Blocks and groups tab: its head, its three tabs (Content, Appearance, Behaviour), the options of the selection and of every block, style targets. |
 | `Options/OptionsBlockPicker.lua` | The "See all" window of the Blocks tab: every block at once (green dot on the ones on screen), search, a click selects. |
 | `Options/OptionsStyleGallery.lua` | The style gallery (a click on a style list opens it, `ns.StyleListOpensGallery`): every style as a real block, in rows by family, "Automatic" first from the Style and layouts tab. A click marks a style; Apply (or This block, Its group, All blocks) sets it. Arrows or d-pad, Enter or A, Escape or B. |
-| `Options/OptionsStyleWorkshop.lua` | The workshop of the style gallery (`ns.StyleWorkshop`): a column on the right with the rows of `ns.LOOK_ROWS`. It starts from the blocks' settings, shows what the marked style offers except what the player changed, draws every thumbnail with those values and writes only through the gallery's buttons (`W.Changes`, `ns:ApplyLookToBlocks`). Keyboard and gamepad: Right at the end of a row, Enter or A takes a row, Left / Right change it. |
+| `Options/OptionsStyleWorkshop.lua` | The workshop of the style gallery (`ns.StyleWorkshop`): a column on the right with the rows of `ns.LOOK_ROWS`. It starts from the blocks' settings, shows what the marked style offers except what the player changed, draws every thumbnail (two merged blocks, the separator between them) with those values and writes only through the gallery's buttons (`W.Changes`, `ns:ApplyLookToBlocks`). Its last box, Animate the thumbnails (`W.Animating`), lights the blocks in turn and changes their numbers; Fewer animations keeps them still. Keyboard and gamepad: Right at the end of a row, Enter or A takes a row, Left / Right change it. |
 | `Options/OptionsPages.lua` | The Style and layouts, Placement and more, Accessibility, Launchers, DataBroker and Profiles and sharing tabs, with their popups (new profile, import, preset, reset). |
 | `Options/OptionsHelp.lua` | Themed windows (`ns:SkinWindow`), the help text (`ns.HelpText`) and the Help and About tabs. |
 | `Options/OptionsWindow.lua` | Side windows, folding and zoom, the search box, the main window (`BuildPanel`), open / toggle functions and the Blizzard settings page. |

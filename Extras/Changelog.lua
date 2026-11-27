@@ -52,8 +52,8 @@ ns.CHANGELOG = {
         highlights = {
             { en = "Tessera's windows in stone and metal, in your style's colors.",
               fr = "Les fenêtres de Tessera en pierre et métal, aux couleurs de ton style." },
-            { en = "Four new block styles: Gilded, Blue rune, Silver and Brazen, with rounded corners.",
-              fr = "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Airain, aux coins arrondis.",
+            { en = "Six new block styles: Gilded, Blue rune, Silver, Brazen, Jade and Amethyst, with rounded corners.",
+              fr = "Six nouveaux styles de blocs : Doré, Runique bleu, Argent, Airain, Jade et Améthyste, aux coins arrondis.",
               show = { page = "PAGE_LOOK", label = "THEME" } },
             { en = "Pick your style in a gallery of real blocks, and set its font and effects beside it.",
               fr = "Choisis ton style dans une galerie de vrais blocs, et règle sa police et ses effets à côté.",
@@ -78,22 +78,26 @@ ns.CHANGELOG = {
                 "Accessibility: Window shadow turns off the shadow under Tessera's windows, if it bothers you.",
                 "Sharper drawings: the page icons, the switch and the arrows are drawn at 128 px, and the logo at 256 px,"
                     .. " so they stay sharp on big screens.",
-                "Four new block styles: Gilded, Blue rune, Silver and Brazen. A tinted, see-through background, a rounded edge"
+                "Six new block styles: Gilded, Blue rune, Silver, Brazen, Jade and Amethyst. A tinted, see-through background, a rounded edge"
                     .. " drawn by Tessera and an ornament between merged blocks. Your other styles stay as they were.",
                 "Corners: rounded, or square with a line one screen pixel wide.",
                 "Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block,"
                     .. " and addons that use LibSharedMedia get them too.",
                 "Effects, for any style: the edge lights up under the mouse, and a number that changes counts"
-                    .. " to its new value. The four new styles turn them on; Fewer animations turns them off.",
-                "One Style box for the whole look: style, font, text size, corners, icons and effects, in this order,"
+                    .. " to its new value. The six new styles turn them on; Fewer animations turns them off."
+                    .. " The glow has four shapes (Halo, Edge, Inner, Pulse) and takes the style's color or your class color;"
+                    .. " your blocks keep the halo they had.",
+                "One Style box for the whole look: style, font, text size, corners, icons, separators, effects,"
+                    .. " glow shape and color, in this order,"
                     .. " in the Style and layouts tab for every block and at the top of a block's Appearance tab."
                     .. " The block's style leaves the Content tab. Blocks whose style is locked keep theirs.",
                 "Separator shape, for any style: a line, a short line, a dash, a diamond, three runes, a dot or a big dot between merged blocks"
-                    .. " (Groups of blocks for every block, or Separators for one block).",
-                "Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks"
+                    .. " (Style box or Groups of blocks for every block, or Separators for one block).",
+                "Progress bar: a new look, a thin line under the value (Bar look). The six new styles use it on the blocks"
                     .. " that have a progress; the other styles keep the band.",
                 "Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block,"
-                    .. " in rows by family. On the right, set the font, text size, corners and effects: every thumbnail shows them."
+                    .. " in rows by family, two merged blocks each. On the right, set the font, text size, corners, separators and effects:"
+                    .. " every thumbnail shows them, and can light up and move (Animate the thumbnails)."
                     .. " Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.",
               },
               fr = {
@@ -109,24 +113,28 @@ ns.CHANGELOG = {
                 "Accessibilité : Ombre des fenêtres enlève l'ombre sous les fenêtres de Tessera, si elle te gêne.",
                 "Dessins plus nets : les icônes des pages, l'interrupteur et les flèches sont dessinés en 128 px, et le logo en 256 px,"
                     .. " pour rester nets sur les grands écrans.",
-                "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Airain. Un fond teinté un peu transparent,"
+                "Six nouveaux styles de blocs : Doré, Runique bleu, Argent, Airain, Jade et Améthyste. Un fond teinté un peu transparent,"
                     .. " un bord arrondi dessiné par Tessera et un ornement entre les blocs fusionnés. Tes autres styles restent tels quels.",
                 "Coins : arrondis, ou droits avec un trait d'un pixel de l'écran.",
                 "Deux polices arrivent avec ces styles : Cinzel (Runique bleu) et Inter (Argent). Tu peux les choisir pour n'importe quel bloc,"
                     .. " et les addons qui utilisent LibSharedMedia les reçoivent aussi.",
                 "Effets, pour tous les styles : le bord s'éclaire sous la souris, et un nombre qui change"
-                    .. " glisse jusqu'à sa nouvelle valeur. Les quatre nouveaux styles les allument ; Moins d'animations les coupe.",
-                "Un seul cadre Style pour toute l'allure : style, police, taille du texte, coins, icônes et effets, dans cet ordre,"
+                    .. " glisse jusqu'à sa nouvelle valeur. Les six nouveaux styles les allument ; Moins d'animations les coupe."
+                    .. " La lueur a quatre formes (Halo, Liseré, Intérieure, Pulsation) et prend la couleur du style ou celle de ta classe ;"
+                    .. " tes blocs gardent le halo qu'ils avaient.",
+                "Un seul cadre Style pour toute l'allure : style, police, taille du texte, coins, icônes, séparateurs, effets,"
+                    .. " forme et couleur de la lueur, dans cet ordre,"
                     .. " dans l'onglet Style et dispositions pour tous les blocs et en haut de l'onglet Apparence d'un bloc."
                     .. " Le style du bloc quitte l'onglet Contenu. Les blocs au style verrouillé gardent le leur.",
                 "Forme des séparateurs, pour tous les styles : une ligne, un petit trait, un tiret, un losange, trois runes,"
                     .. " un point ou un gros point entre les blocs fusionnés"
-                    .. " (Groupes de blocs pour tous les blocs, ou Séparateurs pour un seul bloc).",
-                "Barre de progression : une nouvelle allure, une fine ligne sous la valeur (Allure de la barre). Les quatre nouveaux"
+                    .. " (cadre Style ou Groupes de blocs pour tous les blocs, ou Séparateurs pour un seul bloc).",
+                "Barre de progression : une nouvelle allure, une fine ligne sous la valeur (Allure de la barre). Les six nouveaux"
                     .. " styles l'utilisent sur les blocs qui ont une progression ; les autres styles gardent la bande.",
                 "Galerie des styles : un clic sur la liste des styles (onglet Style et dispositions, ou page d'un bloc) montre tous les styles"
-                    .. " en vrais blocs, rangés par famille. À droite, règle la police, la taille du texte, les coins et les effets :"
-                    .. " chaque vignette les montre. Clique sur un style, puis sur Appliquer. Les flèches ou la croix,"
+                    .. " en vrais blocs, rangés par famille, deux blocs fusionnés chacun. À droite, règle la police, la taille du texte,"
+                    .. " les coins, les séparateurs et les effets : chaque vignette les montre, et peut s'allumer et bouger"
+                    .. " (Animer les vignettes). Clique sur un style, puis sur Appliquer. Les flèches ou la croix,"
                     .. " Entrée ou A, et Échap ou B marchent aussi.",
               },
             },

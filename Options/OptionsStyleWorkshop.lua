@@ -24,6 +24,11 @@ local side, scroll, content, title, hint
 local rows, visible = {}, {}
 local touched, proposals, ctx = {}, {}, {}
 local focusRow, taken = 1, false
+local animate = true -- "Animate the thumbnails": on at each opening, not saved
+
+local function Still() return ns.sv and ns.sv.reduceMotion and true or false end
+-- the thumbnails move (the gallery's Animate): the box is ticked and Fewer animations is off
+function W.Animating() return W.active and animate and not Still() end
 
 -- A white drawing of Media/Skin stretched by its edges (the focus ring)
 local function Sliced(f, layer, file, margin)
@@ -160,6 +165,9 @@ local function NewRow(spec)
     local r = CreateFrame("Frame", nil, content)
     r.spec, r.kind = spec, spec.kind
     local label, tip = L[spec.label], L[spec.tip]
+    -- a row of the workshop itself (Animate) reads and writes its own value
+    local Read, Write = Display, Set
+    if spec.get then Read, Write = function() return spec.get() end, function(_, v) spec.set(v) end end
     r.label = r:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     r.label:SetJustifyH("LEFT")
     r.label:SetWordWrap(true)
@@ -171,39 +179,56 @@ local function NewRow(spec)
             if root.SetScrollMode then root:SetScrollMode(400) end
             for _, opt in ipairs(Choices(spec)) do
                 root:CreateRadio(ns:MediaLabel(opt),
-                    function(value) return (Display(field) or "mixed") == value end,
-                    function(value) Set(field, value) end, opt.key)
+                    function(value) return (Read(field) or "mixed") == value end,
+                    function(value) Write(field, value) end, opt.key)
             end
         end)
         r.control = dd
         r.Refresh = function() dd:GenerateMenu() end
         r.Step = function(dir)
             local list = spec.choices()
-            local now, at = Display(field), 0
+            local now, at = Read(field), 0
             for i, item in ipairs(list) do if item.key == now then at = i end end
             local nextAt = math.max(1, math.min(#list, at + dir))
             if at == 0 then nextAt = dir > 0 and 1 or #list end
-            if list[nextAt] then Set(field, list[nextAt].key) end
+            if list[nextAt] then Write(field, list[nextAt].key) end
         end
         AttachTip(dd, label, tip)
     elseif spec.kind == "slider" then
         local sl = Skin.Slider(CreateFrame("Frame", nil, r, "MinimalSliderWithSteppersTemplate"))
-        sl:Init(Display(field, true) or spec.min, spec.min, spec.max, spec.max - spec.min, {
+        -- (27/11, Braincell1980) bigger arrows, the size of the lists' button, and air around them
+        for _, b in ipairs({ sl.Back, sl.Forward }) do
+            if type(b) == "table" and b.SetSize then b:SetSize(24, 24) end
+        end
+        if type(sl.Back) == "table" and type(sl.Forward) == "table" and type(sl.Slider) == "table" then
+            sl.Back:ClearAllPoints()
+            sl.Back:SetPoint("LEFT", sl, "LEFT", 2, 0)
+            sl.Forward:ClearAllPoints()
+            sl.Forward:SetPoint("RIGHT", sl, "RIGHT", -2, 0)
+            sl.Slider:ClearAllPoints()
+            sl.Slider:SetPoint("LEFT", sl.Back, "RIGHT", 8, 0)
+            sl.Slider:SetPoint("RIGHT", sl.Forward, "LEFT", -8, 0)
+        end
+        if type(sl.RightText) == "table" then
+            sl.RightText:ClearAllPoints()
+            sl.RightText:SetPoint("LEFT", sl, "RIGHT", 10, 0)
+        end
+        sl:Init(Read(field, true) or spec.min, spec.min, spec.max, spec.max - spec.min, {
             [MinimalSliderWithSteppersMixin.Label.Right] = function(v) return tostring(math.floor(v + 0.5)) end,
         })
         sl:RegisterCallback(MinimalSliderWithSteppersMixin.Event.OnValueChanged, function(_, value)
             if r.updating then return end
-            Set(field, math.floor(value + 0.5))
+            Write(field, math.floor(value + 0.5))
         end, r)
         r.control = sl
         r.Refresh = function()
             r.updating = true
-            sl:SetValue(Display(field, true) or spec.min)
+            sl:SetValue(Read(field, true) or spec.min)
             r.updating = false
         end
         r.Step = function(dir)
-            local v = (Display(field, true) or spec.min) + dir
-            Set(field, math.max(spec.min, math.min(spec.max, v)))
+            local v = (Read(field, true) or spec.min) + dir
+            Write(field, math.max(spec.min, math.min(spec.max, v)))
         end
         if sl.Slider then AttachTip(sl.Slider, label, tip) end
     else
@@ -214,14 +239,18 @@ local function NewRow(spec)
         cb:SetSize(24, 24)
         cb:SetScript("OnEnter", nil)
         cb:SetScript("OnLeave", nil)
-        cb:SetScript("OnClick", function(self) Set(field, self:GetChecked() and true or false) end)
+        cb:SetScript("OnClick", function(self) Write(field, self:GetChecked() and true or false) end)
         r:EnableMouse(true)
         r:SetScript("OnMouseUp", function(_, button)
             if button == "LeftButton" and cb:IsEnabled() then cb:Click() end
         end)
         r.control = cb
-        r.Refresh = function() cb:SetChecked(Display(field, true) and true or false) end
-        r.Step = function() Set(field, not Display(field, true)) end
+        r.Refresh = function()
+            cb:SetChecked(Read(field, true) and true or false)
+            -- (Animate: off and greyed with Fewer animations)
+            if spec.still then cb:SetEnabled(not Still()) end
+        end
+        r.Step = function() Write(field, not Read(field, true)) end
         AttachTip(cb, label, tip)
     end
     AttachTip(r, label, tip)
@@ -269,6 +298,15 @@ function W.Build(f, colW, pad, barH)
         Skin.TextColor(hint, p.soft)
     end)
     for i, spec in ipairs(ns.LOOK_ROWS) do rows[i] = NewRow(spec) end
+    -- last, the workshop's own box: the thumbnails light up and move (27/11)
+    rows[#rows + 1] = NewRow({ field = "animate", label = "STYLE_WORKSHOP_ANIMATE", kind = "check",
+        tip = "TIP_STYLE_WORKSHOP_ANIMATE", still = true,
+        get = function() return animate and not Still() end,
+        set = function(v)
+            animate = v and true or false
+            if not animate and ns.StyleGalleryStill then ns.StyleGalleryStill() end
+            for _, r in ipairs(rows) do if r.spec.field == "animate" then r.Refresh() end end
+        end })
     W.side, W.scroll, W.content, W.rows = side, scroll, content, rows -- (tools/mock_run.lua)
 end
 
@@ -280,6 +318,7 @@ function W.Open(o, openKey, chosen, redraw)
     ctx = { lookNow = o.lookNow, openKey = openKey, chosen = chosen, redraw = redraw }
     touched, proposals = {}, {}
     focusRow, taken = 1, false
+    animate = true
     if side then side:SetShown(W.active) end
     if scroll then scroll:SetVerticalScroll(0) end
 end
@@ -318,7 +357,7 @@ local function Layout()
                 local labelH = math.ceil(r.label:GetStringHeight() or 14)
                 r.control:SetPoint("TOPLEFT", r, "TOPLEFT", 0, -labelH - 4)
                 local ch = r.kind == "list" and 26 or 24
-                if r.kind == "list" then r.control:SetWidth(w) else r.control:SetWidth(w - 40) end
+                if r.kind == "list" then r.control:SetWidth(w) else r.control:SetWidth(w - 36) end
                 h = labelH + 4 + ch
             end
             r:SetHeight(h)

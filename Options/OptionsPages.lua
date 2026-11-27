@@ -678,6 +678,10 @@ local function BuildLookPage(page)
             end
             ns:RefreshOptions()
         end, nil, nil, L.TIP_SEPARATOR_SHAPE_ALL))
+    -- the rest of the separators (on or off, color, class color) is set per block: a shortcut to
+    -- "All blocks", Appearance, Separators (27/11; not in DataBroker mode: no blocks)
+    groups.Add(CreateButton(page, L.LOOK_ALL_SEPARATORS, function() ns:OpenAllBlocks(7) end,
+        function() return not ns.brokerModeActive end, nil, L.TIP_LOOK_ALL_SEPARATORS))
 
     -- sharing the style or the layout alone (the import window reads both, and profiles)
     local shareBox = F.Box(L.SECTION_SHARE)

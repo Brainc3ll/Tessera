@@ -819,7 +819,7 @@ function ns:OpenOptions(pageIndex, blockKey)
     ns.ShowOptionsPage(pageIndex or PAGE_BLOCKS)
 end
 
--- Opens the Blocks tab on "All blocks", at a sub-tab (2 Text, 3 Frame): the shortcuts
+-- Opens the Blocks tab on "All blocks", at a sub-tab (2 Text, 3 Frame, 7 Separators): the shortcuts
 -- of the Look tab, where players look first for the look of every block
 function ns:OpenAllBlocks(sub)
     S.selected = ALL

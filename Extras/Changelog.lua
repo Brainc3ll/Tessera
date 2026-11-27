@@ -88,7 +88,7 @@ ns.CHANGELOG = {
                 "One Style box for the whole look: style, font, text size, corners, icons and effects, in this order,"
                     .. " in the Style and layouts tab for every block and at the top of a block's Appearance tab."
                     .. " The block's style leaves the Content tab. Blocks whose style is locked keep theirs.",
-                "Separator shape, for any style: a line, a drawn line, a dash, a diamond, three runes, a dot or a big dot between merged blocks"
+                "Separator shape, for any style: a line, a short line, a dash, a diamond, three runes, a dot or a big dot between merged blocks"
                     .. " (Groups of blocks for every block, or Separators for one block).",
                 "Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks"
                     .. " that have a progress; the other styles keep the band.",
@@ -118,7 +118,7 @@ ns.CHANGELOG = {
                 "Un seul cadre Style pour toute l'allure : style, police, taille du texte, coins, icônes et effets, dans cet ordre,"
                     .. " dans l'onglet Style et dispositions pour tous les blocs et en haut de l'onglet Apparence d'un bloc."
                     .. " Le style du bloc quitte l'onglet Contenu. Les blocs au style verrouillé gardent le leur.",
-                "Forme des séparateurs, pour tous les styles : un trait, une ligne dessinée, un tiret, un losange, trois runes,"
+                "Forme des séparateurs, pour tous les styles : une ligne, un petit trait, un tiret, un losange, trois runes,"
                     .. " un point ou un gros point entre les blocs fusionnés"
                     .. " (Groupes de blocs pour tous les blocs, ou Séparateurs pour un seul bloc).",
                 "Barre de progression : une nouvelle allure, une fine ligne sous la valeur (Allure de la barre). Les quatre nouveaux"

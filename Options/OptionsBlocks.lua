@@ -811,9 +811,9 @@ local function BuildBlockPage(page)
     end
 
     -- Opens a tab (the old sub-tabs, still used by the Look tab, the tour and the search):
-    -- 1, 5 and 6 Content, 2 and 3 Appearance (at Text and at Background), 4 Behaviour
-    local SUB_TAB = { 1, 2, 2, 3, 1, 1 }
-    local SUB_BOX = { [2] = textBox, [3] = bgBox }
+    -- 1, 5 and 6 Content, 2, 3 and 7 Appearance (at Text, at Background and at Separators), 4 Behaviour
+    local SUB_TAB = { 1, 2, 2, 3, 1, 1, 2 }
+    local SUB_BOX = { [2] = textBox, [3] = bgBox, [7] = sepBox }
     local function ShowSub(index)
         local tab = SUB_TAB[index] or 1
         ShowTab(tab)

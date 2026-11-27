@@ -4592,7 +4592,7 @@ do
     ns:RemoveSpacer(spacer)
     -- three tabs; the old sub-tabs open the right one
     if #ns.blockTabs.bar.buttons ~= 3 then print("STEP ERROR: the Blocks tab has " .. #ns.blockTabs.bar.buttons .. " tabs") end
-    for sub, tab in pairs({ [1] = 1, [2] = 2, [3] = 2, [4] = 3, [5] = 1, [6] = 1 }) do
+    for sub, tab in pairs({ [1] = 1, [2] = 2, [3] = 2, [4] = 3, [5] = 1, [6] = 1, [7] = 2 }) do
         ns.ShowBlockSub(sub)
         if ns.blockTabs.bar.selected ~= tab then print("STEP ERROR: sub-tab " .. sub .. " does not open tab " .. tab) end
     end

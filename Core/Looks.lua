@@ -150,9 +150,12 @@ function ns.FontFitsClient(key)
     return false
 end
 
--- Ornate separators of the 2.0 styles (cfg.separatorStyle): the drawing stands upright in
+-- Ornate separators (cfg.separatorStyle, any style since 27/11): the drawing stands upright in
 -- the file; a horizontal separator turns it a quarter
-ns.SEPARATOR_FILES = { diamond = "hd_sep_diamond", rune = "hd_sep_rune", dot = "hd_sep_dot" }
+ns.SEPARATOR_FILES = {
+    diamond = "hd_sep_diamond", rune = "hd_sep_rune", dot = "hd_sep_dot",
+    drawn = "hd_sep_drawn", dash = "hd_sep_dash", -- (27/11: the fading line alone, a short dash across)
+}
 function ns.SetOrnateSeparator(tex, style, horizontal)
     tex:SetTexture(MEDIA .. ns.SEPARATOR_FILES[style])
     if horizontal then

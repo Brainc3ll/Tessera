@@ -99,6 +99,23 @@ separator("hd_sep_diamond", diamond)
 separator("hd_sep_rune", runes)
 separator("hd_sep_dot", dot, line=False)
 
+
+# "Drawn line": a stroke as if drawn with a pen, thick in the middle and thin at both ends;
+# "Dash": a short line across the join, no line along it
+def stroke(d):
+    for y in range(4 * S, 60 * S):
+        t = abs(y / (64 * S) - 0.5) * 2  # 0 in the middle, 1 at the ends
+        half = 2.6 * (1 - t ** 2)
+        d.line([((16 - half) * S, y), ((16 + half) * S, y)], fill=255)
+
+
+def dash(d):
+    d.rounded_rectangle([3 * S, 30 * S, 29 * S, 34 * S], 2 * S, fill=255)
+
+
+separator("hd_sep_drawn", stroke)
+separator("hd_sep_dash", dash, line=False)
+
 # HD icons (Core/Looks.lua): a ring with a fine inner line, and a dark disc behind the icon,
 # 128 px (the drawings of the preview chosen in game on 26/11)
 m = mask(128, 128)

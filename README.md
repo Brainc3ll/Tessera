@@ -144,7 +144,7 @@ Help tab inside the game explains everything.
   Click a style, then Apply; the keyboard and the gamepad work too.
 - **One Style box:** style, font, text size, corners, icons and effects, in this order, for every
   block (Style and layouts tab) or for one block (top of its Appearance tab).
-- **Separator shapes (any style):** a line, a diamond, three runes or a dot between merged blocks.
+- **Separator shapes (any style):** a line, a drawn line, a dash, a diamond, three runes or a dot between merged blocks.
 - **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every
   direction: a bar, a column, a corner, an L shape... Stick a bar to a screen edge and stretch it
   over the whole width, or start from a ready-made layout (among them "Double

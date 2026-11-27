@@ -61,8 +61,8 @@ ns.CHANGELOG = {
             { en = "Style, font, corners and effects together in one Style box.",
               fr = "Style, police, coins et effets réunis dans un seul cadre Style.",
               show = { page = "PAGE_LOOK", label = "FONT" } },
-            { en = "Between merged blocks: a line, a diamond, runes or a dot.",
-              fr = "Entre les blocs fusionnés : un trait, un losange, des runes ou un point.",
+            { en = "Between merged blocks: a line, a dash, a diamond, runes or a dot.",
+              fr = "Entre les blocs fusionnés : un trait, un tiret, un losange, des runes ou un point.",
               show = { page = "PAGE_LOOK", label = "SEPARATOR_SHAPE" } },
         },
         sections = {
@@ -88,7 +88,7 @@ ns.CHANGELOG = {
                 "One Style box for the whole look: style, font, text size, corners, icons and effects, in this order,"
                     .. " in the Style and layouts tab for every block and at the top of a block's Appearance tab."
                     .. " The block's style leaves the Content tab. Blocks whose style is locked keep theirs.",
-                "Separator shape, for any style: a line, a diamond, three runes or a dot between merged blocks"
+                "Separator shape, for any style: a line, a drawn line, a dash, a diamond, three runes or a dot between merged blocks"
                     .. " (Groups of blocks for every block, or Separators for one block).",
                 "Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks"
                     .. " that have a progress; the other styles keep the band.",
@@ -118,7 +118,8 @@ ns.CHANGELOG = {
                 "Un seul cadre Style pour toute l'allure : style, police, taille du texte, coins, icônes et effets, dans cet ordre,"
                     .. " dans l'onglet Style et dispositions pour tous les blocs et en haut de l'onglet Apparence d'un bloc."
                     .. " Le style du bloc quitte l'onglet Contenu. Les blocs au style verrouillé gardent le leur.",
-                "Forme des séparateurs, pour tous les styles : un trait, un losange, trois runes ou un point entre les blocs fusionnés"
+                "Forme des séparateurs, pour tous les styles : un trait, une ligne dessinée, un tiret, un losange, trois runes"
+                    .. " ou un point entre les blocs fusionnés"
                     .. " (Groupes de blocs pour tous les blocs, ou Séparateurs pour un seul bloc).",
                 "Barre de progression : une nouvelle allure, une fine ligne sous la valeur (Allure de la barre). Les quatre nouveaux"
                     .. " styles l'utilisent sur les blocs qui ont une progression ; les autres styles gardent la bande.",

@@ -5074,7 +5074,7 @@ do
     if not allSep then
         print("STEP ERROR: separators: no shape setting in Groups of blocks")
     else
-        for _, key in ipairs({ "line", "diamond", "rune", "dot" }) do
+        for _, key in ipairs({ "line", "drawn", "dash", "diamond", "rune", "dot" }) do
             local found = false
             for _, opt in ipairs(ns.SeparatorChoices()) do if opt.key == key and L[opt.name] ~= opt.name then found = true end end
             if not found or (key ~= "line" and not ns.SEPARATOR_FILES[key]) then print("STEP ERROR: separators: shape " .. key) end

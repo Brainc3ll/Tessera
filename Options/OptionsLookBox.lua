@@ -26,6 +26,8 @@ end
 function ns.SeparatorChoices()
     return {
         { key = "line", name = L.SEPARATOR_LINE },
+        { key = "drawn", name = L.SEPARATOR_DRAWN },
+        { key = "dash", name = L.SEPARATOR_DASH },
         { key = "diamond", name = L.SEPARATOR_DIAMOND },
         { key = "rune", name = L.SEPARATOR_RUNES },
         { key = "dot", name = L.SEPARATOR_DOT },

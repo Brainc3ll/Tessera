@@ -1198,17 +1198,18 @@ function ns:DrawSeparators(f, cov)
         local thick = unit or self:PixelSize(1, f)
         local Shift = ns.PixelShift
         local fl, fb, fr, ft = f:GetLeft(), f:GetBottom(), f:GetRight(), f:GetTop()
-        -- 2.0 styles: an ornament (diamond, runes) centered on the join, on a layer above
-        -- the next block so it is not cut in half
+        -- an ornament (diamond, runes, dot, dash, drawn line) centered on the join, on a layer
+        -- well above the blocks of the group so the next one does not cut it in half
         local ornate = ns.SEPARATOR_FILES[cfg.separatorStyle or "line"]
         if ornate and not f.ornateLayer then
             f.ornateLayer = CreateFrame("Frame", nil, f)
             f.ornateLayer:SetAllPoints()
             f.ornatePool = {}
         end
-        if f.ornateLayer then f.ornateLayer:SetFrameLevel(f:GetFrameLevel() + 4) end
+        if f.ornateLayer then f.ornateLayer:SetFrameLevel(f:GetFrameLevel() + 20) end
         local function Ornate(side, a, b)
-            local len = math.min(b - a - 2, 24)
+            -- 18 px at most, and a margin at both ends of the join (27/11: 24 was a bit big)
+            local len = math.min(b - a - 6, 18)
             if len < 6 then return end
             ornateUsed = ornateUsed + 1
             local tex = f.ornatePool[ornateUsed]

@@ -98,3 +98,11 @@ save("hd_ring", m, 128, 128)
 m = mask(128, 128)
 ImageDraw.Draw(m).ellipse([3 * S, 3 * S, n - 3 * S, n - 3 * S], fill=255)
 save("hd_disc", m, 128, 128)
+
+# HD icons with a square icon frame: the same frame as the ring, square (27/11: the icon
+# frame setting, square or round, also shapes the HD icons)
+m = mask(128, 128)
+d = ImageDraw.Draw(m)
+d.rectangle([0, 0, n, n], outline=255, width=int(7 * S))
+d.rectangle([10 * S, 10 * S, n - 10 * S, n - 10 * S], outline=150, width=int(1.5 * S))
+save("hd_box", m, 128, 128)

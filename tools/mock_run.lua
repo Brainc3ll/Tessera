@@ -2955,6 +2955,8 @@ for _, step in ipairs({
         ns:ApplyStyle("gold")
         local f = ns.frames.gold
         assert(not (f.hdIcon and f.hdIcon:IsShown()), "usual icons by default")
+        local shape = cfg.iconShape
+        cfg.iconShape = "round"
         for _, set in ipairs({ "hd", "hdTint" }) do
             cfg.iconSet = set
             ns:ApplyStyle("gold")
@@ -2965,6 +2967,21 @@ for _, step in ipairs({
         local w, h = f.hdIcon.__w, f.hdIcon.__h
         assert(w and h and h > 0 and math.abs(w / h - 91 / 128) < 0.01, "HD icon not stretched")
         assert(f.icon:GetAlpha() == 0, "usual icon hidden under the HD one")
+        -- HD icons take the block's height but 2 px on each side (27/11: they looked tiny)
+        assert(f.iconSize >= cfg.height - 4, "HD icon size follows the whole height")
+        -- the icon frame shapes the HD icon (27/11): square frame, round ring, or the drawing alone
+        cfg.iconShape = "square"
+        ns:ApplyStyle("gold")
+        assert(f.hdIconRing:GetTexture():find("hd_box", 1, true) and f.hdIconRing:IsShown(), "square frame")
+        cfg.iconShape = "round"
+        ns:ApplyStyle("gold")
+        assert(f.hdIconRing:GetTexture():find("hd_ring", 1, true), "round ring")
+        cfg.iconShape = "none"
+        ns:ApplyStyle("gold")
+        assert(f.hdIcon:IsShown() and not f.hdIconRing:IsShown() and not f.hdIconDisc:IsShown(), "no frame: the drawing alone")
+        cfg.iconShape = "round"
+        ns:ApplyStyle("gold")
+        assert(f.hdIconRing:IsShown(), "ring for the next checks")
         -- tinted: the class color of the text; a dark tint gets a light disc
         cfg.classColorText = true
         ns:ApplyStyle("gold")
@@ -2992,7 +3009,7 @@ for _, step in ipairs({
         cfg.showIcon = false
         ns:ApplyStyle("gold")
         assert(not f.hdIcon:IsShown() and not f.hdIconRing:IsShown() and f.icon:GetAlpha() == 1, "icon hidden: no ring")
-        cfg.showIcon, cfg.iconSet, fps.iconSet = true, "classic", "classic"
+        cfg.showIcon, cfg.iconSet, fps.iconSet, cfg.iconShape = true, "classic", "classic", shape
         ns:ApplyStyle("gold")
         ns:ApplyStyle("fps")
         C_Texture = oldTex

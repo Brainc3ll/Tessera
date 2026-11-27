@@ -349,6 +349,8 @@ end
 -- theirs, spacers follow (the styles give them the same frame)
 local function Counts(self, key, cfg, look)
     if not cfg then return false end
+    -- "icons": spacers have no icon, they do not make the setting look mixed
+    if look == "icons" and self.IsSpacerKey(key) then return false end
     if look then return not cfg.styleLocked end
     -- spacers keep their own look: "All blocks" does not change them
     return not self.IsSpacerKey(key)
@@ -2305,6 +2307,12 @@ function ns:ApplyStyle(key)
     -- (a size bigger than the height makes the block grow: see NeededSize in Merge.lua)
     local iconSize = (cfg.iconSize or 0) > 0 and cfg.iconSize
         or math.max(8, cfg.height - 2 * inset - 4)
+    -- HD icons (Core/Looks.lua) draw a frame around a thin drawing: following the height, they
+    -- take the block's whole height but 2 pixels on each side, whatever the border (27/11:
+    -- they looked tiny at the usual size)
+    if (cfg.iconSize or 0) <= 0 and ns.HDIconAtlas(f.key, cfg) then
+        iconSize = math.max(iconSize, cfg.height - 4)
+    end
     f.inset, f.iconSize, f.iconOnly = inset, iconSize, iconOnly
     f.borderKey = cfg.border
     f.lineReach = self:GetBorderReach(cfg.border)

@@ -165,7 +165,8 @@ end
 
 ---------------------------------------------------------------------------
 -- HD icons (cfg.iconSet, any style): the game's big drawings, those of the gamepad menus
--- and of the 128 px cursors, in a round ring over a dark disc. A block without one keeps
+-- and of the 128 px cursors, in the icon frame the player chose (round ring or square
+-- frame over a dark backing; no frame: the drawing alone). A block without one keeps
 -- its usual icon. The block's own icon texture stays in place (hidden, alpha 0), so the
 -- text and the layout do not move.
 -- Every name below is in Forever's atlas list (BlizzardInterfaceResources, AtlasInfo.lua,
@@ -221,6 +222,12 @@ function ns.DrawHDIcon(f, cfg, atlas, info, ring)
         f.hdIconRing = f:CreateTexture(nil, "ARTWORK", nil, 2)
         f.hdIconRing:SetTexture(MEDIA .. "hd_ring")
     end
+    -- the icon frame setting shapes the HD icon too: round = ring, square = square frame,
+    -- none = the drawing alone, a little bigger
+    local shape = cfg.iconShape or "none"
+    local framed = shape == "round" or shape == "square"
+    f.hdIconDisc:SetTexture(shape == "square" and WHITE or MEDIA .. "hd_disc")
+    f.hdIconRing:SetTexture(MEDIA .. (shape == "square" and "hd_box" or "hd_ring"))
     f.hdIconDisc:ClearAllPoints()
     f.hdIconDisc:SetAllPoints(icon)
     f.hdIconRing:ClearAllPoints()
@@ -228,10 +235,10 @@ function ns.DrawHDIcon(f, cfg, atlas, info, ring)
     f.hdIconRing:SetVertexColor(ring.r or 1, ring.g or 1, ring.b or 1, ring.a or 1)
     local tex = f.hdIcon
     tex:SetAtlas(atlas, false)
-    -- not square (91 x 128, 127 x 104...): fits inside the ring without stretching
+    -- not square (91 x 128, 127 x 104...): fits inside the frame without stretching
     local size = icon:GetWidth() or 0
     local w, h = info.width or size, info.height or size
-    local s = size * 0.70 / math.max(w, h, 1)
+    local s = size * (framed and 0.78 or 1) / math.max(w, h, 1)
     tex:SetSize(w * s, h * s)
     tex:ClearAllPoints()
     tex:SetPoint("CENTER", icon, "CENTER", 0, 0)
@@ -246,7 +253,7 @@ function ns.DrawHDIcon(f, cfg, atlas, info, ring)
     end
     if tex.SetDesaturated then tex:SetDesaturated((cfg.iconDesaturate or cfg.monochrome) and true or false) end
     icon:SetAlpha(0)
-    f.hdIconDisc:Show()
+    f.hdIconDisc:SetShown(framed)
     tex:Show()
-    f.hdIconRing:Show()
+    f.hdIconRing:SetShown(framed)
 end

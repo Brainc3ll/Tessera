@@ -55,8 +55,8 @@ ns.CHANGELOG = {
             { en = "Four new block styles: Gilded, Blue rune, Silver and Brazen, with rounded corners.",
               fr = "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Airain, aux coins arrondis.",
               show = { page = "PAGE_LOOK", label = "THEME" } },
-            { en = "HD icons for every style: the game's large drawings in a round ring, tinted or not.",
-              fr = "Icônes HD pour tous les styles : les grands dessins du jeu dans un anneau rond, teintés ou non.",
+            { en = "HD icons for every style: the game's large drawings in your icon frame, tinted or not.",
+              fr = "Icônes HD pour tous les styles : les grands dessins du jeu dans ton cadre d'icône, teintés ou non.",
               show = { page = "PAGE_LOOK", label = "ICON_SET" } },
         },
         sections = {
@@ -78,7 +78,7 @@ ns.CHANGELOG = {
                 "Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block,"
                     .. " and addons that use LibSharedMedia get them too.",
                 "Icons (Style and layouts tab, or Appearance for one block), for every style: usual, HD or HD tinted."
-                    .. " HD shows the game's large drawings (gamepad menus, cursors) in a round ring, in the icon frame's color;"
+                    .. " HD shows the game's large drawings (gamepad menus, cursors) in your icon frame (round or square), in its color;"
                     .. " tinted takes the text's color. 24 blocks have one; the others keep their icon. Usual stays the default.",
               },
               fr = {
@@ -100,7 +100,7 @@ ns.CHANGELOG = {
                 "Deux polices arrivent avec ces styles : Cinzel (Runique bleu) et Inter (Argent). Tu peux les choisir pour n'importe quel bloc,"
                     .. " et les addons qui utilisent LibSharedMedia les reçoivent aussi.",
                 "Icônes (onglet Style et dispositions, ou Apparence pour un seul bloc), pour tous les styles : actuelles, HD ou HD teintées."
-                    .. " HD montre les grands dessins du jeu (menus de la manette, curseurs) dans un anneau rond, de la couleur du cadre de l'icône ;"
+                    .. " HD montre les grands dessins du jeu (menus de la manette, curseurs) dans ton cadre d'icône (rond ou carré), de sa couleur ;"
                     .. " teintées prend la couleur du texte. 24 blocs en ont un ; les autres gardent leur icône. Actuelles reste le réglage par défaut.",
               },
             },

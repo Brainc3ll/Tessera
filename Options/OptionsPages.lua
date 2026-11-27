@@ -644,12 +644,12 @@ local function BuildLookPage(page)
                 { key = "hd", name = L.ICON_SET_HD },
                 { key = "hdTint", name = L.ICON_SET_HD_TINT },
             }
-            if not ns:AllBlocksField("iconSet", true) then table.insert(list, 1, { key = "mixed", name = L.FONT_MIXED }) end
+            if not ns:AllBlocksField("iconSet", "icons") then table.insert(list, 1, { key = "mixed", name = L.FONT_MIXED }) end
             return list
         end,
-        function() return ns:AllBlocksField("iconSet", true) or "mixed" end,
+        function() return ns:AllBlocksField("iconSet", "icons") or "mixed" end,
         function(v)
-            if v ~= "mixed" then ns:SetAllBlocksField("iconSet", v, true) end
+            if v ~= "mixed" then ns:SetAllBlocksField("iconSet", v, "icons") end
             ns:RefreshOptions()
         end, nil, nil, L.TIP_ICON_SET_ALL))
     theme.Add(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,

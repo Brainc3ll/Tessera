@@ -576,7 +576,7 @@ local function NeededSize(f, cfg)
         -- while a number glides (Core/Looks.lua) the text on screen is not the final one:
         -- the width measured on the final text in UpdateBlock
         local tw = (f.glide and f.textW) or ns.TextWidth(text, f.lastText)
-        w = math.ceil(tw or 0) + 8 + 2 * inset + (cfg.showIcon and (iconSize + 4) or 0)
+        w = math.ceil(tw or 0) + 8 + 2 * (inset + (f.sepGap or 0)) + (cfg.showIcon and (iconSize + 4) or 0)
     end
     local th = f.text:GetStringHeight() or 0
     local h = math.ceil(math.max(th, cfg.showIcon and iconSize or 0)) + 4 + 2 * inset
@@ -1178,6 +1178,27 @@ function ns.PixelShift(pos, unit, dir)
     return n * unit - pos
 end
 
+-- The highest strata and frame level among the shown blocks of f's group: the ornaments sit
+-- above all of them (27/11: a block of the group in a higher layer, or raised higher, hid half
+-- of an ornament on its side of the join)
+local STRATA_RANK = { BACKGROUND = 1, LOW = 2, MEDIUM = 3, HIGH = 4, DIALOG = 5, FULLSCREEN = 6,
+                      FULLSCREEN_DIALOG = 7, TOOLTIP = 8 }
+local function TopOfGroup(self, f)
+    local root = self:GetRoot(f.key)
+    local strata, level = f:GetFrameStrata(), f:GetFrameLevel()
+    for key, g in pairs(self.frames) do
+        if g ~= f and g:IsShown() and self.db.blocks[key] and self:GetRoot(key) == root then
+            local s, l = g:GetFrameStrata(), g:GetFrameLevel()
+            if (STRATA_RANK[s] or 0) > (STRATA_RANK[strata] or 0) then
+                strata, level = s, l
+            elseif s == strata and l > level then
+                level = l
+            end
+        end
+    end
+    return strata, level
+end
+
 function ns:DrawSeparators(f, cov)
     local cfg = self.db.blocks[f.key]
     f.separatorPool = f.separatorPool or {}
@@ -1206,7 +1227,11 @@ function ns:DrawSeparators(f, cov)
             f.ornateLayer:SetAllPoints()
             f.ornatePool = {}
         end
-        if f.ornateLayer then f.ornateLayer:SetFrameLevel(f:GetFrameLevel() + 20) end
+        if f.ornateLayer and ornate then
+            local strata, level = TopOfGroup(self, f)
+            f.ornateLayer:SetFrameStrata(strata)
+            f.ornateLayer:SetFrameLevel(math.min(level + 20, 9000))
+        end
         local function Ornate(side, a, b)
             -- 18 px at most, and a margin at both ends of the join (27/11: 24 was a bit big)
             local len = math.min(b - a - 6, 18)
@@ -1221,12 +1246,25 @@ function ns:DrawSeparators(f, cov)
             tex:SetVertexColor(c.r, c.g, c.b, c.a)
             tex:ClearAllPoints()
             local mid = (a + b) / 2
+            -- sharp (27/11): a whole, even number of screen pixels each way, centered on a pixel
+            -- edge, so the drawing is not smeared over half pixels
+            local long, short = len, len / 2 -- the drawings are 32 x 64
+            if unit then
+                short = math.max(2, 2 * math.floor(short / unit / 2 + 0.5)) * unit
+                long = 2 * short
+            end
+            if tex.SetSnapToPixelGrid then tex:SetSnapToPixelGrid(false) end
+            if tex.SetTexelSnappingBias then tex:SetTexelSnappingBias(0) end
             if side == "RIGHT" then
-                tex:SetSize(len / 2, len) -- the drawings are 32 x 64
-                tex:SetPoint("CENTER", f, "TOPRIGHT", 0, -mid)
+                tex:SetSize(short, long)
+                local x = unit and fr and Shift(fr, unit) or 0
+                local y = unit and ft and Shift(ft - mid, unit) or 0
+                tex:SetPoint("CENTER", f, "TOPRIGHT", x, -mid + y)
             else
-                tex:SetSize(len, len / 2)
-                tex:SetPoint("CENTER", f, "BOTTOMLEFT", mid, 0)
+                tex:SetSize(long, short)
+                local x = unit and fl and Shift(fl + mid, unit) or 0
+                local y = unit and fb and Shift(fb, unit) or 0
+                tex:SetPoint("CENTER", f, "BOTTOMLEFT", mid + x, y)
             end
             tex:Show()
         end

@@ -2336,6 +2336,10 @@ function ns:ApplyStyle(key)
         iconSize = math.max(iconSize, cfg.height - 4)
     end
     f.inset, f.iconSize, f.iconOnly = inset, iconSize, iconOnly
+    -- an ornament between merged blocks (diamond, dot...) gets some room on both sides of the
+    -- block (27/11: it touched the icons and the text); a plain line needs none
+    local gap = (cfg.separators and ns.SEPARATOR_FILES[cfg.separatorStyle or "line"]) and 3 or 0
+    f.sepGap = gap
     f.borderKey = cfg.border
     f.lineReach = self:GetBorderReach(cfg.border)
     f.icon:SetSize(iconSize, iconSize)
@@ -2344,12 +2348,12 @@ function ns:ApplyStyle(key)
     if iconOnly then
         f.icon:SetPoint("CENTER")
     elseif showIcon then
-        f.icon:SetPoint("LEFT", f, "LEFT", 4 + inset, 0)
+        f.icon:SetPoint("LEFT", f, "LEFT", 4 + inset + gap, 0)
         f.text:SetPoint("LEFT", f.icon, "RIGHT", 4, 0)
-        f.text:SetPoint("RIGHT", f, "RIGHT", -4 - inset, 0)
+        f.text:SetPoint("RIGHT", f, "RIGHT", -4 - inset - gap, 0)
     else
-        f.text:SetPoint("LEFT", f, "LEFT", 4 + inset, 0)
-        f.text:SetPoint("RIGHT", f, "RIGHT", -4 - inset, 0)
+        f.text:SetPoint("LEFT", f, "LEFT", 4 + inset + gap, 0)
+        f.text:SetPoint("RIGHT", f, "RIGHT", -4 - inset - gap, 0)
     end
     f.icon:SetShown(showIcon and true or false)
     self:StyleIcon(f, cfg)

@@ -100,6 +100,15 @@ separator("hd_sep_rune", runes)
 separator("hd_sep_dot", dot, line=False)
 
 
+# "Dot": a small one ("Big dot" is the one above)
+def small_dot(d):
+    r = 5.5
+    d.ellipse([(16 - r) * S, (32 - r) * S, (16 + r) * S, (32 + r) * S], fill=255)
+
+
+separator("hd_sep_dot_small", small_dot, line=False)
+
+
 # "Drawn line": a stroke as if drawn with a pen, thick in the middle and thin at both ends;
 # "Dash": a short line across the join, no line along it
 def stroke(d):

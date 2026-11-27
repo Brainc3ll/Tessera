@@ -792,7 +792,7 @@ table.insert(ns.themes, HDStyle("hdSilver", "THEME_HD_SILVER", {
     glow = { 0.90, 0.92, 1 }, border = "hdLine", sep = "diamond", font = "inter" }))
 table.insert(ns.themes, HDStyle("hdBronze", "THEME_HD_BRONZE", {
     tint = { 0.09, 0.05, 0.03, 0.80 }, edge = { 0.72, 0.45, 0.24 }, value = { 1, 0.92, 0.84 },
-    glow = { 1, 0.62, 0.35 }, border = "hdDouble", sep = "diamond", font = "friz" }))
+    glow = { 1, 0.62, 0.35 }, border = "hdDouble", sep = "drawn", font = "friz" }))
 ns.LocalizeList(ns.themes, "name") -- the names come from keys (nameKey), see Locales/Language.lua
 
 -- The center of modern tooltips is a white texture that the game tints with

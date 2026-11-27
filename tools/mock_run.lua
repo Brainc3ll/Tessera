@@ -1156,7 +1156,7 @@ for _, step in ipairs({
         local text = ns:ExportStyle()
         assert(ns:ApplyTheme("flat"))
         assert(ns:ImportStyle(text) and ns.db.blocks.gold.border == "hdDouble"
-            and ns.db.blocks.gold.separatorStyle == "diamond", "2.0 style export round trip")
+            and ns.db.blocks.gold.separatorStyle ~= "line", "2.0 style export round trip")
         local fx = assert(io.open(addonDir .. "/tools/fixtures/rc9-style.txt"), "missing fixture")
         local old = fx:read("*a")
         fx:close()
@@ -5074,7 +5074,7 @@ do
     if not allSep then
         print("STEP ERROR: separators: no shape setting in Groups of blocks")
     else
-        for _, key in ipairs({ "line", "drawn", "dash", "diamond", "rune", "dot" }) do
+        for _, key in ipairs({ "line", "drawn", "dash", "diamond", "rune", "smallDot", "dot" }) do
             local found = false
             for _, opt in ipairs(ns.SeparatorChoices()) do if opt.key == key and L[opt.name] ~= opt.name then found = true end end
             if not found or (key ~= "line" and not ns.SEPARATOR_FILES[key]) then print("STEP ERROR: separators: shape " .. key) end

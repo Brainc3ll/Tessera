@@ -153,8 +153,8 @@ end
 -- Ornate separators (cfg.separatorStyle, any style since 27/11): the drawing stands upright in
 -- the file; a horizontal separator turns it a quarter
 ns.SEPARATOR_FILES = {
-    diamond = "hd_sep_diamond", rune = "hd_sep_rune", dot = "hd_sep_dot",
-    drawn = "hd_sep_drawn", dash = "hd_sep_dash", -- (27/11: the fading line alone, a short dash across)
+    diamond = "hd_sep_diamond", rune = "hd_sep_rune", dot = "hd_sep_dot", smallDot = "hd_sep_dot_small",
+    drawn = "hd_sep_drawn", dash = "hd_sep_dash", -- (27/11: a pen stroke, a short dash across; "dot" is the big one)
 }
 function ns.SetOrnateSeparator(tex, style, horizontal)
     tex:SetTexture(MEDIA .. ns.SEPARATOR_FILES[style])

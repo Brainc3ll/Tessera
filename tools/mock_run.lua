@@ -80,6 +80,8 @@ local methods = {
     HasFocus = function() return false end,
     GetAtlas = function() return nil end, GetTexture = function(self) return self.__texture or "x" end,
     SetTexture = function(self, file) self.__texture = file end,
+    SetClampedToScreen = function(self, on) self.__clamped = on end,
+    SetClampRectInsets = function(self, l, r, t, b) self.__insets = { l, r, t, b } end,
     GetVertexColor = function() return 1, 1, 1, 1 end, GetDrawLayer = function() return "ARTWORK" end,
     GetFrameStrata = function() return "MEDIUM" end, GetFrameLevel = function() return 1 end,
     IsMenuOpen = function() return false end,
@@ -5017,6 +5019,23 @@ do
     end
     assert(ornate > 0 and lines == 0, "2.0 bar: ornaments, no lines (" .. ornate .. ", " .. lines .. ")")
     assert(squared > 0, "2.0 bar: corners hidden at the joins")
+    -- the whole group stays on the screen as one piece: only group heads are clamped, their
+    -- clamp rectangle covers the group (27/11: a wider font opened a gap at the screen edge)
+    local heads, docked = 0, 0
+    for key, f in pairs(ns.frames) do
+        if f:IsShown() and ns.db.blocks[key] then
+            if ns:GetEffectiveDock(key) then
+                docked = docked + 1
+                assert(f.__clamped == false, "docked block not clamped alone: " .. key)
+            elseif ns:GetSubtree(key) and next(ns:GetSubtree(key)) then
+                heads = heads + 1
+                assert(f.__clamped == true and f.__insets, "group head clamped: " .. key)
+                local ins = f.__insets
+                assert(ins[1] <= 0 and ins[2] >= 0 and ins[3] >= 0 and ins[4] <= 0, "clamp covers the group: " .. key)
+            end
+        end
+    end
+    assert(heads > 0 and docked > 0, "a bar with a head and docked blocks")
     ns:ApplyTheme("flat")
     MOCK_GEOMETRY = false
     ns:ResetProfile("top")

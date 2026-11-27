@@ -590,6 +590,34 @@ local function Find(parent, k)
 end
 
 -- Full layout pass (see the header for the step order)
+-- Keeps whole groups on the screen. The game holds each clamped frame on the screen on its
+-- own: a group that grew past an edge (a wider font, a longer text) had one block pushed
+-- back alone, which opened a gap in the bar (seen with Blue rune on 27/11). Docked blocks
+-- are no longer clamped; the head of each group is, with its clamp rectangle widened to
+-- the whole group, so the game moves the group as one piece.
+function ns:ClampGroupsToScreen(set)
+    for key in pairs(set) do
+        local f = self.frames[key]
+        if f and f.SetClampRectInsets then
+            if self:GetEffectiveDock(key) then
+                f:SetClampedToScreen(false)
+                f:SetClampRectInsets(0, 0, 0, 0)
+            else
+                local gl, gb, gr, gt = self:GroupRectUI(key)
+                local l, b, r, t = self:GetRectUI(f)
+                f:SetClampedToScreen(true)
+                if gl and l then
+                    local k = f:GetEffectiveScale() / UIParent:GetEffectiveScale()
+                    f:SetClampRectInsets(math.min(0, gl - l) / k, math.max(0, gr - r) / k,
+                        math.max(0, gt - t) / k, math.min(0, gb - b) / k)
+                else
+                    f:SetClampRectInsets(0, 0, 0, 0)
+                end
+            end
+        end
+    end
+end
+
 function ns:UpdateLayout()
     if not self.db then return end
     local need = {}
@@ -790,6 +818,7 @@ function ns:UpdateLayout()
     end
     self:CenterAnchoredGroups(width)
     self:PlaceStretchedGroups(width)
+    self:ClampGroupsToScreen(need)
     self:UpdateSeams(need)
     -- second pass a little later, once all positions have settled
     -- (avoids a border that is not redrawn in an unusual arrangement)

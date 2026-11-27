@@ -52,8 +52,8 @@ ns.CHANGELOG = {
         highlights = {
             { en = "Tessera's windows in stone and metal, in your style's colors.",
               fr = "Les fenêtres de Tessera en pierre et métal, aux couleurs de ton style." },
-            { en = "Four new block styles: Gilded, Blue rune, Silver and Bronze 2.0, with rounded corners.",
-              fr = "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Bronze 2.0, aux coins arrondis.",
+            { en = "Four new block styles: Gilded, Blue rune, Silver and Brazen, with rounded corners.",
+              fr = "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Airain, aux coins arrondis.",
               show = { page = "PAGE_LOOK", label = "THEME" } },
         },
         sections = {
@@ -69,7 +69,7 @@ ns.CHANGELOG = {
                 "Accessibility: Window shadow turns off the shadow under Tessera's windows, if it bothers you.",
                 "Sharper drawings: the page icons, the switch and the arrows are drawn at 128 px, and the logo at 256 px,"
                     .. " so they stay sharp on big screens.",
-                "Four new block styles: Gilded, Blue rune, Silver and Bronze 2.0. A tinted, see-through background, a rounded edge"
+                "Four new block styles: Gilded, Blue rune, Silver and Brazen. A tinted, see-through background, a rounded edge"
                     .. " drawn by Tessera and an ornament between merged blocks. Your other styles stay as they were.",
                 "Corners (Style and layouts tab, or Appearance for one block): rounded, or square with a line one screen pixel wide.",
                 "Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block,"
@@ -88,11 +88,21 @@ ns.CHANGELOG = {
                 "Accessibilité : Ombre des fenêtres enlève l'ombre sous les fenêtres de Tessera, si elle te gêne.",
                 "Dessins plus nets : les icônes des pages, l'interrupteur et les flèches sont dessinés en 128 px, et le logo en 256 px,"
                     .. " pour rester nets sur les grands écrans.",
-                "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Bronze 2.0. Un fond teinté un peu transparent,"
+                "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Airain. Un fond teinté un peu transparent,"
                     .. " un bord arrondi dessiné par Tessera et un ornement entre les blocs fusionnés. Tes autres styles restent tels quels.",
                 "Coins (onglet Style et dispositions, ou Apparence pour un seul bloc) : arrondis, ou droits avec un trait d'un pixel de l'écran.",
                 "Deux polices arrivent avec ces styles : Cinzel (Runique bleu) et Inter (Argent). Tu peux les choisir pour n'importe quel bloc,"
                     .. " et les addons qui utilisent LibSharedMedia les reçoivent aussi.",
+              },
+            },
+            { kind = "fixed",
+              en = {
+                "A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push"
+                    .. " back only the block past the edge, which opened a gap in the group.",
+              },
+              fr = {
+                "Un groupe qui dépasse le bord de l'écran (police plus large, texte plus long) reste une seule barre : le jeu"
+                    .. " repoussait seulement le bloc qui dépassait, ce qui ouvrait un écart dans le groupe.",
               },
             },
         },

@@ -135,7 +135,7 @@ Help tab inside the game explains everything.
 - **Stone and metal windows (2.0):** the options window, the placement banner and Tessera's other
   windows use the game's rock and the metal frame of its dialogs, in the colors of your style;
   high contrast draws them plain black with a thick white edge.
-- **2.0 block styles:** Gilded, Blue rune, Silver and Bronze 2.0 give your blocks a tinted,
+- **Four new block styles:** Gilded, Blue rune, Silver and Brazen give your blocks a tinted,
   see-through background, a rounded edge drawn by Tessera and an ornament between merged blocks.
   Corners: rounded, or square with a line one screen pixel wide.
 - **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every
@@ -192,7 +192,7 @@ Help tab inside the game explains everything.
   Blizzard's frames, and sharing, in one place, with shortcuts to the frame and text of all blocks.
 - Round minimap button (click: options, right-click: lock / unlock, drag it around the minimap);
   with FlareUI, Tessera is in FlareUI's addon bag instead.
-- 31 styles: the four 2.0 styles (Gilded, Blue rune, Silver, Bronze 2.0: rounded edge drawn by Tessera, ornaments between merged blocks), matching FlareUI (Bronze, Bronze and gold), ElvUI (Elven), EllesmereUI (Emerald), DaylightUI (Aurora: with the addon, its own API draws the frame of each block) (also without those addons, as an imitation) or
+- 31 styles: four new styles (Gilded, Blue rune, Silver, Brazen: rounded edge drawn by Tessera, ornaments between merged blocks), matching FlareUI (Bronze, Bronze and gold), ElvUI (Elven), EllesmereUI (Emerald), DaylightUI (Aurora: with the addon, its own API draws the frame of each block) (also without those addons, as an imitation) or
   Blizzard's look (Blizzard Retail in silver, Blizzard Forever in gold, Blizzard Classic), Square
   styles, Clean, Transparent, fantasy styles (Runestone: text only, black and white; Grimoire;
   Parchment; Arcane), styles made of the game's own frames (Royal seal, Ironforge, Runeblade,
@@ -378,8 +378,8 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Locales/frFR.lua` | French strings, override `ns.L` keys when the language is French. |
 | `Locales/deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`... | The other languages, sent by pull request or issue; a missing text shows in English. |
 | `Core/Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
-| `Core/Themes.lua` | The styles (Bronze, Bronze and gold and Bronze (old) for FlareUI, Emerald for EllesmereUI, Elven for ElvUI, Aurora for DaylightUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames, the four 2.0 styles), the style offered when an interface is installed. |
-| `Core/Looks.lua` | The 2.0 block styles' frame: rounded fill and edge in 9 pieces from `Media/Looks` (made by `tools/gen_looks_media.py`), squared at the joins of fused groups; ornate separators. |
+| `Core/Themes.lua` | The styles (Bronze, Bronze and gold and Bronze (old) for FlareUI, Emerald for EllesmereUI, Elven for ElvUI, Aurora for DaylightUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames, Gilded, Blue rune, Silver and Brazen), the style offered when an interface is installed. |
+| `Core/Looks.lua` | The frame of Gilded, Blue rune, Silver and Brazen: rounded fill and edge in 9 pieces from `Media/Looks` (made by `tools/gen_looks_media.py`), squared at the joins of fused groups; ornate separators. |
 | `Core/Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
 | `Core/Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Core/Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |

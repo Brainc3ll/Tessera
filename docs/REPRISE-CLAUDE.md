@@ -22,6 +22,7 @@ Version en jeu : 1.7.2, publiée le 21/11 (correctif : un bloc au style verrouil
 
 ## Journal court
 - 26/11 : vraie version des styles de blocs 2.0 commencée sur `2.0` (Opus 5.5) : plan en 5 zips, choix de Braincell1980 notés dans A-REPRENDRE ; zip 1 (4 matières, coins, ornements, Cinzel et Inter) codé, test232.
+- 27/11 : test232 validé (« somptueux ») ; test233 : Airain, plus de « 2.0 » visible, Coins caché sans bordure arrondie, groupes gardés entiers au bord de l'écran.
 - 26/11 : aperçu des styles de blocs 2.0 validé en jeu (test231, galerie avec les vrais styles) ; choix faits (IDEES-FUTUR, « Look HD ») ; suite : vraie version sur `2.0`, nouvelle conversation, Opus 5.5 effort élevé.
 - 26/11 : aperçu des nouveaux styles de blocs 2.0 codé dans Tessera-dev (`/tes debug looks`, zip test230, Opus 5.5) : 4 matières, galerie de vignettes pour le choix du style, icônes HD de la manette en anneau, polices du jeu, Cinzel et Inter. À juger en jeu, puis vraie version sur `2.0`.
 - 26/11 : vraie fenêtre d'options 2.0 « Pierre et métal » codée sur `2.0` (zips test223 à 228, Opus 5.5) : toutes les fenêtres de Tessera sauf les listes au survol, commandes redessinées, interrupteur en pilule (validé), case « Ombre des fenêtres » (validée), icônes 128 px et logo 256 px, `.toc` de `2.0` en 2.0.0. Sonde `/tes debug iconeshd` (test229) à lancer en jeu. Suite : nouveaux styles de blocs modernes et fantasy + nouveau choix du style, dans une nouvelle conversation.

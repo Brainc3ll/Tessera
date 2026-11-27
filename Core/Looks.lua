@@ -172,6 +172,10 @@ end
 -- Every name below is in Forever's atlas list (BlizzardInterfaceResources, AtlasInfo.lua,
 -- build 1.60.1); the game is still asked at run time (C_Texture.GetAtlasInfo).
 ---------------------------------------------------------------------------
+-- Off since 27/11 (Braincell1980): the game's drawings looked too small and choosing one per
+-- block took too long. The code waits for Tessera's own drawings; turning this on brings
+-- back the Icons setting (Look tab, Appearance > Icon) and the HD icons.
+ns.HD_ICONS_ON = false
 ns.HD_ICONS = {
     gold = "Cursor_buy_128", bags = "gamepad-radial-icon-bags", durability = "Cursor_Repair_128",
     mail = "Cursor_mail_128", loot = "Cursor_lootall_128", hearthstone = "Cursor_innkeeper_128",
@@ -189,7 +193,7 @@ ns.HD_ICONS = {
 -- The HD drawing of a block and its size, or nil (usual icons, no drawing for this block,
 -- or an atlas this client does not have)
 function ns.HDIconAtlas(key, cfg)
-    if cfg.iconSet ~= "hd" and cfg.iconSet ~= "hdTint" then return nil end
+    if not ns.HD_ICONS_ON or (cfg.iconSet ~= "hd" and cfg.iconSet ~= "hdTint") then return nil end
     local atlas = key and ns.HD_ICONS[key]
     local info = atlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas)
     if info then return atlas, info end

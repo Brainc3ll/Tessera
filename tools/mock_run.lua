@@ -2951,6 +2951,13 @@ for _, step in ipairs({
             return (a:find("^gamepad%-radial%-icon%-") or a:find("^Cursor_.*_128$")) and { width = 91, height = 128 } or nil
         end }, { __index = oldTex or {} })
         local cfg = ns.db.blocks.gold
+        -- off for now (27/11): a block saved with HD icons by a test build draws its usual icon
+        assert(ns.HD_ICONS_ON == false, "HD icons are off")
+        cfg.iconSet, cfg.enabled, cfg.showIcon = "hd", true, true
+        ns:ApplyStyle("gold")
+        assert(not (ns.frames.gold.hdIcon and ns.frames.gold.hdIcon:IsShown()), "HD off: usual icon")
+        cfg.iconSet = "classic"
+        ns.HD_ICONS_ON = true
         cfg.enabled, cfg.showIcon = true, true
         ns:ApplyStyle("gold")
         local f = ns.frames.gold
@@ -3010,6 +3017,7 @@ for _, step in ipairs({
         ns:ApplyStyle("gold")
         assert(not f.hdIcon:IsShown() and not f.hdIconRing:IsShown() and f.icon:GetAlpha() == 1, "icon hidden: no ring")
         cfg.showIcon, cfg.iconSet, fps.iconSet, cfg.iconShape = true, "classic", "classic", shape
+        ns.HD_ICONS_ON = false
         ns:ApplyStyle("gold")
         ns:ApplyStyle("fps")
         C_Texture = oldTex

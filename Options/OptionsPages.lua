@@ -651,7 +651,7 @@ local function BuildLookPage(page)
         function(v)
             if v ~= "mixed" then ns:SetAllBlocksField("iconSet", v, "icons") end
             ns:RefreshOptions()
-        end, nil, nil, L.TIP_ICON_SET_ALL))
+        end, function() return ns.HD_ICONS_ON end, nil, L.TIP_ICON_SET_ALL))
     theme.Add(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
         function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
         function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), { default = ns.PROFILE_DEFAULTS.scale * 100 })

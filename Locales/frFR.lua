@@ -1664,7 +1664,6 @@ L.HELP_LOOK_1 = "- Style des blocs et de cette fenêtre : Bronze, Bronze ancien,
 L.HELP_LOOK_22 = "- Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?) avec la roche du jeu et le cadre de métal de ses dialogues, aux couleurs de ton style. Le contraste renforcé (onglet Accessibilité) les dessine en noir uni avec un bord blanc épais."
 L.HELP_LOOK_23 = "- Doré, Runique bleu, Argent et Airain donnent à tes blocs un fond teinté un peu transparent, un bord arrondi et un ornement entre les blocs fusionnés. Chaque style choisit une police (celle du jeu, Cinzel ou Inter) ; tu peux la changer."
 L.HELP_LOOK_24 = "- Coins, sous le style : arrondis, ou droits avec un trait d'un pixel de l'écran. Un bloc peut avoir les siens (Apparence, Bordure)."
-L.HELP_LOOK_25 = "- Icônes, sous le style, pour tous les styles : actuelles, HD (les grands dessins du jeu, dans ton cadre d'icône) ou HD teintées de la couleur du texte. Un bloc sans dessin garde son icône ; un bloc peut avoir son propre réglage (Apparence, Icône)."
 L.HELP_LOOK_12 = "- Tessera : les couleurs de l'addon, turquoise sur ardoise sombre, avec la bordure des infobulles du jeu."
 L.HELP_LOOK_13 = "- Blizzard Retail et Blizzard Forever : le cadre actuel des infobulles du jeu, en argent ou en or, le même sur WoW Forever et sur Retail."
 L.HELP_LOOK_14 = "- The War Within et Midnight : les couleurs de ces extensions, sur les blocs et sur cette fenêtre."

@@ -8,7 +8,7 @@ Made by a player who can't code and an AI that can't play (yet). So I test it a 
 
 - Over 50 blocks: gold, bags, durability, FPS and latency, time, XP, quests, reputation, professions and more. Most let you choose what they show, in the block and in its tooltip.
 - Made for WoW Forever, with blocks for its own systems: Legacy points, talents (points per tree, change spec), Comprehension, camping, honor, weapon skills.
-- 31 styles to match your UI: Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, fantasy looks made from the game's own frames and four new styles with rounded corners. HD icons if you like.
+- 31 styles to match your UI: Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, fantasy looks made from the game's own frames and four new styles with rounded corners.
 - Place a bar to the exact pixel with the arrow keys. Style a whole bar at once.
 - DataBroker both ways: your Data Broker plugins become blocks, or Tessera's blocks go into Titan Panel, Bazooka or Arcana (formerly ChocolateBar).
 - Guild member list: hover the Guild block to see who is online, in a list that looks like a tooltip. Click a name to whisper, right-click to invite. Search field and scroll bar for big guilds.
@@ -47,7 +47,7 @@ Fait par un joueur qui ne sait pas coder et une IA qui ne sait pas jouer (pour l
 
 - Plus de 50 blocs : or, sacs, durabilité, FPS et latence, heure, XP, quêtes, réputation, métiers et plus encore. La plupart te laissent choisir ce qu'ils affichent, dans le bloc et dans leur infobulle.
 - Fait pour WoW Forever, avec des blocs pour ses systèmes à lui : points d'Héritage, Compréhension, Camping, honneur, compétences d'armes.
-- 31 styles assortis à ton interface : Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, des looks fantasy tirés du jeu, quatre styles arrondis. Icônes HD en option.
+- 31 styles assortis à ton interface : Blizzard, FlareUI, ElvUI, EllesmereUI, DaylightUI, des looks fantasy tirés du jeu, quatre styles arrondis.
 - Place une barre au pixel près avec les flèches du clavier. Donne un style à toute une barre d'un coup.
 - DataBroker dans les deux sens : les plugins Data Broker de tes autres addons deviennent des blocs, ou les blocs de Tessera vont dans Titan Panel, Bazooka ou Arcana (ex-ChocolateBar).
 - Liste des membres de la guilde : survole le bloc Guilde pour voir qui est en ligne, dans une liste qui ressemble à une infobulle. Clique sur un nom pour chuchoter, clic droit pour inviter. Recherche et barre de défilement pour les grosses guildes.

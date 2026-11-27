@@ -17,7 +17,6 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Four new block styles: Gilded, Blue rune, Silver and Brazen. A tinted, see-through background, a rounded edge drawn by Tessera and an ornament between merged blocks. Your other styles stay as they were.
 - Corners (Style and layouts tab, or Appearance for one block): rounded, or square with a line one screen pixel wide.
 - Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block, and addons that use LibSharedMedia get them too.
-- Icons (Style and layouts tab, or Appearance for one block), for every style: usual, HD or HD tinted. HD shows the game's large drawings (gamepad menus, cursors) in your icon frame (round or square), in its color; tinted takes the text's color. 24 blocks have one; the others keep their icon. Usual stays the default.
 
 ### Fixes
 

@@ -4705,7 +4705,10 @@ do
         local ok, err = pcall(ns.GoToOption, r, ns.ShowOptionsPage)
         if not ok then print("STEP ERROR: going to a search result: " .. tostring(err)) end
     end
-    for _, fn in ipairs(__timers) do pcall(fn) end
+    -- the timers queued so far, once (a timer that queues itself again, such as the style offer
+    -- waiting for What's new to close, would make this loop endless)
+    local queued = __timers; __timers = {}
+    for _, fn in ipairs(queued) do pcall(fn) end
     if not TesseraOptions:IsShown() then ns:ToggleOptions() end
     ns:SetOptionsFolded(true)
     if TesseraOptions:GetHeight() > 100 or TesseraOptions.nav:IsShown() then print("STEP ERROR: a folded window keeps only its top bar") end
@@ -4849,7 +4852,7 @@ do
     local where = guildNote and ns.OptionPlaceName(guildNote) or ""
     local want = table.concat({ L.TAB_BLOCK, ns:GetBlockName("guild"), L.BLOCK_TAB_CONTENT, L.BOX_OWN }, " › ")
     if where ~= want then print("STEP ERROR: search place \"" .. where .. "\" instead of \"" .. want .. "\"") end
-    for _, fn in ipairs(__timers) do pcall(fn) end
+    do local q = __timers; __timers = {}; for _, fn in ipairs(q) do pcall(fn) end end
     -- Accessibility tab: its settings are found, fewer animations runs
     local access = ns.SearchOptions(L.REDUCE_MOTION)
     if not (access[1] and access[1].page == ns.OPTIONS_PAGE_COUNT) then print("STEP ERROR: \"Fewer animations\" not on the Accessibility tab") end
@@ -4858,7 +4861,7 @@ do
     local ok, err = pcall(function() ns:Flash(f); ns:UpdateFades() end)
     if not ok then print("STEP ERROR: fewer animations: " .. tostring(err)) end
     ns.sv.reduceMotion = nil
-    for _, fn in ipairs(__timers) do pcall(fn) end
+    do local q = __timers; __timers = {}; for _, fn in ipairs(q) do pcall(fn) end end
 end
 -- "See all" window of the Blocks tab (1.8): counter, every block in one window, search, a click selects
 do
@@ -5453,7 +5456,8 @@ do
         count = count + 1
         ns:ShowDialog(key, 2, nil, nil)
         local _, shown = ns.DialogState()
-        if shown ~= key or not def.button1 or (f.text:GetText() or "") == "" then print("STEP ERROR: dialog " .. key .. " does not open") end
+        -- (button1 is often a game text, ACCEPT or YES, that the mock does not have)
+        if shown ~= key or (f.text:GetText() or "") == "" then print("STEP ERROR: dialog " .. key .. " does not open") end
         ns:HideDialog(key)
     end
     if count ~= 21 then print("STEP ERROR: dialogs: " .. count .. " instead of 21") end

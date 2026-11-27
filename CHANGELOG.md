@@ -23,6 +23,7 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Fixes
 
 - A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push back only the block past the edge, which opened a gap in the group.
+- Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were at its first or last choice. The arrows now follow the value.
 
 ## 1.9.0 — 2026-11-25
 

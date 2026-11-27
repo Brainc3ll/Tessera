@@ -432,7 +432,11 @@ local function SetupChoices(dd, label, options, getter, setter)
                 else
                     root:CreateRadio(ns:MediaLabel(opt),
                         function(value) return getter() == value end,
-                        function(value) setter(value) end,
+                        function(value)
+                            setter(value)
+                            -- the arrows follow the new choice (27/11: one stayed grey)
+                            if dd.tesseraSync and C_Timer then C_Timer.After(0, dd.tesseraSync) end
+                        end,
                         opt.key)
                 end
             end
@@ -487,6 +491,16 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
                 if dir > 0 then arrows:Increment() else arrows:Decrement() end
             end
             RowHover(holder, dd, arrows.IncrementButton, arrows.DecrementButton)
+            -- the game greys an arrow at the first or last choice, but only when its own list
+            -- tells it; a value set by Tessera (an arrow, Reset, a style) left it stale (27/11):
+            -- the arrows are checked again after every change and when the row shows
+            dd.tesseraSync = function() if arrows.UpdateSteppers then arrows:UpdateSteppers() end end
+            for _, button in ipairs({ arrows.IncrementButton, arrows.DecrementButton }) do
+                if button and button.HookScript then
+                    button:HookScript("OnClick", function() if C_Timer then C_Timer.After(0, dd.tesseraSync) end end)
+                end
+            end
+            holder:HookScript("OnShow", dd.tesseraSync)
         else
             dd = ns.Skin.Dropdown(CreateFrame("DropdownButton", nil, holder, "WowStyle1DropdownTemplate"))
             dd:SetPoint("LEFT", holder, "LEFT", ROW_CONTROL_X, 0)
@@ -501,7 +515,10 @@ local function CreateDropdown(parent, label, options, getter, setter, isShown, w
     holder.dropdown = dd
     holder.Activate = function() if dd.OpenMenu then dd:OpenMenu() end end
 
-    holder.Refresh = function() dd:GenerateMenu() end
+    holder.Refresh = function()
+        dd:GenerateMenu()
+        if dd.tesseraSync then dd.tesseraSync() end
+    end
     holder.getter, holder.setter = getter, setter -- (a box's Reset button)
     return Register(AsSetting(holder, label, tip, "dropdown"), isShown)
 end

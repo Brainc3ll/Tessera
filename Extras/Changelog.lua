@@ -107,10 +107,14 @@ ns.CHANGELOG = {
               en = {
                 "A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push"
                     .. " back only the block past the edge, which opened a gap in the group.",
+                "Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were"
+                    .. " at its first or last choice. The arrows now follow the value.",
               },
               fr = {
                 "Un groupe qui dépasse le bord de l'écran (police plus large, texte plus long) reste une seule barre : le jeu"
                     .. " repoussait seulement le bloc qui dépassait, ce qui ouvrait un écart dans le groupe.",
+                "Listes à flèches des options : une flèche pouvait rester grisée (ou allumée) après un changement, comme si"
+                    .. " la liste était à son premier ou dernier choix. Les flèches suivent maintenant la valeur.",
               },
             },
         },

@@ -3048,8 +3048,9 @@ function ns:CopyStyleToAll(sourceKey, confirmed)
     end
     if self.PushUndo then self:PushUndo(true) end -- Undo brings the old looks back
     for _, key in ipairs(self:GetBlockKeys()) do
-        if key ~= sourceKey then
-            local cfg = self.db.blocks[key]
+        local cfg = self.db.blocks[key]
+        -- confirmed = "unlocked": the locked blocks keep their look (27/11)
+        if key ~= sourceKey and not (confirmed == "unlocked" and cfg.styleLocked) then
             for _, k in ipairs(STYLE_KEYS) do cfg[k] = DeepCopy(src[k]) end
             self:ApplyStyle(key)
         end
@@ -3071,8 +3072,8 @@ function ns:CopyStyleToGroup(sourceKey, confirmed)
     end
     if self.PushUndo then self:PushUndo(true) end
     for _, key in ipairs(members) do
-        if key ~= sourceKey then
-            local cfg = self.db.blocks[key]
+        local cfg = self.db.blocks[key]
+        if key ~= sourceKey and not (confirmed == "unlocked" and cfg.styleLocked) then
             for _, k in ipairs(STYLE_KEYS) do cfg[k] = DeepCopy(src[k]) end
             self:ApplyStyle(key)
         end

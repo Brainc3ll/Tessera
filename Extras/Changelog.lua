@@ -57,7 +57,7 @@ ns.CHANGELOG = {
               show = { page = "PAGE_LOOK", label = "THEME" } },
             { en = "Pick your style in a gallery of real blocks, sorted by family.",
               fr = "Choisis ton style dans une galerie de vrais blocs, rangés par famille.",
-              show = { page = "PAGE_LOOK", label = "STYLE_GALLERY_OPEN" } },
+              show = { page = "PAGE_LOOK", label = "THEME" } },
         },
         sections = {
             { kind = "new",
@@ -81,7 +81,7 @@ ns.CHANGELOG = {
                     .. " to its new value. The four new styles turn them on; Fewer animations turns them off.",
                 "Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks"
                     .. " that have a progress; the other styles keep the band.",
-                "Style gallery: Pick the style… (Style and layouts tab, or a block's page) shows every style as a real block,"
+                "Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block,"
                     .. " in rows by family. Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.",
               },
               fr = {
@@ -106,7 +106,7 @@ ns.CHANGELOG = {
                     .. " glisse jusqu'à sa nouvelle valeur. Les quatre nouveaux styles les allument ; Moins d'animations les coupe.",
                 "Barre de progression : une nouvelle allure, une fine ligne sous la valeur (Allure de la barre). Les quatre nouveaux"
                     .. " styles l'utilisent sur les blocs qui ont une progression ; les autres styles gardent la bande.",
-                "Galerie des styles : Choisir le style… (onglet Style et dispositions, ou page d'un bloc) montre tous les styles"
+                "Galerie des styles : un clic sur la liste des styles (onglet Style et dispositions, ou page d'un bloc) montre tous les styles"
                     .. " en vrais blocs, rangés par famille. Clique sur un style, puis sur Appliquer. Les flèches ou la croix,"
                     .. " Entrée ou A, et Échap ou B marchent aussi.",
               },
@@ -117,12 +117,18 @@ ns.CHANGELOG = {
                     .. " back only the block past the edge, which opened a gap in the group.",
                 "Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were"
                     .. " at its first or last choice. The arrows now follow the value.",
+                "Locked styles: when a style goes to all blocks or to a group, the warning about locked blocks offers"
+                    .. " Skip locked (the others take the style, the locked ones stay as they are), Them too, or Cancel."
+                    .. " No used to leave every block as it was.",
               },
               fr = {
                 "Un groupe qui dépasse le bord de l'écran (police plus large, texte plus long) reste une seule barre : le jeu"
                     .. " repoussait seulement le bloc qui dépassait, ce qui ouvrait un écart dans le groupe.",
                 "Listes à flèches des options : une flèche pouvait rester grisée (ou allumée) après un changement, comme si"
                     .. " la liste était à son premier ou dernier choix. Les flèches suivent maintenant la valeur.",
+                "Styles verrouillés : quand un style va à tous les blocs ou à un groupe, l'avertissement sur les blocs verrouillés"
+                    .. " propose Sauf verrouillés (les autres prennent le style, les verrouillés restent tels quels), Eux aussi ou Annuler."
+                    .. " Non laissait tous les blocs tels quels.",
               },
             },
         },

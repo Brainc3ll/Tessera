@@ -211,15 +211,26 @@ function ns:ApplyStyleToBlocksNow(keys, style)
     self:RefreshOptions()
 end
 
+-- Locked blocks among the targets (27/11, Braincell1980): "Not the locked ones" (the default:
+-- the others take the style, the locked ones stay as they are), "Them too", or Cancel
 ns.OnLanguage(function()
     StaticPopupDialogs["TESSERA_STYLE_LOCKED_APPLY"] = {
         text = L.STYLE_LOCKED_APPLY,
-        button1 = YES,
-        button2 = NO,
+        button1 = L.STYLE_LOCKED_KEEP,
+        button2 = CANCEL,
+        button3 = L.STYLE_LOCKED_ALL,
+        selectCallbackByIndex = true,
         timeout = 0,
         whileDead = true,
         hideOnEscape = true,
-        OnAccept = function(_, data) ns:ApplyStyleToBlocksNow(data.keys, data.style) end,
+        OnAccept = function(_, data)
+            local open = {}
+            for _, key in ipairs(data.keys) do
+                if not (ns.db.blocks[key] and ns.db.blocks[key].styleLocked) then open[#open + 1] = key end
+            end
+            ns:ApplyStyleToBlocksNow(open, data.style)
+        end,
+        OnButton3 = function(_, data) ns:ApplyStyleToBlocksNow(data.keys, data.style) end,
     }
 end)
 
@@ -228,12 +239,19 @@ end)
 ns.OnLanguage(function()
     StaticPopupDialogs["TESSERA_STYLE_LOCKED_COPY"] = {
         text = L.STYLE_LOCKED_APPLY,
-        button1 = YES,
-        button2 = NO,
+        button1 = L.STYLE_LOCKED_KEEP,
+        button2 = CANCEL,
+        button3 = L.STYLE_LOCKED_ALL,
+        selectCallbackByIndex = true,
         timeout = 0,
         whileDead = true,
         hideOnEscape = true,
+        -- "unlocked": every block but the locked ones; true: the locked ones too
         OnAccept = function(_, data)
+            if data.group then ns:CopyStyleToGroup(data.source, "unlocked") else ns:CopyStyleToAll(data.source, "unlocked") end
+            ns:RefreshOptions()
+        end,
+        OnButton3 = function(_, data)
             if data.group then ns:CopyStyleToGroup(data.source, true) else ns:CopyStyleToAll(data.source, true) end
             ns:RefreshOptions()
         end,
@@ -496,7 +514,7 @@ local function BuildBlockPage(page)
     end
     local styleDropdown = valueBox.Add(CreateDropdown(c, L.BLOCK_STYLE, StyleChoices,
         function() return pickStyle or ns:GetTheme() end,
-        function(v) pickStyle = v end, nil, nil, L.TIP_BLOCK_STYLE))
+        function(v) pickStyle = v end, nil, nil, L.TIP_BLOCK_STYLE .. " " .. L.TIP_STYLE_GALLERY_OPEN_BLOCK))
     -- greyed on the "All blocks" page: the Look tab picks that style (see CreateStyleTargets)
     local styleRefresh = styleDropdown.Refresh
     styleDropdown.Refresh = function(self)
@@ -504,10 +522,12 @@ local function BuildBlockPage(page)
         local off = S.selected == ALL
         self.dropdown:SetEnabled(not off)
         self:SetAlpha(off and 0.45 or 1)
+        self.galleryOff = off
     end
     local styleTargets = CreateStyleTargets(c, function() return pickStyle or ns:GetTheme() end)
-    -- the style gallery (OptionsStyleGallery.lua), with the three buttons of "Apply this style to"
-    local galleryButton = valueBox.Add(CreateButton(c, L.STYLE_GALLERY_OPEN, function()
+    -- a click on the list opens the style gallery (OptionsStyleGallery.lua), with the three
+    -- buttons of "Apply this style to"
+    ns.blockStyleList = ns.StyleListOpensGallery(styleDropdown, function()
         local actions = {}
         for _, spec in ipairs(styleTargets.specs) do
             actions[#actions + 1] = {
@@ -525,14 +545,7 @@ local function BuildBlockPage(page)
             currentLabel = L.STYLE_GALLERY_PROFILE,
             actions = actions,
         })
-    end, nil, nil, L.TIP_STYLE_GALLERY_OPEN_BLOCK))
-    -- greyed on the "All blocks" page, as the list above
-    galleryButton.Refresh = function(self)
-        local off = S.selected == ALL
-        self:SetEnabled(not off)
-        self:SetAlpha(off and 0.45 or 1)
-    end
-    ns.blockGalleryButton = galleryButton -- (tools/mock_run.lua)
+    end)
     valueBox.Add(styleTargets)
 
     local tipBox = C.Box(L.SECTION_TOOLTIP, { reset = true })

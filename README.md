@@ -140,8 +140,8 @@ Help tab inside the game explains everything.
   Corners: rounded, or square with a line one screen pixel wide.
 - **Effects (any style):** the edge lights up under the mouse, numbers count to their new value,
   and the progress bar can be a thin line under the value.
-- **Style gallery:** Pick the style… shows every style as a real block, in rows by family. Click a
-  style, then Apply; the keyboard and the gamepad work too.
+- **Style gallery:** a click on the style list shows every style as a real block, in rows by family.
+  Click a style, then Apply; the keyboard and the gamepad work too.
 - **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every
   direction: a bar, a column, a corner, an L shape... Stick a bar to a screen edge and stretch it
   over the whole width, or start from a ready-made layout (among them "Double
@@ -416,7 +416,7 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Options/OptionsBoxes.lua` | Pages laid out in boxes, as in FlareUI's settings panel (1.5): each section in its own box with a Reset button, two short settings per line, indented settings that grey out under the one they depend on, only the shown rows placed; tabs at the top of a page; the keyboard order of the rows. |
 | `Options/OptionsBlocks.lua` | The Blocks and groups tab: its head, its three tabs (Content, Appearance, Behaviour), the options of the selection and of every block, style targets. |
 | `Options/OptionsBlockPicker.lua` | The "See all" window of the Blocks tab: every block at once (green dot on the ones on screen), search, a click selects. |
-| `Options/OptionsStyleGallery.lua` | The style gallery (Pick the style…): every style as a real block, in rows by family, "Automatic" first from the Style and layouts tab. A click marks a style; Apply (or This block, Its group, All blocks) sets it. Arrows or d-pad, Enter or A, Escape or B. |
+| `Options/OptionsStyleGallery.lua` | The style gallery (a click on a style list opens it, `ns.StyleListOpensGallery`): every style as a real block, in rows by family, "Automatic" first from the Style and layouts tab. A click marks a style; Apply (or This block, Its group, All blocks) sets it. Arrows or d-pad, Enter or A, Escape or B. |
 | `Options/OptionsPages.lua` | The Style and layouts, Placement and more, Accessibility, Launchers, DataBroker and Profiles and sharing tabs, with their popups (new profile, import, preset, reset). |
 | `Options/OptionsHelp.lua` | Themed windows (`ns:SkinWindow`), the help text (`ns.HelpText`) and the Help and About tabs. |
 | `Options/OptionsWindow.lua` | Side windows, folding and zoom, the search box, the main window (`BuildPanel`), open / toggle functions and the Blizzard settings page. |

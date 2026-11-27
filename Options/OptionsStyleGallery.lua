@@ -2,7 +2,7 @@ local _, ns = ...
 local L = ns.L
 
 -- Style gallery: every style as a real block drawn by Tessera, in rows by family. Opened by
--- "Pick the style..." under the style lists of the Look tab and of a block's page. A click
+-- a click on the style list of the Look tab or of a block's page. A click
 -- (or Enter, or A) marks a thumbnail; nothing changes before a button at the bottom is
 -- pressed: "Apply" for the profile's style, or "This block / Its group / All blocks" on a
 -- block's page. Arrows or d-pad move, Enter or A confirms, Escape or B closes. Nothing is
@@ -88,12 +88,22 @@ local function DrawSample(card, style)
     local mod = ns.modules and ns.modules.gold
     ns:SetIcon(f.icon, mod and type(mod.icon) ~= "function" and mod.icon or 134400)
     local h = math.max(18, cfg.height or 22)
-    local iconSize = math.max(8, h - 2 * inset - 4)
+    -- as a real block (Core.lua ApplyStyle): a "text only" style (Runestone) hides the icon,
+    -- and the icon takes the style's frame, shape and black and white
+    local showIcon = not cfg.hideIcons
+    local iconSize = (cfg.iconSize or 0) > 0 and cfg.iconSize or math.max(8, h - 2 * inset - 4)
+    f.icon:SetShown(showIcon)
     f.icon:SetSize(iconSize, iconSize)
     f.icon:ClearAllPoints()
     f.icon:SetPoint("LEFT", f, "LEFT", 4 + inset, 0)
+    if showIcon then pcall(ns.StyleIcon, ns, f, cfg) elseif f.iconBorder then f.iconBorder:Hide() end
     f.text:ClearAllPoints()
-    f.text:SetPoint("LEFT", f.icon, "RIGHT", 4, 0)
+    if showIcon then
+        f.text:SetPoint("LEFT", f.icon, "RIGHT", 4, 0)
+    else
+        f.text:SetPoint("LEFT", f, "LEFT", 6 + inset, 0)
+        iconSize = -2
+    end
     f.text:SetText(SAMPLE_TEXT)
     local w = math.ceil(f.text:GetStringWidth() or 0) + iconSize + 14 + 2 * inset
     f:SetSize(w, h)
@@ -519,3 +529,20 @@ function ns:ShowStyleGallery(o)
     ShowMarks()
 end
 function ns.StyleGallery() return gallery end -- (tools/mock_run.lua)
+
+-- A style list (Look tab, block page) whose click opens the gallery instead of its menu (27/11,
+-- choice of Braincell1980: one control, no extra button). The game's dropdown opens its menu
+-- through self:SetMenuOpen / self:OpenMenu (Blizzard_Menu, DropdownButton.lua): both are
+-- replaced on this list only. The mouse wheel still steps through the styles.
+-- holder.galleryOff greys it (the block page on "All blocks").
+function ns.StyleListOpensGallery(holder, open)
+    local dd = holder.dropdown
+    local function Open()
+        if not holder.galleryOff then open() end
+    end
+    dd.SetMenuOpen = function(_, on) if on then Open() end end
+    dd.IsMenuOpen = function() return false end
+    dd.OpenMenu = Open
+    holder.Activate = Open
+    return holder
+end

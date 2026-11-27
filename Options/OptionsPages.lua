@@ -607,7 +607,7 @@ local function BuildLookPage(page)
     -- style
     local theme = F.Box(L.SECTION_THEME, { reset = true })
     theme.Add(CreateNote(page, L.THEME_HINT))
-    theme.Add(CreateDropdown(page, L.THEME, function() return ns:GetStyleChoices() end,
+    local styleList = theme.Add(CreateDropdown(page, L.THEME, function() return ns:GetStyleChoices() end,
        function() return ns:GetStyleChoice() end,
        function(v)
            ns:PickStyleChoice(v)
@@ -615,9 +615,9 @@ local function BuildLookPage(page)
            local note = ns:GetThemeNote()
            if note then ns.Print(note) end
            ns:RefreshOptions()
-       end, nil, nil, L.TIP_THEME))
-    -- the same choice in the style gallery (OptionsStyleGallery.lua): every style as a real block
-    ns.lookGalleryButton = theme.Add(CreateButton(page, L.STYLE_GALLERY_OPEN, function()
+       end, nil, nil, L.TIP_THEME .. " " .. L.TIP_STYLE_GALLERY_OPEN))
+    -- a click on the list opens the style gallery (OptionsStyleGallery.lua): every style as a real block
+    ns.lookStyleList = ns.StyleListOpensGallery(styleList, function()
         ns:ShowStyleGallery({
             auto = true,
             chosen = ns:GetStyleChoice(),
@@ -634,7 +634,8 @@ local function BuildLookPage(page)
                 end,
             } },
         })
-    end, nil, nil, L.TIP_STYLE_GALLERY_OPEN))
+    end)
+    -- the same choice in the style gallery (OptionsStyleGallery.lua): every style as a real block
     -- corners of the 2.0 styles for every block: the same setting as "Corners" under
     -- "All blocks" in the Blocks tab
     theme.Add(CreateDropdown(page, L.EDGE_SHAPE, function()

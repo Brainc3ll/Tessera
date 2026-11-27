@@ -1447,8 +1447,13 @@ for _, step in ipairs({
         ns:CopyStyleToAll("gold")
         assert(#asked == 1 and asked[1].which == "TESSERA_STYLE_LOCKED_COPY" and asked[1].n >= 1, "Copy style to all: no question about the locked block")
         assert(bags.iconSize == 31, "Copy style to all: a locked block changed before the answer")
+        -- the first button (default): every block but the locked one
+        local other = ns.db.blocks.time
+        other.iconSize = 30
         StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnAccept(nil, asked[1].data)
-        assert(bags.iconSize == 44 and bags.styleLocked, "Copy style to all: not copied after yes, or the lock was lost")
+        assert(bags.iconSize == 31 and other.iconSize == 44, "Copy style to all, Not the locked ones: wrong blocks changed")
+        StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnButton3(nil, asked[1].data)
+        assert(bags.iconSize == 44 and bags.styleLocked, "Copy style to all: not copied after Them too, or the lock was lost")
         bags.iconSize = 31
         local members = ns:GetStyleGroup("bags")
         local src
@@ -1460,7 +1465,9 @@ for _, step in ipairs({
         ns:CopyStyleToGroup(src)
         assert(#asked == 1 and asked[1].data.group and bags.iconSize == 31, "Copy style to the group: no question, or changed before the answer")
         StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnAccept(nil, asked[1].data)
-        assert(bags.iconSize == 45 and bags.styleLocked, "Copy style to the group: not copied after yes, or the lock was lost")
+        assert(bags.iconSize == 31, "Copy style to the group, Not the locked ones: the locked block changed")
+        StaticPopupDialogs.TESSERA_STYLE_LOCKED_COPY.OnButton3(nil, asked[1].data)
+        assert(bags.iconSize == 45 and bags.styleLocked, "Copy style to the group: not copied after Them too, or the lock was lost")
         ns.db.blocks[src].iconSize = before
         StaticPopup_Show = realShow
         -- no locked block: no question
@@ -4901,8 +4908,11 @@ do
     local lockKey = "fps"
     ns.db.blocks[lockKey].styleLocked = true
     local lockedBorder = ns.db.blocks[lockKey].border
-    local b = ns.lookGalleryButton
-    if not b then print("STEP ERROR: gallery: no button in the Look tab") else b:GetScript("OnClick")(b) end
+    -- a click on the style list opens the gallery, not the list's menu
+    local b = ns.lookStyleList
+    local function OpenLook() b.dropdown:SetMenuOpen(true) end
+    if not b then print("STEP ERROR: gallery: the Look tab's style list does not open it") else OpenLook() end
+    if b and b.dropdown:IsMenuOpen() then print("STEP ERROR: gallery: the style list opened its menu") end
     local g = ns.StyleGallery()
     if not (g and g:IsShown()) then
         print("STEP ERROR: gallery: the window does not open")
@@ -4945,9 +4955,15 @@ do
             end
         end
         CheckCards("x1")
+        -- a "text only" style (Runestone) shows no icon on its card, as on a real block
+        for i = 1, g.nCards do
+            local c = g.cards[i]
+            if c.key == "runestone" and c.sample.icon:IsShown() then print("STEP ERROR: gallery: Runestone shows an icon") end
+            if c.key == "grimoire" and not c.sample.icon:IsShown() then print("STEP ERROR: gallery: Grimoire lost its icon") end
+        end
         local columns = g.columns
         MOCK_TEXT_SCALE = 2
-        b:GetScript("OnClick")(b)
+        OpenLook()
         CheckCards("x2")
         if g.columns > columns then print("STEP ERROR: gallery: more columns with a text twice as big") end
         MOCK_TEXT_SCALE = nil
@@ -4958,12 +4974,12 @@ do
         ns.db.blocks[lockKey].styleLocked = nil
         ns:SetOptionsSelection("gold")
         ns:RefreshOptions()
-        local bb = ns.blockGalleryButton
+        local bb = ns.blockStyleList
         if not bb then
-            print("STEP ERROR: gallery: no button on the block page")
+            print("STEP ERROR: gallery: the block page's style list does not open it")
         else
             local before = ns.db.blocks.time.border
-            bb:GetScript("OnClick")(bb)
+            bb.Activate()
             if #g.buttons < 4 or not g.buttons[4]:IsShown() then print("STEP ERROR: gallery: the block page buttons are missing") end
             local target = ns:GetTheme() == "hdGold" and "hdSilver" or "hdGold"
             for i = 1, g.nCards do if g.cards[i].key == target then g.cards[i]:GetScript("OnClick")(g.cards[i]) end end
@@ -4978,7 +4994,8 @@ do
             g:Hide()
             ns:SetOptionsSelection("*all")
             ns:RefreshOptions()
-            if bb.usable == nil and bb:GetAlpha() > 0.5 then print("STEP ERROR: gallery: the block page button is not greyed on All blocks") end
+            bb.Activate()
+            if not bb.galleryOff or g:IsShown() then print("STEP ERROR: gallery: the block page list opens it on All blocks") end
             ns:SetOptionsSelection("gold")
         end
     end

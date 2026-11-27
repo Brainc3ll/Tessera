@@ -19,12 +19,13 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block, and addons that use LibSharedMedia get them too.
 - Effects, for any style (Appearance tab): the edge lights up under the mouse, and a number that changes counts to its new value. The four new styles turn them on; Fewer animations turns them off.
 - Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks that have a progress; the other styles keep the band.
-- Style gallery: Pick the style… (Style and layouts tab, or a block's page) shows every style as a real block, in rows by family. Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.
+- Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block, in rows by family. Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.
 
 ### Fixes
 
 - A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push back only the block past the edge, which opened a gap in the group.
 - Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were at its first or last choice. The arrows now follow the value.
+- Locked styles: when a style goes to all blocks or to a group, the warning about locked blocks offers Skip locked (the others take the style, the locked ones stay as they are), Them too, or Cancel. No used to leave every block as it was.
 
 ## 1.9.0 — 2026-11-25
 

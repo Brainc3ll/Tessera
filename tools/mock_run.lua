@@ -81,6 +81,7 @@ local methods = {
     GetAtlas = function() return nil end, GetTexture = function(self) return self.__texture or "x" end,
     SetTexture = function(self, file) self.__texture = file end,
     SetClampedToScreen = function(self, on) self.__clamped = on end,
+    SetAlpha = function(self, a) self.__alpha = a end, GetAlpha = function(self) return self.__alpha or 1 end,
     SetClampRectInsets = function(self, l, r, t, b) self.__insets = { l, r, t, b } end,
     GetVertexColor = function() return 1, 1, 1, 1 end, GetDrawLayer = function() return "ARTWORK" end,
     GetFrameStrata = function() return "MEDIUM" end, GetFrameLevel = function() return 1 end,
@@ -1159,7 +1160,9 @@ for _, step in ipairs({
         local fx = assert(io.open(addonDir .. "/tools/fixtures/rc9-style.txt"), "missing fixture")
         local old = fx:read("*a")
         fx:close()
+        ns.db.blocks.gold.iconSet = "hd"
         assert(ns:ImportStyle(old), "rc9 style over a 2.0 style")
+        assert(ns.db.blocks.gold.iconSet == "classic", "rc9 style: usual icons")
         for key, cfg in pairs(ns.db.blocks) do
             assert(cfg.separatorStyle == "line", "rc9 style keeps no 2.0 ornament: " .. key)
         end
@@ -2939,6 +2942,60 @@ for _, step in ipairs({
         end
         assert(title and after, "herb bag listed under its own title")
         C_Container = oldC
+    end,
+    -- HD icons (2.0.0): the game's drawing in a ring over the block's icon, which stays in
+    -- place; a block without a drawing, or a client without the atlas, keeps its usual icon
+    function()
+        local oldTex = C_Texture
+        C_Texture = setmetatable({ GetAtlasInfo = function(a)
+            return (a:find("^gamepad%-radial%-icon%-") or a:find("^Cursor_.*_128$")) and { width = 91, height = 128 } or nil
+        end }, { __index = oldTex or {} })
+        local cfg = ns.db.blocks.gold
+        cfg.enabled, cfg.showIcon = true, true
+        ns:ApplyStyle("gold")
+        local f = ns.frames.gold
+        assert(not (f.hdIcon and f.hdIcon:IsShown()), "usual icons by default")
+        for _, set in ipairs({ "hd", "hdTint" }) do
+            cfg.iconSet = set
+            ns:ApplyStyle("gold")
+            ns:UpdateBlock("gold")
+            assert(f.hdIcon and f.hdIcon:IsShown() and f.hdIconRing:IsShown(), set .. ": HD icon in its ring")
+        end
+        -- the drawing keeps its proportions inside the ring
+        local w, h = f.hdIcon.__w, f.hdIcon.__h
+        assert(w and h and h > 0 and math.abs(w / h - 91 / 128) < 0.01, "HD icon not stretched")
+        assert(f.icon:GetAlpha() == 0, "usual icon hidden under the HD one")
+        -- tinted: the class color of the text; a dark tint gets a light disc
+        cfg.classColorText = true
+        ns:ApplyStyle("gold")
+        cfg.classColorText = false
+        local oldTint = cfg.textTint
+        cfg.textTint = { r = 0.1, g = 0.06, b = 0.025, a = 1 }
+        ns:ApplyStyle("gold")
+        cfg.textTint = oldTint
+        cfg.iconSet = "classic"
+        ns:ApplyStyle("gold")
+        assert(f.icon:GetAlpha() == 1 and not f.hdIcon:IsShown(), "back to the usual icon")
+        cfg.iconSet = "hd"
+        ns:ApplyStyle("gold")
+        -- no drawing for this block: its usual icon
+        local fps = ns.db.blocks.fps
+        fps.iconSet, fps.enabled, fps.showIcon = "hd", true, true
+        ns:ApplyStyle("fps")
+        assert(not (ns.frames.fps.hdIcon and ns.frames.fps.hdIcon:IsShown()), "fps keeps its icon")
+        -- an older client without the atlas: usual icon
+        C_Texture = oldTex
+        ns:ApplyStyle("gold")
+        assert(not f.hdIcon:IsShown(), "no atlas: usual icon")
+        -- icon turned off: no ring left behind
+        C_Texture = setmetatable({ GetAtlasInfo = function() return { width = 128, height = 128 } end }, { __index = oldTex or {} })
+        cfg.showIcon = false
+        ns:ApplyStyle("gold")
+        assert(not f.hdIcon:IsShown() and not f.hdIconRing:IsShown() and f.icon:GetAlpha() == 1, "icon hidden: no ring")
+        cfg.showIcon, cfg.iconSet, fps.iconSet = true, "classic", "classic"
+        ns:ApplyStyle("gold")
+        ns:ApplyStyle("fps")
+        C_Texture = oldTex
     end,
     -- expansion styles: their art frame on a large window only; a small window (the placement
     -- banner) takes the plain frame; under the art, a solid base hides what is behind

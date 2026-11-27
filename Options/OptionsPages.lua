@@ -637,6 +637,21 @@ local function BuildLookPage(page)
             end
             return false
         end, nil, L.TIP_EDGE_SHAPE_ALL))
+    -- icons of every block, whatever the style: the same setting as "Icons" under "All blocks"
+    theme.Add(CreateDropdown(page, L.ICON_SET, function()
+            local list = {
+                { key = "classic", name = L.ICON_SET_CLASSIC },
+                { key = "hd", name = L.ICON_SET_HD },
+                { key = "hdTint", name = L.ICON_SET_HD_TINT },
+            }
+            if not ns:AllBlocksField("iconSet", true) then table.insert(list, 1, { key = "mixed", name = L.FONT_MIXED }) end
+            return list
+        end,
+        function() return ns:AllBlocksField("iconSet", true) or "mixed" end,
+        function(v)
+            if v ~= "mixed" then ns:SetAllBlocksField("iconSet", v, true) end
+            ns:RefreshOptions()
+        end, nil, nil, L.TIP_ICON_SET_ALL))
     theme.Add(CreateSlider(page, L.GLOBAL_SCALE, 50, 300, 5,
         function() return math.floor((ns.db.scale or 1) * 100 + 0.5) end,
         function(v) ns:SetGlobalScale(v / 100) end, nil, L.TIP_GLOBAL_SCALE), { default = ns.PROFILE_DEFAULTS.scale * 100 })

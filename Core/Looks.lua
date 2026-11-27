@@ -162,3 +162,91 @@ function ns.SetOrnateSeparator(tex, style, horizontal)
         tex:SetTexCoord(0, 1, 0, 1)
     end
 end
+
+---------------------------------------------------------------------------
+-- HD icons (cfg.iconSet, any style): the game's big drawings, those of the gamepad menus
+-- and of the 128 px cursors, in a round ring over a dark disc. A block without one keeps
+-- its usual icon. The block's own icon texture stays in place (hidden, alpha 0), so the
+-- text and the layout do not move.
+-- Every name below is in Forever's atlas list (BlizzardInterfaceResources, AtlasInfo.lua,
+-- build 1.60.1); the game is still asked at run time (C_Texture.GetAtlasInfo).
+---------------------------------------------------------------------------
+ns.HD_ICONS = {
+    gold = "Cursor_buy_128", bags = "gamepad-radial-icon-bags", durability = "Cursor_Repair_128",
+    mail = "Cursor_mail_128", loot = "Cursor_lootall_128", hearthstone = "Cursor_innkeeper_128",
+    honor = "Cursor_PVP_128", pet = "Cursor_Petting_128",
+    time = "gamepad-radial-icon-clock", serverTime = "gamepad-radial-icon-clock",
+    date = "gamepad-radial-icon-calendar", played = "gamepad-radial-icon-stopwatch",
+    guild = "gamepad-radial-icon-guild", friends = "gamepad-radial-icon-social",
+    group = "gamepad-radial-icon-group-up", talents = "gamepad-radial-icon-talents",
+    quests = "gamepad-radial-icon-quests", coords = "gamepad-radial-icon-fullmap-up",
+    zone = "gamepad-radial-icon-fullmap-up", legacy = "gamepad-radial-icon-legacy",
+    whispers = "gamepad-radial-icon-chat", stats = "gamepad-radial-icon-character",
+    level = "gamepad-radial-icon-character", instances = "gamepad-radial-icon-adventureguide-up",
+}
+
+-- The HD drawing of a block and its size, or nil (usual icons, no drawing for this block,
+-- or an atlas this client does not have)
+function ns.HDIconAtlas(key, cfg)
+    if cfg.iconSet ~= "hd" and cfg.iconSet ~= "hdTint" then return nil end
+    local atlas = key and ns.HD_ICONS[key]
+    local info = atlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas)
+    if info then return atlas, info end
+end
+
+-- Color of a tinted HD icon: the text's (class color, or the style's tint while the text is
+-- white), the same rule as the block's text
+local function TintColor(cfg)
+    local c, tint = (cfg.classColorText and ns:GetClassColor()) or cfg.textColor or {}, cfg.textTint
+    local white = (c.r or 1) >= 0.99 and (c.g or 1) >= 0.99 and (c.b or 1) >= 0.99
+    if white and tint and (tint.a or 0) > 0 then c = tint end
+    return c.r or 1, c.g or 1, c.b or 1
+end
+
+function ns.HideHDIcon(f)
+    if not f.hdIcon then return end
+    f.hdIcon:Hide()
+    f.hdIconRing:Hide()
+    f.hdIconDisc:Hide()
+    if f.icon then f.icon:SetAlpha(1) end
+end
+
+-- Draws the HD icon over the block's icon. ring: color of the ring (the icon frame color).
+function ns.DrawHDIcon(f, cfg, atlas, info, ring)
+    local icon = f.icon
+    if not f.hdIcon then
+        f.hdIconDisc = f:CreateTexture(nil, "ARTWORK", nil, 0)
+        f.hdIconDisc:SetTexture(MEDIA .. "hd_disc")
+        f.hdIcon = f:CreateTexture(nil, "ARTWORK", nil, 1)
+        f.hdIconRing = f:CreateTexture(nil, "ARTWORK", nil, 2)
+        f.hdIconRing:SetTexture(MEDIA .. "hd_ring")
+    end
+    f.hdIconDisc:ClearAllPoints()
+    f.hdIconDisc:SetAllPoints(icon)
+    f.hdIconRing:ClearAllPoints()
+    f.hdIconRing:SetAllPoints(icon)
+    f.hdIconRing:SetVertexColor(ring.r or 1, ring.g or 1, ring.b or 1, ring.a or 1)
+    local tex = f.hdIcon
+    tex:SetAtlas(atlas, false)
+    -- not square (91 x 128, 127 x 104...): fits inside the ring without stretching
+    local size = icon:GetWidth() or 0
+    local w, h = info.width or size, info.height or size
+    local s = size * 0.70 / math.max(w, h, 1)
+    tex:SetSize(w * s, h * s)
+    tex:ClearAllPoints()
+    tex:SetPoint("CENTER", icon, "CENTER", 0, 0)
+    -- the disc behind is dark; a dark tint (Parchment's ink) gets a light disc to stand out
+    local r, g, b = 1, 1, 1
+    if cfg.iconSet == "hdTint" then r, g, b = TintColor(cfg) end
+    tex:SetVertexColor(r, g, b, 1)
+    if 0.299 * r + 0.587 * g + 0.114 * b < 0.4 then
+        f.hdIconDisc:SetVertexColor(1, 0.97, 0.9, 0.7)
+    else
+        f.hdIconDisc:SetVertexColor(0, 0, 0, 0.6)
+    end
+    if tex.SetDesaturated then tex:SetDesaturated((cfg.iconDesaturate or cfg.monochrome) and true or false) end
+    icon:SetAlpha(0)
+    f.hdIconDisc:Show()
+    tex:Show()
+    f.hdIconRing:Show()
+end

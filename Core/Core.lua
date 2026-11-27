@@ -878,6 +878,16 @@ end
 local CIRCLE_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 function ns:StyleIcon(f, cfg)
     local tex, shape = f.icon, cfg.iconShape or "none"
+    -- HD icons (Core/Looks.lua): drawn over the icon, which stays in place for the layout
+    local atlas, info = ns.HDIconAtlas(f.key, cfg)
+    if atlas and tex:IsShown() then
+        local c = cfg.iconBorderColor or {}
+        if cfg.classColorIcon then c = self:GetClassColor(c.a) or c end
+        ns.DrawHDIcon(f, cfg, atlas, info, c)
+        if f.iconBorder then f.iconBorder:Hide() end
+        return
+    end
+    ns.HideHDIcon(f)
     if tex.SetDesaturated then tex:SetDesaturated((cfg.iconDesaturate or cfg.monochrome) and true or false) end
     -- crop the icon's own edge when it gets a frame (only if it is not cropped already)
     if shape ~= "none" and tex.GetTexCoord then
@@ -1046,6 +1056,8 @@ local BLOCK_DEFAULTS = {
     classColorSeparator = false, -- lines between merged blocks in the class color
     iconSize = 0,             -- icon size in pixels, 0 = follows the block's height
     iconShape = "none",       -- icon frame: none (as is), square, round
+    iconSet = "classic",      -- icons: "classic" (each block's own), "hd" (the game's big drawings
+                              -- in a ring, Core/Looks.lua), "hdTint" (the same, in the text's color)
     iconBorderColor = { r = 0, g = 0, b = 0, a = 1 },
     iconDesaturate = false,   -- black and white icon
     separators = false,       -- thin line between merged blocks (see Merge.lua, DrawSeparators)
@@ -1085,7 +1097,7 @@ local STYLE_KEYS = {
     "bg", "bgColor", "border", "borderSize", "borderColor", "classColorText", "classColorBorder", "classColorBg", "classColorIcon",
     "classColorSeparator", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
-    "barTexture", "hideIcons", "monochrome", "textTint", "inkColors", "separatorStyle", "edgeShape",
+    "barTexture", "hideIcons", "monochrome", "textTint", "inkColors", "separatorStyle", "edgeShape", "iconSet",
 }
 ns.STYLE_KEYS = STYLE_KEYS -- also what a style export carries (Profiles.lua)
 

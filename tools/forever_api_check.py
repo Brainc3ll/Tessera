@@ -45,6 +45,17 @@ def main():
                         notes.append(entry + " (absent on Forever, a fallback takes over)")
                     else:
                         problems.append(entry + " (absent on Forever)")
+    # the HD icons (Core/Looks.lua, ns.HD_ICONS) must be atlases of the Forever client
+    atlas_file = os.path.join(sys.argv[1], "Resources", "AtlasInfo.lua")
+    if os.path.exists(atlas_file):
+        with open(atlas_file, encoding="utf-8") as f:
+            atlases = f.read()
+        with open(os.path.join(root, "Core", "Looks.lua"), encoding="utf-8") as f:
+            looks = f.read()
+        block = re.search(r"ns\.HD_ICONS = \{(.*?)\n\}", looks, re.S)
+        for key, atlas in re.findall(r'(\w+) = "([^"]+)"', block.group(1) if block else ""):
+            if f'"{atlas}"' not in atlases:
+                problems.append(f"Core/Looks.lua: HD icon of {key}: atlas {atlas} absent on Forever")
     for note in notes:
         print("note: " + note)
     for problem in problems:

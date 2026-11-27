@@ -85,3 +85,16 @@ def runes(d):
 
 separator("hd_sep_diamond", diamond)
 separator("hd_sep_rune", runes)
+
+# HD icons (Core/Looks.lua): a ring with a fine inner line, and a dark disc behind the icon,
+# 128 px (the drawings of the preview chosen in game on 26/11)
+m = mask(128, 128)
+d = ImageDraw.Draw(m)
+n = 128 * S - 1
+d.ellipse([0, 0, n, n], outline=255, width=int(7 * S))
+d.ellipse([10 * S, 10 * S, n - 10 * S, n - 10 * S], outline=150, width=int(1.5 * S))
+save("hd_ring", m, 128, 128)
+
+m = mask(128, 128)
+ImageDraw.Draw(m).ellipse([3 * S, 3 * S, n - 3 * S, n - 3 * S], fill=255)
+save("hd_disc", m, 128, 128)

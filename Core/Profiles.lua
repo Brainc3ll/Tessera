@@ -621,6 +621,8 @@ function ns:ImportStyle(text)
             end
             -- a style from before 2.0 has no ornaments: lines, not the current 2.0 style's ornaments
             if src.separatorStyle == nil then cfg.separatorStyle = "line" end
+            -- and the usual icons
+            if src.iconSet == nil then cfg.iconSet = "classic" end
         end
     end
     if type(data.theme) == "string" and self:GetThemeInfo(data.theme) then self.db.theme = data.theme end

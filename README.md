@@ -138,6 +138,8 @@ Help tab inside the game explains everything.
 - **Four new block styles:** Gilded, Blue rune, Silver and Brazen give your blocks a tinted,
   see-through background, a rounded edge drawn by Tessera and an ornament between merged blocks.
   Corners: rounded, or square with a line one screen pixel wide.
+- **HD icons:** for every style, the game's large drawings (gamepad menus, cursors) in a round
+  ring, tinted or not; blocks without one keep their icon.
 - **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every
   direction: a bar, a column, a corner, an L shape... Stick a bar to a screen edge and stretch it
   over the whole width, or start from a ready-made layout (among them "Double
@@ -379,7 +381,7 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Locales/deDE.lua`, `esES.lua`, `esMX.lua`, `ptBR.lua`... | The other languages, sent by pull request or issue; a missing text shows in English. |
 | `Core/Core.lua` | Shared namespace, frames of known interface addons (`ns.KNOWN_UI_FRAMES`), media lists, frame skinning, saved variables and profiles, block creation/styling/visibility/updates, mouse handlers, snapping, default layout, events, the shared update timer, slash commands, minimap button. |
 | `Core/Themes.lua` | The styles (Bronze, Bronze and gold and Bronze (old) for FlareUI, Emerald for EllesmereUI, Elven for ElvUI, Aurora for DaylightUI, Blizzard Retail/classic, Square styles, Clean, Transparent, fantasy styles, styles made of the game's frames, Gilded, Blue rune, Silver and Brazen), the style offered when an interface is installed. |
-| `Core/Looks.lua` | The frame of Gilded, Blue rune, Silver and Brazen: rounded fill and edge in 9 pieces from `Media/Looks` (made by `tools/gen_looks_media.py`), squared at the joins of fused groups; ornate separators. |
+| `Core/Looks.lua` | HD icons (`ns.HD_ICONS`, ring and disc); the frame of Gilded, Blue rune, Silver and Brazen: rounded fill and edge in 9 pieces from `Media/Looks` (made by `tools/gen_looks_media.py`), squared at the joins of fused groups; ornate separators. |
 | `Core/Merge.lua` | Docking blocks into groups, group layout (sizes, equal heights/widths, shared widths, second row placed once, hidden blocks keeping their place), unlock-mode name tags, border seams and corner joins. |
 | `Core/Placement.lua` | Coordinates and scale, relative positions, undo, alignment guides, snapping to Blizzard frames, frozen groups, quick menu, click actions, key bindings. |
 | `Core/Layers.lua` | Blocks in front of or behind Blizzard's frames: which frames the blocks cover, the question when locking, the temporary switch of placement mode; Edit Mode copies left by older test versions (back to the player's layout, cleanup). |

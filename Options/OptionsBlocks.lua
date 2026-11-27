@@ -578,6 +578,11 @@ local function BuildBlockPage(page)
         { key = "square", name = L.ICON_SHAPE_SQUARE },
         { key = "round", name = L.ICON_SHAPE_ROUND },
     }, "iconShape", L.TIP_ICON_SHAPE))
+    iconBox.Add(Dropdown(a, L.ICON_SET, {
+        { key = "classic", name = L.ICON_SET_CLASSIC },
+        { key = "hd", name = L.ICON_SET_HD },
+        { key = "hdTint", name = L.ICON_SET_HD_TINT },
+    }, "iconSet", L.TIP_ICON_SET))
     iconBox.Add(Color(a, L.ICON_BORDER_COLOR, true, "iconBorderColor", L.TIP_ICON_BORDER_COLOR))
     iconBox.Add(Check(a, L.CLASS_COLOR_ICON, "classColorIcon", L.TIP_CLASS_COLOR_ICON), { half = true })
     iconBox.Add(Check(a, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), { half = true })

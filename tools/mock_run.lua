@@ -4871,6 +4871,119 @@ do
     if not picker.empty:IsShown() then print("STEP ERROR: See all shows no message when nothing matches") end
     picker:Hide()
 end
+-- Style gallery: every style once, by family, "Automatic" first from the Look tab; marking a
+-- thumbnail changes nothing, Apply does; keyboard; locked blocks keep their style; text x2;
+-- from a block's page, "This block" styles that block only
+do
+    local L = ns.L
+    local themeBefore = ns.db.theme
+    local available = ns:GetAvailableThemes()
+    local seen, nCards = {}, 0
+    for _, row in ipairs(ns.StyleGalleryRows(true)) do
+        if row.key then
+            nCards = nCards + 1
+            if seen[row.key] then print("STEP ERROR: gallery: " .. row.key .. " twice") end
+            seen[row.key] = true
+        end
+    end
+    for _, t in ipairs(available) do
+        if not seen[t.key] then print("STEP ERROR: gallery: style " .. t.key .. " missing") end
+    end
+    if ns.StyleGalleryRows(true)[2].key ~= "auto" then print("STEP ERROR: gallery: Automatic is not first") end
+    for _, fam in ipairs(ns.STYLE_FAMILIES) do
+        if not L[fam.title] or L[fam.title] == fam.title then print("STEP ERROR: gallery: no text for " .. fam.title) end
+        for _, key in ipairs(fam.keys) do
+            if not ns:GetThemeInfo(key) then print("STEP ERROR: gallery: family key " .. key .. " is not a style") end
+        end
+    end
+    -- open from the Look tab
+    ns:PickStyleChoice("auto")
+    local lockKey = "fps"
+    ns.db.blocks[lockKey].styleLocked = true
+    local lockedBorder = ns.db.blocks[lockKey].border
+    local b = ns.lookGalleryButton
+    if not b then print("STEP ERROR: gallery: no button in the Look tab") else b:GetScript("OnClick")(b) end
+    local g = ns.StyleGallery()
+    if not (g and g:IsShown()) then
+        print("STEP ERROR: gallery: the window does not open")
+    else
+        if g.nCards ~= nCards then print("STEP ERROR: gallery shows " .. tostring(g.nCards) .. " cards for " .. nCards) end
+        if g.chosen ~= "auto" then print("STEP ERROR: gallery: the current choice is not marked") end
+        local apply = g.buttons[1]
+        if apply.usable then print("STEP ERROR: gallery: Apply is usable on the current style") end
+        -- keyboard: the first key shows the focus, the next ones move it; Enter marks
+        ns.StyleGalleryKey("RIGHT")
+        if g.focus ~= 1 then print("STEP ERROR: gallery: the first key moved the focus") end
+        ns.StyleGalleryKey("DOWN")
+        ns.StyleGalleryKey("ENTER")
+        local marked = g.chosen
+        if marked == "auto" or not seen[marked] then print("STEP ERROR: gallery: Enter marked " .. tostring(marked)) end
+        if ns:GetStyleChoice() ~= "auto" then print("STEP ERROR: gallery: marking a style applied it") end
+        if not apply.usable then print("STEP ERROR: gallery: Apply stays greyed") end
+        -- Tab goes to the buttons, Enter presses Apply
+        ns.StyleGalleryKey("TAB")
+        if g.focus ~= g.nCards + 1 then print("STEP ERROR: gallery: Tab does not reach Apply") end
+        ns.StyleGalleryKey("ENTER")
+        if ns:GetStyleChoice() ~= marked then print("STEP ERROR: gallery: Apply did not apply " .. tostring(marked)) end
+        if ns.db.blocks[lockKey].border ~= lockedBorder then print("STEP ERROR: gallery: a locked block lost its style") end
+        if apply.usable then print("STEP ERROR: gallery: Apply stays usable after applying") end
+        local tagged = 0
+        for i = 1, g.nCards do
+            local c = g.cards[i]
+            if c.tag:GetText() ~= "" then
+                tagged = tagged + 1
+                if c.key ~= marked then print("STEP ERROR: gallery: the current tag is on " .. c.key) end
+            end
+        end
+        if tagged ~= 1 then print("STEP ERROR: gallery: " .. tagged .. " cards tagged current") end
+        -- cards never overlap and hold their sample, also with a text twice as big
+        local function CheckCards(what)
+            for i = 1, g.nCards do
+                local c = g.cards[i]
+                if c.sample:GetWidth() > c:GetWidth() then print("STEP ERROR: gallery " .. what .. ": sample wider than its card " .. c.key) end
+                if g.columns * c:GetWidth() > g.content:GetWidth() + 1 then print("STEP ERROR: gallery " .. what .. ": cards wider than the window") end
+            end
+        end
+        CheckCards("x1")
+        local columns = g.columns
+        MOCK_TEXT_SCALE = 2
+        b:GetScript("OnClick")(b)
+        CheckCards("x2")
+        if g.columns > columns then print("STEP ERROR: gallery: more columns with a text twice as big") end
+        MOCK_TEXT_SCALE = nil
+        -- Escape closes, and the game gets its keys back
+        if not ns.StyleGalleryKey("ESCAPE") or g:IsShown() then print("STEP ERROR: gallery: Escape does not close it") end
+        if ns.StyleGalleryKey("LEFT") then print("STEP ERROR: gallery: a closed gallery keeps the keys") end
+        -- from a block's page: the three buttons of "Apply this style to"
+        ns.db.blocks[lockKey].styleLocked = nil
+        ns:SetOptionsSelection("gold")
+        ns:RefreshOptions()
+        local bb = ns.blockGalleryButton
+        if not bb then
+            print("STEP ERROR: gallery: no button on the block page")
+        else
+            local before = ns.db.blocks.time.border
+            bb:GetScript("OnClick")(bb)
+            if #g.buttons < 4 or not g.buttons[4]:IsShown() then print("STEP ERROR: gallery: the block page buttons are missing") end
+            local target = ns:GetTheme() == "hdGold" and "hdSilver" or "hdGold"
+            for i = 1, g.nCards do if g.cards[i].key == target then g.cards[i]:GetScript("OnClick")(g.cards[i]) end end
+            if g.chosen ~= target then print("STEP ERROR: gallery: a click does not mark the style") end
+            g.buttons[1]:GetScript("OnClick")(g.buttons[1]) -- This block
+            local want = ns:GetBlockDefaults("gold")
+            ns:ApplyThemeToCfg(want, target)
+            if ns.db.blocks.gold.border ~= want.border then print("STEP ERROR: gallery: This block did not style the block") end
+            if ns.db.blocks.time.border ~= before then print("STEP ERROR: gallery: This block styled another block") end
+            if ns:GetStyleChoice() ~= marked then print("STEP ERROR: gallery: This block changed the profile's style") end
+            for i = 1, g.nCards do if g.cards[i].key == "auto" then print("STEP ERROR: gallery: Automatic offered on a block page") end end
+            g:Hide()
+            ns:SetOptionsSelection("*all")
+            ns:RefreshOptions()
+            if bb.usable == nil and bb:GetAlpha() > 0.5 then print("STEP ERROR: gallery: the block page button is not greyed on All blocks") end
+            ns:SetOptionsSelection("gold")
+        end
+    end
+    if themeBefore then ns:ApplyTheme(themeBefore) else ns:PickStyleChoice("auto") end
+end
 -- Language list (1.8): the choice is saved, a change offers the reload, "as the game" does not
 do
     local asked = {}

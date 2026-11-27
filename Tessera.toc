@@ -55,6 +55,7 @@ Options\OptionsWidgets.lua
 Options\OptionsBoxes.lua
 Options\OptionsBlocks.lua
 Options\OptionsBlockPicker.lua
+Options\OptionsStyleGallery.lua
 Options\OptionsPages.lua
 Options\OptionsHelp.lua
 Options\OptionsWindow.lua

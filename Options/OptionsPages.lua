@@ -616,6 +616,25 @@ local function BuildLookPage(page)
            if note then ns.Print(note) end
            ns:RefreshOptions()
        end, nil, nil, L.TIP_THEME))
+    -- the same choice in the style gallery (OptionsStyleGallery.lua): every style as a real block
+    ns.lookGalleryButton = theme.Add(CreateButton(page, L.STYLE_GALLERY_OPEN, function()
+        ns:ShowStyleGallery({
+            auto = true,
+            chosen = ns:GetStyleChoice(),
+            current = function() return ns:GetStyleChoice() end,
+            currentLabel = L.STYLE_GALLERY_CURRENT,
+            actions = { {
+                text = L.STYLE_GALLERY_APPLY, tip = L.TIP_STYLE_GALLERY_APPLY,
+                enabled = function(key) return key ~= nil and key ~= ns:GetStyleChoice() end,
+                run = function(key)
+                    ns:PickStyleChoice(key)
+                    local note = ns:GetThemeNote()
+                    if note then ns.Print(note) end
+                    ns:RefreshOptions()
+                end,
+            } },
+        })
+    end, nil, nil, L.TIP_STYLE_GALLERY_OPEN))
     -- corners of the 2.0 styles for every block: the same setting as "Corners" under
     -- "All blocks" in the Blocks tab
     theme.Add(CreateDropdown(page, L.EDGE_SHAPE, function()

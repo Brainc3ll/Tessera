@@ -268,8 +268,9 @@ local function CreateStyleTargets(parent, getStyle)
         end
         return { S.selected }
     end
-    local function Apply(target)
-        local keys, style = Keys(target), getStyle()
+    local function Apply(target, style)
+        local keys = Keys(target)
+        style = style or getStyle()
         local locked = 0
         for _, key in ipairs(keys) do
             if ns.db.blocks[key] and ns.db.blocks[key].styleLocked then locked = locked + 1 end
@@ -316,6 +317,7 @@ local function CreateStyleTargets(parent, getStyle)
     end)
     AttachTip(goLook, L.STYLE_OPEN_LOOK, L.TIP_STYLE_OPEN_LOOK)
     row.goLook, row.buttons = goLook, buttons -- (tools/mock_run.lua)
+    row.specs, row.Apply = specs, Apply -- the same buttons in the style gallery
     RowHover(row, buttons[1], buttons[2], buttons[3], goLook)
     AttachTip(row, L.APPLY_STYLE_TO, L.TIP_APPLY_STYLE_TO)
     row.Refresh = function()
@@ -503,7 +505,35 @@ local function BuildBlockPage(page)
         self.dropdown:SetEnabled(not off)
         self:SetAlpha(off and 0.45 or 1)
     end
-    valueBox.Add(CreateStyleTargets(c, function() return pickStyle or ns:GetTheme() end))
+    local styleTargets = CreateStyleTargets(c, function() return pickStyle or ns:GetTheme() end)
+    -- the style gallery (OptionsStyleGallery.lua), with the three buttons of "Apply this style to"
+    local galleryButton = valueBox.Add(CreateButton(c, L.STYLE_GALLERY_OPEN, function()
+        local actions = {}
+        for _, spec in ipairs(styleTargets.specs) do
+            actions[#actions + 1] = {
+                text = spec[2], tip = spec[3],
+                enabled = function(key) return key ~= nil and spec[4]() and true or false end,
+                run = function(_, style)
+                    pickStyle = style
+                    styleTargets.Apply(spec[1], style)
+                end,
+            }
+        end
+        ns:ShowStyleGallery({
+            chosen = pickStyle or ns:GetTheme(),
+            current = function() return ns:GetTheme() end,
+            currentLabel = L.STYLE_GALLERY_PROFILE,
+            actions = actions,
+        })
+    end, nil, nil, L.TIP_STYLE_GALLERY_OPEN_BLOCK))
+    -- greyed on the "All blocks" page, as the list above
+    galleryButton.Refresh = function(self)
+        local off = S.selected == ALL
+        self:SetEnabled(not off)
+        self:SetAlpha(off and 0.45 or 1)
+    end
+    ns.blockGalleryButton = galleryButton -- (tools/mock_run.lua)
+    valueBox.Add(styleTargets)
 
     local tipBox = C.Box(L.SECTION_TOOLTIP, { reset = true })
     local showTip = tipBox.Add(Check(c, L.SHOW_TOOLTIP, "tooltip", L.TIP_SHOW_TOOLTIP))

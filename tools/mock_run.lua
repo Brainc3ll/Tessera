@@ -2943,6 +2943,54 @@ for _, step in ipairs({
         assert(title and after, "herb bag listed under its own title")
         C_Container = oldC
     end,
+    -- a little life (2.0.0): glow on hover, gliding values, thin progress bar; the four new
+    -- styles turn them on, any other style off; Fewer animations stops the motion
+    function()
+        assert(ns:ApplyTheme("hdGold"))
+        local cfg, f = ns.db.blocks.durability, ns.frames.durability
+        assert(cfg.hoverGlow and cfg.valueGlide and cfg.progressLook == "thin", "the new styles' effects")
+        assert(cfg.progressBar and cfg.progressByStyle, "thin bar turned on by the style")
+        ns:ApplyStyle("durability")
+        assert(f.barThin and f.barTrack and f.hoverGlowPieces, "thin bar and glow pieces")
+        -- gliding: colors and pictures stay whole, only the digits move
+        f.glide, f.glideLast = nil, "|cff00ff0050|r / 100 |TInterface\\Icons\\x:0|t"
+        ns.SetBlockText(f, cfg, "|cff00ff0080|r / 100 |TInterface\\Icons\\x:0|t")
+        assert(f.glide and #f.glide.to == 2 and f.glide.to[1].value == 80, "a number glides")
+        local parts = 0
+        for _, part in ipairs(f.glide.parts) do if type(part) == "string" and part:find("|cff00ff00", 1, true) then parts = parts + 1 end end
+        assert(parts == 1, "the color code stays whole")
+        -- a decimal counts as one number and keeps its decimals; a time never glides
+        f.glide, f.glideLast = nil, "62.9%"
+        ns.SetBlockText(f, cfg, "63.0%")
+        assert(f.glide and #f.glide.to == 1 and f.glide.to[1].decimals == 1, "decimal number")
+        f.glide, f.glideLast = nil, "1:05"
+        ns.SetBlockText(f, cfg, "1:04")
+        assert(not f.glide and f.text:GetText() == "1:04", "a time is written at once")
+        -- a bar the block has anyway (XP) is not the style's
+        assert(ns:GetBlockDefaults("xp").progressByStyle == false, "XP's own bar")
+        -- another shape (a word changed): at once
+        ns.SetBlockText(f, cfg, "N/A")
+        assert(not f.glide, "a text that changes shape is written at once")
+        -- Fewer animations: no glide, no glow
+        ns.sv.reduceMotion = true
+        f.glideLast = "10 / 100"
+        ns.SetBlockText(f, cfg, "20 / 100")
+        assert(not f.glide, "fewer animations: no glide")
+        ns.GlowTo(f, 1)
+        assert(not f.glowTarget, "fewer animations: no glow")
+        ns.sv.reduceMotion = false
+        ns.GlowTo(f, 1)
+        assert(f.glowTarget == 1, "glow on hover")
+        -- a player's own bar stays when the style changes; the style's own goes away
+        ns.db.blocks.bags.progressBar, ns.db.blocks.bags.progressByStyle = true, false
+        assert(ns:ApplyTheme("flat"))
+        assert(not cfg.hoverGlow and not cfg.valueGlide and cfg.progressLook == "fill", "other style: effects off")
+        assert(cfg.progressBar == false and not cfg.progressByStyle, "the style's bar goes away")
+        assert(ns.db.blocks.bags.progressBar == true, "the player's bar stays")
+        ns:ApplyStyle("durability")
+        assert(not f.barThin and not f.barTrack:IsShown(), "band again")
+        ns.db.blocks.bags.progressBar = false
+    end,
     -- HD icons (2.0.0): the game's drawing in a ring over the block's icon, which stays in
     -- place; a block without a drawing, or a client without the atlas, keeps its usual icon
     function()

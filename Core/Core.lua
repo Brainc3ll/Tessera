@@ -1065,6 +1065,11 @@ local BLOCK_DEFAULTS = {
     separators = false,       -- thin line between merged blocks (see Merge.lua, DrawSeparators)
     separatorColor = { r = 0.8, g = 0.6, b = 0.34, a = 0.5 },
     separatorStyle = "line",  -- 2.0 styles: "diamond" or "rune", an ornament in place of the line
+    hoverGlow = false,        -- the edge lights up under the mouse (Core/Looks.lua)
+    glowColor = { r = 1, g = 0.85, b = 0.5, a = 1 }, -- its color (set by the style)
+    valueGlide = false,       -- a number that changes counts to its new value
+    progressLook = "fill",    -- progress bar: "fill" (a band behind the text) or "thin" (a line under it)
+    progressByStyle = false,  -- the progress bar was turned on by a style (Gilded...), not by the player
     edgeShape = "round",      -- 2.0 borders: "round" corners or "pixel" (a plain line, one screen pixel)
     barTexture = false,       -- progress bar texture ("lsm:<name>"; false = plain color)
     -- set by some styles (Themes.lua), cleared by the others:
@@ -1100,6 +1105,7 @@ local STYLE_KEYS = {
     "classColorSeparator", "alpha",
     "iconSize", "iconShape", "iconBorderColor", "iconDesaturate", "separators", "separatorColor",
     "barTexture", "hideIcons", "monochrome", "textTint", "inkColors", "separatorStyle", "edgeShape", "iconSet",
+    "hoverGlow", "glowColor", "valueGlide", "progressLook",
 }
 ns.STYLE_KEYS = STYLE_KEYS -- also what a style export carries (Profiles.lua)
 
@@ -1178,6 +1184,12 @@ function ns:GetBlockDefaults(key)
     end
     -- Settings a module always forces (e.g. a spacer never shows an icon)
     for field, value in pairs(mod and mod.forced or {}) do d[field] = DeepCopy(value) end
+    -- a bar the block has anyway (XP, reputation, "All blocks") is not the style's: the next
+    -- style keeps it
+    if (mod and mod.defaults and mod.defaults.progressBar) or (db and db.groupDefaults and db.groupDefaults.progressBar)
+        or (launcher and db and db.launcherDefaults and db.launcherDefaults.progressBar) then
+        d.progressByStyle = false
+    end
     return d
 end
 
@@ -1376,7 +1388,11 @@ function ns:PrepareProfile(p)
     local created = {}
     for _, key in ipairs(self.order) do
         if not p.blocks[key] then created[key] = true end
-        p.blocks[key] = CopyDefaults(self:GetBlockDefaults(key), p.blocks[key] or {})
+        -- a block saved before 2.0.0 never had a bar turned on by a style (not taken from
+        -- the current style's defaults: switching style would turn the player's bar off)
+        local saved = p.blocks[key]
+        if saved and saved.progressByStyle == nil then saved.progressByStyle = false end
+        p.blocks[key] = CopyDefaults(self:GetBlockDefaults(key), saved or {})
     end
     for key, cfg in pairs(p.blocks) do
         if ns.IsLauncherKey(key) or ns.IsBrokerKey(key) or ns.IsSpacerKey(key) then CopyDefaults(self:GetBlockDefaults(key), cfg) end
@@ -1929,6 +1945,9 @@ end
 
 local function OnEnter(self)
     local key = self.key
+    -- hover glow (Core/Looks.lua); here, not hooked: the click overlay of locked blocks
+    -- forwards only this handler
+    ns.GlowTo(self, 1)
     local cfg, mod = ns.db.blocks[key], ns:GetModule(key)
     if not cfg or not mod then return end
     ns.hoveredBlock = self -- for "tooltips only while Alt is held" (watcher below)
@@ -1970,6 +1989,7 @@ local function OnEnter(self)
 end
 
 local function OnLeave(self)
+    ns.GlowTo(self, 0)
     if ns.hoveredBlock == self then ns.hoveredBlock = nil end
     if not ns:IsLocked() and ns.ClearPlacementInfo then ns:ClearPlacementInfo() end
     local cfg, mod = ns.db.blocks[self.key], ns:GetModule(self.key)
@@ -2363,6 +2383,14 @@ function ns:ApplyStyle(key)
     f.bar:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", inset, inset)
     f.bar:Hide()
     f.barFraction = nil
+    -- thin bar under the value instead (Core/Looks.lua), and the hover glow
+    do
+        local mod = self:GetModule(key)
+        local left = (showIcon and not iconOnly) and (4 + inset + iconSize + 4) or (4 + inset)
+        ns.PlaceThinBar(f, cfg, inset, left, cfg.progressBar and mod and mod.progress and not iconOnly)
+        local e = f.nineSliceInfo and f.nineSliceInfo.edge or self:PixelSize(6, f)
+        ns.PrepareLife(f, cfg, e)
+    end
 
     f.tag:SetText(self:GetBlockName(key))
     f.lastText = nil -- the text will be rewritten (otherwise the alignment does not follow)
@@ -2615,6 +2643,8 @@ function ns:UpdateBlock(key)
         local tw = ns.TextWidth(text_, text)
         local th = text_:GetStringHeight() or 0
         tw, th = math.ceil(tw), math.ceil(th)
+        -- measured on the final text; a number then counts to it (Core/Looks.lua)
+        ns.SetBlockText(f, cfg, text)
         -- a font the game has not loaded yet can measure 0 wide for a moment: measure again
         -- soon, or the block keeps that width and stays empty until its text changes
         if tw == 0 and text ~= "" and (f.measureTries or 0) < 5 and C_Timer then
@@ -2653,11 +2683,17 @@ function ns:UpdateBar(f, cfg, mod, level)
     end
     if not fraction then
         f.bar:Hide()
+        if f.barTrack then f.barTrack:Hide() end
         f.barFraction = nil
         return
     end
     f.barFraction = fraction
     local hex = level and not cfg.monochrome and self.LEVEL_COLORS[level]
+    if f.barThin then
+        ns.ColorThinBar(f, cfg, hex)
+        self:ResizeBar(f)
+        return
+    end
     local r, g, b, a
     if cfg.monochrome then
         r, g, b, a = 0.7, 0.7, 0.7, 0.3
@@ -2685,8 +2721,9 @@ end
 -- Bar width follows the block's width (also called after a layout pass)
 function ns:ResizeBar(f)
     if not (f.bar and f.barFraction) then return end
-    local inner = f:GetWidth() - 2 * (f.inset or 0)
-    local w = inner * f.barFraction
+    local inner = f.barThin and (f:GetWidth() - f.barThin.left - f.barThin.right)
+        or (f:GetWidth() - 2 * (f.inset or 0))
+    local w = math.max(0, inner) * f.barFraction
     f.bar:SetWidth(math.max(0.01, w))
     -- a texture is cut at the fill, as a status bar does, not squeezed
     if f.barTextured then f.bar:SetTexCoord(0, math.max(0.001, f.barFraction), 0, 1)

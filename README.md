@@ -138,6 +138,8 @@ Help tab inside the game explains everything.
 - **Four new block styles:** Gilded, Blue rune, Silver and Brazen give your blocks a tinted,
   see-through background, a rounded edge drawn by Tessera and an ornament between merged blocks.
   Corners: rounded, or square with a line one screen pixel wide.
+- **Effects (any style):** the edge lights up under the mouse, numbers count to their new value,
+  and the progress bar can be a thin line under the value.
 - **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every
   direction: a bar, a column, a corner, an L shape... Stick a bar to a screen edge and stretch it
   over the whole width, or start from a ready-made layout (among them "Double

@@ -114,6 +114,8 @@ local function ResetBox(box)
             if cfg then
                 local def = ns:GetBlockDefaults(key)
                 for _, f in ipairs(fields) do cfg[f] = ns.DeepCopy(def[f]) end
+                -- the progress bar comes back with who turned it on (the style or the block)
+                if def.progressBar ~= nil and cfg.progressBar == def.progressBar then cfg.progressByStyle = def.progressByStyle end
                 ns:ApplyStyle(key)
             end
         end

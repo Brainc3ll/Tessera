@@ -573,7 +573,9 @@ local function NeededSize(f, cfg)
         w = iconSize + 8 + 2 * inset
     else
         local text = f.text
-        local tw = ns.TextWidth(text, f.lastText)
+        -- while a number glides (Core/Looks.lua) the text on screen is not the final one:
+        -- the width measured on the final text in UpdateBlock
+        local tw = (f.glide and f.textW) or ns.TextWidth(text, f.lastText)
         w = math.ceil(tw or 0) + 8 + 2 * inset + (cfg.showIcon and (iconSize + 4) or 0)
     end
     local th = f.text:GetStringHeight() or 0

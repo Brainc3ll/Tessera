@@ -623,6 +623,11 @@ function ns:ImportStyle(text)
             if src.separatorStyle == nil then cfg.separatorStyle = "line" end
             -- and the usual icons
             if src.iconSet == nil then cfg.iconSet = "classic" end
+            -- nor effects (glow, gliding values, thin bar); a bar a style turned on goes away
+            if src.hoverGlow == nil then cfg.hoverGlow = false end
+            if src.valueGlide == nil then cfg.valueGlide = false end
+            if src.progressLook == nil then cfg.progressLook = "fill" end
+            if cfg.progressByStyle and src.progressLook ~= "thin" then cfg.progressBar, cfg.progressByStyle = false, false end
         end
     end
     if type(data.theme) == "string" and self:GetThemeInfo(data.theme) then self.db.theme = data.theme end

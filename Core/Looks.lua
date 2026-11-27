@@ -261,3 +261,270 @@ function ns.DrawHDIcon(f, cfg, atlas, info, ring)
     tex:Show()
     f.hdIconRing:SetShown(framed)
 end
+
+---------------------------------------------------------------------------
+-- A little life (cfg.hoverGlow, cfg.valueGlide, any style; on with the four new styles):
+-- the edge lights up under the mouse, numbers count to their new value. "Fewer
+-- animations" (Accessibility) turns both off. One OnUpdate for every block, stopped as
+-- soon as nothing moves.
+---------------------------------------------------------------------------
+local animator, moving = nil, {}
+local GLOW_SPEED = 8      -- the glow follows the mouse in about an eighth of a second
+local GLIDE_TIME = 0.45   -- seconds for a number to reach its new value
+-- values that change on their own every second or minute: shown at once, as before
+local NO_GLIDE = { time = true, serverTime = true, date = true, coords = true, played = true,
+    fps = true, latency = true, memory = true, speed = true,
+    -- durations (cooldowns, timers): minutes and seconds would count apart
+    hearthstone = true, camping = true, weaponEnchant = true, longBuffs = true, reset = true }
+
+local function Still() return ns.sv and ns.sv.reduceMotion end
+
+-- the soft glow: 8 pieces of hd_glow around the block (no center), corner size e
+local function GlowPieces(f)
+    if f.hoverGlowPieces then return f.hoverGlowPieces end
+    local pieces = {}
+    for name, c in pairs(COORDS) do
+        local t = f:CreateTexture(nil, "OVERLAY", nil, -2)
+        t:SetTexture(MEDIA .. "hd_glow")
+        t:SetTexCoord(c[1], c[2], c[3], c[4])
+        t:SetBlendMode("ADD")
+        t:SetAlpha(0)
+        pieces[name] = t
+    end
+    f.hoverGlowPieces = pieces
+    return pieces
+end
+
+local function PlaceGlow(f, e)
+    for name, t in pairs(GlowPieces(f)) do
+        t:ClearAllPoints()
+        local corner = CORNER_POINT[name]
+        if corner then
+            t:SetPoint(corner, f, corner, 0, 0)
+            t:SetSize(e, e)
+        elseif name == "TopEdge" or name == "BottomEdge" then
+            local side = name == "TopEdge" and "TOP" or "BOTTOM"
+            t:SetPoint(side .. "LEFT", f, side .. "LEFT", e, 0)
+            t:SetPoint(side .. "RIGHT", f, side .. "RIGHT", -e, 0)
+            t:SetHeight(e)
+        else
+            local side = name == "LeftEdge" and "LEFT" or "RIGHT"
+            t:SetPoint("TOP" .. side, f, "TOP" .. side, 0, -e)
+            t:SetPoint("BOTTOM" .. side, f, "BOTTOM" .. side, 0, e)
+            t:SetWidth(e)
+        end
+    end
+end
+
+local function SetGlowAlpha(f, a)
+    if not f.hoverGlowPieces then return end
+    for _, t in pairs(f.hoverGlowPieces) do t:SetAlpha(a * 0.9) end
+end
+
+-- numbers of a text, outside the game's codes (colors |c, textures |T, atlases |A, links |H):
+-- returns its shape (the text with "\1" for each number), its parts (codes and characters
+-- as they are, NUM for each number) and the numbers with their written length
+local ESCAPES = { "^|c%x%x%x%x%x%x%x%x", "^|r", "^|T.-|t", "^|A.-|a", "^|H.-|h", "^|n", "^||" }
+local NUM = {}
+local function Numbers(text)
+    local shape, parts, nums, i, n = {}, {}, {}, 1, #text
+    while i <= n do
+        local s, e
+        if text:sub(i, i) == "|" then
+            for _, pattern in ipairs(ESCAPES) do
+                s, e = text:find(pattern, i)
+                if s then break end
+            end
+        end
+        if s then
+            parts[#parts + 1] = text:sub(s, e)
+            shape[#shape + 1] = parts[#parts]
+            i = e + 1
+        else
+            -- a decimal number ("62.9", "1.25k") counts as one, with its decimals
+            s, e = text:find("^%d+%.%d+", i)
+            local decimals = s and #text:sub(s, e):match("%.(%d+)$") or nil
+            if not s then s, e = text:find("^%d+", i) end
+            if s then
+                local digits = text:sub(s, e)
+                -- a group after a separator ("1 234") keeps its leading zeros
+                local prev, prev2 = text:sub(s - 1, s - 1), text:sub(s - 2, s - 2)
+                local padded = not decimals and (prev == " " or prev == "," or prev == "'") and prev2:match("%d") ~= nil
+                nums[#nums + 1] = { value = tonumber(digits) or 0, width = padded and #digits or nil, decimals = decimals }
+                parts[#parts + 1] = NUM
+                shape[#shape + 1] = "\1"
+                i = e + 1
+            else
+                parts[#parts + 1] = text:sub(i, i)
+                shape[#shape + 1] = parts[#parts]
+                i = i + 1
+            end
+        end
+    end
+    return table.concat(shape), parts, nums
+end
+
+-- the text at k (0 = old numbers, 1 = new ones); keeps the numbers shown in glide.current
+local function Rebuild(glide, k)
+    local out, j = {}, 0
+    for i, part in ipairs(glide.parts) do
+        if part == NUM then
+            j = j + 1
+            local a, b = glide.from[j], glide.to[j]
+            if b.decimals then
+                local v = a.value + (b.value - a.value) * k
+                glide.current[j] = { value = v, decimals = b.decimals }
+                out[i] = ("%." .. b.decimals .. "f"):format(v)
+            else
+                local v = math.floor(a.value + (b.value - a.value) * k + 0.5)
+                glide.current[j] = { value = v, width = b.width }
+                out[i] = b.width and ("%0" .. b.width .. "d"):format(v) or ("%d"):format(v)
+            end
+        else
+            out[i] = part
+        end
+    end
+    return table.concat(out)
+end
+
+local function Step(_, elapsed)
+    local busy = false
+    for f in pairs(moving) do
+        local done = true
+        -- glow toward its target
+        if f.glowTarget then
+            local a = f.glowAlpha or 0
+            a = a + (f.glowTarget - a) * math.min(1, (elapsed or 0) * GLOW_SPEED)
+            if math.abs(a - f.glowTarget) < 0.01 then a = f.glowTarget else done = false end
+            f.glowAlpha = a
+            SetGlowAlpha(f, a)
+        end
+        -- number toward its value
+        local glide = f.glide
+        if glide then
+            glide.t = glide.t + (elapsed or 0)
+            local k = math.min(1, glide.t / GLIDE_TIME)
+            k = 1 - (1 - k) * (1 - k) -- slows down at the end
+            if k >= 1 then
+                f.text:SetText(glide.final)
+                f.glide = nil
+            else
+                f.text:SetText(Rebuild(glide, k))
+                done = false
+            end
+        end
+        if done then moving[f] = nil else busy = true end
+    end
+    if not busy then animator:SetScript("OnUpdate", nil) end
+end
+
+local function Wake(f)
+    moving[f] = true
+    if not animator then animator = CreateFrame("Frame") end
+    animator:SetScript("OnUpdate", Step)
+end
+
+-- Called by ApplyStyle: glow pieces where the style asks for them
+function ns.PrepareLife(f, cfg, e)
+    if cfg.hoverGlow then
+        PlaceGlow(f, e)
+        local c = cfg.glowColor or {}
+        for _, t in pairs(f.hoverGlowPieces) do t:SetVertexColor(c.r or 1, c.g or 0.85, c.b or 0.5, 1) end
+        SetGlowAlpha(f, f.glowAlpha or 0)
+    else
+        f.glowTarget, f.glowAlpha = nil, 0
+        SetGlowAlpha(f, 0)
+    end
+end
+
+function ns.GlowTo(f, target)
+    local cfg = ns.db and ns.db.blocks[f.key]
+    if not (cfg and cfg.hoverGlow and f.hoverGlowPieces) or Still() then
+        f.glowTarget, f.glowAlpha = nil, 0
+        SetGlowAlpha(f, 0)
+        return
+    end
+    f.glowTarget = target
+    Wake(f)
+end
+
+-- Writes a block's text; a number that changed counts to its new value when the block
+-- asks for it (the text keeps its shape, only digits move). The text always ends exactly
+-- as given.
+function ns.SetBlockText(f, cfg, text)
+    local glide = f.glide
+    local shown = glide and glide.final or f.glideLast
+    f.glideLast = text
+    -- not a time ("1:05", "3h05": its parts would count apart), whatever the block
+    if cfg.valueGlide and not Still() and not NO_GLIDE[f.key] and shown and shown ~= text
+        and not text:find("%d[:h]%d") then
+        local shapeOld, _, numsOld = Numbers(shown)
+        local shapeNew, parts, numsNew = Numbers(text)
+        local huge = false
+        for _, n in ipairs(numsNew) do if n.value > 1e9 then huge = true end end
+        for _, n in ipairs(numsOld) do if n.value > 1e9 then huge = true end end
+        if shapeOld == shapeNew and #numsNew > 0 and not huge then
+            -- a glide still running goes on from the numbers it shows now
+            local from = (glide and glide.current and #glide.current == #numsNew) and glide.current or numsOld
+            f.glide = { parts = parts, from = from, to = numsNew, current = {}, t = 0, final = text }
+            f.text:SetText(Rebuild(f.glide, 0))
+            Wake(f)
+            return
+        end
+    end
+    f.glide = nil
+    f.text:SetText(text)
+end
+
+---------------------------------------------------------------------------
+-- Thin progress bar (cfg.progressLook = "thin", any style): a line two screen pixels high
+-- under the value, over a faint track, instead of the band that fills the background
+---------------------------------------------------------------------------
+-- Called by ApplyStyle once the bar exists. left: where the text starts. lift: true when the
+-- block will show a bar (the text moves up 2 px to leave it room).
+function ns.PlaceThinBar(f, cfg, inset, left, lift)
+    if cfg.progressLook ~= "thin" then
+        f.barThin = nil
+        f.bar:SetDrawLayer("BACKGROUND", 7)
+        if f.barTrack then f.barTrack:Hide() end
+        return
+    end
+    local h = ns:PixelSize(2, f)
+    local bottom, right = inset + 2, 4 + inset
+    f.bar:ClearAllPoints()
+    f.bar:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", left, bottom)
+    f.bar:SetHeight(h)
+    f.bar:SetDrawLayer("ARTWORK", 1)
+    if not f.barTrack then
+        f.barTrack = f:CreateTexture(nil, "ARTWORK", nil, 0)
+        f.barTrack:SetTexture(WHITE)
+    end
+    local track = f.barTrack
+    track:ClearAllPoints()
+    track:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", left, bottom)
+    track:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -right, bottom)
+    track:SetHeight(h)
+    local c = cfg.borderColor or {}
+    track:SetVertexColor(c.r or 1, c.g or 1, c.b or 1, 0.22)
+    track:Hide()
+    f.barThin = { left = left, right = right }
+    if lift and f.text.AdjustPointsOffset then f.text:AdjustPointsOffset(0, 2) end
+end
+
+-- Colors the thin bar (UpdateBar): the level's color (low durability in red...), otherwise
+-- the edge's; never the bar texture. hex: the level color, nil without level.
+function ns.ColorThinBar(f, cfg, hex)
+    local r, g, b
+    if cfg.monochrome then
+        r, g, b = 0.75, 0.75, 0.75
+    elseif hex then
+        r, g, b = tonumber(hex:sub(1, 2), 16) / 255, tonumber(hex:sub(3, 4), 16) / 255, tonumber(hex:sub(5, 6), 16) / 255
+    else
+        local c = cfg.borderColor or {}
+        r, g, b = c.r or 1, c.g or 1, c.b or 1
+    end
+    f.bar:SetTexture(WHITE)
+    f.bar:SetVertexColor(r, g, b, 0.95)
+    f.barTextured = nil
+    if f.barTrack then f.barTrack:Show() end
+end

@@ -4,7 +4,7 @@
 # Frame drawings are 64 x 64 and cut in 9 pieces in game (Core/Core.lua, "hd" skin): the
 # corners are the outer 16 px (CORNER), the edges between them are stretched, so the
 # lines must stay the same along each side.
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 import sys
 
 OUT = sys.argv[1]
@@ -18,8 +18,10 @@ def mask(w, h):
     return Image.new("L", (w * S, h * S), 0)
 
 
-def save(name, m, w, h):
+def save(name, m, w, h, blur=0):
     m = m.resize((w, h), Image.LANCZOS)
+    if blur:
+        m = m.filter(ImageFilter.GaussianBlur(blur))
     img = Image.new("RGBA", (w, h), (255, 255, 255, 0))
     img.putalpha(m)
     img.save(f"{OUT}/{name}.tga")
@@ -106,3 +108,9 @@ d = ImageDraw.Draw(m)
 d.rectangle([0, 0, n, n], outline=255, width=int(7 * S))
 d.rectangle([10 * S, 10 * S, n - 10 * S, n - 10 * S], outline=150, width=int(1.5 * S))
 save("hd_box", m, 128, 128)
+
+# hover glow (Core/Looks.lua): a soft line just inside the edge, blurred; cut in 9 pieces
+# like the frame (the preview's glow, chosen in game on 26/11)
+m = mask(64, 64)
+box(ImageDraw.Draw(m), 2, R - 1, outline=255, width=int(3 * S))
+save("hd_glow", m, 64, 64, blur=2.2)

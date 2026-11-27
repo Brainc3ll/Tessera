@@ -769,6 +769,12 @@ local function HDStyle(key, nameKey, m)
             cfg.textShadow = true
             cfg.textTint = { r = m.value[1], g = m.value[2], b = m.value[3], a = 1 }
             cfg.iconShape, cfg.iconBorderColor = "round", { r = m.edge[1], g = m.edge[2], b = m.edge[3], a = 1 }
+            -- a little life (Core/Looks.lua), and the thin progress bar on the blocks that have
+            -- one; a bar the style turned on goes away with the next style (ApplyThemeToCfg)
+            cfg.hoverGlow, cfg.valueGlide = true, true
+            cfg.glowColor = { r = m.glow[1], g = m.glow[2], b = m.glow[3], a = 1 }
+            cfg.progressLook = "thin"
+            if not cfg.progressBar then cfg.progressBar, cfg.progressByStyle = true, true end
         end,
         window = function()
             return FlatWindow({ m.tint[1], m.tint[2], m.tint[3], 0.97 }, { m.edge[1], m.edge[2], m.edge[3], 1 }, m.value)
@@ -777,16 +783,16 @@ local function HDStyle(key, nameKey, m)
 end
 table.insert(ns.themes, HDStyle("hdGold", "THEME_HD_GOLD", {
     tint = { 0.10, 0.075, 0.045, 0.78 }, edge = { 0.86, 0.66, 0.32 }, value = { 1, 0.95, 0.85 },
-    border = "hdDouble", sep = "diamond", font = "friz" }))
+    glow = { 1, 0.80, 0.45 }, border = "hdDouble", sep = "diamond", font = "friz" }))
 table.insert(ns.themes, HDStyle("hdRune", "THEME_HD_RUNE", {
     tint = { 0.035, 0.06, 0.11, 0.80 }, edge = { 0.40, 0.72, 1 }, value = { 0.90, 0.96, 1 },
-    border = "hdRune", sep = "rune", font = "cinzel" }))
+    glow = { 0.45, 0.80, 1 }, border = "hdRune", sep = "rune", font = "cinzel" }))
 table.insert(ns.themes, HDStyle("hdSilver", "THEME_HD_SILVER", {
     tint = { 0.07, 0.075, 0.085, 0.78 }, edge = { 0.78, 0.80, 0.84 }, value = { 1, 1, 1 },
-    border = "hdLine", sep = "diamond", font = "inter" }))
+    glow = { 0.90, 0.92, 1 }, border = "hdLine", sep = "diamond", font = "inter" }))
 table.insert(ns.themes, HDStyle("hdBronze", "THEME_HD_BRONZE", {
     tint = { 0.09, 0.05, 0.03, 0.80 }, edge = { 0.72, 0.45, 0.24 }, value = { 1, 0.92, 0.84 },
-    border = "hdDouble", sep = "diamond", font = "friz" }))
+    glow = { 1, 0.62, 0.35 }, border = "hdDouble", sep = "diamond", font = "friz" }))
 ns.LocalizeList(ns.themes, "name") -- the names come from keys (nameKey), see Locales/Language.lua
 
 -- The center of modern tooltips is a white texture that the game tints with
@@ -892,6 +898,9 @@ function ns:ApplyThemeToCfg(cfg, key)
     cfg.textTint = { r = 1, g = 1, b = 1, a = 0 }
     cfg.textShadow = false -- the FlareUI styles follow FlareUI's shadow
     cfg.separatorStyle = "line" -- the 2.0 styles draw an ornament instead
+    -- the life of the four new styles, and a progress bar one of them turned on
+    cfg.hoverGlow, cfg.valueGlide, cfg.progressLook = false, false, "fill"
+    if cfg.progressByStyle then cfg.progressBar, cfg.progressByStyle = false, false end
     theme.block(cfg)
 end
 
@@ -902,7 +911,7 @@ local function RestyleProfile(self, key, restyle)
                              "iconShape", "iconSize", "iconBorderColor", "separators", "separatorColor",
                              "barTexture", "classColorText", "classColorBorder", "classColorBg",
                              "classColorIcon", "classColorSeparator", "hideIcons", "monochrome", "textTint", "inkColors",
-                             "textShadow", "separatorStyle" }) do
+                             "textShadow", "separatorStyle", "hoverGlow", "glowColor", "valueGlide", "progressLook" }) do
         if self.db.groupDefaults then self.db.groupDefaults[field] = nil end
         if self.db.launcherDefaults then self.db.launcherDefaults[field] = nil end
     end

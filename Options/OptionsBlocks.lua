@@ -587,6 +587,11 @@ local function BuildBlockPage(page)
     iconBox.Add(Check(a, L.CLASS_COLOR_ICON, "classColorIcon", L.TIP_CLASS_COLOR_ICON), { half = true })
     iconBox.Add(Check(a, L.ICON_DESATURATE, "iconDesaturate", L.TIP_ICON_DESATURATE), { half = true })
 
+    -- a little life: the edge lights up under the mouse, numbers count to their new value
+    local lifeBox = A.Box(L.SECTION_LIFE, { reset = true })
+    lifeBox.Add(Check(a, L.HOVER_GLOW, "hoverGlow", L.TIP_HOVER_GLOW), { half = true })
+    lifeBox.Add(Check(a, L.VALUE_GLIDE, "valueGlide", L.TIP_VALUE_GLIDE), { half = true })
+
     local borderBox = A.Box(L.BORDER, { reset = true })
     -- picking a border also restores its original thickness
     local border = CreateDropdown(a, L.BORDER, function() return ns:GetMediaList("border") end,
@@ -682,6 +687,17 @@ local function BuildBlockPage(page)
         local mod = ns:GetModule(S.selected)
         return mod and mod.progress ~= nil or false
     end), { half = true })
+    -- the bar's look: a band behind the text, or a thin line under it
+    levelBox.Add(Dropdown(a, L.PROGRESS_LOOK, {
+        { key = "fill", name = L.PROGRESS_LOOK_FILL },
+        { key = "thin", name = L.PROGRESS_LOOK_THIN },
+    }, "progressLook", L.TIP_PROGRESS_LOOK, function()
+        local cfg = Cfg()
+        if not (cfg and cfg.progressBar) then return false end
+        if IsGroup() then return true end
+        local mod = ns:GetModule(S.selected)
+        return mod and mod.progress ~= nil or false
+    end))
 
     -- 3. Behaviour: when to show it, hover fade, clicks, alerts and thresholds
     local whenBox = B.Box(L.SECTION_WHEN, { reset = true })

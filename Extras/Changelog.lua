@@ -74,6 +74,10 @@ ns.CHANGELOG = {
                 "Corners (Style and layouts tab, or Appearance for one block): rounded, or square with a line one screen pixel wide.",
                 "Two fonts come with these styles: Cinzel (Blue rune) and Inter (Silver). You can pick them for any block,"
                     .. " and addons that use LibSharedMedia get them too.",
+                "Effects, for any style (Appearance tab): the edge lights up under the mouse, and a number that changes counts"
+                    .. " to its new value. The four new styles turn them on; Fewer animations turns them off.",
+                "Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks"
+                    .. " that have a progress; the other styles keep the band.",
               },
               fr = {
                 "Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?, boîtes de copie)"
@@ -93,6 +97,10 @@ ns.CHANGELOG = {
                 "Coins (onglet Style et dispositions, ou Apparence pour un seul bloc) : arrondis, ou droits avec un trait d'un pixel de l'écran.",
                 "Deux polices arrivent avec ces styles : Cinzel (Runique bleu) et Inter (Argent). Tu peux les choisir pour n'importe quel bloc,"
                     .. " et les addons qui utilisent LibSharedMedia les reçoivent aussi.",
+                "Effets, pour tous les styles (onglet Apparence) : le bord s'éclaire sous la souris, et un nombre qui change"
+                    .. " glisse jusqu'à sa nouvelle valeur. Les quatre nouveaux styles les allument ; Moins d'animations les coupe.",
+                "Barre de progression : une nouvelle allure, une fine ligne sous la valeur (Allure de la barre). Les quatre nouveaux"
+                    .. " styles l'utilisent sur les blocs qui ont une progression ; les autres styles gardent la bande.",
               },
             },
             { kind = "fixed",

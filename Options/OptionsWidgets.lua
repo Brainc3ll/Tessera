@@ -24,6 +24,8 @@ local function SetField(name, value)
     else
         for _, key in ipairs(WriteTargets(name)) do
             ns.db.blocks[key][name] = ns.DeepCopy(value)
+            -- the player's own choice: a style no longer turns this bar off (Core/Themes.lua)
+            if name == "progressBar" then ns.db.blocks[key].progressByStyle = false end
             ns:ApplyStyle(key)
         end
         if SEPARATOR_FIELDS[name] then ns:UpdateLayout() end -- the lines follow the setting at once

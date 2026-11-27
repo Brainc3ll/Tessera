@@ -55,8 +55,8 @@ ns.CHANGELOG = {
             { en = "Four new block styles: Gilded, Blue rune, Silver and Brazen, with rounded corners.",
               fr = "Quatre nouveaux styles de blocs : Doré, Runique bleu, Argent et Airain, aux coins arrondis.",
               show = { page = "PAGE_LOOK", label = "THEME" } },
-            { en = "Pick your style in a gallery of real blocks, sorted by family.",
-              fr = "Choisis ton style dans une galerie de vrais blocs, rangés par famille.",
+            { en = "Pick your style in a gallery of real blocks, and set its font and effects beside it.",
+              fr = "Choisis ton style dans une galerie de vrais blocs, et règle sa police et ses effets à côté.",
               show = { page = "PAGE_LOOK", label = "THEME" } },
             { en = "Style, font, corners and effects together in one Style box.",
               fr = "Style, police, coins et effets réunis dans un seul cadre Style.",
@@ -93,7 +93,8 @@ ns.CHANGELOG = {
                 "Progress bar: a new look, a thin line under the value (Bar look). The four new styles use it on the blocks"
                     .. " that have a progress; the other styles keep the band.",
                 "Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block,"
-                    .. " in rows by family. Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.",
+                    .. " in rows by family. On the right, set the font, text size, corners and effects: every thumbnail shows them."
+                    .. " Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.",
               },
               fr = {
                 "Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?, boîtes de copie)"
@@ -124,7 +125,8 @@ ns.CHANGELOG = {
                 "Barre de progression : une nouvelle allure, une fine ligne sous la valeur (Allure de la barre). Les quatre nouveaux"
                     .. " styles l'utilisent sur les blocs qui ont une progression ; les autres styles gardent la bande.",
                 "Galerie des styles : un clic sur la liste des styles (onglet Style et dispositions, ou page d'un bloc) montre tous les styles"
-                    .. " en vrais blocs, rangés par famille. Clique sur un style, puis sur Appliquer. Les flèches ou la croix,"
+                    .. " en vrais blocs, rangés par famille. À droite, règle la police, la taille du texte, les coins et les effets :"
+                    .. " chaque vignette les montre. Clique sur un style, puis sur Appliquer. Les flèches ou la croix,"
                     .. " Entrée ou A, et Échap ou B marchent aussi.",
               },
             },

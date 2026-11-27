@@ -928,17 +928,26 @@ end
 -- Writes a theme into some blocks only (Blocks tab, "Apply this style to", 1.3): the
 -- profile's style (Look tab) and the window do not change. Undoable. Returns false if
 -- the style is not available.
-function ns:ApplyThemeToBlocks(keys, key)
-    if not byKey[key] or not byKey[key].available() then return false end
+-- look (the style gallery's workshop, 27/11): settings written after the style, a list of
+-- { field, value, spacers } (spacers = false: a spacer keeps its own value, as "All blocks"
+-- does). key = nil writes only look. One undo step for both.
+function ns:ApplyLookToBlocks(keys, key, look)
+    if key and (not byKey[key] or not byKey[key].available()) then return false end
     if self.PushUndo then self:PushUndo(true) end -- Undo brings the old looks back
     for _, blockKey in ipairs(keys) do
         local cfg = self.db.blocks[blockKey]
-        if cfg then self:ApplyThemeToCfg(cfg, key) end
+        if cfg then
+            if key then self:ApplyThemeToCfg(cfg, key) end
+            for _, item in ipairs(look or {}) do
+                if item.spacers or not self.IsSpacerKey(blockKey) then cfg[item.field] = item.value end
+            end
+        end
     end
     self:ReanchorAll() -- drawn again, heads first (see RestyleProfile)
     if self.UpdateAll then self:UpdateAll() end
     return true
 end
+function ns:ApplyThemeToBlocks(keys, key) return self:ApplyLookToBlocks(keys, key) end
 
 -- Switches the profile to a theme: clears style overrides from the group and launcher
 -- defaults, restyles every block and the options window. Returns false if unavailable.

@@ -202,9 +202,11 @@ local function BuildModuleOptions(keys, route, condition)
 end
 
 
--- Applies a style to some blocks and says what it needs (the warning about locked blocks is asked before)
-function ns:ApplyStyleToBlocksNow(keys, style)
-    if self:ApplyThemeToBlocks(keys, style) then
+-- Applies a style to some blocks and says what it needs (the warning about locked blocks is asked before).
+-- look: the settings of the style gallery's workshop, written after the style (ns:ApplyLookToBlocks);
+-- style = nil writes only them.
+function ns:ApplyStyleToBlocksNow(keys, style, look)
+    if self:ApplyLookToBlocks(keys, style, look) and style then
         local note = self:GetThemeNote(style)
         if note then self.Print(note) end
     end
@@ -212,10 +214,12 @@ function ns:ApplyStyleToBlocksNow(keys, style)
 end
 
 -- Locked blocks among the targets (27/11, Braincell1980): "Not the locked ones" (the default:
--- the others take the style, the locked ones stay as they are), "Them too", or Cancel
-ns.OnLanguage(function()
-    StaticPopupDialogs["TESSERA_STYLE_LOCKED_APPLY"] = {
-        text = L.STYLE_LOCKED_APPLY,
+-- the others take the style, the locked ones stay as they are), "Them too", or Cancel.
+-- The settings of the gallery's workshop (data.look) follow the same answer (choice of
+-- Braincell1980, 27/11); with no new style, the question speaks of the look.
+local function LockedDialog(text)
+    return {
+        text = text,
         button1 = L.STYLE_LOCKED_KEEP,
         button2 = CANCEL,
         button3 = L.STYLE_LOCKED_ALL,
@@ -228,10 +232,18 @@ ns.OnLanguage(function()
             for _, key in ipairs(data.keys) do
                 if not (ns.db.blocks[key] and ns.db.blocks[key].styleLocked) then open[#open + 1] = key end
             end
-            ns:ApplyStyleToBlocksNow(open, data.style)
+            ns:ApplyStyleToBlocksNow(open, data.style, data.look)
+            if data.done then data.done() end
         end,
-        OnButton3 = function(_, data) ns:ApplyStyleToBlocksNow(data.keys, data.style) end,
+        OnButton3 = function(_, data)
+            ns:ApplyStyleToBlocksNow(data.keys, data.style, data.look)
+            if data.done then data.done() end
+        end,
     }
+end
+ns.OnLanguage(function()
+    StaticPopupDialogs["TESSERA_STYLE_LOCKED_APPLY"] = LockedDialog(L.STYLE_LOCKED_APPLY)
+    StaticPopupDialogs["TESSERA_STYLE_LOCKED_LOOK"] = LockedDialog(L.STYLE_LOCKED_LOOK)
 end)
 
 -- "Copy style to all" / "Copy this style to the group" with locked blocks among the targets: asks first,
@@ -286,19 +298,23 @@ local function CreateStyleTargets(parent, getStyle)
         end
         return { S.selected }
     end
-    local function Apply(target, style)
+    -- (from the style gallery: look = the workshop's settings, lookOnly = no new style, done =
+    -- called once applied, so a Cancel in the warning keeps the workshop as it was)
+    local function Apply(target, style, look, done, lookOnly)
         local keys = Keys(target)
-        style = style or getStyle()
+        if lookOnly then style = nil else style = style or getStyle() end
         local locked = 0
         for _, key in ipairs(keys) do
             if ns.db.blocks[key] and ns.db.blocks[key].styleLocked then locked = locked + 1 end
         end
         -- a block whose style is locked takes the style only after a warning (it stays locked)
         if locked > 0 then
-            StaticPopup_Show("TESSERA_STYLE_LOCKED_APPLY", locked, nil, { keys = keys, style = style })
+            StaticPopup_Show(style and "TESSERA_STYLE_LOCKED_APPLY" or "TESSERA_STYLE_LOCKED_LOOK", locked, nil,
+                { keys = keys, style = style, look = look, done = done })
             return
         end
-        ns:ApplyStyleToBlocksNow(keys, style)
+        ns:ApplyStyleToBlocksNow(keys, style, look)
+        if done then done() end
     end
     local function Single() return not IsGroup() and ns.db.blocks[S.selected] ~= nil end
     local buttons = {}
@@ -551,16 +567,19 @@ local function BuildBlockPage(page)
     end
     local styleTargets = CreateStyleTargets(a, function() return pickStyle or ns:GetTheme() end)
     -- a click on the list opens the style gallery (OptionsStyleGallery.lua), with the three
-    -- buttons of "Apply this style to"
+    -- buttons of "Apply this style to". The workshop on its right starts from this block's
+    -- settings; with the style it opened on and only the workshop changed, a button writes only
+    -- what changed (choice of Braincell1980, 27/11), otherwise the style, then what changed.
     ns.blockStyleList = ns.StyleListOpensGallery(styleDropdown, function()
         local actions = {}
         for _, spec in ipairs(styleTargets.specs) do
             actions[#actions + 1] = {
                 text = spec[2], tip = spec[3],
                 enabled = function(key) return key ~= nil and spec[4]() and true or false end,
-                run = function(_, style)
-                    pickStyle = style
-                    styleTargets.Apply(spec[1], style)
+                run = function(key, style, look, done, openKey)
+                    local lookOnly = look ~= nil and key == openKey
+                    if not lookOnly then pickStyle = style end
+                    styleTargets.Apply(spec[1], style, look, done, lookOnly)
                 end,
             }
         end
@@ -568,6 +587,10 @@ local function BuildBlockPage(page)
             chosen = pickStyle or ns:GetTheme(),
             current = function() return ns:GetTheme() end,
             currentLabel = L.STYLE_GALLERY_PROFILE,
+            lookNow = function(field)
+                local cfg = Cfg()
+                return cfg and cfg[field]
+            end,
             actions = actions,
         })
     end)

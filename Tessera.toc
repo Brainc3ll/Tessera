@@ -57,6 +57,7 @@ Options\OptionsLookBox.lua
 Options\OptionsBlocks.lua
 Options\OptionsBlockPicker.lua
 Options\OptionsStyleGallery.lua
+Options\OptionsStyleWorkshop.lua
 Options\OptionsPages.lua
 Options\OptionsHelp.lua
 Options\OptionsWindow.lua

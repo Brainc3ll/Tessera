@@ -140,7 +140,7 @@ Help tab inside the game explains everything.
   Corners: rounded, or square with a line one screen pixel wide.
 - **Effects (any style):** the edge lights up under the mouse, numbers count to their new value,
   and the progress bar can be a thin line under the value.
-- **Style gallery:** a click on the style list shows every style as a real block, in rows by family.
+- **Style gallery:** a click on the style list shows every style as a real block, in rows by family. Set the font, text size, corners and effects on the right and see them on every thumbnail before you apply.
   Click a style, then Apply; the keyboard and the gamepad work too.
 - **One Style box:** style, font, text size, corners, icons and effects, in this order, for every
   block (Style and layouts tab) or for one block (top of its Appearance tab).
@@ -421,6 +421,7 @@ The Lua files sit in folders: `Core/` (engine, styles, placement, profiles), `Bl
 | `Options/OptionsBlocks.lua` | The Blocks and groups tab: its head, its three tabs (Content, Appearance, Behaviour), the options of the selection and of every block, style targets. |
 | `Options/OptionsBlockPicker.lua` | The "See all" window of the Blocks tab: every block at once (green dot on the ones on screen), search, a click selects. |
 | `Options/OptionsStyleGallery.lua` | The style gallery (a click on a style list opens it, `ns.StyleListOpensGallery`): every style as a real block, in rows by family, "Automatic" first from the Style and layouts tab. A click marks a style; Apply (or This block, Its group, All blocks) sets it. Arrows or d-pad, Enter or A, Escape or B. |
+| `Options/OptionsStyleWorkshop.lua` | The workshop of the style gallery (`ns.StyleWorkshop`): a column on the right with the rows of `ns.LOOK_ROWS`. It starts from the blocks' settings, shows what the marked style offers except what the player changed, draws every thumbnail with those values and writes only through the gallery's buttons (`W.Changes`, `ns:ApplyLookToBlocks`). Keyboard and gamepad: Right at the end of a row, Enter or A takes a row, Left / Right change it. |
 | `Options/OptionsPages.lua` | The Style and layouts, Placement and more, Accessibility, Launchers, DataBroker and Profiles and sharing tabs, with their popups (new profile, import, preset, reset). |
 | `Options/OptionsHelp.lua` | Themed windows (`ns:SkinWindow`), the help text (`ns.HelpText`) and the Help and About tabs. |
 | `Options/OptionsWindow.lua` | Side windows, folding and zoom, the search box, the main window (`BuildPanel`), open / toggle functions and the Blizzard settings page. |

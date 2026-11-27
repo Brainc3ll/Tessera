@@ -7,13 +7,20 @@ local L = ns.L
 -- pressed: "Apply" for the profile's style, or "This block / Its group / All blocks" on a
 -- block's page. Arrows or d-pad move, Enter or A confirms, Escape or B closes. Nothing is
 -- saved by the window itself.
+-- The workshop (OptionsStyleWorkshop.lua, 27/11) fills a column on the right: font, text size,
+-- corners, icons and effects, shown at once on every thumbnail and written by the same buttons.
+-- The window is wider then (about 1 100, never wider than the screen). Right at the end of a
+-- row of thumbnails goes into the column, Left comes back.
 local Tools = ns.OptionsTools
 local Skin = ns.Skin
 local FitButtonText = Tools.FitButtonText
 local AttachTip = Tools.AttachTip
 
-local WINDOW_W, WINDOW_H, PAD = 900, 560, 18
+local WINDOW_H, PAD = 560, 18
+local NARROW_W, WIDE_W, SIDE_W = 900, 1100, 260
 local MIN_CARD_W, GAP, BAR_H = 196, 8, 44
+local WINDOW_W = NARROW_W -- set at each opening (the workshop makes it wider)
+local SIDE_SPACE = 0       -- room of the workshop's column on the right
 local SAMPLE_TEXT = "1 234   42/80   17:42"
 local MEDIA = Skin.MEDIA
 
@@ -82,6 +89,8 @@ local function DrawSample(card, style)
     local f = card.sample
     local cfg = ns:GetBlockDefaults("gold")
     ns:ApplyThemeToCfg(cfg, style)
+    -- the workshop's font, size, corners, icons and effects (what the player will get)
+    ns.StyleWorkshop.ApplyToCfg(cfg, card.key, style)
     cfg.showIcon, cfg.showLabel = true, false
     local ok, inset = pcall(ns.SkinBlockFrame, ns, f, cfg)
     if not ok then inset = 0 end
@@ -107,6 +116,9 @@ local function DrawSample(card, style)
     f.text:SetText(SAMPLE_TEXT)
     local w = math.ceil(f.text:GetStringWidth() or 0) + iconSize + 14 + 2 * inset
     f:SetSize(w, h)
+    -- the glow under the mouse, as on a real block (Core/Looks.lua reads f.lifeCfg)
+    f.lifeCfg = cfg
+    pcall(ns.PrepareLife, f, cfg, f.nineSliceInfo and f.nineSliceInfo.edge or 6)
     return w, h
 end
 
@@ -117,6 +129,8 @@ local function Choose(index)
     if not card or not card:IsShown() then return end
     gallery.chosen = card.key
     gallery.focus = index
+    gallery.zone = nil
+    ns.StyleWorkshop.Sync() -- the column shows what this style offers
     ShowMarks()
 end
 
@@ -156,6 +170,8 @@ local function NewCard(parent)
         Skin.TextColor(c.tag, p.soft)
     end)
     c:SetScript("OnClick", function(self) Choose(self.index) end)
+    c:HookScript("OnEnter", function(self) ns.GlowTo(self.sample, 1) end)
+    c:HookScript("OnLeave", function(self) ns.GlowTo(self.sample, 0) end)
     return c
 end
 
@@ -196,8 +212,12 @@ end
 
 -- Marks: chosen card, focus ring (only once a key or the d-pad was used), button states
 function ShowMarks()
-    local focus = gallery.keyboardOn and gallery.focus
+    local inSide = gallery.zone == "side"
+    local focus = gallery.keyboardOn and not inSide and gallery.focus
     local current = opts.current and opts.current()
+    local workshop = ns.StyleWorkshop
+    workshop.ShowMarks(gallery.keyboardOn and inSide)
+    local changed = workshop.Changes() ~= nil
     for i, c in ipairs(gallery.cards) do
         if c:IsShown() then
             local chosen = c.key == gallery.chosen
@@ -210,7 +230,7 @@ function ShowMarks()
     local nCards = gallery.nCards or 0
     for i, b in ipairs(gallery.buttons) do
         -- kept on the button too: the keyboard skips a greyed button
-        b.usable = not b.action or b.action.enabled == nil or b.action.enabled(gallery.chosen) and true or false
+        b.usable = not b.action or b.action.enabled == nil or b.action.enabled(gallery.chosen, changed) and true or false
         b:SetEnabled(b.usable)
         b.ring:SetShown(focus == nCards + i)
     end
@@ -218,7 +238,11 @@ function ShowMarks()
     for _, c in ipairs(gallery.cards) do
         if c:IsShown() and c.key == gallery.chosen then name = c.name end
     end
-    gallery.status:SetText(name and L.STYLE_GALLERY_CHOSEN:format(name) or L.STYLE_GALLERY_HINT)
+    if inSide and gallery.keyboardOn and workshop.Taken() then
+        gallery.status:SetText(L.STYLE_WORKSHOP_TAKEN)
+    else
+        gallery.status:SetText(name and L.STYLE_GALLERY_CHOSEN:format(name) or L.STYLE_GALLERY_HINT)
+    end
 end
 
 function Refresh()
@@ -243,7 +267,7 @@ function Refresh()
     end
     for i = nCards + 1, #cards do cards[i]:Hide() end
     gallery.nCards = nCards
-    local usable = WINDOW_W - PAD - 34 - PAD
+    local usable = WINDOW_W - PAD - 34 - PAD - SIDE_SPACE
     widest = math.min(widest, usable)
     local columns = math.max(1, math.floor((usable + GAP) / (widest + GAP)))
     local cardW = math.floor((usable - GAP * (columns - 1)) / columns)
@@ -319,8 +343,15 @@ function Refresh()
             AttachTip(b, a.text, a.tip)
             b:SetScript("OnClick", function()
                 local key = gallery.chosen
-                if not key or (a.enabled and not a.enabled(key)) then return end
-                a.run(key, ChosenStyle())
+                local workshop = ns.StyleWorkshop
+                local look = workshop.Changes()
+                if not key or (a.enabled and not a.enabled(key, look ~= nil)) then return end
+                -- done: called once everything is written (a warning can come first, and its
+                -- Cancel keeps the workshop as it was)
+                a.run(key, ChosenStyle(), look, function()
+                    workshop.Applied(key)
+                    if gallery:IsShown() then Refresh() end
+                end, workshop.OpenKey())
                 if gallery:IsShown() then ShowMarks() end
             end)
         else
@@ -334,6 +365,7 @@ function Refresh()
         gallery.buttons[i].action = nil
     end
     LayoutButtons()
+    ns.StyleWorkshop.Sync()
     ShowMarks()
 end
 
@@ -382,7 +414,14 @@ local KEYS = {
 function ns.StyleGalleryKey(key)
     local what = KEYS[key]
     if not (what and gallery and gallery:IsShown()) then return false end
+    local workshop = ns.StyleWorkshop
     if what == "back" then
+        -- a taken row of the workshop lets go first
+        if gallery.zone == "side" and gallery.keyboardOn and workshop.Taken() then
+            workshop.Release()
+            ShowMarks()
+            return true
+        end
         gallery:Hide()
         return true
     end
@@ -399,6 +438,20 @@ function ns.StyleGalleryKey(key)
     local focus = gallery.focus or 1
     local onButtons = focus > nCards
     local buttons = ButtonIndexes()
+    -- in the workshop's column: Left goes back to the thumbnail, Down past the last row and
+    -- Tab go to the buttons
+    if gallery.zone == "side" then
+        local where = workshop.Key(what)
+        if where == "left" then
+            gallery.zone = nil
+            if gallery.cards[focus] and focus <= nCards then EnsureVisible(gallery.cards[focus]) end
+        elseif where == "down" or where == "tab" then
+            gallery.zone = nil
+            if #buttons > 0 then gallery.focus = buttons[1] end
+        end
+        ShowMarks()
+        return true
+    end
     if what == "confirm" then
         if onButtons then
             local b = gallery.buttons[focus - nCards]
@@ -410,6 +463,12 @@ function ns.StyleGalleryKey(key)
         if onButtons then
             focus = CardAt(gallery.cards[1] and gallery.cards[1].row or 1, 0) or 1
             for i = 1, nCards do if gallery.cards[i].key == gallery.chosen then focus = i end end
+        elseif workshop.HasRows() then
+            -- thumbnails, then the workshop, then the buttons
+            gallery.zone = "side"
+            workshop.Enter()
+            ShowMarks()
+            return true
         elseif #buttons > 0 then
             focus = buttons[1]
         end
@@ -424,7 +483,15 @@ function ns.StyleGalleryKey(key)
         end
     else
         local c = gallery.cards[focus]
+        local nextCard = gallery.cards[focus + 1]
+        local rowEnd = focus >= nCards or not nextCard or nextCard.row ~= c.row
         if what == "left" then focus = math.max(1, focus - 1)
+        elseif what == "right" and rowEnd and workshop.HasRows() then
+            -- the end of a row: into the workshop's column
+            gallery.zone = "side"
+            workshop.Enter()
+            ShowMarks()
+            return true
         elseif what == "right" then focus = math.min(nCards, focus + 1)
         elseif what == "up" then focus = CardAt(c.row - 1, c.col) or focus
         elseif what == "down" then
@@ -483,12 +550,14 @@ local function Build()
     f.status:SetJustifyH("LEFT")
     f.status:SetWordWrap(true)
     f.cards, f.titles, f.buttons = {}, {}, {}
+    ns.StyleWorkshop.Build(f, SIDE_W, PAD, BAR_H)
     f:SetScript("OnKeyDown", OnKey)
     if f.SetScript and f.EnableGamePadButton then f:SetScript("OnGamePadButtonDown", OnKey) end
     f:SetScript("OnShow", function() Listen(true) end)
     f:SetScript("OnHide", function()
         Listen(false)
         f.keyboardOn = false
+        f.zone = nil
     end)
     f:RegisterEvent("PLAYER_REGEN_DISABLED")
     f:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -508,7 +577,11 @@ end
 --   auto = true to offer "Automatic" first,
 --   chosen = the key marked when it opens,
 --   current = function returning the key that gets the tag currentLabel,
---   actions = { { text, tip, run = function(key, style), enabled = function(key) } } }
+--   lookNow = function(field, first) giving the blocks' look settings (the workshop; none: no column),
+--   actions = { { text, tip, run = function(key, style, look, done, openKey),
+--                 enabled = function(key, changed) } } }
+--   (look: the workshop's changes or nil; done(): call once written; openKey: the key marked
+--   when the window opened, or last applied)
 function ns:ShowStyleGallery(o)
     if not gallery then Build() end
     opts = o or {}
@@ -516,6 +589,18 @@ function ns:ShowStyleGallery(o)
     gallery.title:SetText(L.STYLE_GALLERY_TITLE)
     gallery.chosen = opts.chosen or ns:GetTheme()
     gallery.keyboardOn = false
+    gallery.zone = nil
+    -- the workshop: a wider window (never wider than the screen), the column on the right
+    local workshop = ns.StyleWorkshop
+    workshop.Open(opts, gallery.chosen, function() return gallery.chosen, ChosenStyle() end, function()
+        if gallery:IsShown() then Refresh() end
+    end)
+    local screen = UIParent and UIParent.GetWidth and UIParent:GetWidth() or 0
+    if screen < 200 then screen = WIDE_W + 40 end
+    WINDOW_W = workshop.active and math.max(NARROW_W, math.min(WIDE_W, math.floor(screen - 40))) or NARROW_W
+    SIDE_SPACE = workshop.active and SIDE_W + 2 * GAP or 0
+    gallery:SetWidth(WINDOW_W)
+    gallery.scroll:SetPoint("BOTTOMRIGHT", -34 - SIDE_SPACE, PAD + BAR_H)
     gallery:Show()
     gallery:Raise()
     Refresh()

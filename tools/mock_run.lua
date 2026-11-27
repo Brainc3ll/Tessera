@@ -4930,7 +4930,9 @@ do
         if marked == "auto" or not seen[marked] then print("STEP ERROR: gallery: Enter marked " .. tostring(marked)) end
         if ns:GetStyleChoice() ~= "auto" then print("STEP ERROR: gallery: marking a style applied it") end
         if not apply.usable then print("STEP ERROR: gallery: Apply stays greyed") end
-        -- Tab goes to the buttons, Enter presses Apply
+        -- Tab goes to the workshop's column, then to the buttons; Enter presses Apply
+        ns.StyleGalleryKey("TAB")
+        if g.zone ~= "side" then print("STEP ERROR: gallery: Tab does not reach the workshop") end
         ns.StyleGalleryKey("TAB")
         if g.focus ~= g.nCards + 1 then print("STEP ERROR: gallery: Tab does not reach Apply") end
         ns.StyleGalleryKey("ENTER")
@@ -4999,6 +5001,160 @@ do
             ns:SetOptionsSelection("gold")
         end
     end
+    if themeBefore then ns:ApplyTheme(themeBefore) else ns:PickStyleChoice("auto") end
+end
+-- The gallery's workshop (27/11): a column with the Style box's rows; the marked style's offer,
+-- what the player changed kept; shown on the thumbnails, saved only by a button; Apply with the
+-- same style writes only what changed; locked blocks kept; keyboard; text x2; high contrast
+do
+    local W = ns.StyleWorkshop
+    local themeBefore = ns.db.theme
+    ns:PickStyleChoice("auto")
+    local g
+    local function OpenLook() ns.lookStyleList.dropdown:SetMenuOpen(true) g = ns.StyleGallery() end
+    local function Mark(key)
+        for i = 1, g.nCards do if g.cards[i].key == key then g.cards[i]:GetScript("OnClick")(g.cards[i]) end end
+    end
+    local function Row(field)
+        for _, r in ipairs(W.rows) do if r.spec.field == field then return r end end
+    end
+    local function CardOf(key)
+        for i = 1, g.nCards do if g.cards[i].key == key then return g.cards[i] end end
+    end
+    local lockKey = "fps"
+    ns.db.blocks[lockKey].styleLocked = true
+    local lockedSize, lockedBorder = ns.db.blocks[lockKey].fontSize, ns.db.blocks[lockKey].border
+    local size0 = ns:AllBlocksField("fontSize", "blocks", true)
+    OpenLook()
+    if not (W.active and W.side:IsShown()) then print("STEP ERROR: workshop: no column in the gallery") end
+    if g:GetWidth() <= 900 then print("STEP ERROR: workshop: the gallery is not wider") end
+    if g:GetWidth() > UIParent:GetWidth() then print("STEP ERROR: workshop: the gallery is wider than the screen") end
+    if g.content:GetWidth() + W.side:GetWidth() + 18 * 2 + 34 > g:GetWidth() then print("STEP ERROR: workshop: thumbnails under the column") end
+    if g.columns < 3 then print("STEP ERROR: workshop: only " .. g.columns .. " thumbnails per row") end
+    -- the column starts from the blocks; the marked style brings its font and effects
+    if W.Value("fontSize", g.chosen, "x", true) ~= size0 then print("STEP ERROR: workshop: the size is not the blocks' one") end
+    Mark("hdRune")
+    local want = ns:GetBlockDefaults("gold")
+    ns:ApplyThemeToCfg(want, "hdRune")
+    if W.Value("font", "hdRune", "hdRune") ~= want.font then print("STEP ERROR: workshop: the column does not show Blue rune's font") end
+    if W.Value("hoverGlow", "hdRune", "hdRune") ~= true then print("STEP ERROR: workshop: Blue rune's effects are not offered") end
+    if not Row("edgeShape").shown then print("STEP ERROR: workshop: no Corners for a rounded border") end
+    if Row("iconSet").shown ~= (ns.HD_ICONS_ON and true or false) then print("STEP ERROR: workshop: Icons row shown while HD icons are off") end
+    Mark("blizzard")
+    if Row("edgeShape").shown then print("STEP ERROR: workshop: Corners shown without a rounded border") end
+    Mark("hdRune")
+    -- keyboard: Tab into the column, Down to the size, Enter takes it, Right raises it
+    g.keyboardOn = true
+    ns.StyleGalleryKey("TAB")
+    if g.zone ~= "side" then print("STEP ERROR: workshop: Tab does not reach the column") end
+    while W.FocusedRow() and W.FocusedRow().spec.field ~= "fontSize" do ns.StyleGalleryKey("DOWN") end
+    ns.StyleGalleryKey("ENTER")
+    if not W.Taken() then print("STEP ERROR: workshop: Enter does not take the row") end
+    ns.StyleGalleryKey("RIGHT")
+    ns.StyleGalleryKey("RIGHT")
+    local size1 = size0 + 2
+    if W.Value("fontSize", g.chosen, "hdRune") ~= size1 then print("STEP ERROR: workshop: Right does not raise the size") end
+    if ns:AllBlocksField("fontSize", "blocks", true) ~= size0 then print("STEP ERROR: workshop: a change was saved before Apply") end
+    if ns:GetStyleChoice() ~= "auto" then print("STEP ERROR: workshop: the style changed before Apply") end
+    local card = CardOf("hdSilver")
+    if not (card and card.sample.lifeCfg and card.sample.lifeCfg.fontSize == size1) then print("STEP ERROR: workshop: the thumbnails do not show the new size") end
+    -- Escape lets the row go first, Left goes back to the thumbnails
+    ns.StyleGalleryKey("ESCAPE")
+    if W.Taken() or not g:IsShown() then print("STEP ERROR: workshop: Escape on a taken row closed the gallery") end
+    ns.StyleGalleryKey("LEFT")
+    if g.zone == "side" then print("STEP ERROR: workshop: Left does not leave the column") end
+    -- another style: its font, the size the player chose stays
+    Mark("hdSilver")
+    local silver = ns:GetBlockDefaults("gold")
+    ns:ApplyThemeToCfg(silver, "hdSilver")
+    if W.Value("font", "hdSilver", "hdSilver") ~= silver.font then print("STEP ERROR: workshop: Silver's font not shown") end
+    if W.Value("fontSize", "hdSilver", "hdSilver") ~= size1 then print("STEP ERROR: workshop: the player's size was lost") end
+    -- Right at the end of a row of thumbnails goes into the column
+    local first = g.cards[1]
+    local last = 1
+    for i = 1, g.nCards do if g.cards[i].row == first.row then last = i end end
+    g.focus = last
+    ns.StyleGalleryKey("RIGHT")
+    if g.zone ~= "side" then print("STEP ERROR: workshop: Right at the end of a row does not reach the column") end
+    ns.StyleGalleryKey("LEFT")
+    -- Apply: the style, then the size; the locked block keeps both
+    g.buttons[1]:GetScript("OnClick")(g.buttons[1])
+    if ns:GetStyleChoice() ~= "hdSilver" then print("STEP ERROR: workshop: Apply did not give the style") end
+    if ns.db.blocks.gold.fontSize ~= size1 or ns.db.blocks.gold.font ~= silver.font then print("STEP ERROR: workshop: Apply did not write the settings") end
+    if ns.db.blocks[lockKey].fontSize ~= lockedSize or ns.db.blocks[lockKey].border ~= lockedBorder then print("STEP ERROR: workshop: a locked block changed") end
+    if W.Changes() ~= nil then print("STEP ERROR: workshop: changes left after Apply") end
+    if g.buttons[1].usable then print("STEP ERROR: workshop: Apply usable with nothing to apply") end
+    -- same style, only the font: Apply writes the font and keeps the player's colors
+    ns.db.blocks.gold.bgColor = { r = 0.2, g = 0.4, b = 0.6, a = 1 }
+    W.Release()
+    local fonts = ns:GetMediaList("font")
+    local other
+    for _, f in ipairs(fonts) do if f.key ~= silver.font then other = f.key break end end
+    g.zone = "side"
+    W.Enter()
+    while W.FocusedRow() and W.FocusedRow().spec.field ~= "font" do ns.StyleGalleryKey("UP") end
+    Row("font").Step(1)
+    if W.Value("font", g.chosen, "hdSilver") == silver.font then Row("font").Step(-1) end -- (the last font of the list)
+    local picked = W.Value("font", g.chosen, "hdSilver")
+    if picked == silver.font then print("STEP ERROR: workshop: the font did not change") end
+    if not g.buttons[1].usable then print("STEP ERROR: workshop: Apply greyed after changing only the font") end
+    g.buttons[1]:GetScript("OnClick")(g.buttons[1])
+    if ns.db.blocks.gold.font ~= picked then print("STEP ERROR: workshop: Apply did not write the font") end
+    if ns.db.blocks.gold.bgColor.b ~= 0.6 then print("STEP ERROR: workshop: Apply with the same style reset the colors") end
+    if other == nil then print("STEP ERROR: workshop: only one font in the list") end
+    -- text twice as big: rows never overlap and stay in the column
+    MOCK_TEXT_SCALE = 2
+    OpenLook()
+    local prev
+    for _, r in ipairs(W.rows) do
+        if r.shown then
+            if r:GetWidth() > W.content:GetWidth() + 1 or r.label:GetWidth() > r:GetWidth() then print("STEP ERROR: workshop x2: row wider than the column " .. r.spec.field) end
+            if prev and prev.y + prev:GetHeight() > r.y then print("STEP ERROR: workshop x2: rows overlap at " .. r.spec.field) end
+            prev = r
+        end
+    end
+    MOCK_TEXT_SCALE = nil
+    -- high contrast: the column turns plain black with a white edge
+    ns.sv.highContrast = true
+    ns.Skin.Repaint()
+    if W.side.skinMode ~= "contrast" then print("STEP ERROR: workshop: high contrast does not reach the column") end
+    ns.sv.highContrast = nil
+    ns.Skin.Repaint()
+    g:Hide()
+    -- a block's page, same style, only the size: This block writes the size and nothing else
+    ns.db.blocks[lockKey].styleLocked = nil
+    ns:SetOptionsSelection("gold")
+    ns:RefreshOptions()
+    local borderBefore = ns.db.blocks.gold.border
+    ns.db.blocks.gold.border = "none"
+    ns.blockStyleList.Activate()
+    g = ns.StyleGallery()
+    Row("fontSize").Step(1)
+    local timeSize = ns.db.blocks.time.fontSize
+    g.buttons[1]:GetScript("OnClick")(g.buttons[1]) -- This block
+    if ns.db.blocks.gold.fontSize ~= size1 + 1 then print("STEP ERROR: workshop: This block did not write the size") end
+    if ns.db.blocks.gold.border ~= "none" then print("STEP ERROR: workshop: This block gave the style again") end
+    if ns.db.blocks.time.fontSize ~= timeSize then print("STEP ERROR: workshop: This block changed another block") end
+    -- with a locked block in the lot, the warning comes first; Cancel keeps the workshop
+    ns.db.blocks.time.styleLocked = true
+    Row("fontSize").Step(1)
+    local asked = {}
+    local realShow = StaticPopup_Show
+    StaticPopup_Show = function(which, n, _, data) table.insert(asked, { which = which, n = n, data = data }) end
+    g.buttons[3]:GetScript("OnClick")(g.buttons[3]) -- All blocks
+    StaticPopup_Show = realShow
+    if not (asked[1] and asked[1].which == "TESSERA_STYLE_LOCKED_LOOK") then print("STEP ERROR: workshop: no warning for the locked block") end
+    if W.Changes() == nil then print("STEP ERROR: workshop: the warning emptied the workshop before an answer") end
+    -- "Skip locked": the others get the size, the locked one keeps its own
+    if asked[1] then
+        StaticPopupDialogs.TESSERA_STYLE_LOCKED_LOOK.OnAccept(nil, asked[1].data)
+        if ns.db.blocks.time.fontSize ~= timeSize then print("STEP ERROR: workshop: Skip locked changed a locked block") end
+        if ns.db.blocks.gold.fontSize ~= size1 + 2 then print("STEP ERROR: workshop: Skip locked left the others") end
+        if W.Changes() ~= nil then print("STEP ERROR: workshop: changes left after the warning") end
+    end
+    ns.db.blocks.time.styleLocked = nil
+    ns.db.blocks.gold.border = borderBefore
+    g:Hide()
     if themeBefore then ns:ApplyTheme(themeBefore) else ns:PickStyleChoice("auto") end
 end
 -- Look settings gathered (27/11): the Style box of the Style and layouts tab and the one at the top of

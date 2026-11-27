@@ -44,6 +44,8 @@ local function AnyHDBorder()
     return false
 end
 local function HDIcons() return ns.HD_ICONS_ON end
+-- (the style gallery's workshop uses the same choices and the same test for Corners)
+ns.LookHDBorder = HDBorder
 
 -- The rows under the style, in order. look: which blocks "every block" counts (Core.lua,
 -- ns:AllBlocksField): true = spacers too (they take the style's frame), "blocks" or "icons" =
@@ -64,6 +66,13 @@ ns.LOOK_ROWS = {
     { field = "valueGlide", label = "VALUE_GLIDE", kind = "check", half = true, look = "blocks",
       tip = "TIP_VALUE_GLIDE", tipAll = "TIP_VALUE_GLIDE_ALL" },
 }
+
+-- The row of a field (look, kind, tips...)
+function ns.LookRowOf(field)
+    for _, spec in ipairs(ns.LOOK_ROWS) do
+        if spec.field == field then return spec end
+    end
+end
 
 -- A list for every block: "Mixed" first when the blocks differ
 local function WithMixed(choices, mixed)

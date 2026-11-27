@@ -1350,7 +1350,7 @@ NEW_EN = [
 ("TIP_STYLE_GALLERY_OPEN_BLOCK","A click opens every style as a real block, in rows by family: mark one, then pick where it goes (this block, its group or all blocks)."),
 ("STYLE_GALLERY_TITLE","Pick the style"),
 ("STYLE_GALLERY_APPLY","Apply"),
-("TIP_STYLE_GALLERY_APPLY","Gives the marked style to all your blocks and to Tessera's windows. Blocks with a locked style keep theirs."),
+("TIP_STYLE_GALLERY_APPLY","Gives the marked style and the settings on the right to all your blocks, and the style to Tessera's windows. Blocks with a locked style keep theirs."),
 ("STYLE_GALLERY_CLOSE","Close"),
 ("STYLE_GALLERY_CURRENT","Current style"),
 ("STYLE_GALLERY_PROFILE","Profile's style"),
@@ -1366,6 +1366,10 @@ NEW_EN = [
 ("STYLE_FAMILY_OTHER","Others"),
 ("STYLE_LOCKED_KEEP","Skip locked"),
 ("STYLE_LOCKED_ALL","Them too"),
+("STYLE_WORKSHOP_TITLE","Settings"),
+("STYLE_WORKSHOP_HINT","The thumbnails show your changes. A button below writes them."),
+("STYLE_WORKSHOP_TAKEN","Left and right change the value. Enter or A to finish."),
+("STYLE_LOCKED_LOOK","%d of these blocks have a locked style. Give them these settings as well? They stay locked."),
 ]
 NEW_FR = {
 "THEME_FLARE_SQUARE":"Bronze carré",
@@ -2715,7 +2719,7 @@ NEW_FR = {
 "TIP_STYLE_GALLERY_OPEN_BLOCK":"Un clic ouvre tous les styles en vrais blocs, rangés par famille : marque un style, puis choisis où il va (ce bloc, son groupe ou tous les blocs).",
 "STYLE_GALLERY_TITLE":"Choisir le style",
 "STYLE_GALLERY_APPLY":"Appliquer",
-"TIP_STYLE_GALLERY_APPLY":"Donne le style marqué à tous tes blocs et aux fenêtres de Tessera. Les blocs au style verrouillé gardent le leur.",
+"TIP_STYLE_GALLERY_APPLY":"Donne le style marqué et les réglages de droite à tous tes blocs, et le style aux fenêtres de Tessera. Les blocs au style verrouillé gardent le leur.",
 "STYLE_GALLERY_CLOSE":"Fermer",
 "STYLE_GALLERY_CURRENT":"Style actuel",
 "STYLE_GALLERY_PROFILE":"Style du profil",
@@ -2731,4 +2735,8 @@ NEW_FR = {
 "STYLE_FAMILY_OTHER":"Autres",
 "STYLE_LOCKED_KEEP":"Sauf verrouillés",
 "STYLE_LOCKED_ALL":"Eux aussi",
+"STYLE_WORKSHOP_TITLE":"Réglages",
+"STYLE_WORKSHOP_HINT":"Les vignettes montrent tes changements. Un bouton du bas les enregistre.",
+"STYLE_WORKSHOP_TAKEN":"Gauche et droite changent la valeur. Entrée ou A pour finir.",
+"STYLE_LOCKED_LOOK":"%d de ces blocs ont un style verrouillé. Leur donner aussi ces réglages ? Ils restent verrouillés.",
 }

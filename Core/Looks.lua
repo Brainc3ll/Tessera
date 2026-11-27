@@ -441,7 +441,8 @@ function ns.PrepareLife(f, cfg, e)
 end
 
 function ns.GlowTo(f, target)
-    local cfg = ns.db and ns.db.blocks[f.key]
+    -- (a thumbnail of the style gallery carries its own settings: f.lifeCfg)
+    local cfg = f.lifeCfg or ns.db and ns.db.blocks[f.key]
     if not (cfg and cfg.hoverGlow and f.hoverGlowPieces) or Still() then
         f.glowTarget, f.glowAlpha = nil, 0
         SetGlowAlpha(f, 0)

@@ -60,42 +60,43 @@ for cx, cy in ((6, 6), (58, 6), (6, 58), (58, 58)):
 save("hd_rune", m, 64, 64)
 
 
-# ornate separators, 16 x 64: a line fading at both ends, with an ornament in the middle
+# ornate separators, 32 x 64 (27/11, Braincell1980: drawn twice as wide, so each shape reads as its
+# name at the size of a block; shown len/2 wide and len high, Core/Merge.lua): a line fading at
+# both ends, with an ornament in the middle
 def separator(name, ornament, line=True):
-    w, h = 16, 64
+    w, h = 32, 64
     m = mask(w, h)
     d = ImageDraw.Draw(m)
     for y in range(h * S if line else 0):
         t = abs(y / (h * S) - 0.5) * 2  # 0 in the middle, 1 at the ends
         v = int(255 * max(0.0, 1 - t ** 3))
-        d.line([(7.5 * S, y), (8.5 * S, y)], fill=v)
+        d.line([(15.25 * S, y), (16.75 * S, y)], fill=v)
     ornament(d)
     save(name, m, w, h)
 
 
+def lozenge(d, c, hw, hh):
+    d.polygon([(16 * S, (c - hh) * S), ((16 + hw) * S, c * S), (16 * S, (c + hh) * S), ((16 - hw) * S, c * S)], fill=255)
+
+
 def diamond(d):
-    c, k = 32, 4.5
-    d.polygon([(8 * S, (c - k) * S), ((8 + k * 0.8) * S, c * S), (8 * S, (c + k) * S), ((8 - k * 0.8) * S, c * S)],
-              fill=255)
+    lozenge(d, 32, 10, 18)
 
 
 def runes(d):
-    for c in (22, 32, 42):
-        r = 1.7 if c == 32 else 1.2
-        d.ellipse([(8 - r) * S, (c - r) * S, (8 + r) * S, (c + r) * S], fill=255)
+    # three small diamonds on the line, the middle one bigger
+    for c, hw, hh in ((14, 6, 8.5), (32, 8, 11), (50, 6, 8.5)):
+        lozenge(d, c, hw, hh)
+
+
+# "Dot": a round dot alone, no line
+def dot(d):
+    r = 9
+    d.ellipse([(16 - r) * S, (32 - r) * S, (16 + r) * S, (32 + r) * S], fill=255)
 
 
 separator("hd_sep_diamond", diamond)
 separator("hd_sep_rune", runes)
-
-
-# "Dot" (27/11, Braincell1980): a round dot alone, no line; the texture keeps the same
-# 1 to 4 shape as the others, so the dot stays round in game
-def dot(d):
-    r = 5
-    d.ellipse([(8 - r) * S, (32 - r) * S, (8 + r) * S, (32 + r) * S], fill=255)
-
-
 separator("hd_sep_dot", dot, line=False)
 
 # HD icons (Core/Looks.lua): a ring with a fine inner line, and a dark disc behind the icon,

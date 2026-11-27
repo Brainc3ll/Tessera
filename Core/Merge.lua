@@ -1221,10 +1221,10 @@ function ns:DrawSeparators(f, cov)
             tex:ClearAllPoints()
             local mid = (a + b) / 2
             if side == "RIGHT" then
-                tex:SetSize(len / 4, len)
+                tex:SetSize(len / 2, len) -- the drawings are 32 x 64
                 tex:SetPoint("CENTER", f, "TOPRIGHT", 0, -mid)
             else
-                tex:SetSize(len, len / 4)
+                tex:SetSize(len, len / 2)
                 tex:SetPoint("CENTER", f, "BOTTOMLEFT", mid, 0)
             end
             tex:Show()

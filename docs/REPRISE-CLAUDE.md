@@ -38,6 +38,7 @@ Version en jeu : 1.7.2, publiée le 21/11 (correctif : un bloc au style verrouil
 - 27/11 : test247 validé en jeu, sujet de l'atelier fermé. test247 (T2) : lueurs (formes, couleur), séparateurs dans le cadre Style, deux blocs par vignette, animation, Jade et Améthyste (Opus 5.5).
 - 27/11 : zip B, l'atelier dans la galerie (colonne Réglages, vignettes en direct, fenêtre élargie), test246 (Opus 5.5). Décision : le style de la fenêtre ne bouge plus.
 - 27/11 : fenêtre de confirmation pierre et métal codée (21 fenêtres, file d'attente, clavier et manette), espaces de Chemin de ronde sans icône, test248 validé en jeu ; échec GitHub corrigé (boucle de minuteries dans la maquette) ; suite : zip 6, nouvelle conversation (Opus 5.5).
+- 28/11 : zip 6 validé (test250 à test252 : titre « Tessera 2.0.0 » et logo en blason, Essayer en jeu dans la galerie, Revenir rouvre la galerie) ; `main` et `next` avancés sur `2.0` ; suite : préparation de la release 2.0.0, nouvelle conversation (Sonnet 5.5 puis Opus 5.5).
 - 27/11 : zip 6 codé (démo des 6 nouveaux styles dans la fenêtre de mise à jour, bouton Essayer vers la galerie, clavier et manette), test249 (Opus 5.5).
 - 27/11 : zip 5 (listes au survol dans le style des blocs) reporté après la 2.0 ; suite : fenêtre de confirmation pierre et métal, puis zip 6 (Opus 5.5).
 - 26/11 : aperçu des styles de blocs 2.0 validé en jeu (test231, galerie avec les vrais styles) ; choix faits (IDEES-FUTUR, « Look HD ») ; suite : vraie version sur `2.0`, nouvelle conversation, Opus 5.5 effort élevé.

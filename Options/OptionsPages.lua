@@ -113,6 +113,7 @@ ns.OnLanguage(function()
         button1 = L.RELOAD_SHORT,
         button2 = L.LANGUAGE_LATER,
         OnAccept = function() ReloadUI() end,
+        secureReload = true, -- the mouse goes through the game's own /reload
         timeout = 0,
         whileDead = true,
         hideOnEscape = true,
@@ -405,8 +406,10 @@ local function BuildBrokerPage(tabPage, showBlockPage)
     -- also shown with the Reload button below, which it explains
     reload.isShown = function() return sharing() or ns:BrokerNeedsReload() end
     -- only useful once a published block was unshared
-    share.Add(CreateButton(page, L.RELOAD_SHORT, function() ReloadUI() end,
-        function() return ns:BrokerNeedsReload() end, nil, L.TIP_BROKER_RELOAD))
+    local reloadBtn = CreateButton(page, L.RELOAD_SHORT, function() ReloadUI() end,
+        function() return ns:BrokerNeedsReload() end, nil, L.TIP_BROKER_RELOAD)
+    ns:SecureReloadButton(reloadBtn)
+    share.Add(reloadBtn)
 
     -- the shared block being edited (shares the selection with the Blocks tab), then its own
     -- settings (formats, thresholds...) and what its tooltip shows
@@ -595,6 +598,8 @@ ns.OnLanguage(function()
         whileDead = true,
         hideOnEscape = true,
         OnAccept = function() ns:ResetEverything() end,
+        -- the mouse empties the data, then goes through the game's own /reload
+        secureReload = function() ns:ClearAllData() end,
     }
 end)
 

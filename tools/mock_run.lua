@@ -5532,6 +5532,70 @@ do
     end
     ns.ShowDialog = mockShow
 end
+-- Reload buttons (28/11, ADDON_ACTION_BLOCKED on Reload() from the language window): every
+-- ReloadUI() of the addon sits by a secure /reload button (ns:SecureReloadButton, or a window
+-- with secureReload), except the full reset's own and the /tessera reset command
+do
+    for line in toc:gmatch("[^\r\n]+") do
+        if not line:match("^#") and line:match("%.lua$") then
+            local path = line:gsub("\\", "/")
+            local src = {}
+            for l in io.open(addonDir .. "/" .. path):lines() do src[#src + 1] = l end
+            for i, l in ipairs(src) do
+                if l:match("ReloadUI%(%)") and not l:match("^%s*%-%-") then
+                    local ok = false
+                    for j = math.max(1, i - 12), math.min(#src, i + 3) do
+                        if src[j]:match("SecureReloadButton") or src[j]:match("secureReload")
+                            or src[j]:match("function ns:ResetEverything") then ok = true end
+                    end
+                    if not ok then print("STEP ERROR: reload: " .. path .. ":" .. i .. " calls ReloadUI() without the secure /reload button") end
+                end
+            end
+        end
+    end
+    -- the shared secure button covers a reload button under the mouse, runs prepare first,
+    -- and goes away with the button
+    local prepared = 0
+    local b = CreateFrame("Button", nil, UIParent, "UIPanelButtonTemplate")
+    b:SetSize(100, 22)
+    b.IsEnabled = function() return true end
+    ns:SecureReloadButton(b, function() prepared = prepared + 1 end)
+    b:Show()
+    b:GetScript("OnEnter")(b)
+    local o = _G["TesseraReloadClick"]
+    if not (o and o:IsShown() and o:GetAttribute("type") == "macro" and o:GetAttribute("macrotext") == "/reload") then
+        print("STEP ERROR: reload: no secure /reload button over the reload button")
+    else
+        o:GetScript("PreClick")(o)
+        if prepared ~= 1 then print("STEP ERROR: reload: prepare must run on the click, before the reload") end
+        b:Hide()
+        if o:IsShown() then print("STEP ERROR: reload: the secure button must go away with its button") end
+    end
+    -- in combat it never shows
+    InCombatLockdown = function() return true end
+    b:Show()
+    b:GetScript("OnEnter")(b)
+    if o and o:IsShown() then print("STEP ERROR: reload: the secure button showed in combat") end
+    InCombatLockdown = function() return false end
+    -- a reload window reloads before it closes (the keyboard path); the reset empties the data first
+    local reloads, realReload = 0, ReloadUI
+    ReloadUI = function() reloads = reloads + 1 end
+    local mockShow = ns.ShowDialog
+    ns.ShowDialog = ns.RealShowDialog
+    local def = ns.Dialogs.TESSERA_RESET_PROFILE
+    if not (def and type(def.secureReload) == "function") then print("STEP ERROR: reload: the reset window has no secure reload") end
+    if not (ns.Dialogs.TESSERA_LANGUAGE_RELOAD and ns.Dialogs.TESSERA_LANGUAGE_RELOAD.secureReload) then
+        print("STEP ERROR: reload: the language window has no secure reload")
+    end
+    local saved = TesseraDB
+    ns:ShowDialog("TESSERA_LANGUAGE_RELOAD")
+    ns.DialogKey("ENTER")
+    if reloads ~= 1 then print("STEP ERROR: reload: Enter in the language window must reload") end
+    ns:HideDialog("TESSERA_LANGUAGE_RELOAD")
+    TesseraDB = saved
+    ReloadUI = realReload
+    ns.ShowDialog = mockShow
+end
 -- Options that must never get lost (rule: a rework takes nothing away). Dump with
 -- MOCK_WRITE_OPTIONS=1 on a version known good; then every run (enUS only) checks that each
 -- recorded option still exists, or that tools/options_renames.txt says what it became.

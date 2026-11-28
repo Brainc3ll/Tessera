@@ -165,7 +165,7 @@ function ns:UpdatePlacementBanner()
                 ns:StartNudge(ns:GetOptionsSelection(), true)
             end),
             BannerButton(b, L.UNDO_SHORT, L.TIP_UNDO, function() ns:Undo() end),
-            BannerButton(b, L.RELOAD_SHORT, L.TIP_RELOAD, function() ReloadUI() end),
+            ns:SecureReloadButton(BannerButton(b, L.RELOAD_SHORT, L.TIP_RELOAD, function() ReloadUI() end)),
             BannerButton(b, L.LOCK_SHORT, L.TIP_LOCKED, function() ns:SetLocked(true) end),
         }
         local x = 12

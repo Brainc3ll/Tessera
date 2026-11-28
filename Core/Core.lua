@@ -3629,11 +3629,18 @@ function ns:ResetEverything()
         Print(L.RESET_IN_COMBAT)
         return
     end
-    -- nothing may write into the old table on the way out: the global is cleared, and
-    -- the game saves "no data" for Tessera
+    ns:ClearAllData()
+    ReloadUI()
+end
+
+-- The first half of the reset, run on its own by the secure Reload button of the reset
+-- window (Core/SecureClicks.lua), which then reloads with the game's own /reload.
+-- Nothing may write into the old table on the way out: the global is cleared, and
+-- the game saves "no data" for Tessera.
+function ns:ClearAllData()
+    if InCombatLockdown() then return end
     TesseraDB = nil
     Print(L.CMD_RESET)
-    ReloadUI()
 end
 
 -- Shows a ready-made layout, without the message nor the Edit Mode offer: the quick

@@ -74,6 +74,12 @@ local function Answer(index)
         ShowNext()
         return
     end
+    -- a reload window reloads before it closes: hiding first can lose the click the game
+    -- needs to allow a reload (the mouse goes through the secure button, see SecureReloadButton)
+    if index == 1 and def.secureReload and def.OnAccept then
+        def.OnAccept(dialog, data)
+        return
+    end
     Close(true)
     if def.selectCallbackByIndex and def["OnButton" .. index] then
         def["OnButton" .. index](dialog, data)
@@ -151,6 +157,13 @@ local function NewButton(i)
     local b = Skin.Button(CreateFrame("Button", nil, dialog, "UIPanelButtonTemplate"))
     b:SetHeight(BUTTON_H)
     b:SetScript("OnClick", function() Answer(i) end)
+    -- a window that reloads (secureReload) gets the game's own /reload on its first button
+    if i == 1 then
+        ns:SecureReloadButton(b, function()
+            local fn = current and current.def.secureReload
+            if type(fn) == "function" then fn() end
+        end, function() return current and current.def.secureReload and true end)
+    end
     b.ring = CreateFrame("Frame", nil, b)
     b.ring:SetPoint("TOPLEFT", -4, 4)
     b.ring:SetPoint("BOTTOMRIGHT", 4, -4)

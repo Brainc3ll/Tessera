@@ -149,9 +149,85 @@ function ns:RequestOverlaySync()
     end)
 end
 
--- Run any postponed sync when combat ends
+-- Reload buttons (28/11): the game starts a reload only from a click it trusts, and
+-- ReloadUI() called from Tessera's own buttons can be blocked (ADDON_ACTION_BLOCKED, seen in
+-- the language window). One shared secure button covers the reload button under the mouse
+-- and runs the game's own /reload (the same in every language). prepare, if given, runs
+-- first on the same click (the full reset empties the saved data); when, if given, says
+-- whether the button reloads right now (a dialog reuses its buttons).
+-- Like the block overlays, it sits on UIParent in screen coordinates (anchored to the button,
+-- the options window would become protected) and never shows in combat.
+local reloadOverlay
+
+local function HideReloadOverlay()
+    local o = reloadOverlay
+    if not o then return end
+    local b = o.target
+    o.target, o.prepare = nil, nil
+    if b and b.UnlockHighlight then b:UnlockHighlight() end
+    if not InCombatLockdown() then o:Hide() end
+end
+
+local function ReloadOverlay()
+    if reloadOverlay or InCombatLockdown() then return reloadOverlay end
+    local o = CreateFrame("Button", "TesseraReloadClick", UIParent, "SecureActionButtonTemplate")
+    o:RegisterForClicks("LeftButtonUp")
+    o:SetAttribute("useOnKeyDown", false)
+    o:SetAttribute("pressAndHoldAction", false)
+    o:SetAttribute("type", "macro")
+    o:SetAttribute("macrotext", "/reload")
+    o:SetScript("PreClick", function(self)
+        if self.prepare then pcall(self.prepare) end
+    end)
+    -- the button underneath keeps its tooltip
+    o:SetScript("OnEnter", function(self)
+        local b = self.target
+        local h = b and b:GetScript("OnEnter")
+        if h then h(b) end
+    end)
+    o:SetScript("OnLeave", function(self)
+        local b = self.target
+        local h = b and b:GetScript("OnLeave")
+        if h then h(b) end
+        HideReloadOverlay()
+    end)
+    o:Hide()
+    reloadOverlay = o
+    return o
+end
+
+function ns.SecureReloadButton(_, b, prepare, when)
+    b:HookScript("OnEnter", function(self)
+        if InCombatLockdown() or (when and not when()) then return end
+        if self.IsEnabled and not self:IsEnabled() then return end
+        local o = ReloadOverlay()
+        if not o or o.target == self then return end
+        local l, bottom, r, t = ns:GetRectUI(self)
+        if not l then return end
+        o:ClearAllPoints()
+        o:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", l, t)
+        o:SetSize(r - l, t - bottom)
+        o:SetFrameStrata(self:GetFrameStrata())
+        o:SetFrameLevel(self:GetFrameLevel() + 10)
+        o.target, o.prepare = self, prepare
+        if self.LockHighlight then self:LockHighlight() end
+        o:Show()
+    end)
+    -- the button goes away (window closed, page changed): nothing may stay clickable there
+    b:HookScript("OnHide", function(self)
+        if reloadOverlay and reloadOverlay.target == self then HideReloadOverlay() end
+    end)
+    return b
+end
+
+-- Run any postponed sync when combat ends; the reload button never stays up in combat
 local events = CreateFrame("Frame")
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
-events:SetScript("OnEvent", function()
-    if syncPending and ns.built then ns:RequestOverlaySync() end
+events:RegisterEvent("PLAYER_REGEN_DISABLED")
+events:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_REGEN_DISABLED" then
+        HideReloadOverlay()
+    elseif syncPending and ns.built then
+        ns:RequestOverlaySync()
+    end
 end)

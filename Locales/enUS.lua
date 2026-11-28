@@ -1585,6 +1585,7 @@ return {
     STYLE_GALLERY_CHOSEN = "Marked: %s",
     WHATS_NEW_DEMO_TITLE = "The new styles in action. Click one to mark it.",
     WHATS_NEW_DEMO_TRY = "Try %s...",
+    WHATS_NEW_SUBTITLE = "What's new",
     TIP_WHATS_NEW_DEMO_TRY = "Opens the style gallery on this style, with its font and effects beside it. Nothing changes until you press Apply.",
     STYLE_GALLERY_HINT = "Click a style, or move with the arrows and press Enter.",
     STYLE_FAMILY_AUTO = "Automatic",

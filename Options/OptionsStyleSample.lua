@@ -163,7 +163,9 @@ function Sample.Draw(card, style, tweak, withBar)
     local wA = DrawBlock(a, cfg, "gold", Sample.TEXTS[1][step % 3 + 1], h)
     local wB = DrawBlock(b, ns.DeepCopy(cfg), "bags", Sample.TEXTS[2][step % 3 + 1], h, withBar)
     b:ClearAllPoints()
-    b:SetPoint("LEFT", a, "RIGHT", 0, 0)
+    -- top corner to top corner: both blocks round to the same pixel rows (the old center anchor
+    -- could land half a pixel apart on a card low in the window, leaving a ledge on the bottom edge)
+    b:SetPoint("TOPLEFT", a, "TOPRIGHT", 0, 0)
     -- merged as in a group (Merge.lua ApplySeams): the touching sides open
     a.seamKey, b.seamKey = nil, nil
     pcall(ns.ApplySeams, ns, a, { W = wA, H = h, TOP = {}, BOTTOM = {}, LEFT = {}, RIGHT = { { 0, h } }, cornerNotch = {} })

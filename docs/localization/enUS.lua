@@ -1821,3 +1821,4 @@ L["HELP_LOOK_34"] = "- After the update to this version, the What's new window s
 L["TIP_WHATS_NEW_DEMO_TRY"] = "Opens the style gallery on this style, with its font and effects beside it. Nothing changes until you press Apply."
 L["WHATS_NEW_DEMO_TITLE"] = "The new styles in action. Click one to mark it."
 L["WHATS_NEW_DEMO_TRY"] = "Try %s..."
+L["WHATS_NEW_SUBTITLE"] = "What's new"

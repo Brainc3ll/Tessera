@@ -1821,3 +1821,4 @@ L["HELP_LOOK_34"] = "- Après la mise à jour vers cette version, la fenêtre Qu
 L["TIP_WHATS_NEW_DEMO_TRY"] = "Ouvre la galerie des styles sur ce style, avec sa police et ses effets à côté. Rien ne change avant Appliquer."
 L["WHATS_NEW_DEMO_TITLE"] = "Les nouveaux styles en action. Clique sur un style pour le marquer."
 L["WHATS_NEW_DEMO_TRY"] = "Essayer %s..."
+L["WHATS_NEW_SUBTITLE"] = "Les nouveautés"

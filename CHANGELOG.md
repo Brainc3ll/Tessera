@@ -5,6 +5,9 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 
 ## 2.0.0 — 2026-11-28
 
+- Why 2.0? This version changes how Tessera looks and how you dress it up: options window, styles, gallery, confirmation windows, I reworked them all. A plain 1.9 felt too small, so the Volume block planned for it lands here too.
+- Your layouts, profiles and settings carry over as they are. Nothing you used before is gone. This one cost me a good few coffees. ;)
+
 ### New
 
 - Stone and metal: Tessera draws its windows (options, placement banner, See all, What's new, copy boxes, confirmations) with the game's rock, the metal frame of its dialogs and a soft shadow, in your style's colors. Blocks and the lists under the mouse keep their style.

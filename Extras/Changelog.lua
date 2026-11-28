@@ -70,6 +70,22 @@ ns.CHANGELOG = {
               show = { block = "volume", label = "VOLUME_SHOW" } },
         },
         sections = {
+            { kind = "intro",
+              en = {
+                "Why 2.0? This version changes how Tessera looks and how you dress it up: options window, styles, gallery,"
+                    .. " confirmation windows, I reworked them all. A plain 1.9 felt too small, so the Volume block planned for it"
+                    .. " lands here too.",
+                "Your layouts, profiles and settings carry over as they are. Nothing you used before is gone."
+                    .. " This one cost me a good few coffees. ;)",
+              },
+              fr = {
+                "Pourquoi la 2.0 ? Cette version change l'allure de Tessera et la façon de l'habiller : fenêtre d'options,"
+                    .. " styles, galerie, fenêtres de confirmation, j'ai tout repris. Une simple 1.9 ne suffisait plus, alors le"
+                    .. " bloc Volume prévu pour elle arrive ici aussi.",
+                "Tes dispositions, profils et réglages restent tels quels. Rien de ce que tu utilisais n'a disparu."
+                    .. " Celle-ci m'a coûté pas mal de cafés. ;)",
+              },
+            },
             { kind = "new",
               en = {
                 "Stone and metal: Tessera draws its windows (options, placement banner, See all, What's new, copy boxes, confirmations) with the game's rock,"

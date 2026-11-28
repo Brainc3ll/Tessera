@@ -5968,6 +5968,20 @@ do
         if checked == 0 or not fractional then
             print("STEP ERROR: separators: pixel test found no line (" .. checked .. ") or no block between two pixels")
         end
+        -- icons too (28/11): on whole pixels, so their square or round frame is 1 pixel on every side
+        local icons = 0
+        for _, k in ipairs(ns:GetBlockKeys()) do
+            local f = ns.frames[k]
+            local tex = f and f:IsShown() and f.icon
+            if tex and tex:IsShown() and f.iconPoint then
+                icons = icons + 1
+                if not (OnPixel(tex:GetLeft()) and OnPixel(tex:GetTop()) and OnPixel(tex:GetWidth())) then
+                    print("STEP ERROR: icons: the icon of " .. k .. " is not on whole pixels (" .. tex:GetLeft() .. ", " .. tex:GetTop() .. ")")
+                    break
+                end
+            end
+        end
+        if icons == 0 then print("STEP ERROR: icons: pixel test found no icon") end
         GetPhysicalScreenSize = physical
         ns:UpdateLayout()
     end

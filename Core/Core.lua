@@ -2349,12 +2349,16 @@ function ns:ApplyStyle(key)
     f.sepGap = gap
     f.borderKey = cfg.border
     f.lineReach = self:GetBorderReach(cfg.border)
-    f.icon:SetSize(iconSize, iconSize)
+    f.icon:SetSize(self:IconPixelSize(f, iconSize), self:IconPixelSize(f, iconSize))
     f.icon:ClearAllPoints()
     f.text:ClearAllPoints()
+    -- the anchor is kept: ns:SnapIcon (Merge.lua) puts the icon on whole pixels once placed
+    f.iconPoint = nil
     if iconOnly then
+        f.iconPoint = { "CENTER", 0, 0 }
         f.icon:SetPoint("CENTER")
     elseif showIcon then
+        f.iconPoint = { "LEFT", 4 + inset + gap, 0 }
         f.icon:SetPoint("LEFT", f, "LEFT", 4 + inset + gap, 0)
         f.text:SetPoint("LEFT", f.icon, "RIGHT", 4, 0)
         f.text:SetPoint("RIGHT", f, "RIGHT", -4 - inset - gap, 0)
@@ -2679,7 +2683,10 @@ function ns:UpdateBlock(key)
             self:SetIcon(f.icon, icon)
             -- an icon can ask to be drawn bigger than the icon size (the corpse arrow: x1.5)
             local k = type(icon) == "table" and icon.scale or 1
-            if f.iconSize then f.icon:SetSize(f.iconSize * k, f.iconSize * k) end
+            if f.iconSize then
+                local size = self:IconPixelSize(f, f.iconSize * k)
+                f.icon:SetSize(size, size)
+            end
             self:StyleIcon(f, cfg)
         end
     end

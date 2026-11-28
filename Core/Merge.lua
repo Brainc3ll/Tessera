@@ -975,6 +975,7 @@ function ns:UpdateSeams(active)
             end
             self:ApplySeams(f, cov)
             self:DrawSeparators(f, cov)
+            self:SnapIcon(f)
         end
     end
     -- name tags of the unlock mode: no overlap between them, none off screen
@@ -1162,6 +1163,43 @@ local function PixelUnit(f)
     end
     local s = f:GetEffectiveScale()
     if factor and factor > 0 and s and s > 0 then return factor / s end
+end
+
+ns.PixelUnit = PixelUnit
+
+-- Icons on whole pixels (28/11): an icon whose edges fall between two screen pixels gets
+-- rounded by the game on its own, and its frame (square or round, 1 pixel around it) on its
+-- own too, so the frame looked 2 pixels thick on one side and hidden on the other. The icon
+-- keeps its anchor (f.iconPoint, set by the layout) and moves by less than a pixel onto the
+-- grid; its size is already a whole number of pixels (ns:IconPixelSize). The text, anchored
+-- to the icon, follows.
+function ns:SnapIcon(f)
+    local tex, p = f.icon, f.iconPoint
+    if not (tex and p) then return end
+    tex:ClearAllPoints()
+    tex:SetPoint(p[1], f, p[1], p[2], p[3])
+    if not tex:IsShown() then return end
+    local unit = PixelUnit(tex)
+    -- the size too (the screen or the interface scale may have changed since the style)
+    local w = tex:GetWidth()
+    if unit and w and w > 0 then
+        local size = math.max(1, math.floor(w / unit + 0.5)) * unit
+        if math.abs(size - w) > 1e-6 then tex:SetSize(size, size) end
+    end
+    local l, t = tex:GetLeft(), tex:GetTop()
+    if not (unit and l and t) then return end
+    local dx, dy = ns.PixelShift(l, unit), ns.PixelShift(t, unit)
+    if dx ~= 0 or dy ~= 0 then
+        tex:ClearAllPoints()
+        tex:SetPoint(p[1], f, p[1], p[2] + dx, p[3] + dy)
+    end
+end
+
+-- An icon size (frame units) rounded to whole screen pixels, at least one
+function ns:IconPixelSize(f, size)
+    local unit = PixelUnit(f)
+    if not unit then return size end
+    return math.max(1, math.floor(size / unit + 0.5)) * unit
 end
 
 -- Shift that moves a position (frame units) onto the nearest pixel boundary.

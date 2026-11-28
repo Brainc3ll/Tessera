@@ -187,6 +187,7 @@ ns.CHANGELOG = {
             },
             { kind = "fixed",
               en = {
+                "Icon frames, square or round: the icon now sits on whole screen pixels, so its frame is one pixel wide on every side.",
                 "A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push"
                     .. " back only the block past the edge, which opened a gap in the group.",
                 "Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were"
@@ -197,6 +198,7 @@ ns.CHANGELOG = {
                 "Rampart layout: its spacers no longer show an icon. Apply the layout again to clear the ones you have.",
               },
               fr = {
+                "Cadre des icônes, carré ou rond : l'icône tombe maintenant sur des pixels entiers de l'écran, et son cadre fait un pixel de chaque côté.",
                 "Un groupe qui dépasse le bord de l'écran (police plus large, texte plus long) reste une seule barre : le jeu"
                     .. " repoussait seulement le bloc qui dépassait, ce qui ouvrait un écart dans le groupe.",
                 "Listes à flèches des options : une flèche pouvait rester grisée (ou allumée) après un changement, comme si"

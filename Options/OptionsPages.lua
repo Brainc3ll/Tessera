@@ -626,9 +626,11 @@ ns.OnLanguage(function()
             ns:EndStyleTrial(true)
             ns:RefreshOptions()
         end,
-        OnCancel = function()
+        -- Go back (or Escape): the old look, and the gallery opens again on the style tried
+        OnCancel = function(_, data)
             ns:EndStyleTrial(false)
             ns:RefreshOptions()
+            if data and data.key then ns:OpenLookStyleGallery(data.key) end
         end,
     }
 end)
@@ -660,7 +662,7 @@ function ns:OpenLookStyleGallery(chosen)
                 local gallery = ns.StyleGallery()
                 if gallery then gallery:Hide() end
                 local info = key ~= "auto" and ns:GetThemeInfo(key)
-                ns:ShowDialog("TESSERA_STYLE_TRY", info and info.name or L.STYLE_TRY_THIS)
+                ns:ShowDialog("TESSERA_STYLE_TRY", info and info.name or L.STYLE_TRY_THIS, nil, { key = key })
             end,
         } },
     })

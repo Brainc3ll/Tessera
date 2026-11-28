@@ -5501,8 +5501,11 @@ do
         ns:PickStyleChoice(other)
         gold.font = "mock font"
         gold.point = { "CENTER", "CENTER", 12, 34 }
-        ns:ShowDialog("TESSERA_STYLE_TRY", "x")
+        ns:ShowDialog("TESSERA_STYLE_TRY", "x", nil, { key = other })
         ns.DialogClick(2)
+        local g = ns.StyleGallery()
+        if not (g and g:IsShown() and g.chosen) then print("STEP ERROR: Go back does not open the gallery again") end
+        if g then g:Hide() end
         if db.theme ~= before or gold.font ~= beforeFont or db.styleTrial then print("STEP ERROR: Go back keeps the style tried") end
         local bc = gold.borderColor or {}
         if beforeBorder and (bc.r ~= beforeBorder.r or bc.g ~= beforeBorder.g or bc.b ~= beforeBorder.b) then print("STEP ERROR: Go back keeps the border color tried") end

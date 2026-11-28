@@ -3,7 +3,7 @@
 All notable changes to Tessera. The in-game **About** tab (Changelog topic) shows the same list
 (from `Extras/Changelog.lua`), in English or French depending on the game language.
 
-## 2.0.0 — 2026-11-25
+## 2.0.0 — 2026-11-28
 
 ### New
 
@@ -24,18 +24,6 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 - Progress bar: a new look, a thin line under the value (Bar look). The six new styles use it on the blocks that have a progress; the other styles keep the band.
 - Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block, in rows by family, two merged blocks each. On the right, set the font, text size, corners, separators and effects: every thumbnail shows them, and can light up and move (Animate the thumbnails). Click a style, then Apply, or Try in game to see it on your blocks and then keep it or go back. Arrows or d-pad, Enter or A, and Escape or B work too.
 - The window after this update shows the six new styles on real blocks that light up while their numbers glide. Click one, then See opens the gallery on it. Tab or the d-pad lets you use the window with the keyboard or a gamepad.
-
-### Fixes
-
-- A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push back only the block past the edge, which opened a gap in the group.
-- Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were at its first or last choice. The arrows now follow the value.
-- Locked styles: when a style goes to all blocks or to a group, the warning about locked blocks offers Skip locked (the others take the style, the locked ones stay as they are), Them too, or Cancel. No used to leave every block as it was.
-- Rampart layout: its spacers no longer show an icon. Apply the layout again to clear the ones you have.
-
-## 1.9.0 — 2026-11-25
-
-### New
-
 - Volume block: "Hover shows" now offers a clickable list in place of the tooltip. Click a bar or use the wheel to set the general, music, effects, ambience or dialogue volume, and one button mutes or restores all sound. When the game lists several output devices, a button picks one. The list is the default; the tooltip stays a choice.
 - Volume presets: up to four, with names you choose (14 characters at most). A preset keeps the five volumes, whether sound is muted and the output device. A click on a preset in the list applies it; a right click renames, replaces or deletes it.
 - "Click on the block" chooses what a left click does: mute or restore sound (the default), or go to the next preset.
@@ -45,6 +33,13 @@ All notable changes to Tessera. The in-game **About** tab (Changelog topic) show
 ### Improvements
 
 - Eleven blocks have a new icon: FPS, Latency, Addon memory, Quests, Reputation, Currencies, Speed, Volume, Talents, Time played and Comprehension. Time played no longer looks like the two other clocks.
+
+### Fixes
+
+- A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push back only the block past the edge, which opened a gap in the group.
+- Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were at its first or last choice. The arrows now follow the value.
+- Locked styles: when a style goes to all blocks or to a group, the warning about locked blocks offers Skip locked (the others take the style, the locked ones stay as they are), Them too, or Cancel. No used to leave every block as it was.
+- Rampart layout: its spacers no longer show an icon. Apply the layout again to clear the ones you have.
 
 ## 1.8.0 — 2026-11-25
 

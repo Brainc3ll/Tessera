@@ -1637,15 +1637,13 @@ for _, step in ipairs({
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.7.1" then e171 = e break end end
         local e180
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.8.0" then e180 = e break end end
-        local e190
-        for _, e in ipairs(ns.CHANGELOG) do if e.version == "1.9.0" then e190 = e break end end
         local e200
         for _, e in ipairs(ns.CHANGELOG) do if e.version == "2.0.0" then e200 = e break end end
         local n161 = #ns.ChangelogHighlights(e161, "en")
         local n170 = #ns.ChangelogHighlights(e170, "en") + (e171 and #ns.ChangelogHighlights(e171, "en") or 0)
-            + (e180 and #ns.ChangelogHighlights(e180, "en") or 0) + (e190 and #ns.ChangelogHighlights(e190, "en") or 0)
+            + (e180 and #ns.ChangelogHighlights(e180, "en") or 0)
             + (e200 and #ns.ChangelogHighlights(e200, "en") or 0)
-        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0, 1.7.1, 1.8.0, 1.9.0 and 2.0.0 news")
+        assert(#ns.WhatsNewItems("1.6.0") == n161 + n170, "1.6.0 -> now: the 1.6.1, 1.7.0, 1.7.1, 1.8.0 and 2.0.0 news")
         assert(#ns.WhatsNewItems("1.6.1-test184") > 0 and #ns.WhatsNewItems("1.6.1-test184") <= n161 + n170 + 7, "a test build counts as its version")
         assert(#ns.WhatsNewItems("1.5.1") > n161 + n170, "1.5.1 -> 1.6.1: the 1.6.0 news too")
         assert(ns.WhatsNewIsNewer("1.10.0", "1.9.2") and not ns.WhatsNewIsNewer("1.6.0", "1.6.0"), "versions compare as numbers")

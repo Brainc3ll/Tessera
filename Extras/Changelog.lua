@@ -48,7 +48,7 @@ end
 ns.CHANGELOG = {
     {
         version = "2.0.0",
-        date = "2026-11-25",
+        date = "2026-11-28",
         demo = "styles", -- the update window shows the new styles on real blocks (Options/OptionsNewsDemo.lua)
         highlights = {
             { en = "Tessera's windows in stone and metal, in your style's colors.",
@@ -65,6 +65,9 @@ ns.CHANGELOG = {
             { en = "Between merged blocks: a line, a dash, a diamond, runes or a dot.",
               fr = "Entre les blocs fusionnés : un trait, un tiret, un losange, des runes ou un point.",
               show = { page = "PAGE_LOOK", label = "SEPARATOR_SHAPE" } },
+            { en = "Volume list: set every sound channel with a click or the wheel, and keep up to four named presets.",
+              fr = "Liste du volume : règle chaque canal d'un clic ou à la molette, et garde quatre préréglages nommés.",
+              show = { block = "volume", label = "VOLUME_SHOW" } },
         },
         sections = {
             { kind = "new",
@@ -106,6 +109,14 @@ ns.CHANGELOG = {
                 "The window after this update shows the six new styles on real blocks that light up while their numbers glide."
                     .. " Click one, then See opens the gallery on it. Tab or the d-pad lets you use the window"
                     .. " with the keyboard or a gamepad.",
+                "Volume block: \"Hover shows\" now offers a clickable list in place of the tooltip. Click a bar or use the wheel to set the"
+                    .. " general, music, effects, ambience or dialogue volume, and one button mutes or restores all sound."
+                    .. " When the game lists several output devices, a button picks one. The list is the default; the tooltip stays a choice.",
+                "Volume presets: up to four, with names you choose (14 characters at most). A preset keeps the five volumes, whether sound"
+                    .. " is muted and the output device. A click on a preset in the list applies it; a right click renames, replaces or deletes it.",
+                "\"Click on the block\" chooses what a left click does: mute or restore sound (the default), or go to the next preset.",
+                "\"Block text\" can show the name of the preset in use, with the volume or alone. It shows only while the sound matches a preset exactly.",
+                "Presets are shared by all your characters. Create, name and delete them in the Volume block's settings too, without the mouse over the block.",
               },
               fr = {
                 "Pierre et métal : Tessera dessine ses fenêtres (options, bandeau de placement, Tout voir, Quoi de neuf ?, boîtes de copie, confirmations)"
@@ -150,53 +161,6 @@ ns.CHANGELOG = {
                 "La fenêtre qui suit cette mise à jour montre les six nouveaux styles sur de vrais blocs qui s'allument pendant que leurs nombres glissent."
                     .. " Clique sur un style, puis Voir ouvre la galerie sur ce style. Tab ou la croix permettent"
                     .. " d'utiliser la fenêtre au clavier ou à la manette.",
-              },
-            },
-            { kind = "fixed",
-              en = {
-                "A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push"
-                    .. " back only the block past the edge, which opened a gap in the group.",
-                "Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were"
-                    .. " at its first or last choice. The arrows now follow the value.",
-                "Locked styles: when a style goes to all blocks or to a group, the warning about locked blocks offers"
-                    .. " Skip locked (the others take the style, the locked ones stay as they are), Them too, or Cancel."
-                    .. " No used to leave every block as it was.",
-                "Rampart layout: its spacers no longer show an icon. Apply the layout again to clear the ones you have.",
-              },
-              fr = {
-                "Un groupe qui dépasse le bord de l'écran (police plus large, texte plus long) reste une seule barre : le jeu"
-                    .. " repoussait seulement le bloc qui dépassait, ce qui ouvrait un écart dans le groupe.",
-                "Listes à flèches des options : une flèche pouvait rester grisée (ou allumée) après un changement, comme si"
-                    .. " la liste était à son premier ou dernier choix. Les flèches suivent maintenant la valeur.",
-                "Styles verrouillés : quand un style va à tous les blocs ou à un groupe, l'avertissement sur les blocs verrouillés"
-                    .. " propose Sauf verrouillés (les autres prennent le style, les verrouillés restent tels quels), Eux aussi ou Annuler."
-                    .. " Non laissait tous les blocs tels quels.",
-                "Disposition Chemin de ronde : ses espaces n'affichent plus d'icône. Applique de nouveau la disposition pour effacer celles qui restent.",
-              },
-            },
-        },
-    },
-    {
-        version = "1.9.0",
-        date = "2026-11-25",
-        highlights = {
-            { en = "Volume list: set every sound channel with a click or the wheel, and keep up to four named presets.",
-              fr = "Liste du volume : règle chaque canal d'un clic ou à la molette, et garde quatre préréglages nommés.",
-              show = { block = "volume", label = "VOLUME_SHOW" } },
-        },
-        sections = {
-            { kind = "new",
-              en = {
-                "Volume block: \"Hover shows\" now offers a clickable list in place of the tooltip. Click a bar or use the wheel to set the"
-                    .. " general, music, effects, ambience or dialogue volume, and one button mutes or restores all sound."
-                    .. " When the game lists several output devices, a button picks one. The list is the default; the tooltip stays a choice.",
-                "Volume presets: up to four, with names you choose (14 characters at most). A preset keeps the five volumes, whether sound"
-                    .. " is muted and the output device. A click on a preset in the list applies it; a right click renames, replaces or deletes it.",
-                "\"Click on the block\" chooses what a left click does: mute or restore sound (the default), or go to the next preset.",
-                "\"Block text\" can show the name of the preset in use, with the volume or alone. It shows only while the sound matches a preset exactly.",
-                "Presets are shared by all your characters. Create, name and delete them in the Volume block's settings too, without the mouse over the block.",
-              },
-              fr = {
                 "Bloc Volume : « Le survol affiche » propose une liste cliquable à la place de l'infobulle. Clique sur une barre ou utilise la"
                     .. " molette pour régler le volume général, la musique, les effets, l'ambiance ou les dialogues. Un bouton coupe ou remet tout le son."
                     .. " Si le jeu liste plusieurs sorties audio, un bouton en choisit une. La liste est le choix par défaut ; l'infobulle reste un choix.",
@@ -219,6 +183,28 @@ ns.CHANGELOG = {
               fr = {
                 "Onze blocs ont une nouvelle icône : FPS, Latence, Mémoire des addons, Quêtes, Réputation, Monnaies, Vitesse, Volume,"
                     .. " Talents, Temps de jeu et Compréhension. Le Temps de jeu ne ressemble plus aux deux autres horloges.",
+              },
+            },
+            { kind = "fixed",
+              en = {
+                "A group that grows past the screen edge (a wider font, a longer text) stays one bar: the game used to push"
+                    .. " back only the block past the edge, which opened a gap in the group.",
+                "Lists with arrows in the options: an arrow could stay grey (or lit) after a change, as if the list were"
+                    .. " at its first or last choice. The arrows now follow the value.",
+                "Locked styles: when a style goes to all blocks or to a group, the warning about locked blocks offers"
+                    .. " Skip locked (the others take the style, the locked ones stay as they are), Them too, or Cancel."
+                    .. " No used to leave every block as it was.",
+                "Rampart layout: its spacers no longer show an icon. Apply the layout again to clear the ones you have.",
+              },
+              fr = {
+                "Un groupe qui dépasse le bord de l'écran (police plus large, texte plus long) reste une seule barre : le jeu"
+                    .. " repoussait seulement le bloc qui dépassait, ce qui ouvrait un écart dans le groupe.",
+                "Listes à flèches des options : une flèche pouvait rester grisée (ou allumée) après un changement, comme si"
+                    .. " la liste était à son premier ou dernier choix. Les flèches suivent maintenant la valeur.",
+                "Styles verrouillés : quand un style va à tous les blocs ou à un groupe, l'avertissement sur les blocs verrouillés"
+                    .. " propose Sauf verrouillés (les autres prennent le style, les verrouillés restent tels quels), Eux aussi ou Annuler."
+                    .. " Non laissait tous les blocs tels quels.",
+                "Disposition Chemin de ronde : ses espaces n'affichent plus d'icône. Applique de nouveau la disposition pour effacer celles qui restent.",
               },
             },
         },

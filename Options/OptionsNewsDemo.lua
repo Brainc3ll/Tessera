@@ -88,7 +88,7 @@ end
 local function Build(parent)
     demo = CreateFrame("Frame", nil, parent)
     demo.title = demo:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    demo.title:SetJustifyH("LEFT")
+    demo.title:SetJustifyH("CENTER")
     demo.title:SetPoint("TOPLEFT", 0, 0)
     demo.measure = demo:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     demo.measure:Hide()

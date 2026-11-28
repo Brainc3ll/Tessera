@@ -1009,6 +1009,62 @@ function ns:PickStyleChoice(v)
     return self:ApplyTheme(v)
 end
 
+-- Trying a style in game (style gallery, "Try in game", 28/11): a copy of everything a style
+-- change writes (the profile's style, the group and launcher defaults, every block but its
+-- place), kept in the profile so a /reload, a crash or a logout during the try still brings
+-- the old look back at the next login (Core.lua, when the profile is loaded)
+local function IsPlace(field)
+    for _, f in ipairs(ns.POSITION_FIELDS or {}) do if f == field then return true end end
+    return false
+end
+
+function ns:StartStyleTrial()
+    local db = self.db
+    if not db or db.styleTrial then return end
+    local blocks = {}
+    for key, cfg in pairs(db.blocks) do
+        local copy = {}
+        for field, value in pairs(cfg) do
+            if not IsPlace(field) then copy[field] = self.DeepCopy(value) end
+        end
+        blocks[key] = copy
+    end
+    db.styleTrial = {
+        theme = db.theme, autoTheme = db.autoTheme, autoThemeMissing = db.autoThemeMissing,
+        flareFontSeen = self.DeepCopy(db.flareFontSeen),
+        groupDefaults = self.DeepCopy(db.groupDefaults), launcherDefaults = self.DeepCopy(db.launcherDefaults),
+        blocks = blocks,
+    }
+end
+
+-- keep: the player keeps the style tried (the copy is dropped); otherwise the old look comes
+-- back. atLoad: the blocks are drawn afterwards by the caller
+function ns:EndStyleTrial(keep, atLoad)
+    local db = self.db
+    local t = db and db.styleTrial
+    if not t then return end
+    db.styleTrial = nil
+    if keep then return end
+    db.theme, db.autoTheme, db.autoThemeMissing = t.theme, t.autoTheme, t.autoThemeMissing
+    db.flareFontSeen = t.flareFontSeen
+    db.groupDefaults = t.groupDefaults or {}
+    db.launcherDefaults = t.launcherDefaults or {}
+    for key, copy in pairs(t.blocks or {}) do
+        local cfg = db.blocks[key]
+        if cfg then
+            for field in pairs(cfg) do
+                if not IsPlace(field) and copy[field] == nil then cfg[field] = nil end
+            end
+            for field, value in pairs(copy) do cfg[field] = value end
+        end
+    end
+    if atLoad then return end
+    self:ApplyLevelPalette()
+    self:ReanchorAll()
+    if self.UpdateAll then self:UpdateAll() end
+    if self.SkinOptions then self:SkinOptions() end
+end
+
 -- Keys of the blocks whose style the player locked (1.7.1)
 function ns:GetStyleLockedKeys()
     local list = {}

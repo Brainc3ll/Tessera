@@ -603,7 +603,38 @@ end)
 -- none: the current choice). The workshop on its right starts from the settings of every block
 -- (blocks whose style is locked are left out, as in the Style box); Apply gives the style if it
 -- changed, then only the settings changed in the workshop (choice of Braincell1980, 27/11)
+-- Gives the marked style (if it changed) and the workshop's settings to every block
+local function ApplyLook(key, look)
+    if key ~= ns:GetStyleChoice() then
+        ns:PickStyleChoice(key)
+        local note = ns:GetThemeNote()
+        if note then ns.Print(note) end
+    end
+    for _, item in ipairs(look or {}) do ns:SetAllBlocksField(item.field, item.value, item.look) end
+end
+
+-- "Try in game" (28/11): the style on the real blocks, then Keep or Go back (Themes.lua StartStyleTrial)
+ns.OnLanguage(function()
+    ns.Dialogs["TESSERA_STYLE_TRY"] = {
+        text = L.STYLE_TRY_ASK,
+        button1 = L.STYLE_TRY_KEEP,
+        button2 = L.STYLE_TRY_BACK,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true, -- Escape goes back to the old look
+        OnAccept = function()
+            ns:EndStyleTrial(true)
+            ns:RefreshOptions()
+        end,
+        OnCancel = function()
+            ns:EndStyleTrial(false)
+            ns:RefreshOptions()
+        end,
+    }
+end)
+
 function ns:OpenLookStyleGallery(chosen)
+    local function Changed(key, changed) return key ~= nil and (changed or key ~= ns:GetStyleChoice()) end
     ns:ShowStyleGallery({
         auto = true,
         chosen = chosen or ns:GetStyleChoice(),
@@ -612,16 +643,24 @@ function ns:OpenLookStyleGallery(chosen)
         lookNow = function(field, first) return ns:AllBlocksField(field, ns.LookRowOf(field).look, first) end,
         actions = { {
             text = L.STYLE_GALLERY_APPLY, tip = L.TIP_STYLE_GALLERY_APPLY,
-            enabled = function(key, changed) return key ~= nil and (changed or key ~= ns:GetStyleChoice()) end,
+            enabled = Changed,
             run = function(key, _, look, done)
-                if key ~= ns:GetStyleChoice() then
-                    ns:PickStyleChoice(key)
-                    local note = ns:GetThemeNote()
-                    if note then ns.Print(note) end
-                end
-                for _, item in ipairs(look or {}) do ns:SetAllBlocksField(item.field, item.value, item.look) end
+                ApplyLook(key, look)
                 ns:RefreshOptions()
                 done()
+            end,
+        }, {
+            text = L.STYLE_GALLERY_TRY, tip = L.TIP_STYLE_GALLERY_TRY,
+            enabled = Changed,
+            run = function(key, _, look, done)
+                ns:StartStyleTrial()
+                ApplyLook(key, look)
+                ns:RefreshOptions()
+                done()
+                local gallery = ns.StyleGallery()
+                if gallery then gallery:Hide() end
+                local info = key ~= "auto" and ns:GetThemeInfo(key)
+                ns:ShowDialog("TESSERA_STYLE_TRY", info and info.name or L.STYLE_TRY_THIS)
             end,
         } },
     })

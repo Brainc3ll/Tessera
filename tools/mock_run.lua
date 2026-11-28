@@ -5489,7 +5489,35 @@ do
         if shown ~= key or (f.text:GetText() or "") == "" then print("STEP ERROR: dialog " .. key .. " does not open") end
         ns:HideDialog(key)
     end
-    if count ~= 21 then print("STEP ERROR: dialogs: " .. count .. " instead of 21") end
+    if count ~= 22 then print("STEP ERROR: dialogs: " .. count .. " instead of 22") end
+    -- "Try in game" (28/11): Go back puts the old look back, keeps the blocks where they are;
+    -- Keep keeps the new style; a try left open (a /reload) goes back at the next profile load
+    do
+        local db, gold = ns.db, ns.db.blocks.gold
+        local before, beforeBorder, beforeFont = db.theme, ns.DeepCopy(gold.borderColor), gold.font
+        local other
+        for _, t in ipairs(ns:GetAvailableThemes()) do if t.key ~= ns:GetTheme() then other = t.key break end end
+        ns:StartStyleTrial()
+        ns:PickStyleChoice(other)
+        gold.font = "mock font"
+        gold.point = { "CENTER", "CENTER", 12, 34 }
+        ns:ShowDialog("TESSERA_STYLE_TRY", "x")
+        ns.DialogClick(2)
+        if db.theme ~= before or gold.font ~= beforeFont or db.styleTrial then print("STEP ERROR: Go back keeps the style tried") end
+        local bc = gold.borderColor or {}
+        if beforeBorder and (bc.r ~= beforeBorder.r or bc.g ~= beforeBorder.g or bc.b ~= beforeBorder.b) then print("STEP ERROR: Go back keeps the border color tried") end
+        if not (gold.point and gold.point[3] == 12) then print("STEP ERROR: Go back moved the block") end
+        ns:StartStyleTrial()
+        ns:PickStyleChoice(other)
+        ns:ShowDialog("TESSERA_STYLE_TRY", "x")
+        ns.DialogClick(1)
+        if db.theme ~= other or db.styleTrial then print("STEP ERROR: Keep does not keep the style") end
+        ns:StartStyleTrial()
+        ns:PickStyleChoice(before or "auto")
+        ns:EndStyleTrial(false, true) -- what the profile load does
+        if db.theme ~= other or db.styleTrial then print("STEP ERROR: a try left open does not go back at load") end
+        ns:PickStyleChoice(before or "auto")
+    end
     for _, k in ipairs({ "TESSERA_RESET_PROFILE", "TESSERA_REMOVE_BLOCKS", "TESSERA_FORGET_CHARACTER", "TESSERA_REPLACE_BLOCK" }) do
         if ns.Dialogs[k].defaultButton ~= 2 then print("STEP ERROR: " .. k .. " must select Cancel first") end
     end

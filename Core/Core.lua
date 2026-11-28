@@ -1460,6 +1460,8 @@ function ns:LoadProfile()
     elseif not ok then
         error(err)
     end
+    -- a style tried in game and never kept (a /reload or logout during the try): the old look
+    if self.EndStyleTrial then pcall(self.EndStyleTrial, self, false, true) end
     -- the automatic style follows the installed UI (e.g. FlareUI 1.x updated to 2.x)
     if self.SyncAutoTheme then pcall(self.SyncAutoTheme, self) end
     if self.FollowFlareFont then pcall(self.FollowFlareFont, self) end

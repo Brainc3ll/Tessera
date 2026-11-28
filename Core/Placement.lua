@@ -164,6 +164,7 @@ end
 local UNDO_LIMIT = 30
 -- (scale and frozen live on a group's head block: merging, detaching or replacing it moves them)
 local POSITION_FIELDS = { "point", "dock", "anchor", "enabled", "edges", "stretch", "look", "scale", "frozen" }
+ns.POSITION_FIELDS = POSITION_FIELDS -- (Themes.lua: trying a style keeps the blocks where they are)
 
 -- Same value, table contents included (the copies in undo steps are compared with the live settings)
 local function SameValue(a, b)

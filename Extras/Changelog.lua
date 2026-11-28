@@ -56,8 +56,8 @@ ns.CHANGELOG = {
             { en = "Six new block styles: Gilded, Blue rune, Silver, Brazen, Jade and Amethyst, with rounded corners.",
               fr = "Six nouveaux styles de blocs : Doré, Runique bleu, Argent, Airain, Jade et Améthyste, aux coins arrondis.",
               show = { page = "PAGE_LOOK", label = "THEME" } },
-            { en = "Pick your style in a gallery of real blocks, and set its font and effects beside it.",
-              fr = "Choisis ton style dans une galerie de vrais blocs, et règle sa police et ses effets à côté.",
+            { en = "Pick your style in a gallery of real blocks, set its font and effects beside it, and try it in game.",
+              fr = "Choisis ton style dans une galerie de vrais blocs, règle sa police et ses effets à côté, et essaie-le en jeu.",
               show = { page = "PAGE_LOOK", label = "THEME" } },
             { en = "Style, font, corners and effects together in one Style box.",
               fr = "Style, police, coins et effets réunis dans un seul cadre Style.",
@@ -101,9 +101,10 @@ ns.CHANGELOG = {
                 "Style gallery: a click on the style list (Style and layouts tab, or a block's page) shows every style as a real block,"
                     .. " in rows by family, two merged blocks each. On the right, set the font, text size, corners, separators and effects:"
                     .. " every thumbnail shows them, and can light up and move (Animate the thumbnails)."
-                    .. " Click a style, then Apply. Arrows or d-pad, Enter or A, and Escape or B work too.",
+                    .. " Click a style, then Apply, or Try in game to see it on your blocks and then keep it or go back."
+                    .. " Arrows or d-pad, Enter or A, and Escape or B work too.",
                 "The window after this update shows the six new styles on real blocks that light up while their numbers glide."
-                    .. " Click one, then Try opens the gallery on it. Tab or the d-pad lets you use the window"
+                    .. " Click one, then See opens the gallery on it. Tab or the d-pad lets you use the window"
                     .. " with the keyboard or a gamepad.",
               },
               fr = {
@@ -143,10 +144,11 @@ ns.CHANGELOG = {
                 "Galerie des styles : un clic sur la liste des styles (onglet Style et dispositions, ou page d'un bloc) montre tous les styles"
                     .. " en vrais blocs, rangés par famille, deux blocs fusionnés chacun. À droite, règle la police, la taille du texte,"
                     .. " les coins, les séparateurs et les effets : chaque vignette les montre, et peut s'allumer et bouger"
-                    .. " (Animer les vignettes). Clique sur un style, puis sur Appliquer. Les flèches ou la croix,"
+                    .. " (Animer les vignettes). Clique sur un style, puis sur Appliquer, ou sur Essayer en jeu pour le voir"
+                    .. " sur tes blocs puis le garder ou revenir. Les flèches ou la croix,"
                     .. " Entrée ou A, et Échap ou B marchent aussi.",
                 "La fenêtre qui suit cette mise à jour montre les six nouveaux styles sur de vrais blocs qui s'allument pendant que leurs nombres glissent."
-                    .. " Clique sur un style, puis Essayer ouvre la galerie sur ce style. Tab ou la croix permettent"
+                    .. " Clique sur un style, puis Voir ouvre la galerie sur ce style. Tab ou la croix permettent"
                     .. " d'utiliser la fenêtre au clavier ou à la manette.",
               },
             },

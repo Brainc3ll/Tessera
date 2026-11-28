@@ -50,7 +50,6 @@ Plans, not promises:
 - **Accessibility** for players with disabilities: Tessera follows the game's own accessibility settings and only adds what its blocks need. From 1.3, every new feature is checked with text twice as big, in high contrast and without a mouse.
 - **Full gamepad support**, built on WoW Forever's own gamepad mode: something I have never seen in a panel or DataBroker addon.
 - **An interface that sizes itself from its texts**, so no translation or bigger text ever overflows a button.
-- **A language setting**, to use Tessera in another language than your game client.
 
 ## Screenshots
 
@@ -142,8 +141,7 @@ Help tab inside the game explains everything.
   and the progress bar can be a thin line under the value.
 - **Style gallery:** a click on the style list shows every style as a real block, in rows by family. Each thumbnail shows two merged blocks. Set the font, text size, corners, separators and effects on the right and see them on every thumbnail, still or animated, before you apply. Try in game puts it on your blocks first, then you keep it or go back.
 - **What's new window:** after the update to this version, it shows the six new styles on real blocks that light up while their numbers glide. Click one, then See opens the gallery on it. Tab or the d-pad lets you use the window with a keyboard or a gamepad.
-  Click a style, then Apply; the keyboard and the gamepad work too.
-- **One Style box:** style, font, text size, corners, icons and effects, in this order, for every
+- **One Style box:** style, font, text size, corners, separators and effects, in this order, for every
   block (Style and layouts tab) or for one block (top of its Appearance tab).
 - **Separator shapes (any style):** a line, a short line, a dash, a diamond, three runes, a dot or a big dot between merged blocks.
 - **Mosaic placement:** place blocks anywhere; dropped against each other, they merge in every

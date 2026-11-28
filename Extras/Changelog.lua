@@ -63,7 +63,7 @@ ns.CHANGELOG = {
               fr = "Style, police, coins et effets réunis dans un seul cadre Style.",
               show = { page = "PAGE_LOOK", label = "FONT" } },
             { en = "Between merged blocks: a line, a dash, a diamond, runes or a dot.",
-              fr = "Entre les blocs fusionnés : un trait, un tiret, un losange, des runes ou un point.",
+              fr = "Entre les blocs fusionnés : une ligne, un tiret, un losange, des runes ou un point.",
               show = { page = "PAGE_LOOK", label = "SEPARATOR_SHAPE" } },
             { en = "Volume list: set every sound channel with a click or the wheel, and keep up to four named presets.",
               fr = "Liste du volume : règle chaque canal d'un clic ou à la molette, et garde quatre préréglages nommés.",
@@ -93,7 +93,7 @@ ns.CHANGELOG = {
                     .. " to its new value. The six new styles turn them on; Fewer animations turns them off."
                     .. " The glow has four shapes (Halo, Edge, Inner, Pulse) and takes the style's color or your class color;"
                     .. " your blocks keep the halo they had.",
-                "One Style box for the whole look: style, font, text size, corners, icons, separators, effects,"
+                "One Style box for the whole look: style, font, text size, corners, separators, effects,"
                     .. " glow shape and color, in this order,"
                     .. " in the Style and layouts tab for every block and at the top of a block's Appearance tab."
                     .. " The block's style leaves the Content tab. Blocks whose style is locked keep theirs.",
@@ -143,7 +143,7 @@ ns.CHANGELOG = {
                     .. " glisse jusqu'à sa nouvelle valeur. Les six nouveaux styles les allument ; Moins d'animations les coupe."
                     .. " La lueur a quatre formes (Halo, Liseré, Intérieure, Pulsation) et prend la couleur du style ou celle de ta classe ;"
                     .. " tes blocs gardent le halo qu'ils avaient.",
-                "Un seul cadre Style pour toute l'allure : style, police, taille du texte, coins, icônes, séparateurs, effets,"
+                "Un seul cadre Style pour toute l'allure : style, police, taille du texte, coins, séparateurs, effets,"
                     .. " forme et couleur de la lueur, dans cet ordre,"
                     .. " dans l'onglet Style et dispositions pour tous les blocs et en haut de l'onglet Apparence d'un bloc."
                     .. " Le style du bloc quitte l'onglet Contenu. Les blocs au style verrouillé gardent le leur.",
